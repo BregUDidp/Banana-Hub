@@ -2,12 +2,12 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 -- สร้าง Window
 local Window = Rayfield:CreateWindow({
-   Name = "Banana Nab 🍌",
+   Name = "🎭 Sylentis",
    Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Banana Kub 🍌",
+   LoadingTitle = "🎭 Sylentis",
    LoadingSubtitle = "By XaS",
    ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Amethyst", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
  
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
  
@@ -28,25 +28,25 @@ local Window = Rayfield:CreateWindow({
  
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
-      Title = "Key Banana 🍌",
-      Subtitle = "ซื้อคีย์เดี่ยวนี้ 🍌",
-      Note = "เข้าดิสไปซื้อคีย์ 🍌 ",
-      FileName = "Key By Banana Kub", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      Title = "Key Sylentis 🎭",
+      Subtitle = "ซื้อคีย์เดี่ยวนี้ 🎭",
+      Note = "เข้าดิสไปซื้อคีย์ 🎭",
+      FileName = "Key 🎭", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"e8qu7y8tr542er"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 Rayfield:Notify({
-   Title = "☠️",
-   Content = "☠️",
+   Title = "Sylentis กำลังโหลด...",
+   Content = " Sylentis กำลังโหลด...",
    Duration = 5,
    Image = nil,
 })
  
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("ตัวละคร", 6026568198)
-local MainSection = MainTab:CreateSection("🍌 Main 🍌")
+local MainSection = MainTab:CreateSection("🎭 Main 🎭")
  
 -- ตัวแปรระบบ
 local Players = game:GetService("Players")
@@ -294,10 +294,20 @@ friendTab:CreateButton({
 })
  
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("🧩 สคริปต์เพิ่มเติม", 6031280882)
+local extraTab = Window:CreateTab("🔫 สคริปต์อาเซเนิล", 6031280882)
+
+extraTab:CreateButton({
+    Name = "🔫 รัน UnBond",
+	Callback = function()
+	    Rayfield:Notify({Title = "🔫 กำลังโหลด UnBond Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
+	end
+})
+ 
+local extraTab = Window:CreateTab("🧩 สคริปต์ 99 วัน", 6031280882)
  
 extraTab:CreateButton({
-    Name = "💣 รัน SomTank",
+    Name = "💣 รัน  SomTank Hub",
     Callback = function()
         Rayfield:Notify({Title = "🚀 กำลังโหลด SomTank...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
@@ -305,7 +315,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🦊 รัน Foxname Hub",
+    Name = "🦊 รัน  FoxName Hub",
     Callback = function()
         Rayfield:Notify({Title = "🦊 กำลังโหลด Foxname...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
@@ -313,7 +323,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🌌 รัน Voidware",
+    Name = "🌌 รัน  VoidWare Hub",
     Callback = function()
         Rayfield:Notify({Title = "🌌 กำลังโหลด Voidware...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
@@ -409,7 +419,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 โปรโหลดสำเร็จ!",
-    Content="Banana 🍌",
+    Content="พร้อมผจญภัยกับ ไลฟ์สาระ ไปวันๆ แล้ว!",
     Duration=4,
     Image=6026568198
 })
