@@ -319,7 +319,7 @@ ESPTab:CreateToggle({
 
 -- Notification
 Rayfield:Notify({
-    Title = "Rainbow ESP & HP Loaded",
+    Title = "🌀 Sylentis ESP",
     Content = "ใช้ Toggle เพื่อเปิด/ปิดกล่อง, เส้นสีรุ้ง, หรือแถบ HP",
     Duration = 5,
     Image = 4483362458,
