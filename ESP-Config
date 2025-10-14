@@ -1,326 +1,160 @@
--- Load Rayfield UI Library
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-local Window = Rayfield:CreateWindow({
-   Name = "🎭 ESP Hub",
-   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "ESP Hub Loading...",
-   LoadingSubtitle = "By XaS",
-   ShowText = "Rayfield", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
-
-   ToggleUIKeybind = "E", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
-
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
-
-   KeySystem = false, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "Untitled",
-      Subtitle = "Key System",
-      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
-      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
-})
+-- Load Kavo UI Library
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("🌀 มองคน/มองทะลุ", "BloodTheme")
 
 -- Services
-local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
--- ESP Configuration
-local HighlightEnabled = false
-local TracerEnabled = false
-local HealthBarEnabled = false
-local espObjects = {}
+-- ESP Variables
+local ESPEnabled = false
+local ESPObjects = {}
 
--- Function to create rainbow color
-local function getRainbowColor()
-    local time = tick() * 0.5 -- Adjust speed of color change
-    local r = math.sin(time) * 0.5 + 0.5
-    local g = math.sin(time + 2) * 0.5 + 0.5
-    local b = math.sin(time + 4) * 0.5 + 0.5
-    return Color3.new(r, g, b)
-end
-
--- Function to get health bar color
-local function getHealthColor(health, maxHealth)
-    local healthPercent = health / maxHealth
-    if healthPercent > 0.5 then
-        return Color3.fromRGB(0, 255, 0) -- Green
-    elseif healthPercent > 0.25 then
-        return Color3.fromRGB(255, 255, 0) -- Yellow
-    else
-        return Color3.fromRGB(255, 0, 0) -- Red
-    end
-end
-
--- Function to check if player is visible
-local function isPlayerVisible(targetPlayer)
-    if not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") or not targetPlayer.Character:FindFirstChild("Head") then return false end
-    local from = Camera.CFrame.Position
-    local to = targetPlayer.Character.Head.Position
-    local ray = Ray.new(from, (to - from).Unit * 500)
-    local hit, _ = workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character, Camera})
-    return hit and hit:IsDescendantOf(targetPlayer.Character)
-end
-
--- Function to create ESP (Highlight, Tracer, and HP) for a player
-local function createESP(player)
+-- ESP Functions
+local function CreateESP(player)
     if player == LocalPlayer then return end
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local head = character:WaitForChild("Head")
-    local humanoid = character:WaitForChild("Humanoid")
-
-    -- Highlight (Box ESP)
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = character
-    highlight.FillTransparency = 0.5
-    highlight.OutlineTransparency = 0
-    highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Default color
-    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    highlight.Enabled = false
-
-    -- Tracer (Line)
-    local line = Drawing.new("Line")
-    line.Visible = false
-    line.Color = Color3.fromRGB(255, 255, 255) -- Default color
-    line.Thickness = 2
-    line.Transparency = 1
-
-    -- Billboard GUI for name and health
-    local billboardGui = Instance.new("BillboardGui")
-    billboardGui.Parent = head
-    billboardGui.Size = UDim2.new(0, 200, 0, 80)
-    billboardGui.StudsOffset = Vector3.new(0, 2, 0)
-    billboardGui.AlwaysOnTop = true
-    billboardGui.Enabled = false
-
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Parent = billboardGui
-    nameLabel.Size = UDim2.new(1, 0, 0, 30)
-    nameLabel.Position = UDim2.new(0, 0, 0, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = player.Name
-    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.SourceSansBold
-
-    local healthBarBackground = Instance.new("Frame")
-    healthBarBackground.Parent = billboardGui
-    healthBarBackground.Size = UDim2.new(1, 0, 0, 10)
-    healthBarBackground.Position = UDim2.new(0, 0, 0, 35)
-    healthBarBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    healthBarBackground.BorderSizePixel = 0
-    healthBarBackground.Visible = false
-
-    local healthBar = Instance.new("Frame")
-    healthBar.Parent = healthBarBackground
-    healthBar.Size = UDim2.new(1, 0, 1, 0)
-    healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-    healthBar.BorderSizePixel = 0
-
-    espObjects[player] = {
-        Highlight = highlight,
-        Line = line,
-        BillboardGui = billboardGui,
-        HealthBarBackground = healthBarBackground,
-        HealthBar = healthBar,
-        Humanoid = humanoid
+    
+    local function CreateBox()
+        local box = Drawing.new("Square")
+        box.Visible = false
+        box.Color = Color3.fromRGB(255, 0, 0)  -- สีแดงสำหรับศัตรู
+        box.Thickness = 2
+        box.Filled = false
+        box.Transparency = 1
+        return box
+    end
+    
+    local function CreateTracer()
+        local tracer = Drawing.new("Line")
+        tracer.Visible = false
+        tracer.Color = Color3.fromRGB(255, 0, 0)
+        tracer.Thickness = 1
+        tracer.Transparency = 1
+        return tracer
+    end
+    
+    local function CreateName()
+        local name = Drawing.new("Text")
+        name.Visible = false
+        name.Color = Color3.fromRGB(255, 255, 255)
+        name.Size = 16
+        name.Center = true
+        name.Outline = true
+        name.Font = 2
+        name.Text = player.Name
+        return name
+    end
+    
+    local esp = {
+        Box = CreateBox(),
+        Tracer = CreateTracer(),
+        Name = CreateName(),
+        Player = player
     }
+    
+    table.insert(ESPObjects, esp)
 end
 
--- Function to remove ESP
-local function removeESP(player)
-    if espObjects[player] then
-        espObjects[player].Highlight:Destroy()
-        espObjects[player].Line:Remove()
-        espObjects[player].BillboardGui:Destroy()
-        espObjects[player] = nil
-    end
-end
-
--- Function to toggle Highlight
-local function toggleHighlight()
-    HighlightEnabled = not HighlightEnabled
-    if HighlightEnabled then
-        -- Add Highlights to all players
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and not espObjects[player] then
-                createESP(player)
-            end
-        end
-        -- Add to new players
-        Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function()
-                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
-                    createESP(player)
-                end
-            end)
-        end)
-    end
-end
-
--- Function to toggle Tracer
-local function toggleTracer()
-    TracerEnabled = not TracerEnabled
-    if TracerEnabled then
-        -- Add Tracers to all players
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and not espObjects[player] then
-                createESP(player)
-            end
-        end
-        -- Add to new players
-        Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function()
-                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
-                    createESP(player)
-                end
-            end)
-        end)
-    end
-end
-
--- Function to toggle Health Bar
-local function toggleHealthBar()
-    HealthBarEnabled = not HealthBarEnabled
-    if HealthBarEnabled then
-        -- Add Health Bars to all players
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character and not espObjects[player] then
-                createESP(player)
-            end
-        end
-        -- Add to new players
-        Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function()
-                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
-                    createESP(player)
-                end
-            end)
-        end)
-    end
-end
-
--- Update ESP
-RunService.RenderStepped:Connect(function()
-    -- Update ESP
-    for player, esp in pairs(espObjects) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+local function UpdateESP()
+    for _, esp in pairs(ESPObjects) do
+        local player = esp.Player
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Head") then
             local rootPart = player.Character.HumanoidRootPart
-            local humanoid = esp.Humanoid
-            local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
-            if onScreen and isPlayerVisible(player) then
-                -- Update Highlight
-                if HighlightEnabled then
-                    esp.Highlight.Enabled = true
-                    esp.Highlight.FillColor = getRainbowColor()
+            local head = player.Character.Head
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            
+            if humanoid and humanoid.Health > 0 then
+                local rootPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+                local headPos = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
+                local legPos = Camera:WorldToViewportPoint(rootPart.Position - Vector3.new(0, 3, 0))
+                
+                if onScreen then
+                    -- Box ESP
+                    local size = (headPos - legPos).Magnitude
+                    esp.Box.Size = Vector2.new(2000 / rootPos.Z, size)
+                    esp.Box.Position = Vector2.new(rootPos.X - esp.Box.Size.X / 2, rootPos.Y - esp.Box.Size.Y / 2)
+                    esp.Box.Visible = true
+                    
+                    -- Tracer
+                    esp.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                    esp.Tracer.To = Vector2.new(rootPos.X, rootPos.Y)
+                    esp.Tracer.Visible = true
+                    
+                    -- Name
+                    esp.Name.Position = Vector2.new(rootPos.X, rootPos.Y - esp.Box.Size.Y / 2 - 20)
+                    esp.Name.Visible = true
                 else
-                    esp.Highlight.Enabled = false
-                end
-                -- Update Tracer
-                if TracerEnabled then
-                    esp.Line.Visible = true
-                    esp.Line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 50) -- From bottom center
-                    esp.Line.To = Vector2.new(screenPos.X, screenPos.Y)
-                    esp.Line.Color = getRainbowColor()
-                else
-                    esp.Line.Visible = false
-                end
-                -- Update Name and Health
-                esp.BillboardGui.Enabled = (HighlightEnabled or TracerEnabled or HealthBarEnabled)
-                esp.HealthBarBackground.Visible = HealthBarEnabled
-                if HealthBarEnabled then
-                    esp.HealthBar.Size = UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0)
-                    esp.HealthBar.BackgroundColor3 = getHealthColor(humanoid.Health, humanoid.MaxHealth)
+                    esp.Box.Visible = false
+                    esp.Tracer.Visible = false
+                    esp.Name.Visible = false
                 end
             else
-                esp.Highlight.Enabled = false
-                esp.Line.Visible = false
-                esp.BillboardGui.Enabled = false
-                esp.HealthBarBackground.Visible = false
+                esp.Box.Visible = false
+                esp.Tracer.Visible = false
+                esp.Name.Visible = false
             end
         else
-            esp.Highlight.Enabled = false
-            esp.Line.Visible = false
-            esp.BillboardGui.Enabled = false
-            esp.HealthBarBackground.Visible = false
+            esp.Box.Visible = false
+            esp.Tracer.Visible = false
+            esp.Name.Visible = false
         end
     end
+end
+
+local function ToggleESP(state)
+    ESPEnabled = state
+    if state then
+        for _, player in pairs(Players:GetPlayers()) do
+            if not table.find(ESPObjects, function(esp) return esp.Player == player end) then
+                CreateESP(player)
+            end
+        end
+        RunService.RenderStepped:Connect(UpdateESP)
+    else
+        for _, esp in pairs(ESPObjects) do
+            esp.Box:Remove()
+            esp.Tracer:Remove()
+            esp.Name:Remove()
+        end
+        ESPObjects = {}
+    end
+end
+
+-- UI Tab
+local MainTab = Window:NewTab("ESP Settings")
+local MainSection = MainTab:NewSection("Main Features")
+
+MainSection:NewToggle("Enable ESP", "เปิด/ปิด ESP สำหรับผู้เล่นทั้งหมด", function(state)
+    ToggleESP(state)
 end)
 
--- Create Rayfield Window
-local Window = Rayfield:CreateWindow({
-    Name = "🌀 ESP Hub",
-    LoadingTitle = "Loading ESP and HP...",
-    LoadingSubtitle = "By XaS",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "ESPRayfield",
-        FileName = "Config"
-    },
-    Discord = {
-        Enabled = false,
-        Invite = "",
-        RememberJoins = true
-    },
-    KeySystem = false
-})
+MainSection:NewSlider("ESP Distance", "ปรับระยะการแสดง ESP (studs)", 500, 1, function(value)
+    -- สามารถเพิ่ม logic สำหรับ distance check ใน UpdateESP ได้ที่นี่
+    print("ESP Distance set to: " .. value)
+end)
 
--- Create Tab
-local ESPTab = Window:CreateTab("🌀 มองหาคน/มองทะลุ", 4483362458) -- Icon ID
+-- Player Tab
+local PlayerTab = Window:NewTab("Player List")
+local PlayerSection = PlayerTab:NewSection("Players")
 
--- Toggle Button for Highlight
-ESPTab:CreateToggle({
-    Name = "🌌 Highlight",
-    CurrentValue = false,
-    Flag = "ToggleHighlight",
-    Callback = function(Value)
-        toggleHighlight()
-    end,
-})
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        PlayerSection:NewToggle(player.Name, "เปิด ESP สำหรับ " .. player.Name, function(state)
+            -- Logic สำหรับ toggle ต่อผู้เล่นคนเดียว (ขยายจากตัวอย่างพื้นฐาน)
+            print("Toggled ESP for " .. player.Name .. ": " .. tostring(state))
+        end)
+    end
+end
 
--- Toggle Button for Tracer
-ESPTab:CreateToggle({
-    Name = "🔫 Tracers",
-    CurrentValue = false,
-    Flag = "ToggleTracer",
-    Callback = function(Value)
-        toggleTracer()
-    end,
-})
-
--- Toggle Button for Health Bar
-ESPTab:CreateToggle({
-    Name = "💓 Health ESP",
-    CurrentValue = false,
-    Flag = "ToggleHealthBar",
-    Callback = function(Value)
-        toggleHealthBar()
-    end,
-})
+-- Handle new players
+Players.PlayerAdded:Connect(function(player)
+    if ESPEnabled then
+        CreateESP(player)
+    end
+    -- Refresh UI if needed
+end)
 
 -- Notification
-Rayfield:Notify({
-    Title = "🌀 Sylentis ESP",
-    Content = "ใช้ Toggle เพื่อเปิด/ปิดกล่อง, เส้นสีรุ้ง, หรือแถบ HP",
-    Duration = 5,
-    Image = 4483362458,
-})
+Library:Notify("ESP Hub Loaded! Use the toggle to start.", 5)
