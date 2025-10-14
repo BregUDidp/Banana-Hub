@@ -156,5 +156,10 @@ Players.PlayerAdded:Connect(function(player)
     -- Refresh UI if needed
 end)
 
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.E, function()
+	print("You just clicked the bind")
+end)
+
+
 -- Notification
 Library:Notify("ESP Hub Loaded! Use the toggle to start.", 5)
