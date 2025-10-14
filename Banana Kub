@@ -205,7 +205,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 
 -- แท็บเพื่อน
-local friendTab = Window:CreateTab("👥 วาป/มองหาคน", 6026568198)
+local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
  
 local function getPlayerList()
     local list = {}
