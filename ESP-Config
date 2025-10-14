@@ -268,9 +268,9 @@ end)
 
 -- Create Rayfield Window
 local Window = Rayfield:CreateWindow({
-    Name = "Rainbow ESP & HP",
+    Name = "🌀 ESP Hub",
     LoadingTitle = "Loading ESP and HP...",
-    LoadingSubtitle = "by Grok",
+    LoadingSubtitle = "By XaS",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "ESPRayfield",
