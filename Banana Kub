@@ -292,11 +292,11 @@ friendTab:CreateButton({
         })
     end
 })
--- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("🧩 สคริปต์ 99 วัน", 6031280882)
+ 
+local extraTab = Window:CreateTab("🧩 สคริปต์เพิ่มเติม", 6031280882)
  
 extraTab:CreateButton({
-    Name = "💣 รัน  SomTank Hub",
+    Name = "💣 รัน SomTank",
     Callback = function()
         Rayfield:Notify({Title = "🚀 กำลังโหลด SomTank...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
@@ -304,7 +304,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🦊 รัน  FoxName Hub",
+    Name = "🦊 รัน Foxname Hub",
     Callback = function()
         Rayfield:Notify({Title = "🦊 กำลังโหลด Foxname...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
@@ -312,7 +312,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🌌 รัน  VoidWare Hub",
+    Name = "🌌 รัน Voidware",
     Callback = function()
         Rayfield:Notify({Title = "🌌 กำลังโหลด Voidware...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
@@ -325,6 +325,17 @@ creditTab:CreateLabel("version 1.3.3 (+)แท็บรายการอัพ�
 creditTab:CreateLabel("version 1.3.4 ไม่ประสงค์บอกอัพเดต")
 creditTab:CreateLabel("version 1.3.5 (=)เปลี่ยนวาปให้เป็นไม่ต้องพิมพ์แค่เลือกแล้วกดก็สามารถเลือกวาปได้ by thomas")
 creditTab:CreateLabel("version 1.3.6 ")
+ 
+ 
+-- แท็บเครดิต
+local creditTab2 = Window:CreateTab("📜 เครดิต",6034989579)
+creditTab2:CreateLabel("📜 เครดิต")
+creditTab2:CreateLabel("owner by livezala")
+creditTab2:CreateLabel("original script by dion_ktl")
+creditTab2:CreateLabel("นำมาต่อยอด by thomas (โทมัส)")
+creditTab2:CreateLabel("อัพเดต 10/11/2025 10::54 PM")
+creditTab2:CreateLabel("version 1.3.4fu")
+creditTab2:CreateLabel("รับอัพเดต discord:dSyCsRpU62")
  
 -- แท็บเคาท์ดาวน์ปีใหม่
 local newYearTab = Window:CreateTab("🎉 เคาท์ดาวน์ปีใหม่", 6034979821)
