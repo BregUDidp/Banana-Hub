@@ -1,0 +1,290 @@
+-- Load Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Services
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+
+-- ESP Configuration
+local HighlightEnabled = false
+local TracerEnabled = false
+local HealthBarEnabled = false
+local espObjects = {}
+
+-- Function to create rainbow color
+local function getRainbowColor()
+    local time = tick() * 0.5 -- Adjust speed of color change
+    local r = math.sin(time) * 0.5 + 0.5
+    local g = math.sin(time + 2) * 0.5 + 0.5
+    local b = math.sin(time + 4) * 0.5 + 0.5
+    return Color3.new(r, g, b)
+end
+
+-- Function to get health bar color
+local function getHealthColor(health, maxHealth)
+    local healthPercent = health / maxHealth
+    if healthPercent > 0.5 then
+        return Color3.fromRGB(0, 255, 0) -- Green
+    elseif healthPercent > 0.25 then
+        return Color3.fromRGB(255, 255, 0) -- Yellow
+    else
+        return Color3.fromRGB(255, 0, 0) -- Red
+    end
+end
+
+-- Function to check if player is visible
+local function isPlayerVisible(targetPlayer)
+    if not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") or not targetPlayer.Character:FindFirstChild("Head") then return false end
+    local from = Camera.CFrame.Position
+    local to = targetPlayer.Character.Head.Position
+    local ray = Ray.new(from, (to - from).Unit * 500)
+    local hit, _ = workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character, Camera})
+    return hit and hit:IsDescendantOf(targetPlayer.Character)
+end
+
+-- Function to create ESP (Highlight, Tracer, and HP) for a player
+local function createESP(player)
+    if player == LocalPlayer then return end
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local head = character:WaitForChild("Head")
+    local humanoid = character:WaitForChild("Humanoid")
+
+    -- Highlight (Box ESP)
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = character
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Default color
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.Enabled = false
+
+    -- Tracer (Line)
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.Color = Color3.fromRGB(255, 255, 255) -- Default color
+    line.Thickness = 2
+    line.Transparency = 1
+
+    -- Billboard GUI for name and health
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Parent = head
+    billboardGui.Size = UDim2.new(0, 200, 0, 80)
+    billboardGui.StudsOffset = Vector3.new(0, 2, 0)
+    billboardGui.AlwaysOnTop = true
+    billboardGui.Enabled = false
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Parent = billboardGui
+    nameLabel.Size = UDim2.new(1, 0, 0, 30)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = player.Name
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.SourceSansBold
+
+    local healthBarBackground = Instance.new("Frame")
+    healthBarBackground.Parent = billboardGui
+    healthBarBackground.Size = UDim2.new(1, 0, 0, 10)
+    healthBarBackground.Position = UDim2.new(0, 0, 0, 35)
+    healthBarBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    healthBarBackground.BorderSizePixel = 0
+    healthBarBackground.Visible = false
+
+    local healthBar = Instance.new("Frame")
+    healthBar.Parent = healthBarBackground
+    healthBar.Size = UDim2.new(1, 0, 1, 0)
+    healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    healthBar.BorderSizePixel = 0
+
+    espObjects[player] = {
+        Highlight = highlight,
+        Line = line,
+        BillboardGui = billboardGui,
+        HealthBarBackground = healthBarBackground,
+        HealthBar = healthBar,
+        Humanoid = humanoid
+    }
+end
+
+-- Function to remove ESP
+local function removeESP(player)
+    if espObjects[player] then
+        espObjects[player].Highlight:Destroy()
+        espObjects[player].Line:Remove()
+        espObjects[player].BillboardGui:Destroy()
+        espObjects[player] = nil
+    end
+end
+
+-- Function to toggle Highlight
+local function toggleHighlight()
+    HighlightEnabled = not HighlightEnabled
+    if HighlightEnabled then
+        -- Add Highlights to all players
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and not espObjects[player] then
+                createESP(player)
+            end
+        end
+        -- Add to new players
+        Players.PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function()
+                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
+                    createESP(player)
+                end
+            end)
+        end)
+    end
+end
+
+-- Function to toggle Tracer
+local function toggleTracer()
+    TracerEnabled = not TracerEnabled
+    if TracerEnabled then
+        -- Add Tracers to all players
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and not espObjects[player] then
+                createESP(player)
+            end
+        end
+        -- Add to new players
+        Players.PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function()
+                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
+                    createESP(player)
+                end
+            end)
+        end)
+    end
+end
+
+-- Function to toggle Health Bar
+local function toggleHealthBar()
+    HealthBarEnabled = not HealthBarEnabled
+    if HealthBarEnabled then
+        -- Add Health Bars to all players
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and not espObjects[player] then
+                createESP(player)
+            end
+        end
+        -- Add to new players
+        Players.PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function()
+                if HighlightEnabled or TracerEnabled or HealthBarEnabled then
+                    createESP(player)
+                end
+            end)
+        end)
+    end
+end
+
+-- Update ESP
+RunService.RenderStepped:Connect(function()
+    -- Update ESP
+    for player, esp in pairs(espObjects) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+            local rootPart = player.Character.HumanoidRootPart
+            local humanoid = esp.Humanoid
+            local screenPos, onScreen = Camera:WorldToViewportPoint(rootPart.Position)
+            if onScreen and isPlayerVisible(player) then
+                -- Update Highlight
+                if HighlightEnabled then
+                    esp.Highlight.Enabled = true
+                    esp.Highlight.FillColor = getRainbowColor()
+                else
+                    esp.Highlight.Enabled = false
+                end
+                -- Update Tracer
+                if TracerEnabled then
+                    esp.Line.Visible = true
+                    esp.Line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y - 50) -- From bottom center
+                    esp.Line.To = Vector2.new(screenPos.X, screenPos.Y)
+                    esp.Line.Color = getRainbowColor()
+                else
+                    esp.Line.Visible = false
+                end
+                -- Update Name and Health
+                esp.BillboardGui.Enabled = (HighlightEnabled or TracerEnabled or HealthBarEnabled)
+                esp.HealthBarBackground.Visible = HealthBarEnabled
+                if HealthBarEnabled then
+                    esp.HealthBar.Size = UDim2.new(humanoid.Health / humanoid.MaxHealth, 0, 1, 0)
+                    esp.HealthBar.BackgroundColor3 = getHealthColor(humanoid.Health, humanoid.MaxHealth)
+                end
+            else
+                esp.Highlight.Enabled = false
+                esp.Line.Visible = false
+                esp.BillboardGui.Enabled = false
+                esp.HealthBarBackground.Visible = false
+            end
+        else
+            esp.Highlight.Enabled = false
+            esp.Line.Visible = false
+            esp.BillboardGui.Enabled = false
+            esp.HealthBarBackground.Visible = false
+        end
+    end
+end)
+
+-- Create Rayfield Window
+local Window = Rayfield:CreateWindow({
+    Name = "Rainbow ESP & HP",
+    LoadingTitle = "Loading ESP and HP...",
+    LoadingSubtitle = "by Grok",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "ESPRayfield",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "",
+        RememberJoins = true
+    },
+    KeySystem = false
+})
+
+-- Create Tab
+local ESPTab = Window:CreateTab("ESP", 4483362458) -- Icon ID
+
+-- Toggle Button for Highlight
+ESPTab:CreateToggle({
+    Name = "Toggle Rainbow Highlight",
+    CurrentValue = false,
+    Flag = "ToggleHighlight",
+    Callback = function(Value)
+        toggleHighlight()
+    end,
+})
+
+-- Toggle Button for Tracer
+ESPTab:CreateToggle({
+    Name = "Toggle Rainbow Tracers",
+    CurrentValue = false,
+    Flag = "ToggleTracer",
+    Callback = function(Value)
+        toggleTracer()
+    end,
+})
+
+-- Toggle Button for Health Bar
+ESPTab:CreateToggle({
+    Name = "Toggle Health Bar",
+    CurrentValue = false,
+    Flag = "ToggleHealthBar",
+    Callback = function(Value)
+        toggleHealthBar()
+    end,
+})
+
+-- Notification
+Rayfield:Notify({
+    Title = "Rainbow ESP & HP Loaded",
+    Content = "ใช้ Toggle เพื่อเปิด/ปิดกล่อง, เส้นสีรุ้ง, หรือแถบ HP",
+    Duration = 5,
+    Image = 4483362458,
+})
