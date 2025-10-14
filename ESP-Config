@@ -289,7 +289,7 @@ local ESPTab = Window:CreateTab("🌀 มองหาคน/มองทะล�
 
 -- Toggle Button for Highlight
 ESPTab:CreateToggle({
-    Name = "Toggle Rainbow Highlight",
+    Name = "🌌 Highlight",
     CurrentValue = false,
     Flag = "ToggleHighlight",
     Callback = function(Value)
@@ -299,7 +299,7 @@ ESPTab:CreateToggle({
 
 -- Toggle Button for Tracer
 ESPTab:CreateToggle({
-    Name = "Toggle Rainbow Tracers",
+    Name = "🔫 Tracers",
     CurrentValue = false,
     Flag = "ToggleTracer",
     Callback = function(Value)
@@ -309,7 +309,7 @@ ESPTab:CreateToggle({
 
 -- Toggle Button for Health Bar
 ESPTab:CreateToggle({
-    Name = "Toggle Health Bar",
+    Name = "💓 Health ESP",
     CurrentValue = false,
     Flag = "ToggleHealthBar",
     Callback = function(Value)
