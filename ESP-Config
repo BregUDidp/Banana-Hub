@@ -1,6 +1,6 @@
 -- Load Kavo UI Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("🌀 มองคน/มองทะลุ", "BloodTheme")
+local Window = Library.CreateLib("🌀 มองคน/มองทะลุ", "Midnight")
 
 -- Services
 local Players = game:GetService("Players")
@@ -156,9 +156,12 @@ Players.PlayerAdded:Connect(function(player)
     -- Refresh UI if needed
 end)
 
+local Tab = Window:NewTab("KeyBind")
+local Section = Tab:NewSection("KeyBind Zone")
 Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.E, function()
-	print("You just clicked the bind")
+	Library:ToggleUI()
 end)
+
 
 
 -- Notification
