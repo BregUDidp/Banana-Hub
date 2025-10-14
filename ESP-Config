@@ -123,20 +123,20 @@ local function ToggleESP(state)
 end
 
 -- UI Tab
-local MainTab = Window:NewTab("🌌 ESP Player")
-local MainSection = MainTab:NewSection("Main Features")
+local MainTab = Window:NewTab("ESP Player Selected")
+local MainSection = MainTab:NewSection("Main Friend and Players")
 
-MainSection:NewToggle("🌀 Click ESP", "เปิด/ปิด ESP สำหรับผู้เล่นทั้งหมด", function(state)
+MainSection:NewToggle("Click ESP", "เปิด/ปิด ESP สำหรับผู้เล่นทั้งหมด", function(state)
     ToggleESP(state)
 end)
 
-MainSection:NewSlider("🌌 ESP DisTrance", "ปรับระยะการแสดง ESP (studs)", 500, 1, function(value)
+MainSection:NewSlider("ESP Click Players", "ปรับระยะการแสดง ESP (studs)", 500, 1, function(value)
     -- สามารถเพิ่ม logic สำหรับ distance check ใน UpdateESP ได้ที่นี่
     print("ESP Distance set to: " .. value)
 end)
 
 -- Player Tab
-local PlayerTab = Window:NewTab("🏡 ALL Player")
+local PlayerTab = Window:NewTab("ALL Player In Here")
 local PlayerSection = PlayerTab:NewSection("🥝 Zone Players ALL")
 
 for _, player in pairs(Players:GetPlayers()) do
