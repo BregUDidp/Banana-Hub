@@ -204,7 +204,7 @@ local infJumpToggle = MainTab:CreateToggle({
 })
  
 -- แท็บเพื่อน
-local friendTab = Window:CreateTab("👥 วาป", 6026568198)
+local friendTab = Window:CreateTab("👥 วาป/มองหาคน", 6026568198)
  
 local function getPlayerList()
     local list = {}
@@ -292,18 +292,17 @@ friendTab:CreateButton({
         })
     end
 })
- 
--- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("🔫 สคริปต์อาเซเนิล", 6031280882)
 
 extraTab:CreateButton({
-    Name = "🔫 รัน UnBond",
-	Callback = function()
-	    Rayfield:Notify({Title = "🔫 กำลังโหลด UnBond Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
-	end
+   Name = "🌀 สคริป มองหาคน",
+   Callback = function()
+   local Button = Tab:CreateButton({
+   Rayfield:Notify({Title = "🌀 กำลังโหลด ESP Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))()
+   end,
 })
  
+-- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์ 99 วัน", 6031280882)
  
 extraTab:CreateButton({
