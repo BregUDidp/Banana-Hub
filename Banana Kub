@@ -202,7 +202,8 @@ local infJumpToggle = MainTab:CreateToggle({
         })
     end
 })
- 
+
+
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาป/มองหาคน", 6026568198)
  
@@ -292,9 +293,10 @@ friendTab:CreateButton({
         })
     end
 })
- 
+
+-- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์เพิ่มเติม", 6031280882)
- 
+
 extraTab:CreateButton({
     Name = "💣 รัน SomTank",
     Callback = function()
