@@ -340,12 +340,10 @@ creditTab:CreateLabel("version 1.3.6 ")
 -- แท็บเครดิต
 local creditTab2 = Window:CreateTab("📜 เครดิต",6034989579)
 creditTab2:CreateLabel("📜 เครดิต")
-creditTab2:CreateLabel("owner by livezala")
-creditTab2:CreateLabel("original script by dion_ktl")
-creditTab2:CreateLabel("นำมาต่อยอด by thomas (โทมัส)")
+creditTab2:CreateLabel("original script by XaS")
+creditTab2:CreateLabel("นำมาต่อยอด by thomas (Sylentis)")
 creditTab2:CreateLabel("อัพเดต 10/11/2025 10::54 PM")
 creditTab2:CreateLabel("version 1.3.4fu")
-creditTab2:CreateLabel("รับอัพเดต discord:dSyCsRpU62")
  
 -- แท็บเคาท์ดาวน์ปีใหม่
 local newYearTab = Window:CreateTab("🎉 เคาท์ดาวน์ปีใหม่", 6034979821)
