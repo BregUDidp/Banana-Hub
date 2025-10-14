@@ -296,10 +296,9 @@ friendTab:CreateButton({
 extraTab:CreateButton({
    Name = "🌀 สคริป มองหาคน",
    Callback = function()
-   local Button = Tab:CreateButton({
-   Rayfield:Notify({Title = "🌀 กำลังโหลด ESP Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))()
-   end,
+       Rayfield:Notify({Title = "🌀 กำลังโหลด ESP Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))()
+   end
 })
  
 -- แท็บสคริปต์เพิ่มเติม
