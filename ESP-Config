@@ -1,165 +1,167 @@
--- Load Kavo UI Library
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("Rainbow ESP & Tracers", "Ocean") -- Theme: Ocean (dark/blue)
+-- โหลด Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- สร้าง Window
+local Window = Rayfield:CreateWindow({
+    Name = "Rainbow ESP, Blood & Name",
+    LoadingTitle = "Rayfield Interface",
+    LoadingSubtitle = "by Grok",
+    ConfigurationSaving = {
+        Enabled = false
+    }
+})
 
--- ESP Tab
-local ESPTab = Window:NewTab("ESP")
-local ESPSection = ESPTab:NewSection("Rainbow ESP and Tracers Controls")
+-- สร้าง Tab
+local ESPTab = Window:CreateTab("ESP & Blood", nil)
 
--- Variables
-local ESPEnabled = false
-local RainbowEnabled = false
-local TracersEnabled = false
-local TracerThickness = 2 -- Default thickness
-local ESPObjects = {}
+-- ตัวแปรหลัก
+local FeatureEnabled = false
+local ESPHighlights = {}
+local BloodGuis = {}
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 
--- Camera for screen positioning
-local Camera = game:GetService("Workspace").CurrentCamera
-
--- Core ESP Function (Highlights + Tracers)
-local function CreateESP(Player)
-    if Player == game.Players.LocalPlayer then return end
-    local Character = Player.Character
-    if not Character or not Character:FindFirstChild("HumanoidRootPart") then return end
-
-    -- Highlight
-    local Highlight = Instance.new("Highlight")
-    Highlight.Parent = Character
-    Highlight.FillColor = Color3.fromRGB(255, 0, 0) -- Start with red
-    Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-    Highlight.FillTransparency = 0.5
-    Highlight.OutlineTransparency = 0
-    Highlight.Adornee = Character
-
-    -- Name Label
-    local BillboardGui = Instance.new("BillboardGui")
-    BillboardGui.Parent = Character.Head
-    BillboardGui.Size = UDim2.new(0, 100, 0, 50)
-    BillboardGui.StudsOffset = Vector3.new(0, 2, 0)
-    BillboardGui.AlwaysOnTop = true
-
-    local NameLabel = Instance.new("TextLabel")
-    NameLabel.Parent = BillboardGui
-    NameLabel.Size = UDim2.new(1, 0, 1, 0)
-    NameLabel.BackgroundTransparency = 1
-    NameLabel.Text = Player.Name
-    NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    NameLabel.TextScaled = true
-    NameLabel.Font = Enum.Font.SourceSansBold
-
-    -- Tracer
-    local Tracer = Drawing.new("Line")
-    Tracer.Visible = TracersEnabled
-    Tracer.Color = Color3.fromRGB(255, 0, 0)
-    Tracer.Thickness = TracerThickness
-    Tracer.Transparency = 1
-
-    ESPObjects[Player] = {Highlight = Highlight, Label = NameLabel, Tracer = Tracer}
+-- ฟังก์ชันสร้าง Rainbow Color
+local function getRainbowColor()
+    local time = tick()
+    local frequency = 0.3
+    local r = math.sin(frequency * time + 0) * 127 + 128
+    local g = math.sin(frequency * time + 2) * 127 + 128
+    local b = math.sin(frequency * time + 4) * 127 + 128
+    return Color3.fromRGB(r, g, b)
 end
 
-local function RemoveESP(Player)
-    if ESPObjects[Player] then
-        ESPObjects[Player].Highlight:Destroy()
-        ESPObjects[Player].Label:Destroy()
-        ESPObjects[Player].Tracer:Remove()
-        ESPObjects[Player] = nil
+-- ฟังก์ชันสร้าง ESP, Blood และ Name
+local function createESPandBlood(player)
+    if player == Players.LocalPlayer then return end
+    local character = player.Character
+    if not character then
+        warn("[DEBUG] ไม่พบ Character สำหรับ " .. player.Name)
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local head = character:FindFirstChild("Head")
+    if not humanoid or not head then
+        warn("[DEBUG] ไม่พบ Humanoid หรือ Head สำหรับ " .. player.Name)
+        return
+    end
+
+    -- สร้าง ESP (Highlight)
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = character
+    highlight.FillColor = Color3.new(1, 1, 1)
+    highlight.OutlineColor = Color3.new(1, 1, 1)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    ESPHighlights[player] = highlight
+
+    -- สร้าง Blood และ Name (BillboardGui)
+    local billboard = Instance.new("BillboardGui")
+    billboard.Parent = head
+    billboard.Size = UDim2.new(0, 100, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+    billboard.AlwaysOnTop = true
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Parent = billboard
+    nameLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = player.Name
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.SourceSansBold
+
+    local frame = Instance.new("Frame")
+    frame.Parent = billboard
+    frame.Size = UDim2.new(humanoid.Health / math.max(humanoid.MaxHealth, 1), 0, 0.3, 0)
+    frame.Position = UDim2.new(0, 0, 0.4, 0)
+    frame.BackgroundColor3 = Color3.new(1, 0, 0)
+    frame.BorderSizePixel = 0
+
+    local hpLabel = Instance.new("TextLabel")
+    hpLabel.Parent = billboard
+    hpLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    hpLabel.Position = UDim2.new(0, 0, 0.7, 0)
+    hpLabel.BackgroundTransparency = 1
+    hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
+    hpLabel.TextColor3 = Color3.new(1, 1, 1)
+    hpLabel.TextScaled = true
+    hpLabel.Font = Enum.Font.SourceSansBold
+
+    BloodGuis[player] = {billboard = billboard, frame = frame, hpLabel = hpLabel, nameLabel = nameLabel, humanoid = humanoid}
+
+    -- อัปเดตสีรุ้งและ HP
+    coroutine.wrap(function()
+        while FeatureEnabled and ESPHighlights[player] and BloodGuis[player] and character.Parent and humanoid.Parent do
+            local color = getRainbowColor()
+            highlight.FillColor = color
+            highlight.OutlineColor = color
+            frame.BackgroundColor3 = color
+            nameLabel.TextColor3 = color
+            hpLabel.TextColor3 = color
+            local healthPercent = humanoid.Health / math.max(humanoid.MaxHealth, 1)
+            frame.Size = UDim2.new(healthPercent, 0, 0.3, 0)
+            hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
+            RunService.Heartbeat:Wait()
+        end
+    end)()
+end
+
+-- ลบ ESP, Blood และ Name
+local function removeESPandBlood(player)
+    if ESPHighlights[player] then
+        ESPHighlights[player]:Destroy()
+        ESPHighlights[player] = nil
+    end
+    if BloodGuis[player] then
+        BloodGuis[player].billboard:Destroy()
+        BloodGuis[player] = nil
     end
 end
 
-local function UpdateTracers()
-    for Player, Obj in pairs(ESPObjects) do
-        if Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and TracersEnabled then
-            local RootPart = Player.Character.HumanoidRootPart
-            local ScreenPos, OnScreen = Camera:WorldToViewportPoint(RootPart.Position)
-            if OnScreen then
-                Obj.Tracer.Visible = true
-                Obj.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y) -- Bottom of screen
-                Obj.Tracer.To = Vector2.new(ScreenPos.X, ScreenPos.Y)
-                Obj.Tracer.Thickness = TracerThickness -- Update thickness
-            else
-                Obj.Tracer.Visible = false
+-- Toggle ESP, Blood และ Name
+ESPTab:CreateToggle({
+    Name = "ESP, Blood & Name Rainbow",
+    CurrentValue = false,
+    Flag = "ESPToggle",
+    Callback = function(state)
+        FeatureEnabled = state
+        if state then
+            for player, _ in pairs(ESPHighlights) do
+                removeESPandBlood(player)
             end
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character then
+                    createESPandBlood(player)
+                end
+            end
+            Players.PlayerAdded:Connect(function(player)
+                player.CharacterAdded:Connect(function()
+                    if FeatureEnabled then
+                        createESPandBlood(player)
+                    end
+                end)
+            end)
+            Players.PlayerRemoving:Connect(function(player)
+                removeESPandBlood(player)
+            end)
         else
-            Obj.Tracer.Visible = false
-        end
-    end
-end
-
-local function UpdateRainbow()
-    if not RainbowEnabled then return end
-    for Player, Obj in pairs(ESPObjects) do
-        if Player.Character and Player.Character.Parent then
-            local Time = tick()
-            local RainbowColor = Color3.fromHSV((Time * 0.5) % 1, 1, 1) -- HSV for rainbow cycle
-            Obj.Highlight.FillColor = RainbowColor
-            Obj.Label.TextColor3 = RainbowColor
-            Obj.Tracer.Color = RainbowColor
-        end
-    end
-end
-
--- Kavo UI Toggles and Sliders
-ESPSection:NewToggle("Enable ESP", "Toggles player highlights and labels", function(State)
-    ESPEnabled = State
-    if State then
-        for _, Player in pairs(game.Players:GetPlayers()) do
-            CreateESP(Player)
-        end
-        game.Players.PlayerAdded:Connect(CreateESP)
-        game.Players.PlayerRemoving:Connect(RemoveESP)
-        spawn(function()
-            while ESPEnabled do
-                UpdateTracers()
-                UpdateRainbow()
-                wait(0.1)
+            for player, _ in pairs(ESPHighlights) do
+                removeESPandBlood(player)
             end
-        end)
-    else
-        for Player, _ in pairs(ESPObjects) do
-            RemoveESP(Player)
         end
+        Rayfield:Notify({
+            Title = "สถานะ",
+            Content = "ESP, Blood & Name " .. (state and "เปิด" or "ปิด"),
+            Duration = 3
+        })
     end
-end)
+})
 
-ESPSection:NewToggle("Enable Tracers", "Toggles lines to players", function(State)
-    TracersEnabled = State
-    for _, Obj in pairs(ESPObjects) do
-        Obj.Tracer.Visible = State and ESPEnabled
-    end
-end)
-
-ESPSection:NewToggle("Rainbow Mode", "Cycles colors on ESP and tracers", function(State)
-    RainbowEnabled = State
-    if State and ESPEnabled then
-        spawn(function()
-            while RainbowEnabled and ESPEnabled do
-                UpdateRainbow()
-                wait(0.1)
-            end
-        end)
-    end
-end)
-
-ESPSection:NewSlider("ESP Transparency", "Adjust fill transparency (0-1)", 100, 0, function(Value)
-    local Transparency = Value / 100
-    for _, Obj in pairs(ESPObjects) do
-        if Obj.Highlight then
-            Obj.Highlight.FillTransparency = Transparency
-        end
-    end
-end)
-
-ESPSection:NewSlider("Tracer Thickness", "Adjust tracer line thickness (1-10)", 10, 1, function(Value)
-    TracerThickness = Value
-    for _, Obj in pairs(ESPObjects) do
-        if Obj.Tracer then
-            Obj.Tracer.Thickness = TracerThickness
-        end
-    end
-end)
-
--- Credits Tab
-local CreditsTab = Window:NewTab("Credits")
-local CreditsSection = CreditsTab:NewSection("Info")
-CreditsSection:NewLabel("Adapted from wa0101/Roblox-ESP | UI by xHeptc")
-CreditsSection:NewLabel("Use at your own risk - No ban protection!")
+-- Notification เมื่อโหลด
+Rayfield:Notify({
+    Title = "โหลดสำเร็จ",
+    Content = "สคริปต์ ESP, Blood & Name Rainbow พร้อมใช้งาน!",
+    Duration = 5
+})
