@@ -294,6 +294,161 @@ friendTab:CreateButton({
     end
 })
  
+local Tab = Window:CreateTab("🌀 การมองหาคน", nil)
+
+-- ตัวแปรหลัก
+local FeatureEnabled = false
+local ESPHighlights = {}
+local BloodGuis = {}
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- ฟังก์ชันสร้าง Rainbow Color
+local function getRainbowColor()
+    local time = tick()
+    local frequency = 0.3
+    local r = math.sin(frequency * time + 0) * 127 + 128
+    local g = math.sin(frequency * time + 2) * 127 + 128
+    local b = math.sin(frequency * time + 4) * 127 + 128
+    return Color3.fromRGB(r, g, b)
+end
+
+-- ฟังก์ชันสร้าง ESP, Blood และ Name
+local function createESPandBlood(player)
+    if player == Players.LocalPlayer then return end
+    local character = player.Character
+    if not character then
+        warn("[DEBUG] ไม่พบ Character สำหรับ " .. player.Name)
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local head = character:FindFirstChild("Head")
+    if not humanoid or not head then
+        warn("[DEBUG] ไม่พบ Humanoid หรือ Head สำหรับ " .. player.Name)
+        return
+    end
+
+    -- สร้าง ESP (Highlight)
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = character
+    highlight.FillColor = Color3.new(1, 1, 1)
+    highlight.OutlineColor = Color3.new(1, 1, 1)
+    highlight.FillTransparency = 0.5
+    highlight.OutlineTransparency = 0
+    ESPHighlights[player] = highlight
+
+    -- สร้าง Blood และ Name (BillboardGui)
+    local billboard = Instance.new("BillboardGui")
+    billboard.Parent = head
+    billboard.Size = UDim2.new(0, 100, 0, 50)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+    billboard.AlwaysOnTop = true
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Parent = billboard
+    nameLabel.Size = UDim2.new(1, 0, 0.4, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = player.Name
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.SourceSansBold
+
+    local frame = Instance.new("Frame")
+    frame.Parent = billboard
+    frame.Size = UDim2.new(humanoid.Health / math.max(humanoid.MaxHealth, 1), 0, 0.3, 0)
+    frame.Position = UDim2.new(0, 0, 0.4, 0)
+    frame.BackgroundColor3 = Color3.new(1, 0, 0)
+    frame.BorderSizePixel = 0
+
+    local hpLabel = Instance.new("TextLabel")
+    hpLabel.Parent = billboard
+    hpLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    hpLabel.Position = UDim2.new(0, 0, 0.7, 0)
+    hpLabel.BackgroundTransparency = 1
+    hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
+    hpLabel.TextColor3 = Color3.new(1, 1, 1)
+    hpLabel.TextScaled = true
+    hpLabel.Font = Enum.Font.SourceSansBold
+
+    BloodGuis[player] = {billboard = billboard, frame = frame, hpLabel = hpLabel, nameLabel = nameLabel, humanoid = humanoid}
+
+    -- อัปเดตสีรุ้งและ HP
+    coroutine.wrap(function()
+        while FeatureEnabled and ESPHighlights[player] and BloodGuis[player] and character.Parent and humanoid.Parent do
+            local color = getRainbowColor()
+            highlight.FillColor = color
+            highlight.OutlineColor = color
+            frame.BackgroundColor3 = color
+            nameLabel.TextColor3 = color
+            hpLabel.TextColor3 = color
+            local healthPercent = humanoid.Health / math.max(humanoid.MaxHealth, 1)
+            frame.Size = UDim2.new(healthPercent, 0, 0.3, 0)
+            hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
+            RunService.Heartbeat:Wait()
+        end
+    end)()
+end
+
+-- ลบ ESP, Blood และ Name
+local function removeESPandBlood(player)
+    if ESPHighlights[player] then
+        ESPHighlights[player]:Destroy()
+        ESPHighlights[player] = nil
+    end
+    if BloodGuis[player] then
+        BloodGuis[player].billboard:Destroy()
+        BloodGuis[player] = nil
+    end
+end
+
+-- Toggle ESP, Blood และ Name
+local Toggle = Tab:CreateToggle({
+    Name = "🌀 มองคน/มองหา",
+    CurrentValue = false,
+    Flag = "ESPToggle",
+    Callback = function(state)
+        FeatureEnabled = state
+        if state then
+            for player, _ in pairs(ESPHighlights) do
+                removeESPandBlood(player)
+            end
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character then
+                    createESPandBlood(player)
+                end
+            end
+            Players.PlayerAdded:Connect(function(player)
+                player.CharacterAdded:Connect(function()
+                    if FeatureEnabled then
+                        createESPandBlood(player)
+                    end
+                end)
+            end)
+            Players.PlayerRemoving:Connect(function(player)
+                removeESPandBlood(player)
+            end)
+        else
+            for player, _ in pairs(ESPHighlights) do
+                removeESPandBlood(player)
+            end
+        end
+        Rayfield:Notify({
+            Title = "สถานะ",
+            Content = "ESP, Blood & Name " .. (state and "เปิด" or "ปิด"),
+            Duration = 3
+        })
+    end
+})
+
+-- Notification เมื่อโหลด
+Rayfield:Notify({
+    Title = "โหลดสำเร็จ",
+    Content = "สคริปต์ ESP, Blood & Name Rainbow พร้อมใช้งาน!",
+    Duration = 5
+})
+
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์เอาฟรี", 6031280882)
 
