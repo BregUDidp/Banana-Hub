@@ -303,3 +303,11 @@ ESPSection:NewButton("🌀 ลบ แค่เส้น/ทั้งหมด", 
 end)
 
 print("[DEBUG] สคริปต์ ESP โหลดสำเร็จ")
+
+local Tab = Window:NewTab("🌀 สคริปรวมการเล็ง")
+local Section = Tab:NewSection("❄️ รวมสคริป")
+
+Section:NewButton("🔫 Unbond Hub", "ButtonInfo", function()
+    print("Clicked")
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
+end)
