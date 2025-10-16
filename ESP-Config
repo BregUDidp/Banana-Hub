@@ -1,34 +1,83 @@
--- Kavo UI version of your Rayfield aimbot script
--- Load Kavo UI (common host). ถ้าใช้ host อื่นให้เปลี่ยน URL ตามที่ต้องการ
+-- โหลด Kavo UI Library
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("❄️ SnowX AimBot + ESP [ ❄️ Premuim ❄️ ]", "GrapeTheme") -- ชื่อหน้าต่างเหมือนเดิม
 
-local tab = Window:NewTab("🌀 เล็งเป๋าหมาย/การมองคน")
-local section = tab:NewSection("🌀 Visual AimBot 🌀")
+local Window = Library.CreateLib("❄️ SnowX AimBot", "Sentinel")
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+-- Tabs & Section
+local MainTab = Window:NewTab("❄️ การมองคน/การทะลุยิง")
+local MainSection = MainTab:NewSection("❄️ ESP SnowX")
+
+-- Services
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
 local cam = workspace.CurrentCamera
-local UserInputService = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
+local input = game:GetService("UserInputService")
+local run = game:GetService("RunService")
 
-local aimbotOn = false
+-- States
+local aimbotOn, fovOn, tracerOn, espOn = false, false, false, false
 local target = nil
 local holding = false
+
+-- Rainbow
+local function rainbowColor(speed)
+    local t = tick() * (speed or 1)
+    return Color3.fromHSV((t % 5) / 5, 1, 1)
+end
+
+-- FOV Circle
+local fovCircle = Drawing.new("Circle")
+fovCircle.Radius = 100
+fovCircle.Thickness = 2
+fovCircle.Filled = false
+fovCircle.Visible = false
+
+-- Drawing storage
+local drawings = {}
+
+local function createDrawingSet()
+    local set = {}
+    set.box = Drawing.new("Square")
+    set.box.Thickness = 2
+    set.box.Filled = false
+    set.box.Visible = false
+
+    set.tracer = Drawing.new("Line")
+    set.tracer.Thickness = 2
+    set.tracer.Visible = false
+
+    set.hpText = Drawing.new("Text")
+    set.hpText.Size = 16
+    set.hpText.Center = true
+    set.hpText.Outline = true
+    set.hpText.Visible = false
+
+    set.hpBack = Drawing.new("Square")
+    set.hpBack.Filled = true
+    set.hpBack.Visible = false
+
+    set.hpBar = Drawing.new("Square")
+    set.hpBar.Filled = true
+    set.hpBar.Visible = false
+
+    return set
+end
 
 local function GetClosest()
     local closest = nil
     local dist = math.huge
-    local mousePos = UserInputService:GetMouseLocation()
-
-    for _, v in pairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
-            local pos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
-            if vis then
-                local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
-                if mag < dist then
-                    dist = mag
-                    closest = v
+    local mousePos = input:GetMouseLocation()
+    for _, v in pairs(plrs:GetPlayers()) do
+        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") then
+            local hum = v.Character:FindFirstChild("Humanoid")
+            if hum.Health > 0 then
+                local pos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
+                if vis then
+                    local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                    if mag < dist then
+                        dist = mag
+                        closest = v
+                    end
                 end
             end
         end
@@ -36,284 +85,138 @@ local function GetClosest()
     return closest
 end
 
--- Kavo toggle: NewToggle(text, tooltip, callback)
-section:NewToggle("❄️ ล็อกเป๋าหมายคน", "Toggle aimbot", function(state)
-    aimbotOn = state
-    if not state then
-        target = nil
-        holding = false
-    end
-end)
-
--- เมาส์ขวากด = เริ่มล็อกเป้า
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if gpe then return end
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+-- Input events
+input.InputBegan:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then
         holding = true
         target = GetClosest()
     end
 end)
-
-UserInputService.InputEnded:Connect(function(input, gpe)
-    if gpe then return end
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+input.InputEnded:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.MouseButton2 then
         holding = false
         target = nil
     end
 end)
 
--- Render loop: หมุนกล้องไปยังหัวเป้าเมื่อเปิดและกำลังกด
-RunService.RenderStepped:Connect(function()
+plrs.PlayerRemoving:Connect(function(player)
+    if drawings[player] then
+        for _, d in pairs(drawings[player]) do
+            if d and d.Remove then
+                d:Remove()
+            end
+        end
+        drawings[player] = nil
+    end
+end)
+
+run.RenderStepped:Connect(function()
+    -- FOV
+    if fovOn then
+        fovCircle.Position = input:GetMouseLocation()
+        fovCircle.Color = rainbowColor(2)
+        fovCircle.Visible = true
+    else
+        fovCircle.Visible = false
+    end
+
+    -- ESP loop
+    for _, v in pairs(plrs:GetPlayers()) do
+        if v ~= plr then
+            local alive = v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0
+            local headPos, vis = nil, false
+            if alive then
+                headPos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
+            end
+
+            if not drawings[v] then
+                drawings[v] = createDrawingSet()
+            end
+            local set = drawings[v]
+            local col = rainbowColor(2)
+
+            -- Box
+            if espOn and alive and vis then
+                set.box.Size = Vector2.new(30, 30)
+                set.box.Position = Vector2.new(headPos.X - 15, headPos.Y - 15)
+                set.box.Color = col
+                set.box.Visible = true
+            else
+                set.box.Visible = false
+            end
+
+            -- Tracer
+            if tracerOn and alive and vis then
+                set.tracer.From = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y)
+                set.tracer.To = Vector2.new(headPos.X, headPos.Y)
+                set.tracer.Color = col
+                set.tracer.Visible = true
+            else
+                set.tracer.Visible = false
+            end
+
+            -- Health
+            if espOn and alive and vis then
+                local hum = v.Character:FindFirstChild("Humanoid")
+                local health = math.max(0, hum.Health)
+                local maxHealth = hum.MaxHealth or 100
+                local pct = math.clamp(health / maxHealth, 0, 1)
+
+                set.hpText.Text = string.format("%d / %d", math.floor(health), math.floor(maxHealth))
+                set.hpText.Position = Vector2.new(headPos.X, headPos.Y - 28)
+                set.hpText.Color = Color3.new(1,1,1)
+                set.hpText.Visible = true
+
+                local barWidth = 40
+                local barHeight = 6
+                local barPosX = headPos.X - barWidth/2
+                local barPosY = headPos.Y + 18
+
+                set.hpBack.Size = Vector2.new(barWidth, barHeight)
+                set.hpBack.Position = Vector2.new(barPosX, barPosY)
+                set.hpBack.Color = Color3.fromRGB(30,30,30)
+                set.hpBack.Visible = true
+
+                set.hpBar.Size = Vector2.new(barWidth * pct, barHeight)
+                set.hpBar.Position = Vector2.new(barPosX, barPosY)
+                set.hpBar.Color = Color3.fromHSV(pct * 0.33, 1, 1)
+                set.hpBar.Visible = true
+            else
+                set.hpText.Visible = false
+                set.hpBack.Visible = false
+                set.hpBar.Visible = false
+            end
+        end
+    end
+
+    -- Aimbot
     if aimbotOn and holding and target and target.Character and target.Character:FindFirstChild("Head") then
-        -- ทำให้มุมมองกล้องหันไปที่หัวเป้า
         cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character.Head.Position)
     end
 end)
 
-local Section = Tab:NewSection("🏃‍♂️ Speed Walk")
-
-Section:NewSlider("🏃‍♂️ การปรับการเดินและวิ่ง", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
+-- GUI toggles
+MainSection:NewToggle("🌀 เปิด AimBot/ปิด AimBot", false, function(state)
+    aimbotOn = state
+    print("Aimbot state:", state)
 end)
-
-local ESPTab = Window:NewTab("🌀 การเห็นคน/การมองทะลุ")
-local ESPSection = ESPTab:NewSection("🌀 ESP Zone")
-
--- ตัวแปรหลัก
-local FeatureEnabled = false
-local ESPHighlights = {}
-local BloodGuis = {}
-local Tracers = {}
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
-
--- ฟังก์ชันสร้าง Rainbow Color
-local function getRainbowColor()
-    local time = tick()
-    local frequency = 0.3
-    local r = math.sin(frequency * time + 0) * 127 + 128
-    local g = math.sin(frequency * time + 2) * 127 + 128
-    local b = math.sin(frequency * time + 4) * 127 + 128
-    return Color3.fromRGB(r, g, b)
-end
-
--- ฟังก์ชันสร้าง Tracer
-local function createTracer(player)
-    if player == LocalPlayer then return end
-    local tracer = Drawing.new("Line")
-    tracer.Thickness = 2
-    tracer.Transparency = 1
-    tracer.Color = Color3.new(1, 1, 1)
-    tracer.Visible = false
-    Tracers[player] = tracer
-    print("[DEBUG] สร้าง Tracer สำหรับ " .. player.Name)
-end
-
--- ลบ Tracer
-local function removeTracer(player)
-    if Tracers[player] then
-        Tracers[player]:Remove()
-        Tracers[player] = nil
-        print("[DEBUG] ลบ Tracer สำหรับ " .. player.Name)
-    end
-end
-
--- ลบ Tracer ทั้งหมด
-local function clearAllTracers()
-    for player, tracer in pairs(Tracers) do
-        removeTracer(player)
-    end
-    print("[DEBUG] ลบ Tracer ทั้งหมดแล้ว")
-    -- Kavo ไม่มี Notify อัตโนมัติ ต้องทำเองถ้าต้องการ
-end
-
--- ฟังก์ชันอัปเดต Tracer
-local function updateTracers()
-    if not FeatureEnabled or not next(Tracers) then return end
-    local localChar = LocalPlayer.Character
-    if not localChar or not localChar:FindFirstChild("HumanoidRootPart") then
-        print("[DEBUG] ไม่พบ HumanoidRootPart ของ LocalPlayer")
-        return
-    end
-    
-    local localPos = localChar.HumanoidRootPart.Position
-    for player, tracer in pairs(Tracers) do
-        local character = player.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            local targetPos = character.HumanoidRootPart.Position
-            local screenPosLocal, onScreenLocal = Camera:WorldToScreenPoint(localPos)
-            local screenPosTarget, onScreenTarget = Camera:WorldToScreenPoint(targetPos)
-            
-            if onScreenLocal and onScreenTarget then
-                tracer.From = Vector2.new(screenPosLocal.X, screenPosLocal.Y)
-                tracer.To = Vector2.new(screenPosTarget.X, screenPosTarget.Y)
-                tracer.Color = getRainbowColor()
-                tracer.Visible = true
-            else
-                tracer.Visible = false
-                print("[DEBUG] Tracer ไม่แสดงสำหรับ " .. player.Name .. " (อยู่นอกหน้าจอ)")
-            end
-        else
-            tracer.Visible = false
-            print("[DEBUG] ไม่พบ Character/HumanoidRootPart สำหรับ " .. player.Name)
-        end
-    end
-end
-
--- ฟังก์ชันสร้าง ESP, Blood, Name และ Tracer
-local function createESPandBlood(player)
-    if player == LocalPlayer then return end
-    local character = player.Character
-    if not character then
-        warn("[DEBUG] ไม่พบ Character สำหรับ " .. player.Name)
-        return
-    end
-
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local head = character:FindFirstChild("Head")
-    if not humanoid or not head then
-        warn("[DEBUG] ไม่พบ Humanoid หรือ Head สำหรับ " .. player.Name)
-        return
-    end
-
-    -- สร้าง Tracer
-    createTracer(player)
-
-    -- สร้าง ESP (Highlight)
-    local highlight = Instance.new("Highlight")
-    highlight.Parent = character
-    highlight.FillColor = Color3.new(1, 1, 1)
-    highlight.OutlineColor = Color3.new(1, 1, 1)
-    highlight.FillTransparency = 0.5
-    highlight.OutlineTransparency = 0
-    ESPHighlights[player] = highlight
-    print("[DEBUG] สร้าง ESP สำหรับ " .. player.Name)
-
-    -- สร้าง Blood และ Name (BillboardGui)
-    local billboard = Instance.new("BillboardGui")
-    billboard.Parent = head
-    billboard.Size = UDim2.new(0, 100, 0, 50)
-    billboard.StudsOffset = Vector3.new(0, 2, 0)
-    billboard.AlwaysOnTop = true
-
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Parent = billboard
-    nameLabel.Size = UDim2.new(1, 0, 0.4, 0)
-    nameLabel.Position = UDim2.new(0, 0, 0, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = player.Name
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
-    nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.SourceSansBold
-
-    local frame = Instance.new("Frame")
-    frame.Parent = billboard
-    frame.Size = UDim2.new(humanoid.Health / math.max(humanoid.MaxHealth, 1), 0, 0.3, 0)
-    frame.Position = UDim2.new(0, 0, 0.4, 0)
-    frame.BackgroundColor3 = Color3.new(1, 0, 0)
-    frame.BorderSizePixel = 0
-
-    local hpLabel = Instance.new("TextLabel")
-    hpLabel.Parent = billboard
-    hpLabel.Size = UDim2.new(1, 0, 0.3, 0)
-    hpLabel.Position = UDim2.new(0, 0, 0.7, 0)
-    hpLabel.BackgroundTransparency = 1
-    hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
-    hpLabel.TextColor3 = Color3.new(1, 1, 1)
-    hpLabel.TextScaled = true
-    hpLabel.Font = Enum.Font.SourceSansBold
-
-    BloodGuis[player] = {billboard = billboard, frame = frame, hpLabel = hpLabel, nameLabel = nameLabel, humanoid = humanoid}
-    print("[DEBUG] สร้าง Blood และ Name สำหรับ " .. player.Name)
-
-    -- อัปเดตสีรุ้งและ HP
-    coroutine.wrap(function()
-        while FeatureEnabled and ESPHighlights[player] and BloodGuis[player] and character.Parent and humanoid.Parent do
-            local color = getRainbowColor()
-            highlight.FillColor = color
-            highlight.OutlineColor = color
-            frame.BackgroundColor3 = color
-            nameLabel.TextColor3 = color
-            hpLabel.TextColor3 = color
-            local healthPercent = humanoid.Health / math.max(humanoid.MaxHealth, 1)
-            frame.Size = UDim2.new(healthPercent, 0, 0.3, 0)
-            hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
-            RunService.Heartbeat:Wait()
-        end
-        print("[DEBUG] หยุด loop สีรุ้งสำหรับ " .. player.Name)
-    end)()
-end
-
--- ลบ ESP, Blood, Name และ Tracer
-local function removeESPandBlood(player)
-    if ESPHighlights[player] then
-        ESPHighlights[player]:Destroy()
-        ESPHighlights[player] = nil
-        print("[DEBUG] ลบ ESP สำหรับ " .. player.Name)
-    end
-    if BloodGuis[player] then
-        BloodGuis[player].billboard:Destroy()
-        BloodGuis[player] = nil
-        print("[DEBUG] ลบ Blood และ Name สำหรับ " .. player.Name)
-    end
-    removeTracer(player)
-end
-
--- Toggle ESP, Blood, Name และ Tracer
-ESPSection:NewToggle("🌀 เปิดการมองเห็นคน/ปิดการมองเห็นคน", "Toggle ESP Suite", function(state)
-    FeatureEnabled = state
-    if state then
-        for player, _ in pairs(ESPHighlights) do
-            removeESPandBlood(player)
-        end
-        for _, player in pairs(Players:GetPlayers()) do
-            if player.Character then
-                createESPandBlood(player)
+MainSection:NewToggle("🌀 โชว์วงกลมรอบตัว", "Show circle around mouse", false, function(state)
+    fovOn = state
+    fovCircle.Visible = state
+    print("FOV state:", state)
+end)
+MainSection:NewToggle("🌀 การมองคน", "Show boxes and health", false, function(state)
+    espOn = state
+    if not state then
+        for _, set in pairs(drawings) do
+            for _, d in pairs(set) do
+                if d then d.Visible = false end
             end
         end
-
-        local tracerConnection
-        tracerConnection = RunService.RenderStepped:Connect(function()
-            if FeatureEnabled then
-                updateTracers()
-            else
-                tracerConnection:Disconnect()
-                clearAllTracers()
-            end
-        end)
-
-        Players.PlayerAdded:Connect(function(player)
-            player.CharacterAdded:Connect(function()
-                if FeatureEnabled then
-                    createESPandBlood(player)
-                end
-            end)
-        end)
-
-        Players.PlayerRemoving:Connect(function(player)
-            removeESPandBlood(player)
-        end)
-    else
-        for player, _ in pairs(ESPHighlights) do
-            removeESPandBlood(player)
-        end
-        clearAllTracers()
     end
+    print("ESP state:", state)
 end)
-
--- ปุ่มลบ Tracer
-ESPSection:NewButton("🌀 ลบ แค่เส้น/ทั้งหมด", "Remove all tracers", function()
-    clearAllTracers()
-end)
-
-print("[DEBUG] สคริปต์ ESP โหลดสำเร็จ")
-
-local Tab = Window:NewTab("🌀 สคริปรวมการเล็ง")
-local Section = Tab:NewSection("❄️ รวมสคริป")
-
-Section:NewButton("🔫 Unbond Hub", "ButtonInfo", function()
-    print("Clicked")
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
+MainSection:NewToggle("🌀 การมองคนแบบเป็นเส้น", "Line to enemies", false, function(state)
+    tracerOn = state
+    print("Tracer state:", state)
 end)
