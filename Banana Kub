@@ -206,7 +206,15 @@ local infJumpToggle = MainTab:CreateToggle({
 
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
- 
+
+friendTab:CreateButton({
+   Name = "🎭 ไม้กายศิสวาป",
+   Callback = function()
+       Rayfield:Notify({Title = "🎭 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
+   end,
+})
+
 local function getPlayerList()
     local list = {}
     for _, p in pairs(Players:GetPlayers()) do
@@ -294,13 +302,6 @@ friendTab:CreateButton({
     end
 })
 
-friendTab:CreateButton({
-   Name = "🎭 ไม้กายศิสวาป",
-   Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
-   end,
-})
- 
 -- สร้าง Tab
 local ESPTab = Window:CreateTab("🌀 การเห็นคน", nil)
 
