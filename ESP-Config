@@ -1,7 +1,7 @@
 -- Kavo UI version of your Rayfield aimbot script
 -- Load Kavo UI (common host). ถ้าใช้ host อื่นให้เปลี่ยน URL ตามที่ต้องการ
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("❄️ SnowX AimBot + ESP ", "GrapeTheme") -- ชื่อหน้าต่างเหมือนเดิม
+local Window = Library.CreateLib("❄️ SnowX AimBot + ESP [ ❄️ Premuim ❄️ ]", "GrapeTheme") -- ชื่อหน้าต่างเหมือนเดิม
 
 local tab = Window:NewTab("🌀 เล็งเป๋าหมาย/การมองคน")
 local section = tab:NewSection("🌀 Visual 🌀")
