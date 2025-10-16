@@ -311,3 +311,8 @@ Section:NewButton("🔫 Unbond Hub", "ButtonInfo", function()
     print("Clicked")
        loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
 end)
+
+local Tab = Window:NewTab("🌌 KeyBind")
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.E, function()
+	Library:ToggleUI()
+end)
