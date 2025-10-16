@@ -539,7 +539,7 @@ ESPTab:CreateButton({
     end
 })
 
-extraTab:CreateButton({
+ESPTab:CreateButton({
    Name = "❄️ รัน SnowX AimBot",
    Callback = function()
        Rayfield:Notify({Title = "❄️ กำลังโหลด ❄️ SnowX...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
