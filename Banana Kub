@@ -298,6 +298,65 @@ friendTab:CreateButton({
 local ESPTab = Window:CreateTab("🌀 การเห็นคน", nil)
 
 -- ตัวแปรหลัก
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local cam = workspace.CurrentCamera
+local input = game:GetService("UserInputService")
+local run = game:GetService("RunService")
+local aimbotOn = false
+local target = nil
+local holding = false
+
+function GetClosest()
+    local closest = nil
+    local dist = math.huge
+    local mousePos = input:GetMouseLocation()
+
+    for _, v in pairs (plrs:GetPlayers()) do
+        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local pos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
+            if vis then
+                local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                if mag < dist then
+                    dist = mag
+                    closest = v 
+                end
+            end
+        end
+    end
+    return closest
+end
+
+ESPTab:CreateToggle({
+    Name = "🌀 ล็อกเป๋าหมาย",
+    CurrentState = false,
+    Flag = "a",
+    Callback = function(val)
+        aimbotOn = val
+    end
+})
+
+input.InputBegan:Connect(function(key)
+    if key.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = true
+        target = GetClosest()
+    end
+end)
+
+input.InputEnded:Connect(function(key)
+    if key.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = false
+        target = nil
+    end
+end)
+
+run.RenderStepped:Connect(function()
+    if aimbotOn and holding and target and target.Character and target.Character.Head then
+        cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character.Head.Position)
+    end
+end)
+
 local FeatureEnabled = false
 local ESPHighlights = {}
 local BloodGuis = {}
