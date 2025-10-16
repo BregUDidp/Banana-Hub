@@ -1,24 +1,87 @@
--- โหลด Rayfield UI Library
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
--- สร้าง Window
-local Window = Rayfield:CreateWindow({
-    Name = "Rainbow ESP, Blood & Name",
-    LoadingTitle = "Rayfield Interface",
-    LoadingSubtitle = "by Grok",
-    ConfigurationSaving = {
-        Enabled = false
-    }
-})
+-- Kavo UI version of your Rayfield aimbot script
+-- Load Kavo UI (common host). ถ้าใช้ host อื่นให้เปลี่ยน URL ตามที่ต้องการ
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("❄️ SnowX AimBot + ESP ", "GrapeTheme") -- ชื่อหน้าต่างเหมือนเดิม
 
--- สร้าง Tab
-local ESPTab = Window:CreateTab("ESP & Blood", nil)
+local tab = Window:NewTab("🌀 เล็งเป๋าหมาย/การมองคน")
+local section = tab:NewSection("🌀 Visual 🌀")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local cam = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local aimbotOn = false
+local target = nil
+local holding = false
+
+local function GetClosest()
+    local closest = nil
+    local dist = math.huge
+    local mousePos = UserInputService:GetMouseLocation()
+
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local pos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
+            if vis then
+                local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                if mag < dist then
+                    dist = mag
+                    closest = v
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Kavo toggle: NewToggle(text, tooltip, callback)
+section:NewToggle("❄️ ล็อกเป๋าหมายคน", "Toggle aimbot", function(state)
+    aimbotOn = state
+    if not state then
+        target = nil
+        holding = false
+    end
+end)
+
+-- เมาส์ขวากด = เริ่มล็อกเป้า
+UserInputService.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = true
+        target = GetClosest()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gpe)
+    if gpe then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = false
+        target = nil
+    end
+end)
+
+-- Render loop: หมุนกล้องไปยังหัวเป้าเมื่อเปิดและกำลังกด
+RunService.RenderStepped:Connect(function()
+    if aimbotOn and holding and target and target.Character and target.Character:FindFirstChild("Head") then
+        -- ทำให้มุมมองกล้องหันไปที่หัวเป้า
+        cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character.Head.Position)
+    end
+end)
+
+local ESPTab = Window:NewTab("🌀 การเห็นคน/การมองทะลุ")
+local ESPSection = ESPTab:NewSection("")
 
 -- ตัวแปรหลัก
 local FeatureEnabled = false
 local ESPHighlights = {}
 local BloodGuis = {}
+local Tracers = {}
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
 -- ฟังก์ชันสร้าง Rainbow Color
 local function getRainbowColor()
@@ -30,9 +93,72 @@ local function getRainbowColor()
     return Color3.fromRGB(r, g, b)
 end
 
--- ฟังก์ชันสร้าง ESP, Blood และ Name
+-- ฟังก์ชันสร้าง Tracer
+local function createTracer(player)
+    if player == LocalPlayer then return end
+    local tracer = Drawing.new("Line")
+    tracer.Thickness = 2
+    tracer.Transparency = 1
+    tracer.Color = Color3.new(1, 1, 1)
+    tracer.Visible = false
+    Tracers[player] = tracer
+    print("[DEBUG] สร้าง Tracer สำหรับ " .. player.Name)
+end
+
+-- ลบ Tracer
+local function removeTracer(player)
+    if Tracers[player] then
+        Tracers[player]:Remove()
+        Tracers[player] = nil
+        print("[DEBUG] ลบ Tracer สำหรับ " .. player.Name)
+    end
+end
+
+-- ลบ Tracer ทั้งหมด
+local function clearAllTracers()
+    for player, tracer in pairs(Tracers) do
+        removeTracer(player)
+    end
+    print("[DEBUG] ลบ Tracer ทั้งหมดแล้ว")
+    -- Kavo ไม่มี Notify อัตโนมัติ ต้องทำเองถ้าต้องการ
+end
+
+-- ฟังก์ชันอัปเดต Tracer
+local function updateTracers()
+    if not FeatureEnabled or not next(Tracers) then return end
+    local localChar = LocalPlayer.Character
+    if not localChar or not localChar:FindFirstChild("HumanoidRootPart") then
+        print("[DEBUG] ไม่พบ HumanoidRootPart ของ LocalPlayer")
+        return
+    end
+    
+    local localPos = localChar.HumanoidRootPart.Position
+    for player, tracer in pairs(Tracers) do
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local targetPos = character.HumanoidRootPart.Position
+            local screenPosLocal, onScreenLocal = Camera:WorldToScreenPoint(localPos)
+            local screenPosTarget, onScreenTarget = Camera:WorldToScreenPoint(targetPos)
+            
+            if onScreenLocal and onScreenTarget then
+                tracer.From = Vector2.new(screenPosLocal.X, screenPosLocal.Y)
+                tracer.To = Vector2.new(screenPosTarget.X, screenPosTarget.Y)
+                tracer.Color = getRainbowColor()
+                tracer.Visible = true
+            else
+                tracer.Visible = false
+                print("[DEBUG] Tracer ไม่แสดงสำหรับ " .. player.Name .. " (อยู่นอกหน้าจอ)")
+            end
+        else
+            tracer.Visible = false
+            print("[DEBUG] ไม่พบ Character/HumanoidRootPart สำหรับ " .. player.Name)
+        end
+    end
+end
+
+-- ฟังก์ชันสร้าง ESP, Blood, Name และ Tracer
 local function createESPandBlood(player)
-    if player == Players.LocalPlayer then return end
+    if player == LocalPlayer then return end
     local character = player.Character
     if not character then
         warn("[DEBUG] ไม่พบ Character สำหรับ " .. player.Name)
@@ -46,6 +172,9 @@ local function createESPandBlood(player)
         return
     end
 
+    -- สร้าง Tracer
+    createTracer(player)
+
     -- สร้าง ESP (Highlight)
     local highlight = Instance.new("Highlight")
     highlight.Parent = character
@@ -54,6 +183,7 @@ local function createESPandBlood(player)
     highlight.FillTransparency = 0.5
     highlight.OutlineTransparency = 0
     ESPHighlights[player] = highlight
+    print("[DEBUG] สร้าง ESP สำหรับ " .. player.Name)
 
     -- สร้าง Blood และ Name (BillboardGui)
     local billboard = Instance.new("BillboardGui")
@@ -90,6 +220,7 @@ local function createESPandBlood(player)
     hpLabel.Font = Enum.Font.SourceSansBold
 
     BloodGuis[player] = {billboard = billboard, frame = frame, hpLabel = hpLabel, nameLabel = nameLabel, humanoid = humanoid}
+    print("[DEBUG] สร้าง Blood และ Name สำหรับ " .. player.Name)
 
     -- อัปเดตสีรุ้งและ HP
     coroutine.wrap(function()
@@ -105,63 +236,70 @@ local function createESPandBlood(player)
             hpLabel.Text = "HP: " .. math.floor(humanoid.Health)
             RunService.Heartbeat:Wait()
         end
+        print("[DEBUG] หยุด loop สีรุ้งสำหรับ " .. player.Name)
     end)()
 end
 
--- ลบ ESP, Blood และ Name
+-- ลบ ESP, Blood, Name และ Tracer
 local function removeESPandBlood(player)
     if ESPHighlights[player] then
         ESPHighlights[player]:Destroy()
         ESPHighlights[player] = nil
+        print("[DEBUG] ลบ ESP สำหรับ " .. player.Name)
     end
     if BloodGuis[player] then
         BloodGuis[player].billboard:Destroy()
         BloodGuis[player] = nil
+        print("[DEBUG] ลบ Blood และ Name สำหรับ " .. player.Name)
     end
+    removeTracer(player)
 end
 
--- Toggle ESP, Blood และ Name
-ESPTab:CreateToggle({
-    Name = "ESP, Blood & Name Rainbow",
-    CurrentValue = false,
-    Flag = "ESPToggle",
-    Callback = function(state)
-        FeatureEnabled = state
-        if state then
-            for player, _ in pairs(ESPHighlights) do
-                removeESPandBlood(player)
-            end
-            for _, player in pairs(Players:GetPlayers()) do
-                if player.Character then
-                    createESPandBlood(player)
-                end
-            end
-            Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function()
-                    if FeatureEnabled then
-                        createESPandBlood(player)
-                    end
-                end)
-            end)
-            Players.PlayerRemoving:Connect(function(player)
-                removeESPandBlood(player)
-            end)
-        else
-            for player, _ in pairs(ESPHighlights) do
-                removeESPandBlood(player)
+-- Toggle ESP, Blood, Name และ Tracer
+ESPSection:NewToggle("🌀 เปิดการมองเห็นคน/ปิดการมองเห็นคน", "Toggle ESP Suite", function(state)
+    FeatureEnabled = state
+    if state then
+        for player, _ in pairs(ESPHighlights) do
+            removeESPandBlood(player)
+        end
+        for _, player in pairs(Players:GetPlayers()) do
+            if player.Character then
+                createESPandBlood(player)
             end
         end
-        Rayfield:Notify({
-            Title = "สถานะ",
-            Content = "ESP, Blood & Name " .. (state and "เปิด" or "ปิด"),
-            Duration = 3
-        })
-    end
-})
 
--- Notification เมื่อโหลด
-Rayfield:Notify({
-    Title = "โหลดสำเร็จ",
-    Content = "สคริปต์ ESP, Blood & Name Rainbow พร้อมใช้งาน!",
-    Duration = 5
-})
+        local tracerConnection
+        tracerConnection = RunService.RenderStepped:Connect(function()
+            if FeatureEnabled then
+                updateTracers()
+            else
+                tracerConnection:Disconnect()
+                clearAllTracers()
+            end
+        end)
+
+        Players.PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function()
+                if FeatureEnabled then
+                    createESPandBlood(player)
+                end
+            end)
+        end)
+
+        Players.PlayerRemoving:Connect(function(player)
+            removeESPandBlood(player)
+        end)
+    else
+        for player, _ in pairs(ESPHighlights) do
+            removeESPandBlood(player)
+        end
+        clearAllTracers()
+    end
+end)
+
+-- ปุ่มลบ Tracer
+ESPSection:NewButton("🌀 ลบ แค่เส้น/ทั้งหมด", "Remove all tracers", function()
+    clearAllTracers()
+end)
+
+print("[DEBUG] สคริปต์ ESP โหลดสำเร็จ")
