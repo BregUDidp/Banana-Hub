@@ -539,6 +539,14 @@ ESPTab:CreateButton({
     end
 })
 
+extraTab:CreateButton({
+   Name = "❄️ รัน SnowX AimBot",
+   Callback = function()
+       Rayfield:Notify({Title = "❄️ กำลังโหลด ❄️ SnowX...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ESP-Config"))()
+   end,
+})
+
 -- Notification เมื่อโหลด
 Rayfield:Notify({
     Title = "โหลดสำเร็จ",
@@ -573,14 +581,6 @@ extraTab:CreateButton({
         Rayfield:Notify({Title = "🌌 กำลังโหลด Voidware...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
     end
-})
- 
-extraTab:CreateButton({
-   Name = "🔫 รัน UnBond Hub อาเซเนิล",
-   Callback = function()
-       Rayfield:Notify({Title = "🔫 กำลังโหลด UnBond Hub...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
-   end,
 })
  
 -- แท็บรายการอัพเดต
