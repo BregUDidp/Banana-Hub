@@ -4,7 +4,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHept
 local Window = Library.CreateLib("❄️ SnowX AimBot + ESP [ ❄️ Premuim ❄️ ]", "GrapeTheme") -- ชื่อหน้าต่างเหมือนเดิม
 
 local tab = Window:NewTab("🌀 เล็งเป๋าหมาย/การมองคน")
-local section = tab:NewSection("🌀 Visual 🌀")
+local section = tab:NewSection("🌀 Visual AimBot 🌀")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -68,6 +68,12 @@ RunService.RenderStepped:Connect(function()
         -- ทำให้มุมมองกล้องหันไปที่หัวเป้า
         cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character.Head.Position)
     end
+end)
+
+local Section = Tab:NewSection("🏃‍♂️ Speed Walk")
+
+Section:NewSlider("🏃‍♂️ การปรับการเดินและวิ่ง", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
 end)
 
 local ESPTab = Window:NewTab("🌀 การเห็นคน/การมองทะลุ")
