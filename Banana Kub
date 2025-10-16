@@ -329,7 +329,7 @@ function GetClosest()
 end
 
 ESPTab:CreateToggle({
-    Name = "🌀 ล็อกเป๋าหมาย",
+    Name = "🎯 ล็อกเป๋าหมาย",
     CurrentState = false,
     Flag = "a",
     Callback = function(val)
@@ -544,7 +544,7 @@ end
 
 -- Toggle ESP, Blood, Name และ Tracer
 ESPTab:CreateToggle({
-    Name = "🌀 เปิดการมองเห็นคน/ปิดการมองเห็นคน",
+    Name = "🔍 เปิดการมองเห็นคน/ปิดการมองเห็นคน",
     CurrentValue = false,
     Flag = "ESPSuiteToggle",
     Callback = function(state)
@@ -596,14 +596,6 @@ ESPTab:CreateButton({
     Callback = function()
         clearAllTracers()
     end
-})
-
-ESPTab:CreateButton({
-   Name = "❄️ รัน SnowX AimBot",
-   Callback = function()
-       Rayfield:Notify({Title = "❄️ กำลังโหลด ❄️ SnowX...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ESP-Config"))()
-   end
 })
 
 -- Notification เมื่อโหลด
