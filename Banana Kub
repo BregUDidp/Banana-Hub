@@ -293,6 +293,13 @@ friendTab:CreateButton({
         })
     end
 })
+
+local Button = Tab:CreateButton({
+   Name = "🎭 ไม้กายศิสวาป",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
+   end,
+})
  
 -- สร้าง Tab
 local ESPTab = Window:CreateTab("🌀 การเห็นคน", nil)
