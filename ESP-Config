@@ -77,7 +77,7 @@ Section:NewSlider("🏃‍♂️ การปรับการเดินแ�
 end)
 
 local ESPTab = Window:NewTab("🌀 การเห็นคน/การมองทะลุ")
-local ESPSection = ESPTab:NewSection("")
+local ESPSection = ESPTab:NewSection("🌀 ESP Zone")
 
 -- ตัวแปรหลัก
 local FeatureEnabled = false
@@ -316,9 +316,4 @@ local Section = Tab:NewSection("❄️ รวมสคริป")
 Section:NewButton("🔫 Unbond Hub", "ButtonInfo", function()
     print("Clicked")
        loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
-end)
-
-local Tab = Window:NewTab("🌌 KeyBind")
-Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.E, function()
-	Library:ToggleUI()
 end)
