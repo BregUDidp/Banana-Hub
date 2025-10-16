@@ -336,6 +336,127 @@ function GetClosest()
     return closest
 end
 
+-- 🔵 FOV Circle แบบ Rainbow เปิด/ปิดได้
+local fovEnabled = false
+local fovRadius = 150
+local fovThickness = 2
+local fovSpeed = 0.6
+local fovFollowMouse = false
+
+local drawingAvailable = typeof(Drawing) == "table" and typeof(Drawing.new) == "function"
+local fovCircle = nil
+
+local function getRainbowColor(speed, offset)
+    local hue = (tick() * (speed or 1) + (offset or 0)) % 1
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+local function createFOVCircle()
+    if not drawingAvailable then return end
+    if fovCircle then return end
+
+    local c = Drawing.new("Circle")
+    c.Visible = false
+    c.Radius = fovRadius
+    c.Thickness = fovThickness
+    c.NumSides = 100
+    c.Filled = false
+    c.Transparency = 1
+    fovCircle = c
+end
+
+local function removeFOVCircle()
+    if fovCircle then
+        fovCircle:Remove()
+        fovCircle = nil
+    end
+end
+
+-- เริ่มวาดวงกลม
+run.RenderStepped:Connect(function()
+    if not fovEnabled or not fovCircle then
+        if fovCircle then fovCircle.Visible = false end
+        return
+    end
+
+    local pos
+    if fovFollowMouse then
+        local mouse = input:GetMouseLocation()
+        pos = Vector2.new(mouse.X, mouse.Y)
+    else
+        local view = cam.ViewportSize
+        pos = Vector2.new(view.X / 2, view.Y / 2)
+    end
+
+    fovCircle.Position = pos
+    fovCircle.Color = getRainbowColor(fovSpeed)
+    fovCircle.Thickness = fovThickness
+    fovCircle.Radius = fovRadius
+    fovCircle.Visible = true
+end)
+
+-- สร้าง UI สำหรับ FOV ในแท็บการมองเห็น
+ESPTab:CreateToggle({
+    Name = "🔵 เปิด/ปิด FOV Circle (สายรุ้ง)",
+    CurrentState = false,
+    Flag = "FOVToggle",
+    Callback = function(val)
+        fovEnabled = val
+        if val then
+            createFOVCircle()
+        else
+            if fovCircle then fovCircle.Visible = false end
+        end
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ขนาดวง FOV",
+    Range = {10, 1000},
+    Increment = 1,
+    CurrentValue = fovRadius,
+    Suffix = "px",
+    Flag = "FOVRadius",
+    Callback = function(val)
+        fovRadius = val
+        if fovCircle then fovCircle.Radius = val end
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ความหนาเส้นวง",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = fovThickness,
+    Suffix = "px",
+    Flag = "FOVThickness",
+    Callback = function(val)
+        fovThickness = val
+        if fovCircle then fovCircle.Thickness = val end
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "🌈 ความเร็วสีสายรุ้ง",
+    Range = {0.1, 5},
+    Increment = 0.1,
+    CurrentValue = fovSpeed,
+    Flag = "FOVSpeed",
+    Callback = function(val)
+        fovSpeed = val
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🖱️ วงตามเมาส์",
+    CurrentState = false,
+    Flag = "FOVMouseFollow",
+    Callback = function(val)
+        fovFollowMouse = val
+    end
+})
+
+
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย",
     CurrentState = false,
