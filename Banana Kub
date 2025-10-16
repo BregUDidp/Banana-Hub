@@ -544,7 +544,7 @@ ESPTab:CreateButton({
    Callback = function()
        Rayfield:Notify({Title = "❄️ กำลังโหลด ❄️ SnowX...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ESP-Config"))()
-   end,
+   end
 })
 
 -- Notification เมื่อโหลด
