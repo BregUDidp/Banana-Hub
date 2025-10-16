@@ -38,8 +38,8 @@ local Window = Rayfield:CreateWindow({
    }
 })
 Rayfield:Notify({
-   Title = "Sylentis กำลังโหลด...",
-   Content = " Sylentis กำลังโหลด...",
+   Title = "❄️ SnowX กำลังโหลด...",
+   Content = "❄️ SnowX กำลังโหลด...",
    Duration = 5,
    Image = nil,
 })
