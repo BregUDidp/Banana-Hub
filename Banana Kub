@@ -303,7 +303,7 @@ friendTab:CreateButton({
 })
 
 -- สร้าง Tab
-local ESPTab = Window:CreateTab("🌀 การเห็นคน", nil)
+local ESPTab = Window:CreateTab("🌀 การเห็นคน/การล็อคเป๋า", nil)
 
 -- ตัวแปรหลัก
 
@@ -397,7 +397,7 @@ end)
 
 -- สร้าง UI สำหรับ FOV ในแท็บการมองเห็น
 ESPTab:CreateToggle({
-    Name = "🔵 เปิด/ปิด FOV Circle (สายรุ้ง)",
+    Name = "🌀 เปิดวงกลม/ปิดวงกลม",
     CurrentState = false,
     Flag = "FOVToggle",
     Callback = function(val)
@@ -411,7 +411,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ขนาดวง FOV",
+    Name = "📏 ขนาดวงวงกลม",
     Range = {10, 1000},
     Increment = 1,
     CurrentValue = fovRadius,
@@ -424,7 +424,7 @@ ESPTab:CreateSlider({
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ความหนาเส้นวง",
+    Name = "📏 ความหนาเส้นวงกลม",
     Range = {1, 10},
     Increment = 1,
     CurrentValue = fovThickness,
@@ -433,17 +433,6 @@ ESPTab:CreateSlider({
     Callback = function(val)
         fovThickness = val
         if fovCircle then fovCircle.Thickness = val end
-    end
-})
-
-ESPTab:CreateSlider({
-    Name = "🌈 ความเร็วสีสายรุ้ง",
-    Range = {0.1, 5},
-    Increment = 0.1,
-    CurrentValue = fovSpeed,
-    Flag = "FOVSpeed",
-    Callback = function(val)
-        fovSpeed = val
     end
 })
 
@@ -494,6 +483,13 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local cam = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+
+
 
 -- Notification เมื่อโหลด
 Rayfield:Notify({
