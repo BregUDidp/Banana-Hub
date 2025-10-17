@@ -165,7 +165,7 @@ end)
 local destroyBtn = Instance.new("TextButton", frame)
 destroyBtn.Size = UDim2.new(0.4, 0, 0, 35)
 destroyBtn.Position = UDim2.new(0.55, 0, 0, 145)
-destroyBtn.Text = "❌ Destroy GUI"
+destroyBtn.Text = "❌ ปิดหน้าต่าง"
 destroyBtn.Font = Enum.Font.GothamBold
 destroyBtn.TextSize = 14
 destroyBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
