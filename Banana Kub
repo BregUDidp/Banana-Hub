@@ -2,11 +2,11 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 -- สร้าง Window
 local Window = Rayfield:CreateWindow({
-   Name = "🧿 SyWareX  [🎈 Premuim 🎈]",
+   Name = "🎈 SyWareX  [🎈 Premuim 🎈]",
    Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "🧿 SyWareX",
+   LoadingTitle = "🎈 SyWareX",
    LoadingSubtitle = "By XaS",
-   ShowText = "🧿 SyWareX ", -- for mobile users to unhide rayfield, change if you'd like
+   ShowText = "🎈 SyWareX ", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
  
    ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "F" or Enum.KeyCode)
@@ -28,10 +28,10 @@ local Window = Rayfield:CreateWindow({
  
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
-      Title = "🧿 SyWareX พร้อมโหลด",
+      Title = "🎈 SyWareX พร้อมโหลดถ้าใส่คีย์เสร็จ",
       Subtitle = "ไปเอาคีย์ในดิส",
-      Note = "เข้าดิสเพื่อไปเอาคีย์ 🧿",
-      FileName = "Key SyWareX 🧿", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      Note = "เข้าดิสเพื่อไปเอาคีย์ 🎈",
+      FileName = "Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"2222"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
@@ -45,7 +45,7 @@ Rayfield:Notify({
 })
  
 local ESPTab = Window:CreateTab("🌀 การเห็นคน/การล็อคเป๋า", nil)
-local Section = ESPTab:CreateSection("❄️ Main 1 ❄️")
+local Section = ESPTab:CreateSection("🎈 Main 1 🎈")
 -- ตัวแปรหลัก
 
 local plrs = game:GetService("Players")
@@ -426,7 +426,7 @@ local RunService = game:GetService("RunService")
 -- Notification เมื่อโหลด
 Rayfield:Notify({
     Title = "โหลดสำเร็จ",
-    Content = "สคริปต์ ❄️ SnowX พร้อมใช้งาน!",
+    Content = "สคริปต์ 🎈 SyWareX พร้อมใช้งาน!",
     Duration = 5
 })
 
@@ -434,7 +434,7 @@ print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("🏡 ตัวละคร", 6026568198)
-local MainSection = MainTab:CreateSection("❄️ Main 2 ❄️")
+local MainSection = MainTab:CreateSection("🎈 Main 2 🎈")
  
 -- ตัวแปรระบบ
 local Players = game:GetService("Players")
@@ -594,7 +594,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
-local Section = friendTab:CreateSection("❄️ Main 3 ❄️")
+local Section = friendTab:CreateSection("🎈 Main 3 🎈")
 
 friendTab:CreateButton({
    Name = "🎈 ไม้กายศิษวาป",
@@ -825,7 +825,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 โปรโหลดสำเร็จ!",
-    Content="พร้อมผจญภัยกับ 🧿 SyWareX แล้ว!",
+    Content="พร้อมผจญภัยกับ 🎈 SyWareX แล้ว!",
     Duration=4,
     Image=6026568198
 })
