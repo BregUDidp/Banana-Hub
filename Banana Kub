@@ -718,6 +718,14 @@ extraTab:CreateButton({
     end
 })
  
+extraTab:CreateButton({
+   Name = "👾 รัน RobloxFreeScript Hub 99 คืน",
+   Callback = function()
+       Rayfield:Notify({Title = "👾 กำลังโหลด RobloxFreeScript...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+	   loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
+   end,
+})
+
 -- แท็บรายการอัพเดต
 local creditTab = Window:CreateTab("📜รายการอัพเดต",6034989579)
 creditTab:CreateLabel("version 1.3.3 (+)แท็บรายการอัพเดต แท็บสคริปต์เพิ่มเติม แท็บวาป แก้ไขให้วาปใช้ได้กับ displayname")
