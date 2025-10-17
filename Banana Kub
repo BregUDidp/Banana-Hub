@@ -597,9 +597,9 @@ local friendTab = Window:CreateTab("👥 วาปไปหาคน", 602656819
 local Section = friendTab:CreateSection("❄️ Main 3 ❄️")
 
 friendTab:CreateButton({
-   Name = "🎭 ไม้กายศิสวาป",
+   Name = "🎈 ไม้กายศิษวาป",
    Callback = function()
-       Rayfield:Notify({Title = "🎭 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       Rayfield:Notify({Title = "🎈 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
