@@ -692,8 +692,8 @@ friendTab:CreateButton({
 })
 
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("🧩 สคริปต์ 99 คืน", 6031280882)
-local Section = extraTab:CreateSection("❄️ Main 4 ❄️")
+local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
+local Section = extraTab:CreateSection("🎈 Main 4 🎈")
 
 extraTab:CreateButton({
     Name = "💣 รัน SomTank Hub 99 คืน",
