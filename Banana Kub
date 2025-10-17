@@ -691,6 +691,24 @@ Rayfield:Notify({
 
 print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
+local Tab = Window:CreateTab("🧩 สคริปหมุนไปหาคน", 6031280882)
+
+local Button = Tab:CreateButton({
+   Name = "💫  รัน Fling [1]",
+   Callback = function()
+       Rayfield:Notify({Title = "👾 กำลังโหลด Fling X...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Fling%20ESP"))()
+   end,
+})
+
+local Button = Tab:CreateButton({
+   Name = "💫  รัน Fling [2]",
+   Callback = function()
+       Rayfield:Notify({Title = "👾 กำลังโหลด Fling X...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/LiarRise/FLN-X/refs/heads/main/README.md"))()
+   end,
+})
+
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์เอาฟรี", 6031280882)
 
