@@ -410,6 +410,15 @@ ESPTab:CreateToggle({
     end
 })
 
+ESPTab:CreateToggle({
+    Name = "🖱️ วงตามเมาส์",
+    CurrentState = false,
+    Flag = "FOVMouseFollow",
+    Callback = function(val)
+        fovFollowMouse = val
+    end
+})
+
 ESPTab:CreateSlider({
     Name = "📏 ขนาดวงวงกลม",
     Range = {10, 1000},
@@ -436,15 +445,197 @@ ESPTab:CreateSlider({
     end
 })
 
+-- ======= Services & Vars =======
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local cam = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+
+-- Drawing availability
+local DrawingAvailable = (typeof(Drawing) == "table" and typeof(Drawing.new) == "function")
+
+-- ESP vars
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
+local espVisible = {}
+local espRainbowSpeed = 0.9
+local espGlowLayers = 3
+local espMaxBoxSize = 200
+
+-- Rainbow color function
+local function rainbowColor(speed, offset)
+    local t = tick() * (speed or 1) + (offset or 0)
+    return Color3.fromHSV(t % 1, 1, 1)
+end
+
+-- Create ESP drawing objects
+local function createESPForPlayer(player)
+    if not DrawingAvailable or espBoxes[player] then return end
+
+    local boxData = {}
+
+    -- Main box
+    boxData.main = Drawing.new("Square")
+    boxData.main.Visible = false
+    boxData.main.Filled = false
+    boxData.main.Thickness = 1
+
+    -- Glow layers
+    boxData.glows = {}
+    for i = 1, espGlowLayers do
+        local g = Drawing.new("Square")
+        g.Visible = false
+        g.Filled = false
+        g.Thickness = 1
+        g.Transparency = math.clamp(0.55 * (1 - (i - 1)/espGlowLayers), 0.03, 0.9)
+        table.insert(boxData.glows, g)
+    end
+
+    -- Name tag
+    boxData.name = Drawing.new("Text")
+    boxData.name.Visible = false
+    boxData.name.Center = true
+    boxData.name.Size = 14
+
+    -- Health bar
+    boxData.health = Drawing.new("Square")
+    boxData.health.Visible = false
+    boxData.health.Filled = true
+
+    -- Tracer line
+    boxData.tracer = Drawing.new("Line")
+    boxData.tracer.Visible = false
+    boxData.tracer.Thickness = 1
+
+    espBoxes[player] = boxData
+end
+
+-- Remove ESP drawing objects
+local function removeESPForPlayer(player)
+    local box = espBoxes[player]
+    if box then
+        pcall(function()
+            if box.main then box.main:Remove() end
+            if box.name then box.name:Remove() end
+            if box.health then box.health:Remove() end
+            if box.tracer then box.tracer:Remove() end
+            for _, g in ipairs(box.glows) do g:Remove() end
+        end)
+        espBoxes[player] = nil
+        espVisible[player] = nil
+    end
+end
+
+-- Render loop
+RunService.RenderStepped:Connect(function()
+    if not DrawingAvailable then return end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+            if espEnabled then
+                createESPForPlayer(player)
+                local box = espBoxes[player]
+                local hrp = player.Character.HumanoidRootPart
+                local rootPos, onScreen = cam:WorldToViewportPoint(hrp.Position)
+
+                if onScreen then
+                    espVisible[player] = true
+                    local depth = (cam.CFrame.Position - hrp.Position).Magnitude
+                    local scale = math.clamp(2000 / depth, 20, espMaxBoxSize)
+                    local boxSize = Vector2.new(scale * 0.6, scale)
+                    local center = Vector2.new(rootPos.X, rootPos.Y)
+
+                    -- Main box
+                    if box.main then
+                        box.main.Size = boxSize
+                        box.main.Position = center - (boxSize / 2)
+                        box.main.Color = rainbowColor(espRainbowSpeed, 0)
+                        box.main.Visible = true
+                    end
+
+                    -- Glow layers
+                    for i, g in ipairs(box.glows) do
+                        local extra = i * 6
+                        g.Size = boxSize + Vector2.new(extra, extra)
+                        g.Position = center - (g.Size / 2)
+                        g.Color = rainbowColor(espRainbowSpeed, i * 0.07)
+                        g.Visible = true
+                    end
+
+                    -- Name tag
+                    if box.name then
+                        box.name.Position = center + Vector2.new(0, -boxSize.Y/2 - 14)
+                        box.name.Text = player.Name
+                        box.name.Color = rainbowColor(espRainbowSpeed, 0.15)
+                        box.name.Visible = true
+                    end
+
+                    -- Tracer
+                    if box.tracer then
+                        local screenCenter = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+                        box.tracer.From = screenCenter
+                        box.tracer.To = center
+                        box.tracer.Color = rainbowColor(espRainbowSpeed, 0.25)
+                        box.tracer.Visible = espTraceEnabled
+                    end
+
+                    -- Health bar
+                    local humanoid = player.Character:FindFirstChild("Humanoid")
+                    if humanoid and box.health then
+                        local hpPct = math.clamp(humanoid.Health / (humanoid.MaxHealth or 100), 0, 1)
+                        local healthW = 4
+                        local healthH = boxSize.Y * hpPct
+                        local healthPos = center - Vector2.new(boxSize.X/2 + 8, boxSize.Y/2 - healthH)
+                        box.health.Size = Vector2.new(healthW, healthH)
+                        box.health.Position = healthPos
+                        box.health.Color = rainbowColor(espRainbowSpeed, hpPct * 0.5)
+                        box.health.Visible = true
+                    end
+                else
+                    -- Out of screen
+                    espVisible[player] = false
+                    if box.main then box.main.Visible = false end
+                    if box.name then box.name.Visible = false end
+                    if box.health then box.health.Visible = false end
+                    if box.tracer then box.tracer.Visible = false end
+                    for _, g in ipairs(box.glows) do g.Visible = false end
+                end
+            else
+                removeESPForPlayer(player)
+            end
+        else
+            removeESPForPlayer(player)
+        end
+    end
+end)
+
+-- Cleanup when player leaves
+Players.PlayerRemoving:Connect(removeESPForPlayer)
+
+-- ======= UI Controls =======Tab:CreateToggle({
 ESPTab:CreateToggle({
-    Name = "🖱️ วงตามเมาส์",
-    CurrentState = false,
-    Flag = "FOVMouseFollow",
+    Name = "🔍 เปิดการมองเห็นคน",
+    CurrentState = espEnabled,
+    Flag = "esp_enable",
     Callback = function(val)
-        fovFollowMouse = val
+        espEnabled = val
+        if not val then
+            for p,_ in pairs(espBoxes) do
+                removeESPForPlayer(p)
+            end
+        end
     end
 })
 
+ESPTab:CreateToggle({
+    Name = "🔍 การมองเห็นคนแบบเส้น",
+    CurrentState = espTraceEnabled,
+    Flag = "esp_tracer",
+    Callback = function(val)
+        espTraceEnabled = val
+    end
+})
 
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย",
