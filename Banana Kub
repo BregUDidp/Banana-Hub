@@ -2,11 +2,11 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 -- สร้าง Window
 local Window = Rayfield:CreateWindow({
-   Name = "🎈 SyWareX  [🎈 Premuim 🎈]",
+   Name = "🎈 BalonX  [🎈 Premuim 🎈]",
    Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "🎈 SyWareX",
-   LoadingSubtitle = "By 🎈 XaS 🎈",
-   ShowText = "🎈 SyWareX ", -- for mobile users to unhide rayfield, change if you'd like
+   LoadingTitle = "[🎈] BalonX [🎈]",
+   LoadingSubtitle = "By [🎈] XaS [🎈]",
+   ShowText = "[🎈] BalonX [🎈]", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
  
    ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "F" or Enum.KeyCode)
@@ -29,7 +29,7 @@ local Window = Rayfield:CreateWindow({
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
       Title = "🎈 SyWareX พร้อมโหลดถ้าใส่คีย์เสร็จ",
-      Subtitle = "🎈 ไปเอาคีย์ในดิส 🎈",
+      Subtitle = "[🎈] ไปเอาคีย์ในดิส [🎈]",
       Note = "เข้าดิสเพื่อไปเอาคีย์ 🎈",
       FileName = "Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
@@ -45,7 +45,7 @@ Rayfield:Notify({
 })
  
 local ESPTab = Window:CreateTab("🌀 การเห็นคน/การล็อคเป๋า", nil)
-local Section = ESPTab:CreateSection("🎈 Main 1 🎈")
+local Section = ESPTab:CreateSection("🎈 Menu Circle 🎈")
 -- ตัวแปรหลัก
 
 local plrs = game:GetService("Players")
@@ -355,28 +355,7 @@ end)
 Players.PlayerRemoving:Connect(removeESPForPlayer)
 
 -- ======= UI Controls =======Tab:CreateToggle({
-ESPTab:CreateToggle({
-    Name = "🔍 เปิดการมองเห็นคน",
-    CurrentState = espEnabled,
-    Flag = "esp_enable",
-    Callback = function(val)
-        espEnabled = val
-        if not val then
-            for p,_ in pairs(espBoxes) do
-                removeESPForPlayer(p)
-            end
-        end
-    end
-})
-
-ESPTab:CreateToggle({
-    Name = "🔍 การมองเห็นคนแบบเส้น",
-    CurrentState = espTraceEnabled,
-    Flag = "esp_tracer",
-    Callback = function(val)
-        espTraceEnabled = val
-    end
-})
+local Section3 = ESPTab:CreateSection("🎈 Menu ESP/AimBot 🎈")
 
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย",
@@ -422,11 +401,33 @@ local cam = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
 
 
+ESPTab:CreateToggle({
+    Name = "🔍 เปิดการมองเห็นคน",
+    CurrentState = espEnabled,
+    Flag = "esp_enable",
+    Callback = function(val)
+        espEnabled = val
+        if not val then
+            for p,_ in pairs(espBoxes) do
+                removeESPForPlayer(p)
+            end
+        end
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🔍 การมองเห็นคนแบบเส้น",
+    CurrentState = espTraceEnabled,
+    Flag = "esp_tracer",
+    Callback = function(val)
+        espTraceEnabled = val
+    end
+})
 
 -- Notification เมื่อโหลด
 Rayfield:Notify({
     Title = "โหลดสำเร็จ",
-    Content = "สคริปต์ 🎈 SyWareX พร้อมใช้งาน!",
+    Content = "สคริปต์ 🎈 BalonX พร้อมใช้งาน!",
     Duration = 5
 })
 
@@ -825,7 +826,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 โปรโหลดสำเร็จ!",
-    Content="พร้อมผจญภัยกับ 🎈 SyWareX แล้ว!",
+    Content="พร้อมผจญภัยกับ 🎈 BalonX แล้ว!",
     Duration=4,
     Image=6026568198
 })
