@@ -38,7 +38,7 @@ end)
 
 local Section = Tab:NewSection("🎈 Menu Arsenal 🎈")
 
-Section:NewButton("🧑‍🚀 รัน UnBond Hub [ มีคีย์ 🔑 ]", "ButtonInfo", function()
+Section:NewButton("🛩️ รัน UnBond Hub [ มีคีย์ 🔑 ]", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
 end)
