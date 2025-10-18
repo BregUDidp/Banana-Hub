@@ -435,8 +435,123 @@ print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("🏡 ตัวละคร", 6026568198)
-local MainSection = MainTab:CreateSection("🎈 Main 2 🎈")
+local MainSection = MainTab:CreateSection("🎈 Menu Fly 🎈")
  
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- โหลด Rayfield
+
+-- ตัวแปรหลัก
+local humanoid, hrp
+local flying = false
+local flySpeed = 80
+local ascend = false
+local descend = false
+local currentVelocity = Vector3.zero
+
+local bv, bg
+
+-- ดึงชิ้นส่วนตัวละคร
+local function getCharParts()
+	character = player.Character or player.CharacterAdded:Wait()
+	return character:WaitForChild("Humanoid"), character:WaitForChild("HumanoidRootPart")
+end
+
+humanoid, hrp = getCharParts()
+
+-- เริ่มบิน
+local function startFlying()
+	if flying then return end
+	flying = true
+	humanoid.PlatformStand = true
+
+	bv = Instance.new("BodyVelocity")
+	bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+	bv.P = 1500
+	bv.Velocity = Vector3.zero
+	bv.Parent = hrp
+
+	bg = Instance.new("BodyGyro")
+	bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+	bg.P = 3000
+	bg.CFrame = hrp.CFrame
+	bg.Parent = hrp
+end
+
+-- หยุดบิน
+local function stopFlying()
+	if not flying then return end
+	flying = false
+	humanoid.PlatformStand = false
+	if bv then bv:Destroy() end
+	if bg then bg:Destroy() end
+	currentVelocity = Vector3.zero
+end
+
+MainTab:CreateToggle({
+	Name = "🛸 เปิด/ปิด การบินแบบมองตามกล้อง",
+	CurrentValue = false,
+	Flag = "FlyToggle",
+	Callback = function(Value)
+		if Value then startFlying() else stopFlying() end
+	end
+})
+
+MainTab:CreateSlider({
+	Name = "🧑‍🚀 ปรับความเร็วบิน",
+	Range = {10, 300},
+	Increment = 5,
+	Suffix = "stud/s",
+	CurrentValue = flySpeed,
+	Flag = "FlySpeedSlider",
+	Callback = function(Value)
+		flySpeed = Value
+	end
+})
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.Space then
+		ascend = false
+	elseif input.KeyCode == Enum.KeyCode.LeftShift then
+		descend = false
+	end
+end)
+
+-- บินตามกล้อง
+RunService.RenderStepped:Connect(function()
+	if flying and bv and bg and humanoid and hrp then
+		local camLook = camera.CFrame.LookVector
+		local vertical = 0
+
+		if ascend then vertical = 1
+		elseif descend then vertical = -1 end
+
+		-- รวมแนวกล้อง + ขึ้นลง
+		local flyDirection = (camLook + Vector3.new(0, vertical, 0)).Unit
+		local targetVelocity = flyDirection * flySpeed
+
+		-- ลื่นไหล
+		currentVelocity = currentVelocity:Lerp(targetVelocity, 0.15)
+		bv.Velocity = currentVelocity
+
+		-- หันตัวละครไปทิศทางที่กล้องหัน
+		bg.CFrame = CFrame.new(hrp.Position, hrp.Position + camLook)
+	end
+end)
+
+-- ตัวละครเกิดใหม่
+player.CharacterAdded:Connect(function(char)
+	character = char
+	humanoid, hrp = getCharParts()
+	stopFlying()
+end)
+
 -- ตัวแปรระบบ
 local Players = game:GetService("Players")
 local RS = game:GetService("RunService")
@@ -510,7 +625,7 @@ end
  
 -- Toggle & Slider UI
 local flyToggle = MainTab:CreateToggle({
-    Name="✈️ เปิด/ปิด การบิน",
+    Name="✈️ เปิด/ปิด การบินแบบธรรมดา",
     CurrentValue=false,
     Flag="FlyToggle",
     Callback=function(val)
@@ -536,6 +651,7 @@ local flySlider = MainTab:CreateSlider({
     end
 })
  
+local Section2 = MainTab:CreateSection("🎈 Menu SpeedWalk🎈")
 local speedToggle = MainTab:CreateToggle({
     Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว",
     CurrentValue=false,
@@ -562,6 +678,7 @@ local speedSlider = MainTab:CreateSlider({
     end
 })
  
+local Section3 = MainTab:CreateSection("🎈 Menu Noclips/Infinite Jump 🎈")
 local noclipToggle = MainTab:CreateToggle({
     Name="👻 เปิด/ปิด Noclip",
     CurrentValue=false,
