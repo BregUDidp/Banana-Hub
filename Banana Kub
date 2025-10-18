@@ -814,14 +814,14 @@ local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอา�
 local Section1 = extraTab:CreateSection("🎈 Menu BalonX Script 🎈")
 
 extraTab:CreateButton({
-    Name = "[🎈] รัน BalonX [🎈] [⭐ Script All ⭐]",
+    Name = "[🎈] รัน BalonX [🎈]  [⭐ Script All ⭐]",
     Callback = function()
         Rayfield:Notify({Title = "🎈 กำลังโหลด BalonX 🎈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/All%20Script%20Kavo%20Ui"))()
     end
 })
 
-local Section2 = extraTab:CreateSection("🎈 สคริปด้านบนของเราเป็นสคริปที่รวมกันอยู่ในนั้นมีสคริปทุกอย่าง 🎈")
+local Section2 = extraTab:CreateSection("[🎈] [ สคริปด้านบนของเราเป็นสคริปที่รวมกันอยู่ในนั้นมีสคริปทุกอย่าง ] [🎈]")
 
 -- แท็บรายการอัพเดต
 local creditTab = Window:CreateTab("📜รายการอัพเดต",6034989579)
