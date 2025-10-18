@@ -1,5 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("[🎈] BalonX [🎈] [⭐ Premuim ⭐]", "GrapeTheme")
+local Window = Library.CreateLib("[🎈] BalonX [🎈] [⭐ Premuim ⭐]", "Synapse")
 
 local Tab = Window:NewTab("🎈 All Script 🎈")
 local Section = Tab:NewSection("🎈 Menu 99 night forest 🎈")
