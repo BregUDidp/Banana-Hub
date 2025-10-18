@@ -28,7 +28,7 @@ local Window = Rayfield:CreateWindow({
  
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
-      Title = "🎈 SyWareX พร้อมโหลดถ้าใส่คีย์เสร็จ",
+      Title = "🎈 BalonX พร้อมโหลดถ้าใส่คีย์เสร็จ",
       Subtitle = "[🎈] ไปเอาคีย์ในดิส [🎈]",
       Note = "เข้าดิสเพื่อไปเอาคีย์ 🎈",
       FileName = "Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
