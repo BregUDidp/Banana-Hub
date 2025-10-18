@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Name = "🎈 BalonX  [🎈 Premuim 🎈]",
    Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "[🎈] BalonX [🎈]",
-   LoadingSubtitle = "By [🎈] XaS [🎈]",
+   LoadingSubtitle = "ผู้ผลิตสคริป By [🎈] XaS [🎈]",
    ShowText = "[🎈] BalonX [🎈]", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
  
@@ -30,8 +30,8 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "🎈 BalonX พร้อมโหลดถ้าใส่คีย์เสร็จ",
       Subtitle = "[🎈] ไปเอาคีย์ในดิส [🎈]",
-      Note = "เข้าดิสเพื่อไปเอาคีย์ 🎈",
-      FileName = "Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      Note = "[🎈] เข้าดิสเพื่อไปเอาคีย์ และคีย์ฟรีแต่ว่าให้ไปเอาในลิ้งที่มีอยู่แล้ว [🎈]",
+      FileName = "🎈 Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"2222"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
@@ -712,7 +712,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
-local Section = friendTab:CreateSection("🎈 Main 3 🎈")
+local Section = friendTab:CreateSection("🎈 Menu Teleports Tools/Teleport To Players 🎈")
 
 friendTab:CreateButton({
    Name = "🎈 ไม้กายศิษวาป",
@@ -811,10 +811,10 @@ friendTab:CreateButton({
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
-local Section = extraTab:CreateSection("🎈 Main 4 🎈")
+local Section1 = extraTab:CreateSection("🎈 Menu 99 night forest 🎈")
 
 extraTab:CreateButton({
-    Name = "💣 รัน SomTank Hub 99 คืน",
+    Name = "💣 รัน SomTank Hub [ 🌲 99 คืน ]",
     Callback = function()
         Rayfield:Notify({Title = "🚀 กำลังโหลด SomTank...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
@@ -822,7 +822,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🦊 รัน Foxname Hub 99 คืน",
+    Name = "🦊 รัน Foxname Hub [ 🌲 99 คืน ]",
     Callback = function()
         Rayfield:Notify({Title = "🦊 กำลังโหลด Foxname...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
@@ -830,7 +830,7 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-    Name = "🌌 รัน Voidware Hub 99 คืน",
+    Name = "🌌 รัน Voidware Hub [ 🌲 99 คืน ]",
     Callback = function()
         Rayfield:Notify({Title = "🌌 กำลังโหลด Voidware...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
@@ -838,10 +838,28 @@ extraTab:CreateButton({
 })
  
 extraTab:CreateButton({
-   Name = "👾 รัน RobloxFreeScript Hub 99 คืน",
+   Name = "👾 รัน RobloxFreeScript Hub [ 🌲 99 คืน ]",
    Callback = function()
        Rayfield:Notify({Title = "👾 กำลังโหลด RobloxFreeScript...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
 	   loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
+   end,
+})
+
+local Section2 = extraTab:CreateSection("🎈 Menu Fling Gui 🎈")
+
+extraTab:CreateButton({
+   Name = "🛰️ รัน Fling Gui แบบไปหาคน [ 1 ] [ ⭐ All Maps ]",
+   Callback = function()
+       Rayfield:Notify({Title = "🛰️ กำลังโหลด Fling Gui 1...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+	   loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Fling%20ESP"))()
+   end,
+})
+
+extraTab:CreateButton({
+   Name = "🛰️ รัน Fling Gui แบบต้องเข้าตัวละคร [ 2 ] [ ⭐ All Maps ]",
+   Callback = function()
+       Rayfield:Notify({Title = "🛰️ กำลังโหลด Fling Gui 2...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+	   loadstring(game:HttpGet("https://raw.githubusercontent.com/LiarRise/FLN-X/refs/heads/main/README.md"))()
    end,
 })
 
