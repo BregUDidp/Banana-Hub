@@ -814,7 +814,7 @@ local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอา�
 local Section1 = extraTab:CreateSection("🎈 Menu Script 🎈")
 
 extraTab:CreateButton({
-    Name = "[🎈]     รันสคริปรวม     [🎈]",
+    Name = "[🎈]     รันสคริปรวม      [🎈]",
     Callback = function()
         Rayfield:Notify({Title = "🎈 กำลังโหลด สคริปรวม 🎈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/All%20Script%20Kavo%20Ui"))()
