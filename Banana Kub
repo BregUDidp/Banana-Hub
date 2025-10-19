@@ -358,7 +358,7 @@ Players.PlayerRemoving:Connect(removeESPForPlayer)
 local Section3 = ESPTab:CreateSection("📟 Menu ESP/AimBot 📟")
 
 ESPTab:CreateToggle({
-    Name = "🎯 ล็อกเป๋าหมาย",
+    Name = "🎯 ล็อกเป๋าหมาย [ กดตัว Q ]",
     CurrentState = false,
     Flag = "a",
     Callback = function(val)
