@@ -1,8 +1,8 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("[🎂] CakeX [🎂] [⭐ Premuim ⭐]", "Synapse")
+local Window = Library.CreateLib("[🎈] BalonX [🎈] [⭐ Premuim ⭐]", "Synapse")
 
-local Tab = Window:NewTab("🎂 [ All Script ] 🎂")
-local Section = Tab:NewSection("🎂 Menu 99 night forest 🎂")
+local Tab = Window:NewTab("🎈 [ All Script ] 🎈")
+local Section = Tab:NewSection("🎈 Menu 99 night forest 🎈")
 
 Section:NewButton("💣  รัน Somtank Hub", "ButtonInfo", function()
     print("Clicked")
@@ -24,14 +24,14 @@ Section:NewButton("👾  รัน RobloxFreeScript1 [ มีคีย์ 🔑 ]
 	loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
 end)
 
-local Section = Tab:NewSection("🎂 Menu Arsenal 🎂")
+local Section = Tab:NewSection("🎈 Menu Arsenal 🎈")
 
 Section:NewButton("🛩️ รัน UnBond Hub [ มีคีย์ 🔑 ]", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
 end)
 
-local Tab = Window:NewTab("🎂 [ KeyBinds ] 🎂")
+local Tab = Window:NewTab("🎈 [ KeyBinds ] 🎈")
 local Section = Tab:NewSection("🙈 [ KeyBinds ] 🙈")
 
 Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.E, function()
