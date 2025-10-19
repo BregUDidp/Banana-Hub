@@ -2,11 +2,11 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 -- สร้าง Window
 local Window = Rayfield:CreateWindow({
-   Name = "🎈 BalonX  [🎈 Premuim 🎈]",
+   Name = "📟 BalonX  [⭐ Premuim ⭐]",
    Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "[🎈] BalonX [🎈]",
-   LoadingSubtitle = "ผู้ผลิตสคริป By [🎈] XaS [🎈]",
-   ShowText = "[🎈] BalonX [🎈]", -- for mobile users to unhide rayfield, change if you'd like
+   LoadingTitle = "[📟] BalonX [📟]",
+   LoadingSubtitle = "ผู้ผลิตสคริป By [📟] XaS [📟]",
+   ShowText = "[📟] BalonX [📟]", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
  
    ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "F" or Enum.KeyCode)
@@ -28,24 +28,24 @@ local Window = Rayfield:CreateWindow({
  
    KeySystem = true, -- Set this to true to use our key system
    KeySettings = {
-      Title = "🎈 BalonX พร้อมโหลดถ้าใส่คีย์เสร็จ",
-      Subtitle = "[🎈] ไปเอาคีย์ในดิส [🎈]",
-      Note = "[🎈] Key = 2222 [🎈]",
-      FileName = "🎈 Key SyWareX 🎈", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      Title = "📟 BalonX พร้อมโหลดถ้าใส่คีย์เสร็จ",
+      Subtitle = "[📟] ไปเอาคีย์ในดิส [📟]",
+      Note = "[📟] Key = 2222 [📟]",
+      FileName = "📟 Key BalonX 📟", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"2222"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 Rayfield:Notify({
-   Title = "🎈 ค่าย สคริปกำลังโหลด...",
-   Content = "🎈 ค่าย สคริปกำลังโหลดนะจ๊ะ...",
+   Title = "📟 ค่าย สคริปกำลังโหลด...",
+   Content = "📟 ค่าย สคริปกำลังโหลดนะจ๊ะ...",
    Duration = 5,
    Image = nil,
 })
  
 local ESPTab = Window:CreateTab("🌀 การเห็นคน/การล็อคเป๋า", nil)
-local Section = ESPTab:CreateSection("🎈 Menu Circle 🎈")
+local Section = ESPTab:CreateSection("📟 Menu Circle 📟")
 -- ตัวแปรหลัก
 
 local plrs = game:GetService("Players")
@@ -355,7 +355,7 @@ end)
 Players.PlayerRemoving:Connect(removeESPForPlayer)
 
 -- ======= UI Controls =======Tab:CreateToggle({
-local Section3 = ESPTab:CreateSection("🎈 Menu ESP/AimBot 🎈")
+local Section3 = ESPTab:CreateSection("📟 Menu ESP/AimBot 📟")
 
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย",
@@ -427,7 +427,7 @@ ESPTab:CreateToggle({
 -- Notification เมื่อโหลด
 Rayfield:Notify({
     Title = "โหลดสำเร็จ",
-    Content = "สคริปต์ 🎈 BalonX พร้อมใช้งาน!",
+    Content = "สคริปต์ 📟 BalonX พร้อมใช้งาน!",
     Duration = 5
 })
 
@@ -435,7 +435,7 @@ print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("🏡 ตัวละคร", 6026568198)
-local MainSection = MainTab:CreateSection("🎈 Menu Fly 🎈")
+local MainSection = MainTab:CreateSection("📟 Menu Fly 📟")
  
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -651,7 +651,7 @@ local flySlider = MainTab:CreateSlider({
     end
 })
  
-local Section2 = MainTab:CreateSection("🎈 Menu SpeedWalk🎈")
+local Section2 = MainTab:CreateSection("📟 Menu SpeedWalk📟")
 local speedToggle = MainTab:CreateToggle({
     Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว",
     CurrentValue=false,
@@ -678,7 +678,7 @@ local speedSlider = MainTab:CreateSlider({
     end
 })
  
-local Section3 = MainTab:CreateSection("🎈 Menu Noclips/Infinite Jump 🎈")
+local Section3 = MainTab:CreateSection("📟 Menu Noclips/Infinite Jump 📟")
 local noclipToggle = MainTab:CreateToggle({
     Name="👻 เปิด/ปิด Noclip",
     CurrentValue=false,
@@ -712,12 +712,12 @@ local infJumpToggle = MainTab:CreateToggle({
 
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
-local Section = friendTab:CreateSection("🎈 Menu Teleports Tools/Teleport To Players 🎈")
+local Section = friendTab:CreateSection("📟 Menu Teleports Tools/Teleport To Players 📟")
 
 friendTab:CreateButton({
-   Name = "🎈 ไม้กายศิษวาป",
+   Name = "📟 ไม้กายศิษวาป",
    Callback = function()
-       Rayfield:Notify({Title = "🎈 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       Rayfield:Notify({Title = "📟 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
@@ -811,17 +811,17 @@ friendTab:CreateButton({
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
-local Section1 = extraTab:CreateSection("🎈 Menu Script 🎈")
+local Section1 = extraTab:CreateSection("📟 Menu Script 📟")
 
 extraTab:CreateButton({
-    Name = "[🎈]     รันสคริปรวม      [🎈]",
+    Name = "[📟]     รันสคริปรวม      [📟]",
     Callback = function()
-        Rayfield:Notify({Title = "🎈 กำลังโหลด สคริปรวม 🎈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "📟 กำลังโหลด สคริปรวม 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/All%20Script%20Kavo%20Ui"))()
     end
 })
 
-local Section2 = extraTab:CreateSection("[🎈] [ สคริปด้านบนของเราเป็นสคริปที่รวมกันอยู่ในนั้นมีสคริปทุกอย่าง ] [🎈]")
+local Section2 = extraTab:CreateSection("[📟] [ สคริปด้านบนของเราเป็นสคริปที่รวมกันอยู่ในนั้นมีสคริปทุกอย่าง ] [📟]")
 
 -- แท็บรายการอัพเดต
 local creditTab = Window:CreateTab("📜รายการอัพเดต",6034989579)
@@ -921,7 +921,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 โปรโหลดสำเร็จ!",
-    Content="พร้อมผจญภัยกับ 🎈 BalonX แล้ว!",
+    Content="พร้อมผจญภัยกับ 📟 BalonX แล้ว!",
     Duration=4,
     Image=6026568198
 })
