@@ -31,11 +31,6 @@ Section:NewButton("🛰️ รัน Fling Gui แบบไปหาคน [ 1 ]
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Fling%20ESP"))()
 end)
 
-Section:NewButton("🛰️ รัน Fling Gui แบบต้องเข้าตัวละคร [ 2 ]", "ButtonInfo", function()
-    print("Clicked")
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Fling%20ESP"))()
-end)
-
 local Section = Tab:NewSection("🎂 Menu Arsenal 🎂")
 
 Section:NewButton("🛩️ รัน UnBond Hub [ มีคีย์ 🔑 ]", "ButtonInfo", function()
