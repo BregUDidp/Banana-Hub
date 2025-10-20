@@ -152,7 +152,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateToggle({
-    Name = "🖱️ วงตามเมาส์",
+    Name = "🖱️ วงกลมตามเมาส์",
     CurrentState = false,
     Flag = "FOVMouseFollow",
     Callback = function(val)
