@@ -811,13 +811,13 @@ friendTab:CreateButton({
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
-local Section1 = extraTab:CreateSection("📟 Menu Script 📟")
+local Section1 = extraTab:CreateSection("📟 Menu Script All 📟")
 
 extraTab:CreateButton({
-    Name = "[📟]     รันสคริปรวม      [📟]",
+    Name = "[📟]  รัน Somtank      [📟]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริปรวม 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/All%20Script%20Kavo%20Ui"))()
+        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        
     end
 })
 
