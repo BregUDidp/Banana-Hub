@@ -44,8 +44,8 @@ Rayfield:Notify({
    Image = nil,
 })
  
-local ESPTab = Window:CreateTab("🌀 การเห็นคน/การล็อคเป๋า", nil)
-local Section = ESPTab:CreateSection("📟 Menu Circle 📟")
+local ESPTab = Window:CreateTab("📟 Menu [ Aimbot ]", nil)
+local Section = ESPTab:CreateSection("📟 Menu [ Circle ] 📟 ")
 -- ตัวแปรหลัก
 
 local plrs = game:GetService("Players")
@@ -355,7 +355,7 @@ end)
 Players.PlayerRemoving:Connect(removeESPForPlayer)
 
 -- ======= UI Controls =======Tab:CreateToggle({
-local Section3 = ESPTab:CreateSection("📟 Menu ESP/AimBot 📟")
+local Section3 = ESPTab:CreateSection("📟 Menu [ ESP/AimBot ] 📟")
 
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย [ กดคลิกขวา ]",
@@ -416,7 +416,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateToggle({
-    Name = "🔍 การมองเห็นคนแบบเส้น",
+    Name = "🔍 ปิดมองเห็นคนแบบเส้น",
     CurrentState = espTraceEnabled,
     Flag = "esp_tracer",
     Callback = function(val)
