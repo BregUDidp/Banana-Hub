@@ -838,7 +838,15 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน RobloxFreeScript      [📟]",
+    Name = "[📟]  รัน Elude Hub      [📟]",
+    Callback = function()
+        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
+    end
+})
+
+extraTab:CreateButton({
+    Name = "[📟]  รัน RobloxFreeScript [ 1 แมพ 99 Night Forest ] [ 2 Arsenal ]  [📟]",
     Callback = function()
         Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
