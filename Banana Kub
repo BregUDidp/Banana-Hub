@@ -44,7 +44,7 @@ Rayfield:Notify({
    Image = nil,
 })
  
-local ESPTab = Window:CreateTab("📟 [⭐]  AimBot  [⭐]", nil)
+local ESPTab = Window:CreateTab(" [🙈]  AimBot  [🙈] ", nil)
 local Section = ESPTab:CreateSection("📟 Menu Circle 📟")
 -- ตัวแปรหลัก
 
