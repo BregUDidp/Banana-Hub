@@ -1,0 +1,226 @@
+local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
+
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+
+local Window = Library:CreateWindow({
+    -- Set Center to true if you want the menu to appear in the center
+    -- Set AutoShow to true if you want the menu to appear when it is created
+    -- Position and Size are also valid options here
+    -- but you do not need to define them unless you are changing them :)
+
+    Title = '📟 [ BalonX ] 📟',
+    Center = true,
+    AutoShow = true,
+    TabPadding = 8,
+    MenuFadeTime = 0.2
+})
+
+local Tabs = {
+    -- Creates a new tab titled Main
+    Main = Window:AddTab('📟 [ Menu Script/WalkSpeed ] 📟'),
+    ['🙈'] = Window:AddTab('🙈'),
+}
+
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('📟 [ Menu 99 Night Forest ] 📟')
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน Somtank Hub',
+    Func = function()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน FoxName Hub',
+    Func = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน VoidWare Hub',
+    Func = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน Elude Hub',
+    Func = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน RaBade',
+    Func = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('📟 [ Menu Arsenal ] 📟')
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '📟 รัน UnBound Hub',
+    Func = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local RightGroupBox = Tabs.Main:AddRightGroupbox('[ 🏃‍♀️ ] [ Menu WalkSpeed ] [ 🏃‍♀️ ]')
+
+local MyButton = RightGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 100',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 50',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 35',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 30',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 30
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local MyButton = RightGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 20 [ แบบธรรมดา ]',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
+    end,
+    DoubleClick = false,
+    Tooltip = 'This is the main button'
+})
+
+local RightGroupBox = Tabs.Main:AddRightGroupbox('[ 👥 ] [ Menu Player ] [ 👥 ]')
+
+
+RightGroupBox:AddDropdown('👥 [ All Player ] 👥', {
+    SpecialType = 'Player',
+    Text = '',
+    Tooltip = 'This is a tooltip', -- Information shown when you hover over the dropdown
+
+    Callback = function(Value)
+        print('[cb] Player dropdown got changed:', Value)
+    end
+})
+
+-- เพิ่มโซน Highlight Player ใน Tab Main ด้านขวา
+local HighlightGroup = Tabs.Main:AddRightGroupbox('[ 🌀 Menu Highlight Player 🌀 ]')
+
+local highlightEnabled = false
+local rainbowEnabled = true
+
+local function createHighlight(player)
+    if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+    if not player.Character:FindFirstChild("Highlight") then
+        local hl = Instance.new("Highlight")
+        hl.Name = "Highlight"
+        hl.FillColor = Color3.fromRGB(255, 0, 0)
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+        hl.FillTransparency = 0.5
+        hl.OutlineTransparency = 0
+        hl.Parent = player.Character
+    end
+end
+
+local function removeHighlight(player)
+    if player.Character then
+        local hl = player.Character:FindFirstChild("Highlight")
+        if hl then hl:Destroy() end
+    end
+end
+
+HighlightGroup:AddToggle('ESP_Toggle', {
+    Text = '👀 ปิด/เปิดการมองเห็นคน 👀',
+    Default = false,
+    Tooltip = 'เปิด/ปิด Highlight ทั้งหมด',
+    Callback = function(Value)
+        highlightEnabled = Value
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= game.Players.LocalPlayer then
+                if Value then
+                    createHighlight(plr)
+                else
+                    removeHighlight(plr)
+                end
+            end
+        end
+    end
+})
+
+HighlightGroup:AddToggle('Rainbow_Toggle', {
+    Text = '🌈 ปรับการมองเห็นให้เป็นสีรุ่ง',
+    Default = true,
+    Tooltip = 'เปิด/ปิดการเปลี่ยนสีรุ้งของ Highlight',
+    Callback = function(Value)
+        rainbowEnabled = Value
+    end
+})
+
+task.spawn(function()
+    local hue = 0
+    while task.wait(0.03) do
+        if highlightEnabled and rainbowEnabled then
+            hue = (hue + 0.01) % 1
+            local color = Color3.fromHSV(hue, 1, 1)
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= game.Players.LocalPlayer and player.Character then
+                    local hl = player.Character:FindFirstChild("Highlight")
+                    if hl then
+                        hl.FillColor = color
+                    end
+                end
+            end
+        end
+    end
+end)
+
+game.Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function()
+        task.wait(1)
+        if highlightEnabled then
+            createHighlight(plr)
+        end
+    end)
+end)
+
+local MenuGroup = Tabs['🙈']:AddLeftGroupbox('[ 🌀 ]  Exit  [ 🌀 ]')
+
+MenuGroup:AddButton('🙈 [ Exit ] 🙈', function() Library:Unload() end)
