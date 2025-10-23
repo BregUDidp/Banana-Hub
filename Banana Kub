@@ -2,50 +2,31 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 -- สร้าง Window
 local Window = Rayfield:CreateWindow({
-   Name = "📟 BalonX  [⭐ Premuim ⭐]",
-   Icon = 1, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "[📟] BalonX [📟]",
-   LoadingSubtitle = "ผู้ผลิตสคริป By [📟] XaS [📟]",
-   ShowText = "[📟] BalonX [📟]", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
- 
-   ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "F" or Enum.KeyCode)
- 
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
- 
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
- 
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "XaS", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
- 
-   KeySystem = true, -- Set this to true to use our key system
-   KeySettings = {
-      Title = "📟 BalonX พร้อมโหลดถ้าใส่คีย์เสร็จ",
-      Subtitle = "[📟] ไปเอาคีย์ในดิส [📟]",
-      Note = "[📟] Key = BALON-0101  [📟]",
-      FileName = "📟 Key BalonX 📟", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
-      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"BALON-0101"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
+    Name = "🙈 BalonX 🙈  | ZelX | MarCo |",
+    LoadingTitle = "🙈   [ ลุยกันเลย ]   🙈",
+    LoadingSubtitle = "🙈 [ กำลังโหลดสคริป ] 🙈...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "LifeSuraConfig",
+        FileName = "SuraConfig"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "dSyCsRpU62",
+        RememberJoins = true
+    },
+    KeySystem = false
 })
+
 Rayfield:Notify({
-   Title = "📟 ค่าย สคริปกำลังโหลด...",
-   Content = "📟 ค่าย สคริปกำลังโหลดนะจ๊ะ...",
+   Title = "🙈 ค่าย สคริปกำลังโหลด...",
+   Content = "🙈 ค่าย สคริปกำลังโหลดนะจ๊ะ...",
    Duration = 5,
    Image = nil,
 })
  
 local ESPTab = Window:CreateTab(" [🙈]  AimBot  [🙈] ", nil)
-local Section = ESPTab:CreateSection("📟 Menu Circle 📟")
+local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 -- ตัวแปรหลัก
 
 local plrs = game:GetService("Players")
@@ -355,7 +336,7 @@ end)
 Players.PlayerRemoving:Connect(removeESPForPlayer)
 
 -- ======= UI Controls =======Tab:CreateToggle({
-local Section3 = ESPTab:CreateSection("📟 Menu ESP/AimBot 📟")
+local Section3 = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 ESPTab:CreateToggle({
     Name = "🎯 ล็อกเป๋าหมาย [ กดคลิกขวา ]",
@@ -427,7 +408,7 @@ ESPTab:CreateToggle({
 -- Notification เมื่อโหลด
 Rayfield:Notify({
     Title = "โหลดสำเร็จ",
-    Content = "สคริปต์ 📟 BalonX พร้อมใช้งาน!",
+    Content = "สคริปต์ 🙈 BalonX พร้อมใช้งาน!",
     Duration = 5
 })
 
@@ -435,7 +416,7 @@ print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("🏡 ตัวละคร", 6026568198)
-local MainSection = MainTab:CreateSection("📟 Menu Fly 📟")
+local MainSection = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
  
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -651,7 +632,7 @@ local flySlider = MainTab:CreateSlider({
     end
 })
  
-local Section2 = MainTab:CreateSection("📟 Menu SpeedWalk📟")
+local Section2 = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 local speedToggle = MainTab:CreateToggle({
     Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว",
     CurrentValue=false,
@@ -678,7 +659,7 @@ local speedSlider = MainTab:CreateSlider({
     end
 })
  
-local Section3 = MainTab:CreateSection("📟 Menu Noclips/Infinite Jump 📟")
+local Section3 = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 local noclipToggle = MainTab:CreateToggle({
     Name="👻 เปิด/ปิด Noclip",
     CurrentValue=false,
@@ -712,12 +693,12 @@ local infJumpToggle = MainTab:CreateToggle({
 
 -- แท็บเพื่อน
 local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
-local Section = friendTab:CreateSection("📟 Menu Teleports Tools/Teleport To Players 📟")
+local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 friendTab:CreateButton({
-   Name = "📟 ไม้กายศิษวาป",
+   Name = "🙈 ไม้กายศิษวาป",
    Callback = function()
-       Rayfield:Notify({Title = "📟 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       Rayfield:Notify({Title = "🙈 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
@@ -811,65 +792,49 @@ friendTab:CreateButton({
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
-local Section1 = extraTab:CreateSection("📟 Menu Script All 📟")
+local Section1 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน Somtank Hub     [📟]",
+    Name = "[🙈]  รัน Somtank Hub     [🙈]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน FoxName Hub      [📟]",
+    Name = "[🙈]  รัน FoxName Hub      [🙈]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน VoidWare Hub      [📟]",
+    Name = "[🙈]  รัน Elude Hub      [🙈]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
-        loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[📟]  รัน Elude Hub      [📟]",
-    Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน RaBade [ 99 Night Forest ] [ Arsenal ]  [📟]",
+    Name = "[🙈]  รัน RaBade       [🙈]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
     end
 })
 
-local Section2 = extraTab:CreateSection("📟 Menu Aresenal 📟")
+local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
-    Name = "[📟]  รัน Unbond Hub      [📟]",
+    Name = "[🙈]  รัน Unbond Hub      [🙈]",
     Callback = function()
-        Rayfield:Notify({Title = "📟 กำลังโหลด สคริป 📟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
     end
 })
-
--- แท็บเครดิต
-local creditTab2 = Window:CreateTab("📜 เครดิต",6034989579)
-creditTab2:CreateLabel("📜 เครดิต")
-creditTab2:CreateLabel("Original Script By XaS")
-creditTab2:CreateLabel("นำมาต่อยอด By XaS")
-creditTab2:CreateLabel("อัพเดต 10/11/2025 10::54 PM")
-creditTab2:CreateLabel("version 1.3.4")
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
@@ -914,6 +879,12 @@ UIS.JumpRequest:Connect(function()
         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
+
+UIS.JumpRequest:Connect(function()
+    if infJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
  
 -- รีเซ็ตตัวละครเมื่อ respawn
 player.CharacterAdded:Connect(function(c)
@@ -929,7 +900,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 โปรโหลดสำเร็จ!",
-    Content="พร้อมผจญภัยกับ 📟 BalonX แล้ว!",
+    Content="พร้อมผจญภัยกับ 🐵 BalonX แล้ว!",
     Duration=4,
     Image=6026568198
 })
