@@ -255,6 +255,88 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
+-- เพิ่ม GroupBox ในแท็บบิน (อยู่ซ้ายของแท็บนั้น)
+local FlyGroupBox = Tabs['🙈 3']:AddRightGroupbox('🕊️ [ โซนบิน ] 🕊️')
+
+local flying = false
+local speed = 50
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local flyConnection
+
+-- ฟังก์ชันเปิด/ปิดบิน
+local function toggleFly(enable)
+    flying = enable
+    if flying then
+        humanoid.PlatformStand = true -- ปิดฟิสิกส์ humanoid เดิม
+
+        flyConnection = RunService.Heartbeat:Connect(function(deltaTime)
+            local moveDirection = Vector3.new(0,0,0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDirection = moveDirection + workspace.CurrentCamera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDirection = moveDirection - workspace.CurrentCamera.CFrame.LookVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDirection = moveDirection - workspace.CurrentCamera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDirection = moveDirection + workspace.CurrentCamera.CFrame.RightVector
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDirection = moveDirection + Vector3.new(0,1,0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveDirection = moveDirection - Vector3.new(0,1,0)
+            end
+
+            if moveDirection.Magnitude > 0 then
+                moveDirection = moveDirection.Unit * speed
+                rootPart.Velocity = moveDirection
+            else
+                rootPart.Velocity = Vector3.new(0,0,0)
+            end
+        end)
+    else
+        humanoid.PlatformStand = false
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        rootPart.Velocity = Vector3.new(0,0,0)
+    end
+end
+
+-- Toggle เปิด/ปิดบิน
+FlyGroupBox:AddToggle('FlyToggle', {
+    Text = '🕊️ [ บินแบบธรรมดา ] 🕊️',
+    Default = false,
+    Tooltip = '🕊️ [ กดเพื่อบิน ] 🕊️',
+    Callback = function(value)
+        toggleFly(value)
+    end
+})
+
+-- Slider ปรับความเร็วบิน
+FlyGroupBox:AddSlider('FlySpeed', {
+    Text = ' [ ปรับความเร็วบิน ]',
+    Default = speed,
+    Min = 10,
+    Max = 200,
+    Rounding = 1,
+    Tooltip = '🕊️ [ ปรับความเร็วบิน ] 🕊️',
+    Callback = function(value)
+        speed = value
+    end
+})
+
 
 local LeftGroupBox = Tabs['🙈 2']:AddLeftGroupbox('🌀 วาปไปหาเพื่อน 🌀')
 
