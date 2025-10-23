@@ -82,7 +82,7 @@ local MyButton = LeftGroupBox:AddButton({
 local LeftGroupBox = Tabs['🙈 3']:AddLeftGroupbox('[ 🏃‍♀️ ] [ Menu WalkSpeed ] [ 🏃‍♀️ ]')
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 200',
+    Text = '🏃‍♀️ WalkSpeed 200 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
     end,
@@ -91,7 +91,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 175',
+    Text = '🏃‍♀️ WalkSpeed 175 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 175
     end,
@@ -100,7 +100,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 150',
+    Text = '🏃‍♀️ WalkSpeed 150 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 150
     end,
@@ -109,7 +109,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 135',
+    Text = '🏃‍♀️ WalkSpeed 135 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 135
     end,
@@ -118,7 +118,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 130',
+    Text = '🏃‍♀️ WalkSpeed 130 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 130
     end,
@@ -127,7 +127,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 100',
+    Text = '🏃‍♀️ WalkSpeed 100 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
     end,
@@ -136,7 +136,16 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 50',
+    Text = '🏃‍♀️ WalkSpeed 75 🏃‍♀️',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 75
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 75 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 50 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
     end,
@@ -145,7 +154,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 35',
+    Text = '🏃‍♀️ WalkSpeed 35 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
     end,
@@ -154,7 +163,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '🏃‍♀️ WalkSpeed 30',
+    Text = '🏃‍♀️ WalkSpeed 30 🏃‍♀️',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 30
     end,
