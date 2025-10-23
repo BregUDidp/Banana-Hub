@@ -128,21 +128,77 @@ local MyButton = RightGroupBox:AddButton({
     Tooltip = 'This is the main button'
 })
 
-local RightGroupBox = Tabs.Main:AddRightGroupbox('[ 👥 ] [ Menu Player ] [ 👥 ]')
+local RightGroupBox = Tabs.Main:AddRightGroupbox('🌀 [ Teleport To Player ] 🌀')
 
+-- เพิ่มตัวแปรเก็บชื่อผู้เล่นที่เลือก
+local selectedPlayerName = nil
 
-RightGroupBox:AddDropdown('👥 [ All Player ] 👥', {
+-- Dropdown สำหรับเลือกผู้เล่น (อัพเดตรายชื่อ)
+local playerDropdown = RightGroupBox:AddDropdown('👥 [ All Player ] 👥', {
     SpecialType = 'Player',
     Text = '',
-    Tooltip = 'This is a tooltip', -- Information shown when you hover over the dropdown
-
+    Tooltip = 'เลือกผู้เล่นที่ต้องการเทเลพอร์ต',
     Callback = function(Value)
+        selectedPlayerName = Value
         print('[cb] Player dropdown got changed:', Value)
     end
 })
 
+-- ฟังก์ชันอัพเดตรายชื่อใน Dropdown (ถ้า SpecialType = 'Player' ไม่อัพเดตอัตโนมัติ)
+local function updatePlayerList()
+    local playerNames = {}
+    for _, plr in pairs(game.Players:GetPlayers()) do
+        if plr ~= game.Players.LocalPlayer then
+            table.insert(playerNames, plr.Name)
+        end
+    end
+    playerDropdown:SetValues(playerNames)
+    if #playerNames > 0 then
+        selectedPlayerName = playerNames[1]
+        playerDropdown:SetValue(selectedPlayerName)
+    else
+        selectedPlayerName = nil
+        playerDropdown:SetValue(nil)
+    end
+end
+
+-- เรียกอัพเดตรายชื่อครั้งแรก
+updatePlayerList()
+
+-- อัพเดตรายชื่อเมื่อมีผู้เล่นเข้าออก
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
+
+-- ปุ่ม Teleport ไปผู้เล่นที่เลือก
+RightGroupBox:AddButton({
+    Text = '🚀 วาปไปยังที่เราเลือก',
+    Tooltip = 'เทเลพอร์ตไปยังผู้เล่นที่เลือก',
+    Func = function()
+        if not selectedPlayerName then
+            Library:Notify('Error', 'กรุณาเลือกผู้เล่นก่อนเทเลพอร์ต', 3)
+            return
+        end
+
+        local targetPlayer = game.Players:FindFirstChild(selectedPlayerName)
+        if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            Library:Notify('Error', 'ไม่พบผู้เล่นหรือผู้เล่นไม่มีตัวละคร', 3)
+            return
+        end
+
+        local localPlayer = game.Players.LocalPlayer
+        if not localPlayer.Character or not localPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            Library:Notify('Error', 'ตัวละครของคุณยังไม่พร้อม', 3)
+            return
+        end
+
+        -- เทเลพอร์ตโดยเลื่อนขึ้น 5 studs
+        localPlayer.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+        Library:Notify('Success', 'เทเลพอร์ตสำเร็จ!', 3)
+    end
+})
+
 -- เพิ่มโซน Highlight Player ใน Tab Main ด้านขวา
-local HighlightGroup = Tabs.Main:AddRightGroupbox('[ 🌀 Menu Highlight Player 🌀 ]')
+local HighlightGroup = Tabs.Main:AddRightGroupbox('[ 🛰️ Menu Highlight Player 🛰️ ]')
 
 local highlightEnabled = false
 local rainbowEnabled = true
@@ -221,6 +277,6 @@ game.Players.PlayerAdded:Connect(function(plr)
     end)
 end)
 
-local MenuGroup = Tabs['🙈']:AddLeftGroupbox('[ 🌀 ]  Exit  [ 🌀 ]')
+local MenuGroup = Tabs['🙈']:AddLeftGroupbox('[ 🙈 ]  Exit Menu Ui [ 🙈 ]')
 
-MenuGroup:AddButton('🙈 [ Exit ] 🙈', function() Library:Unload() end)
+MenuGroup:AddButton('🙈 [ Exit The Menu ] 🙈', function() Library:Unload() end)
