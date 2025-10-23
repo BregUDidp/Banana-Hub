@@ -82,6 +82,51 @@ local MyButton = LeftGroupBox:AddButton({
 local LeftGroupBox = Tabs['🙈 3']:AddLeftGroupbox('[ 🏃‍♀️ ] [ Menu WalkSpeed ] [ 🏃‍♀️ ]')
 
 local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 200',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 200 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 175',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 175
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 175 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 150',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 150
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 150 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 135',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 135
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 135 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
+    Text = '🏃‍♀️ WalkSpeed 130',
+    Func = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 130
+    end,
+    DoubleClick = false,
+    Tooltip = '🏃‍♀️ [ WalkSpeed 130 ] 🏃‍♀️'
+})
+
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 100',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
@@ -127,7 +172,7 @@ local MyButton = LeftGroupBox:AddButton({
 })
 
 -- เพิ่ม GroupBox ใหม่สำหรับ Infinite Jump และ Noclip ไว้ที่ Right GroupBox
-local ExtraGroupBox = Tabs['🙈 3']:AddLeftGroupbox('⚙️ [ Infinite Jump / Noclip ] ⚙️')
+local ExtraGroupBox = Tabs['🙈 3']:AddRightGroupbox('⚙️ [ Infinite Jump / Noclip ] ⚙️')
 
 local infiniteJumpEnabled = false
 local noclipEnabled = false
@@ -158,18 +203,18 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
 end)
 
 ExtraGroupBox:AddToggle('InfiniteJumpToggle', {
-    Text = '🦘 กระโดดไม่จำกัด 🦘',
+    Text = '🦘 [ กระโดดไม่จำกัด ] 🦘',
     Default = false,
-    Tooltip = 'เปิด/ปิด Infinite Jump',
+    Tooltip = '🦘 [ กระโดดไม่จำกัด ] 🦘',
     Callback = function(Value)
         infiniteJumpEnabled = Value
     end
 })
 
 ExtraGroupBox:AddToggle('NoclipToggle', {
-    Text = '🚶‍♂️ ทะลุทุกสิ่ง',
+    Text = '🧱 [ ทะลุทุกสิ่งทุกอย่าง ] 🧱',
     Default = false,
-    Tooltip = 'เปิด/ปิด Noclip',
+    Tooltip = '🧱 [ 1 คน 2 สิ่งของ 3 กำแพง ] 🧱',
     Callback = function(Value)
         noclipEnabled = Value
         if Value then
