@@ -1,21 +1,40 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
--- สร้าง Window
 local Window = Rayfield:CreateWindow({
-    Name = "🙈 BalonX 🙈  | ZelX | MarCo |",
-    LoadingTitle = "🙈   [ ลุยกันเลย ]   🙈",
-    LoadingSubtitle = "🙈 [ กำลังโหลดสคริป ] 🙈...",
-    ConfigurationSaving = {
-        Enabled = true,
-        FolderName = "LifeSuraConfig",
-        FileName = "SuraConfig"
-    },
-    Discord = {
-        Enabled = false,
-        Invite = "dSyCsRpU62",
-        RememberJoins = true
-    },
-    KeySystem = false
+   Name = "🙈 BalonX 🙈 | ZelX | MarCo |",
+   Icon = 5, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "🙈 :D",
+   LoadingSubtitle = "🙈 :D",
+   ShowText = "🐵", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "AmberGlow", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "🐵",
+      Subtitle = "🐵",
+      Note = "🐵 Key = 1 🐵", -- Use this to tell the user how to get a key
+      FileName = "🐵 Key 🐵", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"1"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
 })
 
 Rayfield:Notify({
@@ -25,7 +44,7 @@ Rayfield:Notify({
    Image = nil,
 })
  
-local ESPTab = Window:CreateTab(" [🙈]  AimBot  [🙈] ", nil)
+local ESPTab = Window:CreateTab(" [🙈]  AimBot/ESP   [🙈] ", nil)
 local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 -- ตัวแปรหลัก
 
@@ -692,7 +711,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 
 -- แท็บเพื่อน
-local friendTab = Window:CreateTab("👥 วาปไปหาคน", 6026568198)
+local friendTab = Window:CreateTab("👥 วาปไปหาคน 👥", 6026568198)
 local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 friendTab:CreateButton({
@@ -761,7 +780,7 @@ friendTab:CreateButton({
         if targetCFrame then
             hrp.CFrame = targetCFrame + Vector3.new(0,3,0)
             Rayfield:Notify({
-                Title = "✅ Teleport สำเร็จ",
+                Title = "✅ วาปไปหาคนนั้น สำเร็จ",
                 Content = "คุณได้ไปหา "..friendName,
                 Duration = 3,
                 Image = 6026568198
@@ -793,6 +812,16 @@ friendTab:CreateButton({
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("🧩 สคริปต์รวมเอาฟรี", 6031280882)
 local Section1 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+extraTab:CreateButton({
+    Name = "[🙈]  รัน GodMode       [🙈]",
+    Callback = function()
+        Rayfield:Notify({Title = "🙈 กำลังโหลด สคริป 🙈...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))()
+    end
+})
+
+local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
     Name = "[🙈]  รัน Somtank Hub     [🙈]",
@@ -835,6 +864,8 @@ extraTab:CreateButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
     end
 })
+
+local Section3 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
