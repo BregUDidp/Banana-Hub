@@ -5,11 +5,6 @@ local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local Window = Library:CreateWindow({
-    -- Set Center to true if you want the menu to appear in the center
-    -- Set AutoShow to true if you want the menu to appear when it is created
-    -- Position and Size are also valid options here
-    -- but you do not need to define them unless you are changing them :)
-
     Title = '📟 [ BalonX ] 📟',
     Center = true,
     AutoShow = true,
@@ -18,7 +13,6 @@ local Window = Library:CreateWindow({
 })
 
 local Tabs = {
-    -- Creates a new tab titled Main
     Main = Window:AddTab('📟 [ Menu Script/WalkSpeed ] 📟'),
     ['🙈'] = Window:AddTab('🙈'),
 }
@@ -127,6 +121,82 @@ local MyButton = RightGroupBox:AddButton({
     DoubleClick = false,
     Tooltip = 'This is the main button'
 })
+
+-- เพิ่ม GroupBox ใหม่สำหรับ Infinite Jump และ Noclip ไว้ที่ Right GroupBox
+local ExtraGroupBox = Tabs.Main:AddRightGroupbox('⚙️ [ Infinite Jump / Noclip ] ⚙️')
+
+local infiniteJumpEnabled = false
+local noclipEnabled = false
+
+-- ฟังก์ชัน Noclip
+local function noclipLoop()
+    local player = game.Players.LocalPlayer
+    while noclipEnabled do
+        task.wait()
+        if player.Character then
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide == true then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end
+
+-- Infinite Jump
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infiniteJumpEnabled then
+        local character = game.Players.LocalPlayer.Character
+        if character and character:FindFirstChildOfClass("Humanoid") then
+            character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+ExtraGroupBox:AddToggle('InfiniteJumpToggle', {
+    Text = '🦘 กระโดดไม่จำกัด 🦘',
+    Default = false,
+    Tooltip = 'เปิด/ปิด Infinite Jump',
+    Callback = function(Value)
+        infiniteJumpEnabled = Value
+    end
+})
+
+ExtraGroupBox:AddToggle('NoclipToggle', {
+    Text = '🚶‍♂️ ทะลุทุกสิ่ง',
+    Default = false,
+    Tooltip = 'เปิด/ปิด Noclip',
+    Callback = function(Value)
+        noclipEnabled = Value
+        if Value then
+            -- รัน loop Noclip
+            task.spawn(noclipLoop)
+        end
+    end
+})
+
+-- Toggle Keybind สำหรับเปิด/ปิด Infinite Jump และ Noclip
+local UIS = game:GetService("UserInputService")
+local toggleKey = Enum.KeyCode.V
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == toggleKey then
+        infiniteJumpEnabled = not infiniteJumpEnabled
+        noclipEnabled = not noclipEnabled
+
+        -- อัพเดต Toggle UI
+        Library:Notify('Toggle Keybind', ('Infinite Jump %s, Noclip %s'):format(tostring(infiniteJumpEnabled), tostring(noclipEnabled)), 3)
+
+        Library.ToggleItems['InfiniteJumpToggle']:SetValue(infiniteJumpEnabled)
+        Library.ToggleItems['NoclipToggle']:SetValue(noclipEnabled)
+
+        if noclipEnabled then
+            task.spawn(noclipLoop)
+        end
+    end
+end)
+
 
 local RightGroupBox = Tabs.Main:AddRightGroupbox('🌀 [ Teleport To Player ] 🌀')
 
