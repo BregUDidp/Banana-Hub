@@ -13,8 +13,12 @@ local Window = Library:CreateWindow({
 })
 
 local Tabs = {
-    Main = Window:AddTab('📟 [ Menu Script/WalkSpeed ] 📟'),
-    ['🙈'] = Window:AddTab('🙈'),
+    Main = Window:AddTab('📟 สคริปรวม'),
+	['🙈 3'] = Window:AddTab('🏃‍♀️ วิ่ง'),
+	['🙈 2'] = Window:AddTab('🌀 วาป'),
+	['🙈 4'] = Window:AddTab('👀 มองคน'),
+    ['🙈'] = Window:AddTab('🙈 กดออก'),
+	
 }
 
 local LeftGroupBox = Tabs.Main:AddLeftGroupbox('📟 [ Menu 99 Night Forest ] 📟')
@@ -25,7 +29,7 @@ local MyButton = LeftGroupBox:AddButton({
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. 99 Night Forest ] 📟'
 })
 
 local MyButton = LeftGroupBox:AddButton({
@@ -34,7 +38,7 @@ local MyButton = LeftGroupBox:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. 99 Night Forest ] 📟'
 })
 
 local MyButton = LeftGroupBox:AddButton({
@@ -43,7 +47,7 @@ local MyButton = LeftGroupBox:AddButton({
         loadstring(game:HttpGet("https://rawscripts.net/raw/99-Nights-in-the-Forest-KEYLESS-Best-Script-for-99-Nights-in-the-Forest-53093"))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. 99 Night Forest ] 📟'
 })
 
 local MyButton = LeftGroupBox:AddButton({
@@ -52,16 +56,16 @@ local MyButton = LeftGroupBox:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. 99 Night Forest ] 📟'
 })
 
 local MyButton = LeftGroupBox:AddButton({
-    Text = '📟 รัน RaBade',
+    Text = '📟 รัน RaBlade',
     Func = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. 99 Night Forest 2. Arsenal 3.Rivals ] 📟'
 })
 
 local LeftGroupBox = Tabs.Main:AddLeftGroupbox('📟 [ Menu Arsenal ] 📟')
@@ -72,58 +76,58 @@ local MyButton = LeftGroupBox:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/samerop/unbound-hub/main/unbound-hub.lua"))()
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '📟 [ 1. Arsenal ]'
 })
 
-local RightGroupBox = Tabs.Main:AddRightGroupbox('[ 🏃‍♀️ ] [ Menu WalkSpeed ] [ 🏃‍♀️ ]')
+local LeftGroupBox = Tabs['🙈 3']:AddLeftGroupbox('[ 🏃‍♀️ ] [ Menu WalkSpeed ] [ 🏃‍♀️ ]')
 
-local MyButton = RightGroupBox:AddButton({
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 100',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '🏃‍♀️ [ WalkSpeed 100 ] 🏃‍♀️'
 })
 
-local MyButton = RightGroupBox:AddButton({
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 50',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '🏃‍♀️ [ WalkSpeed 50 ] 🏃‍♀️'
 })
 
-local MyButton = RightGroupBox:AddButton({
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 35',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '🏃‍♀️ [ WalkSpeed 35 ] 🏃‍♀️'
 })
 
-local MyButton = RightGroupBox:AddButton({
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 30',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 30
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '🏃‍♀️ [ WalkSpeed 30 ] 🏃‍♀️'
 })
 
-local MyButton = RightGroupBox:AddButton({
+local MyButton = LeftGroupBox:AddButton({
     Text = '🏃‍♀️ WalkSpeed 20 [ แบบธรรมดา ]',
     Func = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
     end,
     DoubleClick = false,
-    Tooltip = 'This is the main button'
+    Tooltip = '🏃‍♀️ [ WalkSpeed 20 [ แบบธรรมดา ] 🏃‍♀️'
 })
 
 -- เพิ่ม GroupBox ใหม่สำหรับ Infinite Jump และ Noclip ไว้ที่ Right GroupBox
-local ExtraGroupBox = Tabs.Main:AddRightGroupbox('⚙️ [ Infinite Jump / Noclip ] ⚙️')
+local ExtraGroupBox = Tabs['🙈 3']:AddLeftGroupbox('⚙️ [ Infinite Jump / Noclip ] ⚙️')
 
 local infiniteJumpEnabled = false
 local noclipEnabled = false
@@ -198,13 +202,13 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
 end)
 
 
-local RightGroupBox = Tabs.Main:AddRightGroupbox('🌀 [ Teleport To Player ] 🌀')
+local LeftGroupBox = Tabs['🙈 2']:AddLeftGroupbox('🌀 วาปไปหาเพื่อน 🌀')
 
 -- เพิ่มตัวแปรเก็บชื่อผู้เล่นที่เลือก
 local selectedPlayerName = nil
 
 -- Dropdown สำหรับเลือกผู้เล่น (อัพเดตรายชื่อ)
-local playerDropdown = RightGroupBox:AddDropdown('👥 [ All Player ] 👥', {
+local playerDropdown = LeftGroupBox:AddDropdown('👥 [ All Player ] 👥', {
     SpecialType = 'Player',
     Text = '',
     Tooltip = 'เลือกผู้เล่นที่ต้องการเทเลพอร์ต',
@@ -240,7 +244,7 @@ game.Players.PlayerAdded:Connect(updatePlayerList)
 game.Players.PlayerRemoving:Connect(updatePlayerList)
 
 -- ปุ่ม Teleport ไปผู้เล่นที่เลือก
-RightGroupBox:AddButton({
+LeftGroupBox:AddButton({
     Text = '🚀 วาปไปยังที่เราเลือก',
     Tooltip = 'เทเลพอร์ตไปยังผู้เล่นที่เลือก',
     Func = function()
@@ -268,7 +272,7 @@ RightGroupBox:AddButton({
 })
 
 -- เพิ่มโซน Highlight Player ใน Tab Main ด้านขวา
-local HighlightGroup = Tabs.Main:AddRightGroupbox('[ 🛰️ Menu Highlight Player 🛰️ ]')
+local HighlightGroup = Tabs['🙈 4']:AddLeftGroupbox('[ 👀 ] Menu ESP Players [ 👀 ]')
 
 local highlightEnabled = false
 local rainbowEnabled = true
