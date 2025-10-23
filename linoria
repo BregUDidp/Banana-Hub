@@ -5,7 +5,7 @@ local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local Window = Library:CreateWindow({
-    Title = 'Balon Hub - Premuim | ZelX-Garco',
+    Title = 'Balon Hub - Premuim |  FPS 59-78 |',
     Center = true,
     AutoShow = true,
     TabPadding = 8,
@@ -487,6 +487,37 @@ game.Players.PlayerAdded:Connect(function(plr)
     end)
 end)
 
-local MenuGroup = Tabs['🙈']:AddLeftGroupbox('[ 🙈 ]  Exit Menu Ui [ 🙈 ]')
+local MenuGroup = Tabs['🙈']:AddLeftGroupbox('[ Exit Menu linoria ui ]')
 
-MenuGroup:AddButton('🙈 [ Exit The Menu ] 🙈', function() Library:Unload() end)
+MenuGroup:AddButton('[ Exit The Menu ]', function() Library:Unload() end)
+MenuGroup:AddLabel('[ Menu bind ]'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
+Library:SetWatermarkVisibility(true)
+
+-- Example of dynamically-updating watermark with common traits (fps and ping)
+local FrameTimer = tick()
+local FrameCounter = 0;
+local FPS = 60;
+
+local WatermarkConnection = game:GetService('RunService').RenderStepped:Connect(function()
+    FrameCounter += 1;
+
+    if (tick() - FrameTimer) >= 1 then
+        FPS = FrameCounter;
+        FrameTimer = tick();
+        FrameCounter = 0;
+    end;
+
+    Library:SetWatermark(('[ 👀 BalonX 👀 ] | %s fps | %s ms'):format(
+        math.floor(FPS),
+        math.floor(game:GetService('Stats').Network.ServerStatsItem['Data Ping']:GetValue())
+    ));
+end);
+
+Library.KeybindFrame.Visible = true; -- todo: add a function for this
+
+Library:OnUnload(function()
+    WatermarkConnection:Disconnect()
+
+    print('Unloaded!')
+    Library.Unloaded = true
+end)
