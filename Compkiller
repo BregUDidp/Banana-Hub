@@ -1,0 +1,406 @@
+local Compkiller = loadstring(game:HttpGet("https://raw.githubusercontent.com/4lpaca-pin/CompKiller/refs/heads/main/src/source.luau"))()
+
+local Notifier = Compkiller.newNotify()
+
+local ConfigManager = Compkiller:ConfigManager({
+    Directory = "Compkiller-UI",
+    Config = "Example-Configs"
+})
+
+-- แสดงหน้าโหลด (Loader)
+Compkiller:Loader("rbxassetid://120245531583106", 2.5).yield()
+
+-- สร้าง Window
+local Window = Compkiller.new({
+    Name = "[ 🅱️ Balon Hub ]",
+    Keybind = "F",
+    Logo = "rbxassetid://120245531583106",
+    Scale = Compkiller.Scale.Window,
+    TextSize = 15
+})
+
+-- แจ้งเตือนเมื่อเริ่มสคริปต์
+Notifier.new({
+    Title = "Notification",
+    Content = "Thank you for using BalonX script!",
+    Duration = 10,
+    Icon = "rbxassetid://120245531583106"
+})
+
+-- สร้าง Watermark
+local Watermark = Window:Watermark()
+
+Watermark:AddText({
+    Icon = "user",
+    Text = "[.Balon X.]"
+})
+
+Watermark:AddText({
+    Icon = "clock",
+    Text = Compkiller:GetDate()
+})
+
+local Time = Watermark:AddText({
+    Icon = "timer",
+    Text = "TIME"
+})
+
+task.spawn(function()
+    while true do task.wait()
+        Time:SetText(Compkiller:GetTimeNow())
+    end
+end)
+
+Watermark:AddText({
+    Icon = "server",
+    Text = Compkiller.Version
+})
+
+-- สร้างหมวดหมู่แท็บ
+Window:DrawCategory({
+    Name = "[ Main All ]"
+})
+
+-- สร้างแท็บ Aimbot/ESP
+local ESPTab = Window:DrawTab({
+    Name = "[🅱️] .Aimbot/ESP. [🅱️]",
+    Icon = "target",
+    EnableScrolling = true
+})
+
+local ESPSection = ESPTab:DrawSection({
+    Name = "[ 🔮 ] Aimbot & ESP Settings [ 🔮 ]",
+    Position = 'left'
+})
+
+-- ตัวแปรและฟังก์ชันสำหรับ Aimbot/ESP
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local aimbotOn = false
+local target = nil
+local holding = false
+local fovEnabled = false
+local fovRadius = 150
+local fovThickness = 2
+local fovSpeed = 0.6
+local fovFollowMouse = false
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
+local espVisible = {}
+local espRainbowSpeed = 0.9
+local espGlowLayers = 3
+local espMaxBoxSize = 200
+
+local DrawingAvailable = typeof(Drawing) == "table" and typeof(Drawing.new) == "function"
+local fovCircle = nil
+
+-- ฟังก์ชันหาเป้าหมายที่ใกล้ที่สุด
+local function GetClosest()
+    local closest = nil
+    local dist = math.huge
+    local mousePos = UserInputService:GetMouseLocation()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local pos, vis = Camera:WorldToViewportPoint(v.Character.Head.Position)
+            if vis then
+                local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
+                if mag < dist then
+                    dist = mag
+                    closest = v
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- ฟังก์ชันสีรุ้ง
+local function getRainbowColor(speed, offset)
+    local hue = (tick() * (speed or 1) + (offset or 0)) % 1
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+-- สร้างวง FOV
+local function createFOVCircle()
+    if not DrawingAvailable then return end
+    if fovCircle then return end
+    local c = Drawing.new("Circle")
+    c.Visible = false
+    c.Radius = fovRadius
+    c.Thickness = fovThickness
+    c.NumSides = 100
+    c.Filled = false
+    c.Transparency = 1
+    fovCircle = c
+end
+
+-- ลบวง FOV
+local function removeFOVCircle()
+    if fovCircle then
+        fovCircle:Remove()
+        fovCircle = nil
+    end
+end
+
+-- อัปเดตวง FOV
+RunService.RenderStepped:Connect(function()
+    if not fovEnabled or not fovCircle then
+        if fovCircle then fovCircle.Visible = false end
+        return
+    end
+    local pos
+    if fovFollowMouse then
+        local mouse = UserInputService:GetMouseLocation()
+        pos = Vector2.new(mouse.X, mouse.Y)
+    else
+        local view = Camera.ViewportSize
+        pos = Vector2.new(view.X / 2, view.Y / 2)
+    end
+    fovCircle.Position = pos
+    fovCircle.Color = getRainbowColor(fovSpeed)
+    fovCircle.Thickness = fovThickness
+    fovCircle.Radius = fovRadius
+    fovCircle.Visible = true
+end)
+
+-- สร้าง ESP สำหรับผู้เล่น
+local function createESPForPlayer(player)
+    if not DrawingAvailable or espBoxes[player] then return end
+    local boxData = {}
+    boxData.main = Drawing.new("Square")
+    boxData.main.Visible = false
+    boxData.main.Filled = false
+    boxData.main.Thickness = 1
+    boxData.glows = {}
+    for i = 1, espGlowLayers do
+        local g = Drawing.new("Square")
+        g.Visible = false
+        g.Filled = false
+        g.Thickness = 1
+        g.Transparency = math.clamp(0.55 * (1 - (i - 1)/espGlowLayers), 0.03, 0.9)
+        table.insert(boxData.glows, g)
+    end
+    boxData.name = Drawing.new("Text")
+    boxData.name.Visible = false
+    boxData.name.Center = true
+    boxData.name.Size = 14
+    boxData.health = Drawing.new("Square")
+    boxData.health.Visible = false
+    boxData.health.Filled = true
+    boxData.tracer = Drawing.new("Line")
+    boxData.tracer.Visible = false
+    boxData.tracer.Thickness = 1
+    espBoxes[player] = boxData
+end
+
+-- ลบ ESP
+local function removeESPForPlayer(player)
+    local box = espBoxes[player]
+    if box then
+        pcall(function()
+            if box.main then box.main:Remove() end
+            if box.name then box.name:Remove() end
+            if box.health then box.health:Remove() end
+            if box.tracer then box.tracer:Remove() end
+            for _, g in ipairs(box.glows) do g:Remove() end
+        end)
+        espBoxes[player] = nil
+        espVisible[player] = nil
+    end
+end
+
+-- อัปเดต ESP
+RunService.RenderStepped:Connect(function()
+    if not DrawingAvailable then return end
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
+            if espEnabled then
+                createESPForPlayer(player)
+                local box = espBoxes[player]
+                local hrp = player.Character.HumanoidRootPart
+                local rootPos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+                if onScreen then
+                    espVisible[player] = true
+                    local depth = (Camera.CFrame.Position - hrp.Position).Magnitude
+                    local scale = math.clamp(2000 / depth, 20, espMaxBoxSize)
+                    local boxSize = Vector2.new(scale * 0.6, scale)
+                    local center = Vector2.new(rootPos.X, rootPos.Y)
+                    if box.main then
+                        box.main.Size = boxSize
+                        box.main.Position = center - (boxSize / 2)
+                        box.main.Color = getRainbowColor(espRainbowSpeed, 0)
+                        box.main.Visible = true
+                    end
+                    for i, g in ipairs(box.glows) do
+                        local extra = i * 6
+                        g.Size = boxSize + Vector2.new(extra, extra)
+                        g.Position = center - (g.Size / 2)
+                        g.Color = getRainbowColor(espRainbowSpeed, i * 0.07)
+                        g.Visible = true
+                    end
+                    if box.name then
+                        box.name.Position = center + Vector2.new(0, -boxSize.Y/2 - 14)
+                        box.name.Text = player.Name
+                        box.name.Color = getRainbowColor(espRainbowSpeed, 0.15)
+                        box.name.Visible = true
+                    end
+                    if box.tracer then
+                        local screenCenter = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+                        box.tracer.From = screenCenter
+                        box.tracer.To = center
+                        box.tracer.Color = getRainbowColor(espRainbowSpeed, 0.25)
+                        box.tracer.Visible = espTraceEnabled
+                    end
+                    local humanoid = player.Character:FindFirstChild("Humanoid")
+                    if humanoid and box.health then
+                        local hpPct = math.clamp(humanoid.Health / (humanoid.MaxHealth or 100), 0, 1)
+                        local healthW = 4
+                        local healthH = boxSize.Y * hpPct
+                        local healthPos = center - Vector2.new(boxSize.X/2 + 8, boxSize.Y/2 - healthH)
+                        box.health.Size = Vector2.new(healthW, healthH)
+                        box.health.Position = healthPos
+                        box.health.Color = getRainbowColor(espRainbowSpeed, hpPct * 0.5)
+                        box.health.Visible = true
+                    end
+                else
+                    espVisible[player] = false
+                    if box.main then box.main.Visible = false end
+                    if box.name then box.name.Visible = false end
+                    if box.health then box.health.Visible = false end
+                    if box.tracer then box.tracer.Visible = false end
+                    for _, g in ipairs(box.glows) do g.Visible = false end
+                end
+            else
+                removeESPForPlayer(player)
+            end
+        else
+            removeESPForPlayer(player)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(removeESPForPlayer)
+
+-- UI สำหรับ Aimbot/ESP
+ESPSection:AddToggle({
+    Name = "🎯 ล็อกเป้าหมาย [กดคลิกขวา]",
+    Default = false,
+    Callback = function(val)
+        aimbotOn = val
+        Notifier.new({
+            Title = "Aimbot",
+            Content = val and "Aimbot enabled!" or "Aimbot disabled!",
+            Duration = 3,
+            Icon = "rbxassetid://120245531583106"
+        })
+    end
+})
+
+UserInputService.InputBegan:Connect(function(key)
+    if key.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = true
+        target = GetClosest()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(key)
+    if key.UserInputType == Enum.UserInputType.MouseButton2 then
+        holding = false
+        target = nil
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if aimbotOn and holding and target and target.Character and target.Character:FindFirstChild("Head") then
+        Camera.CFrame = CFrame.new(Camera.CFrame.Position, target.Character.Head.Position)
+    end
+end)
+
+ESPSection:AddToggle({
+    Name = "🌀 เปิด/ปิดวง FOV",
+    Default = false,
+    Callback = function(val)
+        fovEnabled = val
+        if val then
+            createFOVCircle()
+        else
+            removeFOVCircle()
+        end
+        Notifier.new({
+            Title = "FOV Circle",
+            Content = val and "FOV Circle enabled!" or "FOV Circle disabled!",
+            Duration = 3,
+            Icon = "rbxassetid://120245531583106"
+        })
+    end
+})
+
+ESPSection:AddToggle({
+    Name = "🖱️ วงตามเมาส์",
+    Default = false,
+    Callback = function(val)
+        fovFollowMouse = val
+    end
+})
+
+ESPSection:AddSlider({
+    Name = "📏 ขนาดวง FOV",
+    Min = 10,
+    Max = 1000,
+    Default = 150,
+    Callback = function(val)
+        fovRadius = val
+        if fovCircle then fovCircle.Radius = val end
+    end
+})
+
+ESPSection:AddSlider({
+    Name = "📏 ความหนาเส้นวง FOV",
+    Min = 1,
+    Max = 10,
+    Default = 2,
+    Callback = function(val)
+        fovThickness = val
+        if fovCircle then fovCircle.Thickness = val end
+    end
+})
+
+ESPSection:AddToggle({
+    Name = "🔍 เปิดการมองเห็น ESP",
+    Default = false,
+    Callback = function(val)
+        espEnabled = val
+        if not val then
+            for p, _ in pairs(espBoxes) do
+                removeESPForPlayer(p)
+            end
+        end
+        Notifier.new({
+            Title = "ESP",
+            Content = val and "ESP enabled!" or "ESP disabled!",
+            Duration = 3,
+            Icon = "rbxassetid://120245531583106"
+        })
+    end
+})
+
+ESPSection:AddToggle({
+    Name = "🔍 เปิด ESP แบบเส้น",
+    Default = true,
+    Callback = function(val)
+        espTraceEnabled = val
+    end
+})
+
+-- แจ้งเตือนเมื่อโหลดสคริปต์สำเร็จ
+Notifier.new({
+    Title = "🎉 โหลดสำเร็จ! 🎉",
+    Content = "พร้อมผจญภัยกับ 🅱️ BalonX 🅱️ แล้ว!",
+    Duration = 4,
+    Icon = "rbxassetid://120245531583106"
+})
