@@ -715,9 +715,9 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-   Name = "[W]  รัน Teleport Gui    [W]",
+   Name = "[W]  รัน Warp Gui    [W]",
    Callback = function()
-       Rayfield:Notify({Title = "📱 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
