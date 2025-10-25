@@ -628,10 +628,10 @@ friendTab:CreateButton({
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("📓 .สคริปต์รวมเอาฟรี. 📓", 4483362458)
-local Section1 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[G]  รัน GodMode       [G]",
+    Name = "[G]  รัน GodMode [.1.]      [G]",
     Callback = function()
         Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))()
@@ -639,30 +639,14 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-    Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
+    Name = "[G]  รัน GodMode [.2.]      [G]",
     Callback = function()
-        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/idbiRMZG"))()
+        Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/God%20Mode"))()
     end
 })
 
-extraTab:CreateButton({
-    Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]",
-    Callback = function()
-        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[E]  รัน ESP/Hitbox       [E]",
-    Callback = function()
-        Rayfield:Notify({Title = "👀 กำลังโหลด สคริป 👀...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/aihVafaB"))()
-    end
-})
-
-local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section2 = extraTab:CreateSection("[ - 99 Night Forest - ]")
 
 extraTab:CreateButton({
     Name = "[S]  รัน Somtank Hub  [S]",
@@ -696,7 +680,25 @@ extraTab:CreateButton({
     end
 })
 
-local Section3 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section3 = extraTab:CreateSection("[ Tranformations ]")
+
+extraTab:CreateButton({
+    Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
+    Callback = function()
+        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://pastebin.com/raw/idbiRMZG"))()
+    end
+})
+
+extraTab:CreateButton({
+    Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]",
+    Callback = function()
+        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))()
+    end
+})
+
+local Section4 = extraTab:CreateSection("[ All Script ]")
 
 extraTab:CreateButton({
     Name = "[I]  รัน Infinite Yield      [I]",
@@ -730,13 +732,14 @@ extraTab:CreateButton({
    end,
 })
 
-local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section5 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 local creditTab = Window:CreateTab("🗒️  .fps. / .Executer.  🗒️ | X |", 4483362458)
 local Section = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 creditTab:CreateLabel("fps   | & 57.0 |")
-creditTab:CreateLabel("Executer Use    | .Xeno. |")
+creditTab:CreateLabel("Executer Use / ตัวรันที่ใช้   | .Xeno. |")
+creditTab:CreateLabel("แมพที่เขียนสคริปหรือโปร [ - Public Office Simulator - ]")
 
 local Section2 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
