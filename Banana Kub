@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "🅱️ Balon Hub   .Premuim Edition.     | ZelX | MarCo |",
    Icon = 5, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "🅱️ Balon Hub 🅱️ กำลังโหลด...",
+   LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Brown", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -25,15 +25,15 @@ local Window = Rayfield:CreateWindow({
       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
    },
 
-   KeySystem = true, -- Set this to true to use our key system
+   KeySystem = true,
    KeySettings = {
-      Title = "🅱️ Keys Balon Hub .Premuim. 🅱️",
-      Subtitle = "🅱️  [ สามารถซื่อคีย์ได้ที่ดิส ] 🅱️",
-      Note = "[♾️   Keys = 111   ♾️]", -- Use this to tell the user how to get a key
-      FileName = "🅱️ Keys 🅱️", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "🅱️ Balon 🅱️",
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"111"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+      Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
    }
 })
 
@@ -434,7 +434,7 @@ Rayfield:Notify({
 print("[DEBUG] สคริปต์โหลดสำเร็จ")
 
 -- แท็บตัวละคร
-local MainTab = Window:CreateTab("🏡 ตัวละคร", 4483362458)
+local MainTab = Window:CreateTab("🏡 .ตัวละคร. 🏡", 4483362458)
 local MainSection = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
  
 local Players = game:GetService("Players")
@@ -613,13 +613,13 @@ local infJumpToggle = MainTab:CreateToggle({
 
 
 -- แท็บเพื่อน
-local friendTab = Window:CreateTab("👥 วาปไปหาคน 👥", 4483362458)
+local friendTab = Window:CreateTab("👥 .วาปไปหาคน. 👥", 4483362458)
 local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 friendTab:CreateButton({
-   Name = "[ 🅱️ ]  .อาวุธวาป.  [ 🅱️ ]",
+   Name = "[ 📱 ]  .อาวุธวาป.  [ 📱 ]",
    Callback = function()
-       Rayfield:Notify({Title = "🅱️ กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+       Rayfield:Notify({Title = "📱 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
@@ -712,13 +712,13 @@ friendTab:CreateButton({
 })
 
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("📜 สคริปต์รวมเอาฟรี 📜", 4483362458)
+local extraTab = Window:CreateTab("📜 .สคริปต์รวมเอาฟรี. 📜", 4483362458)
 local Section1 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
-    Name = "[💖]  รัน GodMode       [💖]",
+    Name = "[G]  รัน GodMode       [G]",
     Callback = function()
-        Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))()
     end
 })
@@ -726,33 +726,33 @@ extraTab:CreateButton({
 local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
-    Name = "[💣]  รัน Somtank Hub  [💣]",
+    Name = "[S]  รัน Somtank Hub  [S]",
     Callback = function()
-        Rayfield:Notify({Title = "💣 กำลังโหลด สคริป 💣...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "💣 กำลังโหลด สคริป 💣...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[🦊]  รัน FoxName Hub  [🦊]",
+    Name = "[F]  รัน FoxName Hub  [F]",
     Callback = function()
-        Rayfield:Notify({Title = "🦊 กำลังโหลด สคริป 🦊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🦊 กำลังโหลด สคริป 🦊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[🍷]  รัน Elude Hub  [🍷]",
+    Name = "[E]  รัน Elude Hub  [E]",
     Callback = function()
-        Rayfield:Notify({Title = "🍷 กำลังโหลด สคริป 🍷...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🍷 กำลังโหลด สคริป 🍷...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
     end
 })
 
 extraTab:CreateButton({
-    Name = "[🟪]  รัน RaBade [ - สคริปแนะนำ - ]   [🟪]",
+    Name = "[R]  รัน RaBade [ - สคริปแนะนำ - ]   [R]",
     Callback = function()
-        Rayfield:Notify({Title = "🟪 กำลังโหลด สคริป 🟪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "🟪 กำลังโหลด สคริป 🟪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
     end
 })
@@ -760,9 +760,9 @@ extraTab:CreateButton({
 local Section3 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
-    Name = "[♾️]  รัน Infinite Yield      [♾️]",
+    Name = "[I]  รัน Infinite Yield      [I]",
     Callback = function()
-        Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 6026568198})
+        Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
     end
 })
