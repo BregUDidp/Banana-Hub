@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
    Name = "🦝 CursedX Hub   .Premuim Edition. | ZelX | MarCo |",
-   Icon = 1760967080306,
+   Icon = 1,
    LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "67",
@@ -707,18 +707,18 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-    Name = "[T]  รัน Telekinnes      [I]",
-    Callback = function()
-        Rayfield:Notify({Title = "💪 กำลังโหลด สคริป 💪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Telekin"))()
-    end
-})
-
-extraTab:CreateButton({
     Name = "[F]  รัน Fling Gui      [F]",
     Callback = function()
         Rayfield:Notify({Title = "🦝 กำลังโหลด สคริป 🦝...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/JmBRHB3z"))()
+    end
+})
+
+extraTab:CreateButton({
+    Name = "[T]  รัน Telekinnes      [I]",
+    Callback = function()
+        Rayfield:Notify({Title = "💪 กำลังโหลด สคริป 💪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Telekin"))()
     end
 })
 
