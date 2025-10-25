@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "🅱️ Balon Hub   .Premuim Edition.     | ZelX | MarCo |",
+   Name = "🦝 CursedX Hub   .Premuim Edition.     | ZelX | MarCo |",
    Icon = 5, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
    LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
@@ -30,7 +30,7 @@ local Window = Rayfield:CreateWindow({
       Title = "",
       Subtitle = "",
       Note = "",
-      FileName = "🅱️ Balon 🅱️",
+      FileName = "",
       SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
       Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
@@ -38,8 +38,8 @@ local Window = Rayfield:CreateWindow({
 })
 
 Rayfield:Notify({
-   Title = "🅱️ ค่ายสคริปอันดับ 1 สคริปกำลังโหลด...",
-   Content = "🅱️ ค่ายสคริปอันดับ 1 สคริปกำลังโหลดนะจ๊ะ...",
+   Title = "🦝 ค่ายสคริปอันดับ 1 สคริปกำลังโหลด...",
+   Content = "🦝 ค่ายสคริปอันดับ 1 สคริปกำลังโหลดนะจ๊ะ...",
    Duration = 5,
    Image = nil,
 })
@@ -47,74 +47,40 @@ Rayfield:Notify({
 local ESPTab = Window:CreateTab(" [👀]  .AimBot/ESP.   [👀] ", 4483362458)
 local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
--- ตัวแปรหลัก
-local plrs = game:GetService("Players")
-local plr = plrs.LocalPlayer
-local cam = workspace.CurrentCamera
-local input = game:GetService("UserInputService")
-local run = game:GetService("RunService")
-local aimbotOn = false
-local target = nil
-local holding = false
+local Players       = game:GetService("Players")
+local LocalPlayer   = Players.LocalPlayer
+local Camera        = workspace.CurrentCamera
+local UserInput     = game:GetService("UserInputService")
+local RunService    = game:GetService("RunService")
 
-function GetClosest()
-    local closest = nil
-    local dist = math.huge
-    local mousePos = input:GetMouseLocation()
-
-    for _, v in pairs (plrs:GetPlayers()) do
-        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
-            local pos, vis = cam:WorldToViewportPoint(v.Character.Head.Position)
-            if vis then
-                local mag = (Vector2.new(pos.X, pos.Y) - mousePos).Magnitude
-                if mag < dist then
-                    dist = mag
-                    closest = v 
-                end
-            end
-        end
-    end
-    return closest
-end
-
--- 🔵 FOV Circle แบบ Rainbow เปิด/ปิดได้
 local fovEnabled = false
 local fovRadius = 150
 local fovThickness = 2
 local fovSpeed = 0.6
 local fovFollowMouse = false
-
-local drawingAvailable = typeof(Drawing) == "table" and typeof(Drawing.new) == "function"
 local fovCircle = nil
+local DrawingAvailable = (typeof(Drawing) == "table" and typeof(Drawing.new) == "function")
 
+--// Rainbow Color
 local function getRainbowColor(speed, offset)
     local hue = (tick() * (speed or 1) + (offset or 0)) % 1
     return Color3.fromHSV(hue, 1, 1)
 end
 
+--// Create FOV Circle
 local function createFOVCircle()
-    if not drawingAvailable then return end
-    if fovCircle then return end
-
-    local c = Drawing.new("Circle")
-    c.Visible = false
-    c.Radius = fovRadius
-    c.Thickness = fovThickness
-    c.NumSides = 100
-    c.Filled = false
-    c.Transparency = 1
-    fovCircle = c
+    if not DrawingAvailable or fovCircle then return end
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Visible = false
+    fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.NumSides = 100
+    fovCircle.Filled = false
+    fovCircle.Transparency = 1
 end
 
-local function removeFOVCircle()
-    if fovCircle then
-        fovCircle:Remove()
-        fovCircle = nil
-    end
-end
-
--- เริ่มวาดวงกลม
-run.RenderStepped:Connect(function()
+--// FOV Render
+RunService.RenderStepped:Connect(function()
     if not fovEnabled or not fovCircle then
         if fovCircle then fovCircle.Visible = false end
         return
@@ -122,51 +88,134 @@ run.RenderStepped:Connect(function()
 
     local pos
     if fovFollowMouse then
-        local mouse = input:GetMouseLocation()
+        local mouse = UserInput:GetMouseLocation()
         pos = Vector2.new(mouse.X, mouse.Y)
     else
-        local view = cam.ViewportSize
-        pos = Vector2.new(view.X / 2, view.Y / 2)
+        local size = Camera.ViewportSize
+        pos = Vector2.new(size.X / 2, size.Y / 2)
     end
 
     fovCircle.Position = pos
-    fovCircle.Color = getRainbowColor(fovSpeed)
-    fovCircle.Thickness = fovThickness
     fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.Color = autoTarget and Color3.fromRGB(255, 0, 0) or getRainbowColor(fovSpeed)
     fovCircle.Visible = true
 end)
 
--- สร้าง UI สำหรับ FOV ในแท็บการมองเห็น
+--// Find Closest in FOV
+local function GetClosestInFOV()
+    local closest = nil
+    local closestDist = math.huge
+    local mousePos = UserInput:GetMouseLocation()
+    local centerPos = fovFollowMouse and mousePos or Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local headPos = player.Character.Head.Position
+                local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+
+                if onScreen then
+                    local screenPoint = Vector2.new(screenPos.X, screenPos.Y)
+                    local distToCenter = (screenPoint - centerPos).Magnitude
+
+                    if distToCenter <= fovRadius then
+                        local distToMouse = (screenPoint - mousePos).Magnitude
+                        if distToMouse < closestDist then
+                            closestDist = distToMouse
+                            closest = player
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+--// 🔥 SMOOTH AIMBOT TOGGLE (ด้านบนสุด)
 ESPTab:CreateToggle({
-    Name = "🌀 เปิดวงกลม/ปิดวงกลม",
-    CurrentState = false,
-    Flag = "FOVToggle",
+    Name = "🎯 การล็อคเป๋าหมายคน [ .ต้องเปิดวงกลมก่อน. ]",
+    CurrentValue = false,
+    Callback = function(val)
+        aimbotOn = val
+        if not val then autoTarget = nil end
+    end
+})
+
+--// Smooth Aimbot Toggle
+ESPTab:CreateToggle({
+    Name = "✨ การล็อคเป๋าหมายคนแบบนุ่มนวล",
+    CurrentValue = true,
+    Callback = function(val)
+        smoothEnabled = val
+    end
+})
+
+--// Smooth Speed Slider
+ESPTab:CreateSlider({
+    Name = "⚡ ความเร็ว Smooth",
+    Range = {1, 30},
+    Increment = 1,
+    CurrentValue = 8,
+    Suffix = "x",
+    Callback = function(val)
+        smoothSpeed = 0.12 / (val / 8)  -- แปลง 1-30 → 0.22-0.03
+    end
+})
+
+--// 🔥 SMOOTH AIMBOT LOOP (นุ่มนวล 100%)
+RunService.RenderStepped:Connect(function()
+    if aimbotOn and fovEnabled then
+        autoTarget = GetClosestInFOV()
+        
+        if autoTarget and autoTarget.Character and autoTarget.Character:FindFirstChild("Head") then
+            local targetPos = autoTarget.Character.Head.Position
+            
+            if smoothEnabled then
+                -- 🔥 SMOOTH AIM: หมุนกล้องแบบนุ่มนวล
+                local currentCFrame = Camera.CFrame
+                local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+                Camera.CFrame = currentCFrame:lerp(targetCFrame, smoothSpeed)
+            else
+                -- Instant Aim
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPos)
+            end
+        end
+    else
+        autoTarget = nil
+    end
+end)
+
+--// =================================== --
+--//            FOV CONTROLS            --
+--// =================================== --
+ESPTab:CreateSection("____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________")
+
+ESPTab:CreateToggle({
+    Name = "🌀 เปิดวงกลม",
+    CurrentValue = false,
     Callback = function(val)
         fovEnabled = val
-        if val then
-            createFOVCircle()
-        else
-            if fovCircle then fovCircle.Visible = false end
-        end
+        if val then createFOVCircle() end
     end
 })
 
 ESPTab:CreateToggle({
     Name = "🖱️ วงตามเมาส์",
-    CurrentState = false,
-    Flag = "FOVMouseFollow",
+    CurrentValue = false,
     Callback = function(val)
         fovFollowMouse = val
     end
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ขนาดวงวงกลม",
+    Name = "📏 ขนาดวงกลม",
     Range = {10, 1000},
     Increment = 1,
-    CurrentValue = fovRadius,
+    CurrentValue = 150,
     Suffix = "px",
-    Flag = "FOVRadius",
     Callback = function(val)
         fovRadius = val
         if fovCircle then fovCircle.Radius = val end
@@ -174,260 +223,142 @@ ESPTab:CreateSlider({
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ความหนาเส้นวงกลม",
+    Name = "📏 ความหนาเส้น",
     Range = {1, 10},
     Increment = 1,
-    CurrentValue = fovThickness,
+    CurrentValue = 2,
     Suffix = "px",
-    Flag = "FOVThickness",
     Callback = function(val)
         fovThickness = val
         if fovCircle then fovCircle.Thickness = val end
     end
 })
 
--- ======= Services & Vars =======
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local cam = workspace.CurrentCamera
-local RunService = game:GetService("RunService")
+--// =================================== --
+--//                ESP                 --
+--// =================================== --
 
--- Drawing availability
-local DrawingAvailable = (typeof(Drawing) == "table" and typeof(Drawing.new) == "function")
-
--- ESP vars
 local espEnabled = false
 local espTraceEnabled = true
 local espBoxes = {}
-local espVisible = {}
-local espRainbowSpeed = 0.9
-local espGlowLayers = 3
-local espMaxBoxSize = 200
 
--- Rainbow color function
-local function rainbowColor(speed, offset)
+local function rainbow(speed, offset)
     local t = tick() * (speed or 1) + (offset or 0)
     return Color3.fromHSV(t % 1, 1, 1)
 end
 
--- Create ESP drawing objects
-local function createESPForPlayer(player)
+local function createESP(player)
     if not DrawingAvailable or espBoxes[player] then return end
+    local box = {}
+    box.main = Drawing.new("Square")
+    box.main.Thickness = 2
+    box.main.Filled = false
+    box.main.Visible = false
 
-    local boxData = {}
+    box.name = Drawing.new("Text")
+    box.name.Size = 16
+    box.name.Center = true
+    box.name.Outline = true
+    box.name.Visible = false
 
-    -- Main box
-    boxData.main = Drawing.new("Square")
-    boxData.main.Visible = false
-    boxData.main.Filled = false
-    boxData.main.Thickness = 1
+    box.tracer = Drawing.new("Line")
+    box.tracer.Thickness = 2
+    box.tracer.Visible = false
 
-    -- Glow layers
-    boxData.glows = {}
-    for i = 1, espGlowLayers do
-        local g = Drawing.new("Square")
-        g.Visible = false
-        g.Filled = false
-        g.Thickness = 1
-        g.Transparency = math.clamp(0.55 * (1 - (i - 1)/espGlowLayers), 0.03, 0.9)
-        table.insert(boxData.glows, g)
-    end
-
-    -- Name tag
-    boxData.name = Drawing.new("Text")
-    boxData.name.Visible = false
-    boxData.name.Center = true
-    boxData.name.Size = 14
-
-    -- Health bar
-    boxData.health = Drawing.new("Square")
-    boxData.health.Visible = false
-    boxData.health.Filled = true
-
-    -- Tracer line
-    boxData.tracer = Drawing.new("Line")
-    boxData.tracer.Visible = false
-    boxData.tracer.Thickness = 1
-
-    espBoxes[player] = boxData
+    espBoxes[player] = box
 end
 
--- Remove ESP drawing objects
-local function removeESPForPlayer(player)
+local function removeESP(player)
     local box = espBoxes[player]
     if box then
         pcall(function()
-            if box.main then box.main:Remove() end
-            if box.name then box.name:Remove() end
-            if box.health then box.health:Remove() end
-            if box.tracer then box.tracer:Remove() end
-            for _, g in ipairs(box.glows) do g:Remove() end
+            box.main:Remove()
+            box.name:Remove()
+            box.tracer:Remove()
         end)
         espBoxes[player] = nil
-        espVisible[player] = nil
     end
 end
 
--- Render loop
 RunService.RenderStepped:Connect(function()
     if not DrawingAvailable then return end
 
     for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") then
-            if espEnabled then
-                createESPForPlayer(player)
-                local box = espBoxes[player]
-                local hrp = player.Character.HumanoidRootPart
-                local rootPos, onScreen = cam:WorldToViewportPoint(hrp.Position)
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                if espEnabled then
+                    createESP(player)
+                    local box = espBoxes[player]
+                    local root = player.Character.HumanoidRootPart
+                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
 
-                if onScreen then
-                    espVisible[player] = true
-                    local depth = (cam.CFrame.Position - hrp.Position).Magnitude
-                    local scale = math.clamp(2000 / depth, 20, espMaxBoxSize)
-                    local boxSize = Vector2.new(scale * 0.6, scale)
-                    local center = Vector2.new(rootPos.X, rootPos.Y)
+                    if onScreen then
+                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
+                        local size = Vector2.new(scale * 0.6, scale)
+                        local center = Vector2.new(pos.X, pos.Y)
 
-                    -- Main box
-                    if box.main then
-                        box.main.Size = boxSize
-                        box.main.Position = center - (boxSize / 2)
-                        box.main.Color = rainbowColor(espRainbowSpeed, 0)
+                        box.main.Size = size
+                        box.main.Position = center - size/2
+                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
                         box.main.Visible = true
-                    end
 
-                    -- Glow layers
-                    for i, g in ipairs(box.glows) do
-                        local extra = i * 6
-                        g.Size = boxSize + Vector2.new(extra, extra)
-                        g.Position = center - (g.Size / 2)
-                        g.Color = rainbowColor(espRainbowSpeed, i * 0.07)
-                        g.Visible = true
-                    end
-
-                    -- Name tag
-                    if box.name then
-                        box.name.Position = center + Vector2.new(0, -boxSize.Y/2 - 14)
-                        box.name.Text = player.Name
-                        box.name.Color = rainbowColor(espRainbowSpeed, 0.15)
+                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
+                        box.name.Text = player.Name .. ((autoTarget == player) and " [🔒LOCKED]" or "")
+                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
                         box.name.Visible = true
-                    end
 
-                    -- Tracer
-                    if box.tracer then
-                        local screenCenter = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
-                        box.tracer.From = screenCenter
-                        box.tracer.To = center
-                        box.tracer.Color = rainbowColor(espRainbowSpeed, 0.25)
-                        box.tracer.Visible = espTraceEnabled
-                    end
-
-                    -- Health bar
-                    local humanoid = player.Character:FindFirstChild("Humanoid")
-                    if humanoid and box.health then
-                        local hpPct = math.clamp(humanoid.Health / (humanoid.MaxHealth or 100), 0, 1)
-                        local healthW = 4
-                        local healthH = boxSize.Y * hpPct
-                        local healthPos = center - Vector2.new(boxSize.X/2 + 8, boxSize.Y/2 - healthH)
-                        box.health.Size = Vector2.new(healthW, healthH)
-                        box.health.Position = healthPos
-                        box.health.Color = rainbowColor(espRainbowSpeed, hpPct * 0.5)
-                        box.health.Visible = true
+                        if espTraceEnabled then
+                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                            box.tracer.From = screenCenter
+                            box.tracer.To = center
+                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
+                            box.tracer.Visible = true
+                        end
+                    else
+                        box.main.Visible = false
+                        box.name.Visible = false
+                        box.tracer.Visible = false
                     end
                 else
-                    -- Out of screen
-                    espVisible[player] = false
-                    if box.main then box.main.Visible = false end
-                    if box.name then box.name.Visible = false end
-                    if box.health then box.health.Visible = false end
-                    if box.tracer then box.tracer.Visible = false end
-                    for _, g in ipairs(box.glows) do g.Visible = false end
+                    removeESP(player)
                 end
             else
-                removeESPForPlayer(player)
+                removeESP(player)
             end
         else
-            removeESPForPlayer(player)
+            removeESP(player)
         end
     end
 end)
 
--- Cleanup when player leaves
-Players.PlayerRemoving:Connect(removeESPForPlayer)
+Players.PlayerRemoving:Connect(removeESP)
 
--- ======= UI Controls =======Tab:CreateToggle({
-local Section3 = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-ESPTab:CreateToggle({
-    Name = "🎯 ล็อกเป๋าหมาย [ กดคลิกขวา ]",
-    CurrentState = false,
-    Flag = "a",
-    Callback = function(val)
-        aimbotOn = val
-    end
-})
-
-input.InputBegan:Connect(function(key)
-    if key.UserInputType == Enum.UserInputType.MouseButton2 then
-        holding = true
-        target = GetClosest()
-    end
-end)
-
-input.InputEnded:Connect(function(key)
-    if key.UserInputType == Enum.UserInputType.MouseButton2 then
-        holding = false
-        target = nil
-    end
-end)
-
-run.RenderStepped:Connect(function()
-    if aimbotOn and holding and target and target.Character and target.Character.Head then
-        cam.CFrame = CFrame.new(cam.CFrame.Position, target.Character.Head.Position)
-    end
-end)
-
-local FeatureEnabled = false
-local ESPHighlights = {}
-local BloodGuis = {}
-local Tracers = {}
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
-
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local cam = workspace.CurrentCamera
-local RunService = game:GetService("RunService")
-
+--// ESP UI
+ESPTab:CreateSection("____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________w")
 
 ESPTab:CreateToggle({
     Name = "🔍 เปิดการมองเห็นคน",
-    CurrentState = espEnabled,
-    Flag = "esp_enable",
+    CurrentValue = false,
     Callback = function(val)
         espEnabled = val
         if not val then
-            for p,_ in pairs(espBoxes) do
-                removeESPForPlayer(p)
-            end
+            for p,_ in pairs(espBoxes) do removeESP(p) end
         end
     end
 })
 
 ESPTab:CreateToggle({
-    Name = "🔍 การมองเห็นคนแบบเส้น",
-    CurrentState = espTraceEnabled,
-    Flag = "esp_tracer",
+    Name = "🔍 เปิดเส้นดวยการอัตโนมัต",
+    CurrentValue = true,
     Callback = function(val)
         espTraceEnabled = val
     end
 })
 
--- Notification เมื่อโหลด
 Rayfield:Notify({
-    Title = "[🅱️] .โหลดสำเร็จ. [🅱️]",
-    Content = "สคริปต์ 🅱️ BalonX พร้อมใช้งาน!",
+    Title = "[🦝] .โหลดสำเร็จ. [🦝]",
+    Content = "สคริปต์ 🦝 BalonX พร้อมใช้งาน!",
     Duration = 5
 })
 
@@ -833,7 +764,7 @@ end)
  
 Rayfield:Notify({
     Title="🎉 !โปรโหลดสำเร็จ! 🎉",
-    Content="พร้อมผจญภัยกับ 🅱️ BalonX 🅱️ แล้ว!",
+    Content="พร้อมผจญภัยกับ 🦝 CursedX Hub 🦝 แล้ว!",
     Duration=4,
     Image=6026568198
 })
