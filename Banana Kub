@@ -718,7 +718,7 @@ extraTab:CreateButton({
     Name = "[T]  รัน Telekinnes      [I]",
     Callback = function()
         Rayfield:Notify({Title = "💪 กำลังโหลด สคริป 💪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Telekin"))()
+        loadstring(game:HttpGet("https://pastebin.com/raw/GBq42MTE"))()
     end
 })
 
