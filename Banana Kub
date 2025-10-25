@@ -1,14 +1,14 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "🦝 CursedX Hub   .Premuim Edition.     | ZelX | MarCo |",
-   Icon = 5, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   Name = "🦝 CursedX Hub   .Premuim Edition. | ZelX | MarCo |",
+   Icon = 1760967080306,
    LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Brown", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   ShowText = "67",
+   Theme = "Brown",
 
-   ToggleUIKeybind = "F", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+   ToggleUIKeybind = "F",
 
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
@@ -547,14 +547,6 @@ local infJumpToggle = MainTab:CreateToggle({
 local friendTab = Window:CreateTab("👥 .วาปไปหาคน. 👥", 4483362458)
 local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
-friendTab:CreateButton({
-   Name = "[ 📱 ]  .อาวุธวาป.  [ 📱 ]",
-   Callback = function()
-       Rayfield:Notify({Title = "📱 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
-   end,
-})
-
 local function getPlayerList()
     local list = {}
     for _, p in pairs(Players:GetPlayers()) do
@@ -643,7 +635,7 @@ friendTab:CreateButton({
 })
 
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("📜 .สคริปต์รวมเอาฟรี. 📜", 4483362458)
+local extraTab = Window:CreateTab("📓 .สคริปต์รวมเอาฟรี. 📓", 4483362458)
 local Section1 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
@@ -698,7 +690,55 @@ extraTab:CreateButton({
     end
 })
 
+extraTab:CreateButton({
+    Name = "[T]  รัน Telekinnes      [I]",
+    Callback = function()
+        Rayfield:Notify({Title = "💪 กำลังโหลด สคริป 💪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Telekin"))()
+    end
+})
+
+extraTab:CreateButton({
+    Name = "[F]  รัน Fling Gui      [F]",
+    Callback = function()
+        Rayfield:Notify({Title = "🦝 กำลังโหลด สคริป 🦝...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://pastebin.com/raw/JmBRHB3z"))()
+    end
+})
+
+extraTab:CreateButton({
+   Name = "[W]  รัน Teleport Gui    [W]",
+   Callback = function()
+       Rayfield:Notify({Title = "📱 กำลังโหลด Teleport Tool...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
+   end,
+})
+
 local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+local creditTab = Window:CreateTab("🗒️  .fps. / .Executer.  🗒️ | X |", 4483362458)
+local Section = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel("fps   | & 57.0 |")
+creditTab:CreateLabel("Executer Use    | .Xeno. |")
+
+local Section2 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Computer.  1. Wave 2. Zenith 3. Valex 4. Swift 5. Xeno 6. Solara")
+
+local Section3 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Mobile.  1. Delta 2. Krl 3. Cryptic 4. Evon 5. CodeX 6. Trigon")
+
+local Section4 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Mac.  1. Hydrogen 2. Macsploit 3. Synapse Mac")
+
+local Section5 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Exeternel.  1. Valex 2. DX9 Ware 3. Ronin 4. Serotonin 5. Photon 6. Isabelle 7. Melatonin 8. Assembly 9. Yerba 10. Matrix Hub 11. Matcha")
+
+local Section6 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
@@ -758,7 +798,7 @@ player.CharacterAdded:Connect(function(c)
     stopFlying()
     toggleSpeed(false)
     noclipEnabled=false
-    infJumpEnabled=false
+  infJumpEnabled=false
     Rayfield:LoadConfiguration()
 end)
  
