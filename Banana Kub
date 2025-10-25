@@ -646,6 +646,14 @@ extraTab:CreateButton({
     end
 })
 
+extraTab:CreateButton({
+    Name = "[S]  รัน Sandevis [ - กดตัว F - ]       [S]",
+    Callback = function()
+        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))()
+    end
+})
+
 local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 extraTab:CreateButton({
@@ -803,8 +811,8 @@ player.CharacterAdded:Connect(function(c)
 end)
  
 Rayfield:Notify({
-    Title="🎉 !โปรโหลดสำเร็จ! 🎉",
+    Title="📓 !โปรโหลดสำเร็จ! 📓",
     Content="พร้อมผจญภัยกับ 🦝 CursedX Hub 🦝 แล้ว!",
     Duration=4,
-    Image=6026568198
+    Image=4483362458
 })
