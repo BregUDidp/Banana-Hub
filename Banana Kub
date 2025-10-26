@@ -665,6 +665,14 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
+    Name = "[C]  รัน  CPS Hub   [C]",
+    Callback = function()
+        Rayfield:Notify({Title = "🍊 กำลังโหลด สคริป 🍊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Rx1m/CpsHub/refs/heads/main/Hub",true))()
+    end
+})
+
+extraTab:CreateButton({
     Name = "[E]  รัน Elude Hub  [E]",
     Callback = function()
         Rayfield:Notify({Title = "🍷 กำลังโหลด สคริป 🍷...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
