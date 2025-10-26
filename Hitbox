@@ -15,20 +15,20 @@ end)
 game.StarterGui:SetCore("SendNotification", {
     Title = "แมพ [ Be A Parkour Ninja ]",
     Text = "________________________________________________________",
-    Duration = 60
+    Duration = 5
 })
 
 game.StarterGui:SetCore("SendNotification", {
     Title = "🦝 .CursedX Hub.",
     Text = "🦝 [ .Cursed X Hub. ]",
-    Duration = 60
+    Duration = 5
 })
 
 wait(1)
 game.StarterGui:SetCore("SendNotification", {
     Title = "🗡️ Kill All 🗡️",
     Text = "________________________________________________________",
-    Duration = 60
+    Duration = 5
 })
 
 _G.HeadSize = 100
