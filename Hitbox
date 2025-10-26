@@ -31,16 +31,18 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 5
 })
 
---Zone HeadSize
+-- Zone  [ HeadSize/Hitbox ] --
 
 _G.HeadSize = 20
 _G.Disabled = true
 
--- ฟังก์ชันสำหรับสร้างสีรุ้ง
+-- Setting   Hitbox --
+-- จะเป็นการปรับ Hibox โดยตรง --
+
 local function getRainbowColor()
-    local time = tick() * 0.5 -- ปรับความเร็วการเปลี่ยนสี
-    local hue = (time % 1) -- คำนวณ Hue (0 ถึง 1)
-    local color = Color3.fromHSV(hue, 1, 1) -- สร้างสีจาก HSV (ความอิ่มตัวและความสว่างเต็มที่)
+    local time = tick() * 0.5
+    local hue = (time % 1)
+    local color = Color3.fromHSV(hue, 1, 1)
     return color
 end
 
