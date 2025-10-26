@@ -1,0 +1,60 @@
+local InfiniteJumpEnabled = true
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+
+local vu = game:GetService("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end)
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "แมพ [ Be A Parkour Ninja ]",
+    Text = "________________________________________________________",
+    Duration = 60
+})
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🦝 .CursedX Hub.",
+    Text = "🦝 [ .Cursed X Hub. ]",
+    Duration = 60
+})
+
+wait(1)
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🗡️ Kill All 🗡️",
+    Text = "________________________________________________________",
+    Duration = 60
+})
+
+_G.HeadSize = 100
+_G.Disabled = true
+
+-- ฟังก์ชันสำหรับสร้างสีรุ้ง
+local function getRainbowColor()
+    local time = tick() * 0.5 -- ปรับความเร็วการเปลี่ยนสี
+    local hue = (time % 1) -- คำนวณ Hue (0 ถึง 1)
+    local color = Color3.fromHSV(hue, 1, 1) -- สร้างสีจาก HSV (ความอิ่มตัวและความสว่างเต็มที่)
+    return color
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if _G.Disabled then
+        for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
+            if v.Name ~= game:GetService("Players").LocalPlayer.Name then
+                pcall(function()
+                    local hrp = v.Character.HumanoidRootPart
+                    hrp.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                    hrp.Transparency = 0.7
+                    hrp.Color = getRainbowColor() -- ใช้สีรุ้ง
+                    hrp.Material = Enum.Material.Neon
+                    hrp.CanCollide = false
+                end)
+            end
+        end
+    end
+end)
