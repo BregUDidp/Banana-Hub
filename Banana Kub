@@ -652,7 +652,7 @@ extraTab:CreateButton({
     Name = "[S]  รัน Somtank Hub  [S]",
     Callback = function()
         Rayfield:Notify({Title = "💣 กำลังโหลด สคริป 💣...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99v3'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))()
     end
 })
 
