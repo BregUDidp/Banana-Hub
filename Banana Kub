@@ -692,7 +692,7 @@ extraTab:CreateButton({
     end
 })
 
-local Section3 = extraTab:CreateSection("[ Tranformations ]")
+local Section3 = extraTab:CreateSection("[ - Tranformations - ]")
 
 extraTab:CreateButton({
     Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
@@ -710,7 +710,7 @@ extraTab:CreateButton({
     end
 })
 
-local Section4 = extraTab:CreateSection("[ All Script ]")
+local Section4 = extraTab:CreateSection("[ - All Script - [ หรือทำเอง ]")
 
 extraTab:CreateButton({
     Name = "[I]  รัน Infinite Yield      [I]",
@@ -729,7 +729,7 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-   Name = "[W]  รัน Warp Gui    [W]",
+   Name = "[T]  รัน Teleport Hub    [T]",
    Callback = function()
        Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
