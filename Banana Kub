@@ -1,5 +1,11 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
+game.StarterGui:SetCore("SendNotification", {
+    Title = "คีย์ = 67",
+    Text = "________________________________________________________",
+    Duration = 7
+})
+
 local Window = Rayfield:CreateWindow({
    Name = "🦝 CursedX Hub   .Premuim Edition. | ZelX | MarCo |",
    Icon = 1,
@@ -631,7 +637,7 @@ local Section3 = friendTab:CreateSection("______________________________________
 local Section4 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("📓 .สคริปต์รวมเอาฟรี. 📓", 4483362458)
+local extraTab = Window:CreateTab("🌲 .สคริปต์ 99 คืน. 🌲", 4483362458)
 local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
@@ -692,9 +698,12 @@ extraTab:CreateButton({
     end
 })
 
-local Section3 = extraTab:CreateSection("[ - Tranformations - ]")
+local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
-extraTab:CreateButton({
+local mamaTab = Window:CreateTab("🧑‍💻 .สคริปต์รวมที่ทำเอง. 🧑‍💻", 4483362458)
+local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
+
+mamaTab:CreateButton({
     Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
     Callback = function()
         Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
@@ -702,7 +711,7 @@ extraTab:CreateButton({
     end
 })
 
-extraTab:CreateButton({
+mamaTab:CreateButton({
     Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]",
     Callback = function()
         Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
@@ -710,9 +719,9 @@ extraTab:CreateButton({
     end
 })
 
-local Section4 = extraTab:CreateSection("[ - All Script - [ หรือทำเอง ]")
+local Section2 = mamaTab:CreateSection("[ - สคริปทำเอง  -")
 
-extraTab:CreateButton({
+mamaTab:CreateButton({
     Name = "[I]  รัน Infinite Yield      [I]",
     Callback = function()
         Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
@@ -720,7 +729,7 @@ extraTab:CreateButton({
     end
 })
 
-extraTab:CreateButton({
+mamaTab:CreateButton({
     Name = "[F]  รัน Fling Gui      [F]",
     Callback = function()
         Rayfield:Notify({Title = "🦝 กำลังโหลด สคริป 🦝...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
@@ -728,15 +737,13 @@ extraTab:CreateButton({
     end
 })
 
-extraTab:CreateButton({
+mamaTab:CreateButton({
    Name = "[T]  รัน Teleport Hub    [T]",
    Callback = function()
        Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
    end,
 })
-
-local Section5 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 local creditTab = Window:CreateTab("🗒️  .fps. / .Executer.  🗒️ | X |", 4483362458)
 local Section = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
