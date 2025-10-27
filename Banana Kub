@@ -6,6 +6,12 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 7
 })
 
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ สร้างโดย ] 🦝 - CursedX - 🦝",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+
 local Window = Rayfield:CreateWindow({
    Name = "🦝 CursedX Hub   .Premuim Edition. | ZelX | MarCo |",
    Icon = 1,
