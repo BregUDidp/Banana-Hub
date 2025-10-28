@@ -793,6 +793,14 @@ mamaTab:CreateButton({
    end,
 })
 
+mamaTab:CreateButton({
+   Name = "[F]  รัน Touch Fling     [F]",
+   Callback = function()
+       Rayfield:Notify({Title = "🌀 กำลังโหลด สคริป 🌀...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))()
+   end,
+})
+
 local creditTab = Window:CreateTab("🗒️  .fps. / .Executer.  🗒️ | X |", 4483362458)
 local Section = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
