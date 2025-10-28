@@ -707,7 +707,17 @@ extraTab:CreateButton({
 local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 local mamaTab = Window:CreateTab("🧑‍💻 .สคริปต์รวมที่ทำเอง. 🧑‍💻", 4483362458)
-local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
+local Section1 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน - ]")
+
+mamaTab:CreateButton({
+    Name = "[I]  รัน Infinite Yield      [I]",
+    Callback = function()
+        Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+    end
+})
+
+local Section2 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
 
 mamaTab:CreateButton({
     Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
@@ -725,14 +735,22 @@ mamaTab:CreateButton({
     end
 })
 
-local Section2 = mamaTab:CreateSection("[ - สคริปทำเอง  -")
+local Section3 = mamaTab:CreateSection("[ - สคริปทำเอง  -")
 
 mamaTab:CreateButton({
-    Name = "[I]  รัน Infinite Yield      [I]",
-    Callback = function()
-        Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
-    end
+   Name = "[N]  รัน Invisible    [N]",
+   Callback = function()
+       Rayfield:Notify({Title = "👻 กำลังโหลด สคริป 👻...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       loadstring(game:HttpGet("https://pastebin.com/raw/zY0NHCmB"))()
+   end,
+})
+
+mamaTab:CreateButton({
+   Name = "[H]  รัน Hitbox    [H]",
+   Callback = function()
+       Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Hitbox"))()
+   end,
 })
 
 mamaTab:CreateButton({
@@ -748,6 +766,16 @@ mamaTab:CreateButton({
    Callback = function()
        Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
+   end,
+})
+
+local Section4 = mamaTab:CreateSection("[ - สคริปของคนอื่น  -")
+
+mamaTab:CreateButton({
+   Name = "[P]  รัน PowerPanel    [P]",
+   Callback = function()
+       Rayfield:Notify({Title = "🌀 กำลังโหลด สคริป 🌀...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/Script"))()
    end,
 })
 
