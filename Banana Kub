@@ -754,14 +754,6 @@ mamaTab:CreateButton({
 })
 
 mamaTab:CreateButton({
-    Name = "[F]  รัน Fling Gui      [F]",
-    Callback = function()
-        Rayfield:Notify({Title = "🦝 กำลังโหลด สคริป 🦝...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/JmBRHB3z"))()
-    end
-})
-
-mamaTab:CreateButton({
    Name = "[T]  รัน Teleport Hub    [T]",
    Callback = function()
        Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
