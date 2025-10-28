@@ -746,7 +746,7 @@ mamaTab:CreateButton({
 })
 
 mamaTab:CreateButton({
-   Name = "[H]  รัน Hitbox    [H]",
+   Name = "[H]  รัน Hitbox [ - 20 - ]    [H]",
    Callback = function()
        Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Hitbox"))()
