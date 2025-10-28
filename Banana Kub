@@ -668,6 +668,16 @@ extraTab:CreateButton({
     end
 })
 
+local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
+
+extraTab:CreateButton({
+    Name = "[K]  รัน Kill Aura  [K]",
+    Callback = function()
+        Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/hubgitsucksdick0122/Google-scripts/refs/heads/main/killaura99"))()
+    end
+})
+
 local Section2 = extraTab:CreateSection("[ - 99 Night Forest - ]")
 
 extraTab:CreateButton({
