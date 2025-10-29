@@ -653,7 +653,7 @@ local extraTab = Window:CreateTab("🌲 .สคริปต์ 99 คืน. �
 local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[G]  รัน GodMode [.2.]      [G]",
+    Name = "[G]  รัน GodMode      [G]",
     Callback = function()
         Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/9jDt2Ft4"))()
@@ -663,7 +663,7 @@ extraTab:CreateButton({
 local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[K]  รัน Kill Aura [ กดตัว Z ] [K]",
+    Name = "[K]  รัน Kill Aura [ กดตัว Z ]    [K]",
     Callback = function()
         Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/raXZPKJ7"))()
