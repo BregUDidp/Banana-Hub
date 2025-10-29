@@ -1,3 +1,15 @@
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ สคริป God Mode สำหรับ 99 คืน ]",
+    Text = "🦝 [ .Cursed X Hub. ]",
+    Duration = 5
+})
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "🦝 .สร้างโดย CursedX. 🦝",
+    Text = "🦝 [ .Cursed X Hub. ]",
+    Duration = 5
+})
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DamagePlayer = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer")
 
