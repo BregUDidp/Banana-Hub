@@ -653,28 +653,20 @@ local extraTab = Window:CreateTab("🌲 .สคริปต์ 99 คืน. �
 local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[G]  รัน GodMode [.1.]      [G]",
-    Callback = function()
-        Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ProBaconHub/DATABASE/refs/heads/main/99%20Nights%20in%20the%20Forest/Infinite%20Health.lua"))()
-    end
-})
-
-extraTab:CreateButton({
     Name = "[G]  รัน GodMode [.2.]      [G]",
     Callback = function()
         Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/God%20Mode"))()
+        loadstring(game:HttpGet("https://pastebin.com/raw/9jDt2Ft4"))()
     end
 })
 
 local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[K]  รัน Kill Aura  [K]",
+    Name = "[K]  รัน Kill Aura [ กดตัว Z ] [K]",
     Callback = function()
         Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/hubgitsucksdick0122/Google-scripts/refs/heads/main/killaura99"))()
+        loadstring(game:HttpGet("https://pastebin.com/raw/raXZPKJ7"))()
     end
 })
 
@@ -737,7 +729,7 @@ mamaTab:CreateButton({
    Name = "[T]  รัน Teleport Hub    [T]",
    Callback = function()
        Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20Tool"))()
+       loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
    end,
 })
 
