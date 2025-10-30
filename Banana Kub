@@ -1,25 +1,19 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 game.StarterGui:SetCore("SendNotification", {
-    Title = "🦝 [ คีย์ = 67 ] 🦝",
-    Text = "________________________________________________________",
-    Duration = 7
-})
-
-game.StarterGui:SetCore("SendNotification", {
     Title = "🗺️ [ รันได้ทุกแมพ ] 🗺️",
     Text = "________________________________________________________",
     Duration = 10
 })
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[ สร้างโดย ] 🦝 - CursedX - 🦝",
+    Title = "[ สร้างโดย ] 🦝 - XaS - 🦝",
     Text = "________________________________________________________",
     Duration = 10
 })
 
 local Window = Rayfield:CreateWindow({
-   Name = "   CursedX Hub   .Premuim.   [ Zeus ]",
+   Name = "  CursedX Hub   .Premuim.   [ Zeus ]",
    Icon = "webhook",
    LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
