@@ -459,7 +459,7 @@ local function toggleSpeed(on)
     superSpeed = on
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
-        Title = superSpeed and "🏃‍♂️ วิ่งเร็วเปิด" or "🚶‍♂️ วิ่งเร็วปิด",
+        Title = superSpeed and "🏃‍♂️ วิ่งเร็ว ✅" or "🚶‍♂️ วิ่งเร็ว 🛑",
         Content = superSpeed and "วิ่งเร็วสุดขีด!" or "กลับสู่ความเร็วปกติ",
         Duration = 3,
         Image = 4483362458
@@ -895,4 +895,4 @@ Rayfield:Notify({
     Content="พร้อมผจญภัยกับ 🦝 CursedX Hub 🦝 แล้ว!",
     Duration=4,
     Image=4483362458
-})v
+})
