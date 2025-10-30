@@ -49,7 +49,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local ESPTab = Window:CreateTab("Aimbot/ESP", "eye")
+local ESPTab = Window:CreateTab("Aimbot/ESP", "target")
 local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 local Players       = game:GetService("Players")
