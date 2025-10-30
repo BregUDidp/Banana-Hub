@@ -49,13 +49,6 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-Rayfield:Notify({
-   Title = "🦝 ค่ายสคริปอันดับ 1 สคริปกำลังโหลด...",
-   Content = "🦝 ค่ายสคริปอันดับ 1 สคริปกำลังโหลดนะจ๊ะ...",
-   Duration = 5,
-   Image = 4483362458,
-})
- 
 local ESPTab = Window:CreateTab("Aimbot/ESP", "eye")
 local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
@@ -883,10 +876,3 @@ player.CharacterAdded:Connect(function(c)
   infJumpEnabled=false
     Rayfield:LoadConfiguration()
 end)
- 
-Rayfield:Notify({
-    Title="📓 !โปรโหลดสำเร็จ! 📓",
-    Content="พร้อมผจญภัยกับ 🦝 CursedX Hub 🦝 แล้ว!",
-    Duration=4,
-    Image=4483362458
-})
