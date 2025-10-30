@@ -15,9 +15,9 @@ game.StarterGui:SetCore("SendNotification", {
 local Window = Rayfield:CreateWindow({
    Name = "  CursedX Hub   .Premuim.   [ Zeus ]",
    Icon = "webhook",
-   LoadingTitle = "67 กำลังโหลด...",
+   LoadingTitle = "🦝 CursedX 🦝 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "67",
+   ShowText = "🦝",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
