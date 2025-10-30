@@ -19,8 +19,8 @@ game.StarterGui:SetCore("SendNotification", {
 })
 
 local Window = Rayfield:CreateWindow({
-   Name = "🦝 CursedX Hub   .Premuim.   [ Zeus ]",
-   Icon = 1,
+   Name = " CursedX Hub   .Premuim.   [ Zeus ]",
+   Icon = "webhook",
    LoadingTitle = "67 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "67",
@@ -62,7 +62,7 @@ Rayfield:Notify({
    Image = 4483362458,
 })
  
-local ESPTab = Window:CreateTab(" [👀]  .AimBot/ESP.   [👀] ", 4483362458)
+local ESPTab = Window:CreateTab("Aimbot/ESP", "eye")
 local Section = ESPTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 local Players       = game:GetService("Players")
@@ -375,7 +375,7 @@ ESPTab:CreateToggle({
 })
 
 -- แท็บตัวละคร
-local MainTab = Window:CreateTab("🏡 .ตัวละคร. 🏡", 4483362458)
+local MainTab = Window:CreateTab("ตัวละคร", "home")
 local MainSection = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
  
 local Players = game:GetService("Players")
@@ -554,7 +554,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 
 -- แท็บเพื่อน
-local friendTab = Window:CreateTab("👥 .วาปไปหาคน. 👥", 4483362458)
+local friendTab = Window:CreateTab("วาปไปหาคน", "baby")
 local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 local Section2 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
@@ -649,7 +649,7 @@ local Section3 = friendTab:CreateSection("______________________________________
 local Section4 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 -- แท็บสคริปต์เพิ่มเติม
-local extraTab = Window:CreateTab("🌲 .สคริปต์ 99 คืน. 🌲", 4483362458)
+local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
 local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
@@ -714,7 +714,7 @@ extraTab:CreateButton({
 
 local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
-local mamaTab = Window:CreateTab("🧑‍💻 .สคริปต์รวม. 🧑‍💻", 4483362458)
+local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
 local Section1 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
 
 mamaTab:CreateButton({
@@ -803,7 +803,7 @@ mamaTab:CreateButton({
    end,
 })
 
-local creditTab = Window:CreateTab("🗒️  .fps. / .Executer.  🗒️ | X |", 4483362458)
+local creditTab = Window:CreateTab("fps/Executer", "square-activity")
 local Section = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 creditTab:CreateLabel("fps   | & 57.0 |")
@@ -895,4 +895,4 @@ Rayfield:Notify({
     Content="พร้อมผจญภัยกับ 🦝 CursedX Hub 🦝 แล้ว!",
     Duration=4,
     Image=4483362458
-})
+})v
