@@ -7,17 +7,17 @@ game.StarterGui:SetCore("SendNotification", {
 })
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[ สร้างโดย ] 🦝 - XaS - 🦝",
+    Title = "[ สร้างโดย ] 💤 - XaS - 💤",
     Text = "________________________________________________________",
     Duration = 10
 })
 
 local Window = Rayfield:CreateWindow({
-   Name = "  CursedX Hub   .Premuim.   [ Zeus ]",
+   Name = "  Mesui X Hub   .Premuim.   [ Zeus ]",
    Icon = "webhook",
-   LoadingTitle = "🦝 CursedX 🦝 กำลังโหลด...",
+   LoadingTitle = "💤 Mesui X 💤 กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "🦝",
+   ShowText = "💤",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -796,7 +796,7 @@ local Section1 = creditTab:CreateSection("______________________________________
 creditTab:CreateButton({
    Name = "[K]  รัน Kick เพื่อเช็คตัวรัน Xeno     [K]",
    Callback = function()
-       game.Players.LocalPlayer:Kick("1️⃣ [ CursedX On Top ] 1️⃣")
+       game.Players.LocalPlayer:Kick("1️⃣ [ Mesui X On Top ] 1️⃣")
    end,
 })
 
