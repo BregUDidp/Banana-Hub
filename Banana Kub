@@ -363,7 +363,7 @@ ESPTab:CreateToggle({
 
 -- แท็บตัวละคร
 local MainTab = Window:CreateTab("ตัวละคร", "home")
-local MainSection = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local MainSection = MainTab:CreateSection("[🛸] โซนบินและปรับความเร็วบิน [🛸]")
  
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -464,7 +464,7 @@ local flyToggle = MainTab:CreateToggle({
 })
  
 local flySlider = MainTab:CreateSlider({
-    Name="🚀 ความเร็วบิน",
+    Name="📏 ความเร็วบิน",
     Range={1,500},
     Increment=1,
     Suffix=" Speed",
@@ -481,16 +481,16 @@ local flySlider = MainTab:CreateSlider({
     end
 })
  
-local Section2 = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section2 = MainTab:CreateSection("[🏃‍♂️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
 local speedToggle = MainTab:CreateToggle({
-    Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว",
+    Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว/การเดิน",
     CurrentValue=false,
     Flag="SpeedToggle",
     Callback=toggleSpeed
 })
  
 local speedSlider = MainTab:CreateSlider({
-    Name="⚡ ความเร็ววิ่ง",
+    Name="📏 ความเร็วในการวิ่งวิ่ง",
     Range={1,500},
     Increment=1,
     Suffix=" Speed",
@@ -500,7 +500,7 @@ local speedSlider = MainTab:CreateSlider({
         runSpeed=val
         if superSpeed then humanoid.WalkSpeed=runSpeed end
         Rayfield:Notify({
-            Title="⚡ ปรับความเร็ววิ่ง",
+            Title="📏 ปรับความเร็ววิ่ง",
             Content="ตั้งความเร็ววิ่งเป็น "..val,
             Duration=2,
             Image=4483362458
@@ -508,7 +508,7 @@ local speedSlider = MainTab:CreateSlider({
     end
 })
  
-local Section3 = MainTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section3 = MainTab:CreateSection("[👻] โซนกระโดดและทะลุกำแพง [🦘]")
 local noclipToggle = MainTab:CreateToggle({
     Name="👻 เปิด/ปิด Noclip",
     CurrentValue=false,
@@ -539,11 +539,10 @@ local infJumpToggle = MainTab:CreateToggle({
     end
 })
 
+local Section4 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
 
--- แท็บเพื่อน
 local friendTab = Window:CreateTab("วาปไปหาคน", "bone")
-local Section = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-local Section2 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section = friendTab:CreateSection("[👥]  โซน วาปไปหาเพื่อน      [👥] ")
 
 local function getPlayerList()
     local list = {}
@@ -632,20 +631,142 @@ friendTab:CreateButton({
     end
 })
 
-local Section3 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-local Section4 = friendTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+local Section3 = friendTab:CreateSection("[🌲]  โซนลากศพใน 99 คืน [ เวลาเพื่อนตาย ]     [🌲]")
+
+-- === ลากศพเฉพาะชื่อ ===
+local DragOffset = 5
+local DragDelay = 0.2
+
+friendTab:CreateSlider({
+    Name = "📏 ปรับระยะห่างการลากศพเพื่อน",
+    Range = {1, 15},
+    Increment = 1,
+    CurrentValue = 5,
+    Flag = "DragOffset",
+    Callback = function(val) DragOffset = val end
+})
+
+friendTab:CreateSlider({
+    Name = "📏 ปรับการดีเลย์การลากศพเพื่อน",
+    Range = {0.05, 1},
+    Increment = 0.05,
+    CurrentValue = 0.2,
+    Flag = "DragDelay",
+    Callback = function(val) DragDelay = val end
+})
+
+friendTab:CreateButton({
+    Name = "⚔️ ลากศพเพื่อนตามชื่อที่เราเลือก",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "กรุณาเลือกชื่อก่อน!", Duration = 3})
+            return
+        end
+        local displayName = selected:match("^(.+) %(") or selected
+
+        char = player.Character or player.CharacterAdded:Wait()
+        hrp = char:WaitForChild("HumanoidRootPart")
+
+        local itemsFolder = Workspace:WaitForChild("Characters", 10)
+        local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents", 10)
+        if not itemsFolder or not remoteEvents then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ Characters หรือ RemoteEvents", Duration = 5})
+            return
+        end
+
+        local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem", 5)
+        local stopDragging = remoteEvents:WaitForChild("StopDraggingItem", 5)
+        if not startDragging or not stopDragging then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
+            return
+        end
+
+        local targetName = displayName .. " Body"
+        local bodies = {}
+        for _, obj in pairs(itemsFolder:GetChildren()) do
+            if obj.Name == targetName then
+                table.insert(bodies, obj)
+            end
+        end
+
+        if #bodies == 0 then
+            Rayfield:Notify({Title = "ไม่พบศพ", Content = "ไม่มีศพชื่อ \""..targetName.."\"", Duration = 4})
+            return
+        end
+
+        Rayfield:Notify({Title = "กำลังลากศพ", Content = "พบ "..#bodies.." ตัว", Duration = 3})
+
+        task.spawn(function()
+            for i, body in ipairs(bodies) do
+                local clone = cloneref and cloneref(body) or body
+                startDragging:FireServer(clone)
+                task.wait(0.02)
+                if body.PrimaryPart then
+                    body:PivotTo(hrp.CFrame * CFrame.new(0, 0, -DragOffset))
+                end
+                task.wait(0.05)
+                stopDragging:FireServer(clone)
+                task.wait(DragDelay)
+            end
+            Rayfield:Notify({Title = "สำเร็จ!", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
+        end)
+    end
+})
+
+local Section4 = friendTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
 
 -- แท็บสคริปต์เพิ่มเติม
 local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
-local Section1 = extraTab:CreateSection("[ God Mode [- 99 Night Forest -] ]")
+local Section1 = extraTab:CreateSection("[ God Mode/Delth Fog [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[G]  รัน GodMode      [G]",
+    Name = "[G]  รัน ไม่มีวันตาย      [G]",
     Callback = function()
         Rayfield:Notify({Title = "💖 กำลังโหลด สคริป 💖...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/9jDt2Ft4"))()
     end
 })
+
+-- === ลบหมอกถาวร ===
+local OriginalFogEnd = game:GetService("Lighting").FogEnd
+local OriginalFogStart = game:GetService("Lighting").FogStart
+local FogLoopConnection = nil
+
+local ToggleFog = extraTab:CreateToggle({
+    Name = "[D] กด ลบหมอก    [D]",
+    CurrentValue = false,
+    Flag = "ToggleFog",
+    Callback = function(val)
+        local Lighting = game:GetService("Lighting")
+        if val then
+            if OriginalFogEnd == nil then OriginalFogEnd = Lighting.FogEnd end
+            if OriginalFogStart == nil then OriginalFogStart = Lighting.FogStart end
+            if FogLoopConnection then FogLoopConnection:Disconnect() end
+            FogLoopConnection = RS.Heartbeat:Connect(function()
+                if not ToggleFog.CurrentValue then return end
+                Lighting.FogEnd = 1000
+                Lighting.FogStart = 1000
+            end)
+            Lighting.FogEnd = 1000
+            Lighting.FogStart = 1000
+            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกหายถาวร!", Duration = 3})
+        else
+            if FogLoopConnection then FogLoopConnection:Disconnect() FogLoopConnection = nil end
+            Lighting.FogEnd = OriginalFogEnd or 100000
+            Lighting.FogStart = OriginalFogStart or 0
+            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกกลับมาแล้ว", Duration = 3})
+        end
+    end
+})
+
+-- รองรับ Load Config
+task.spawn(function()
+    task.wait(1)
+    if ToggleFog.CurrentValue then
+        ToggleFog.Callback(true)
+    end
+end)
 
 local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
 
@@ -660,7 +781,7 @@ extraTab:CreateButton({
 local Section2 = extraTab:CreateSection("[ - 99 Night Forest - ]")
 
 extraTab:CreateButton({
-    Name = "[S]  รัน Somtank Hub  [S]",
+    Name = "[S]  รัน Somtank Hub [ - สคริปแนะนำ - 1 - ]  [S]",
     Callback = function()
         Rayfield:Notify({Title = "💣 กำลังโหลด สคริป 💣...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))()
@@ -668,7 +789,7 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-    Name = "[F]  รัน FoxName Hub  [F]",
+    Name = "[F]  รัน FoxName Hub [ - สคริปแนะนำ - 2 - ]  [F]",
     Callback = function()
         Rayfield:Notify({Title = "🦊 กำลังโหลด สคริป 🦊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
@@ -692,17 +813,15 @@ extraTab:CreateButton({
 })
 
 extraTab:CreateButton({
-    Name = "[R]  รัน RaBade [ - สคริปแนะนำ - ]   [R]",
+    Name = "[R]  รัน RaBade [ - สคริปแนะนำ - 3 - ]   [R]",
     Callback = function()
         Rayfield:Notify({Title = "🟪 กำลังโหลด สคริป 🟪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
     end
 })
 
-local Section2 = extraTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
 local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
-local Section1 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
+local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
 
 mamaTab:CreateButton({
     Name = "[I]  รัน Infinite Yield      [I]",
@@ -720,7 +839,7 @@ mamaTab:CreateButton({
    end,
 })
 
-local Section2 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
+local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
 
 mamaTab:CreateButton({
     Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
@@ -738,7 +857,7 @@ mamaTab:CreateButton({
     end
 })
 
-local Section3 = mamaTab:CreateSection("[ - สคริประยะการโจมตี  -")
+local Section2 = mamaTab:CreateSection("[ - สคริประยะการโจมตี  -")
 
 mamaTab:CreateButton({
    Name = "[H]  รัน Hitbox [ - 50 - ]    [H]",
