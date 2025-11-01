@@ -6,11 +6,13 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 10
 })
 
+
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[ สร้างโดย ] 💤 - XaS - 💤",
+    Title = "[ สร้างโดย ] 💤 - ZelX - 💤",
     Text = "________________________________________________________",
     Duration = 10
 })
+wait(1)
 
 local Window = Rayfield:CreateWindow({
    Name = "  Mesui X Hub   .Premuim.   [ Zeus ]",
@@ -452,7 +454,7 @@ end
  
 -- Toggle & Slider UI
 local flyToggle = MainTab:CreateToggle({
-    Name="✈️ เปิด/ปิด การบินแบบธรรมดา",
+    Name="🛸 เปิด/ปิด การบินแบบธรรมดา",
     CurrentValue=false,
     Flag="FlyToggle",
     Callback=function(val)
@@ -461,7 +463,7 @@ local flyToggle = MainTab:CreateToggle({
 })
  
 local flySlider = MainTab:CreateSlider({
-    Name="📏 ความเร็วบิน",
+    Name="📏 ปรับความเร็วในการบิน",
     Range={1,500},
     Increment=1,
     Suffix=" Speed",
@@ -632,7 +634,7 @@ local infJumpToggle = MainTab:CreateToggle({
 
 local Section5 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
 
-local friendTab = Window:CreateTab("วาปไปหาคน", "bone")
+local friendTab = Window:CreateTab("วาปไปหาคน", "door-open")
 local Section = friendTab:CreateSection("[👥]  โซน วาปไปหาเพื่อน      [👥] ")
 
 local function getPlayerList()
