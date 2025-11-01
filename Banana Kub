@@ -15,8 +15,8 @@ game.StarterGui:SetCore("SendNotification", {
 wait(1)
 
 local Window = Rayfield:CreateWindow({
-   Name = "  Mesui X Hub   .Premuim.   [ Zeus ]",
-   Icon = "squirrel",
+   Name = "  [  🎯  ]  |  ProJect  Mesui   [ V-8.0 ]",
+   Icon = "mouse-pointer-click",
    LoadingTitle = "💤 Mesui X 💤   กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "💤",
