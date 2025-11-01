@@ -153,7 +153,7 @@ ESPTab:CreateToggle({
 
 --// Smooth Aimbot Toggle
 ESPTab:CreateToggle({
-    Name = "✨ การล็อคเป๋าหมายคนแบบลื่นๆ",
+    Name = "✨ การล็อคเป๋าหมายคนแบบลื่นๆ [ .ปิดและเปิดใหม่. ]",
     CurrentValue = true,
     Callback = function(val)
         smoothEnabled = val
@@ -162,7 +162,7 @@ ESPTab:CreateToggle({
 
 --// Smooth Speed Slider
 ESPTab:CreateSlider({
-    Name = "⚡ ความเร็ว Smooth",
+    Name = "⚡ ความเร็วของการล็อคเป๋าหมายคน",
     Range = {1, 30},
     Increment = 1,
     CurrentValue = 8,
@@ -207,7 +207,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateToggle({
-    Name = "🖱️ วงตามเมาส์",
+    Name = "🖱️ วงกลมตามเมาส์",
     CurrentValue = false,
     Callback = function(val)
         fovFollowMouse = val
@@ -215,7 +215,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ขนาดวงกลม",
+    Name = "📏 ปรับเส้นวงกลมให้ใหญ่ขึ้น",
     Range = {10, 1000},
     Increment = 1,
     CurrentValue = 150,
@@ -227,7 +227,7 @@ ESPTab:CreateSlider({
 })
 
 ESPTab:CreateSlider({
-    Name = "📏 ความหนาเส้น",
+    Name = "📏 ปรับความหนาของเส้นวงกลม",
     Range = {1, 10},
     Increment = 1,
     CurrentValue = 2,
@@ -353,7 +353,7 @@ ESPTab:CreateToggle({
 })
 
 ESPTab:CreateToggle({
-    Name = "🔍 เปิดเส้นดวยการอัตโนมัต",
+    Name = "🔍 เปิดเส้นแบบอัตโนมัต",
     CurrentValue = true,
     Callback = function(val)
         espTraceEnabled = val
@@ -418,7 +418,7 @@ local function startFlying()
     gyro.Parent = hrp
  
     Rayfield:Notify({
-        Title = "✈️ โหมดบินเปิด!",
+        Title = "🛸 โหมดบินเปิด!",
         Content = "ใช้ W,A,S,D,Space,Ctrl เพื่อควบคุม",
         Duration = 3,
         Image = 4483362458
@@ -582,7 +582,7 @@ local function toggleInvisibility()
 end
 
 MainTab:CreateButton({
-    Name = "👻 กดปุ่มล่องหน [ กดตัว X ]  [ กดอีกทีเพื่อปิด [ 🛑 ]",
+    Name = "👻 กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]",
     Callback = function()
         toggleInvisibility()
     end
@@ -648,14 +648,14 @@ local function getPlayerList()
 end
  
 local friendDropdown = friendTab:CreateDropdown({
-    Name = "👥 เลือกเพื่อน [ ที่เราจะวาป ]",
+    Name = "👥 เลือกเพื่อน [ .ที่เราจะวาป. ]",
     Options = getPlayerList(),
     CurrentOption = {},
     Flag = "FriendSelect"
 })
  
 friendTab:CreateButton({
-    Name = "📌 วาปไปหาเพื่อน [ ที่เราเลือกเอาไว้ ]",
+    Name = "📌 วาปไปหาเพื่อน [ .ที่เราเลือกเอาไว้. ]",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
@@ -864,7 +864,7 @@ end)
 local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
 
 extraTab:CreateButton({
-    Name = "[K]  รัน Kill Aura [ กดตัว Z ]    [K]",
+    Name = "[K]  รัน Kill Aura [ .กดตัว Z. ]    [K]",
     Callback = function()
         Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
         loadstring(game:HttpGet("https://pastebin.com/raw/raXZPKJ7"))()
