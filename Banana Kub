@@ -15,7 +15,7 @@ game.StarterGui:SetCore("SendNotification", {
 local Window = Rayfield:CreateWindow({
    Name = "  Mesui X Hub   .Premuim.   [ Zeus ]",
    Icon = "squirrel",
-   LoadingTitle = "💤 Mesui X 💤 กำลังโหลด...",
+   LoadingTitle = "💤 Mesui X 💤   กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "💤",
    Theme = "Brown",
@@ -975,22 +975,6 @@ mamaTab:CreateButton({
 })
 
 local Section3 = mamaTab:CreateSection("[ - สคริปรวม  -")
-
-mamaTab:CreateButton({
-   Name = "[V]  รัน Invincible FlY     [V]",
-   Callback = function()
-       Rayfield:Notify({Title = "🛸 กำลังโหลด สคริป 🛸...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/396abc/Script/refs/heads/main/FlyR15.lua"))()
-   end,
-})
-
-mamaTab:CreateButton({
-   Name = "[N]  รัน Invisible    [N]",
-   Callback = function()
-       Rayfield:Notify({Title = "👻 กำลังโหลด สคริป 👻...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://pastebin.com/raw/zY0NHCmB"))()
-   end,
-})
 
 mamaTab:CreateButton({
    Name = "[F]  รัน Touch Fling     [F]",
