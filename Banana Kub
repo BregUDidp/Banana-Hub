@@ -403,7 +403,7 @@ local function StopRainbow()
 end
 
 -- Toggle เปิด/ปิด Rainbow
-EyeTab:CreateToggle({
+ESPTab:CreateToggle({
     Name = "🌈 เปิดการมองตัวคน",
     CurrentValue = false,
     Flag = "RainbowToggle",
