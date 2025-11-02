@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "Bypass Script ⚙️",
-   Icon = "cog",
+   Name = "Bypass Script",
+   Icon = "settings",
    LoadingTitle = "⚙️ Bypass Anti Cheat ⚙️  กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "⚙️",
@@ -38,7 +38,19 @@ local Window = Rayfield:CreateWindow({
 })
 
 local KeyTab = Window:CreateTab("Bypass Setting", "cog")
-local Section1 = KeyTab:CreateSection("[ Bypass Ban ]")
+local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
+
+local Toggle = KeyTab:CreateToggle({
+   Name = "[ 🎁 Click Bypass ]",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+       Rayfield:Notify({Title = "Bypass Script กำลังโหลด... ✅", Content = "กรุณารอสักครู่ใกล้จะเสร็จแล้ว", Duration = 3, Image = 4483362458})
+	   Rayfield:Notify({Title = "เปิด Bypass แล้วพร้อมรันสคริป", Content = "รันสคริปค่ายของเรา", Duration = 3, Image = 4483362458})
+   end,
+})
+
+local Section2 = KeyTab:CreateSection("[ Bypass Ban ]")
 
 KeyTab:CreateParagraph({
     Title = "เลือกดูแมพ",
