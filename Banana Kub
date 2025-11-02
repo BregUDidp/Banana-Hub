@@ -727,7 +727,8 @@ friendTab:CreateButton({
     end
 })
 
-local Section5 = friendTab:CreateSection("[🌲]  โซนแมพ 99 คืน  [🌲]")
+local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
+local Section1 = extraTab:CreateSection("[ Teleport to Campfire [- 99 Night Forest -] ]")
 
 -- Services
 local Players = game:GetService("Players")
@@ -766,29 +767,14 @@ local function teleportTo(pos, name)
     end
 end
 
-friendTab:CreateButton({
-    Name = "🦁 วาปไปลงดันหรือสตรองโหว์",
-    Callback = function()
-        teleportTo(Positions.Stronghold, "Stronghold")
-    end
-})
-
-friendTab:CreateButton({
+extraTab:CreateButton({
     Name = "⛺ วาปไปแคมไฟ",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
     end
 })
 
-friendTab:CreateButton({
-    Name = "🦌 วาปไปหาคนเทรดเดอร์",
-    Callback = function()
-        teleportTo(Positions.Traders, "Traders")
-    end
-})
-
-local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
-local Section1 = extraTab:CreateSection("[ God Mode/Delth Fog [- 99 Night Forest -] ]")
+local Section2 = extraTab:CreateSection("[🌲]  โซนอมตะและลบหมอก     [🌲]")
 
 extraTab:CreateToggle({
     Name = "[G] รัน God Mode   [G]",
