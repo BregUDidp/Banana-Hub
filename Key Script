@@ -1,0 +1,74 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+   Name = "Bypass Script ⚙️",
+   Icon = "cog",
+   LoadingTitle = "⚙️ Bypass Anti Cheat ⚙️  กำลังโหลด...",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "⚙️",
+   Theme = "Brown",
+
+   ToggleUIKeybind = "F",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "ABCD", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local KeyTab = Window:CreateTab("Bypass Setting", "cog")
+local Section1 = KeyTab:CreateSection("[ Bypass Ban ]")
+
+KeyTab:CreateParagraph({
+    Title = "เลือกดูแมพ",
+    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
+})
+
+local Dropdown = KeyTab:CreateDropdown({
+   Name = "แมพที่มีฟังชั่นเล่นของสคริป",
+   Options = {"" ,"[ 99 Night Forest ]","[ Arsenal ]","[ FPS Flick ]","[ Ability Wars ]","[ Be A Parkour Ninja ]"},
+   CurrentOption = {"ดูแมพอื่นๆ"},
+   MultipleOptions = false,
+   Flag = "Dropdown1",
+   Callback = function(Options)
+       
+   end,
+})
+
+KeyTab:CreateButton({Name = "กดรับสคริปล่าสุด", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+
+KeyTab:CreateParagraph({
+    Title = "กดยอมรับถ้าดูเสร็จ",
+    Content = "กดรันสคริป"
+})
+
+local ATab = Window:CreateTab("เลือกสคริปที่จะเล่น", "settings")
+local Section1 = ATab:CreateSection("[ เลือกสคริปแต่ละแมพ ]")
+
+ATab:CreateParagraph({
+    Title = "กดยอมรับถ้าดูเสร็จ",
+    Content = "กดรันสคริป"
+})
+
+ATab:CreateButton({Name = "[ 🎯 ] กดรันสคริป การล็อคเป๋าหมาย ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
