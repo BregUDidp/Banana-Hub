@@ -307,7 +307,7 @@ RunService.RenderStepped:Connect(function()
                         box.main.Visible = true
 
                         box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
-                        box.name.Text = player.Name .. ((autoTarget == player) and " [ 🎯 ล็อคตัวละครฝังตรงข้ามแล้ว]" or "")
+                        box.name.Text = player.Name .. ((autoTarget == player) and " [ 🎯 ล็อคตัวละครฝังตรงข้ามแล้ว ]" or "")
                         box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
                         box.name.Visible = true
 
