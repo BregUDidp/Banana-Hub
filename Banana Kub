@@ -340,6 +340,88 @@ Players.PlayerRemoving:Connect(removeESP)
 --// ESP UI
 ESPTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น [🔍]")
 
+-- ตัวแปร
+local Highlights = {}
+local HighlightEnabled = false
+local RainbowSpeed = 1
+local RainbowLoop = nil
+
+-- ฟังก์ชันสร้าง Highlight
+local function CreateHighlight(player)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and not Highlights[player] then
+        local highlight = Instance.new("Highlight")
+        highlight.Name = "RainbowHighlight"
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.OutlineTransparency = 0
+        highlight.FillTransparency = 0.5
+        highlight.Parent = player.Character
+        Highlights[player] = highlight
+    end
+end
+
+-- ลบ Highlight
+local function RemoveHighlight(player)
+    if Highlights[player] then
+        Highlights[player]:Destroy()
+        Highlights[player] = nil
+    end
+end
+
+-- อัปเดต Highlight ทุกคน
+local function UpdateHighlights()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player ~= game.Players.LocalPlayer and player.Character then
+            if HighlightEnabled then
+                CreateHighlight(player)
+            else
+                RemoveHighlight(player)
+            end
+        end
+    end
+end
+
+-- Rainbow Loop (RunService)
+local function StartRainbow()
+    if RainbowLoop then RainbowLoop:Disconnect() end
+    RainbowLoop = game:GetService("RunService").Heartbeat:Connect(function()
+        if not HighlightEnabled then return end
+        local time = tick() * RainbowSpeed
+        local rainbow = Color3.fromHSV(time % 1, 1, 1) -- สีรุ้งเต็มสูบ
+        for _, highlight in pairs(Highlights) do
+            if highlight and highlight.Parent then
+                highlight.FillColor = rainbow
+            end
+        end
+    end)
+end
+
+local function StopRainbow()
+    if RainbowLoop then
+        RainbowLoop:Disconnect()
+        RainbowLoop = nil
+    end
+end
+
+-- Toggle เปิด/ปิด Rainbow
+EyeTab:CreateToggle({
+    Name = "🌈 เปิดการมองตัวคน",
+    CurrentValue = false,
+    Flag = "RainbowToggle",
+    Callback = function(Value)
+        HighlightEnabled = Value
+        if Value then
+            UpdateHighlights()
+            StartRainbow()
+        else
+            StopRainbow()
+            for _, player in pairs(game.Players:GetPlayers()) do
+                RemoveHighlight(player)
+            end
+        end
+    end,
+})
+
+
 ESPTab:CreateToggle({
     Name = "🔍 เปิดการมองเห็นคน",
     CurrentValue = false,
