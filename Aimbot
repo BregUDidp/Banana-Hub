@@ -1,0 +1,462 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Aimbot Function",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+wait(1)
+
+local Window = Rayfield:CreateWindow({
+   Name = "[ 🎯 Aimbot Nare ]",
+   Icon = "crosshair",
+   LoadingTitle = "🎯 Aimbot 🎯   กำลังโหลด...",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "🎯",
+   Theme = "Brown",
+
+   ToggleUIKeybind = "F",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local ESPTab = Window:CreateTab("Aimbot/ESP", "crosshair")
+local Section = ESPTab:CreateSection("[🎯] โซนล็อคเป๋าหมายคน [🎯]")
+
+local Players       = game:GetService("Players")
+local LocalPlayer   = Players.LocalPlayer
+local Camera        = workspace.CurrentCamera
+local UserInput     = game:GetService("UserInputService")
+local RunService    = game:GetService("RunService")
+
+local fovEnabled = false
+local fovRadius = 150
+local fovThickness = 2
+local fovSpeed = 0.6
+local fovFollowMouse = false
+local fovCircle = nil
+local DrawingAvailable = (typeof(Drawing) == "table" and typeof(Drawing.new) == "function")
+
+--// Rainbow Color
+local function getRainbowColor(speed, offset)
+    local hue = (tick() * (speed or 1) + (offset or 0)) % 1
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+--// Create FOV Circle
+local function createFOVCircle()
+    if not DrawingAvailable or fovCircle then return end
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Visible = false
+    fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.NumSides = 100
+    fovCircle.Filled = false
+    fovCircle.Transparency = 1
+end
+
+--// FOV Render
+RunService.RenderStepped:Connect(function()
+    if not fovEnabled or not fovCircle then
+        if fovCircle then fovCircle.Visible = false end
+        return
+    end
+
+    local pos
+    if fovFollowMouse then
+        local mouse = UserInput:GetMouseLocation()
+        pos = Vector2.new(mouse.X, mouse.Y)
+    else
+        local size = Camera.ViewportSize
+        pos = Vector2.new(size.X / 2, size.Y / 2)
+    end
+
+    fovCircle.Position = pos
+    fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.Color = autoTarget and Color3.fromRGB(255, 0, 0) or getRainbowColor(fovSpeed)
+    fovCircle.Visible = true
+end)
+
+--// Find Closest in FOV
+local function GetClosestInFOV()
+    local closest = nil
+    local closestDist = math.huge
+    local mousePos = UserInput:GetMouseLocation()
+    local centerPos = fovFollowMouse and mousePos or Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local headPos = player.Character.Head.Position
+                local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+
+                if onScreen then
+                    local screenPoint = Vector2.new(screenPos.X, screenPos.Y)
+                    local distToCenter = (screenPoint - centerPos).Magnitude
+
+                    if distToCenter <= fovRadius then
+                        local distToMouse = (screenPoint - mousePos).Magnitude
+                        if distToMouse < closestDist then
+                            closestDist = distToMouse
+                            closest = player
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+--// 🔥 SMOOTH AIMBOT TOGGLE (ด้านบนสุด)
+ESPTab:CreateToggle({
+    Name = "🎯 การล็อคเป๋าหมายคน [ .ต้องเปิดวงกลมก่อน. ]",
+    CurrentValue = false,
+    Callback = function(val)
+        aimbotOn = val
+        if not val then autoTarget = nil end
+    end
+})
+
+--// Smooth Aimbot Toggle
+ESPTab:CreateToggle({
+    Name = "✨ การล็อคเป๋าหมายคนแบบลื่นๆ [ .ปิดและเปิดใหม่. ]",
+    CurrentValue = true,
+    Callback = function(val)
+        smoothEnabled = val
+    end
+})
+
+--// Smooth Speed Slider
+ESPTab:CreateSlider({
+    Name = "⚡ ความเร็วของการล็อคเป๋าหมายคน",
+    Range = {1, 30},
+    Increment = 1,
+    CurrentValue = 8,
+    Suffix = "x",
+    Callback = function(val)
+        smoothSpeed = 0.12 / (val / 8)  -- แปลง 1-30 → 0.22-0.03
+    end
+})
+
+--// 🔥 SMOOTH AIMBOT LOOP (นุ่มนวล 100%)
+RunService.RenderStepped:Connect(function()
+    if aimbotOn and fovEnabled then
+        autoTarget = GetClosestInFOV()
+        
+        if autoTarget and autoTarget.Character and autoTarget.Character:FindFirstChild("Head") then
+            local targetPos = autoTarget.Character.Head.Position
+            
+            if smoothEnabled then
+                -- 🔥 SMOOTH AIM: หมุนกล้องแบบนุ่มนวล
+                local currentCFrame = Camera.CFrame
+                local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+                Camera.CFrame = currentCFrame:lerp(targetCFrame, smoothSpeed)
+            else
+                -- Instant Aim
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPos)
+            end
+        end
+    else
+        autoTarget = nil
+    end
+end)
+
+ESPTab:CreateSection("[🌀] โซนเปิดวงกลมตรงหน้าจอ [🌀]")
+
+ESPTab:CreateToggle({
+    Name = "🌀 เปิดวงกลม",
+    CurrentValue = false,
+    Callback = function(val)
+        fovEnabled = val
+        if val then createFOVCircle() end
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🖱️ วงกลมตามเมาส์",
+    CurrentValue = false,
+    Callback = function(val)
+        fovFollowMouse = val
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ปรับเส้นวงกลมให้ใหญ่ขึ้น",
+    Range = {10, 1000},
+    Increment = 1,
+    CurrentValue = 150,
+    Suffix = "px",
+    Callback = function(val)
+        fovRadius = val
+        if fovCircle then fovCircle.Radius = val end
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ปรับความหนาของเส้นวงกลม",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = 2,
+    Suffix = "px",
+    Callback = function(val)
+        fovThickness = val
+        if fovCircle then fovCircle.Thickness = val end
+    end
+})
+
+--// =================================== --
+--//                ESP                 --
+--// =================================== --
+
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
+
+local function rainbow(speed, offset)
+    local t = tick() * (speed or 1) + (offset or 0)
+    return Color3.fromHSV(t % 1, 1, 1)
+end
+
+local function createESP(player)
+    if not DrawingAvailable or espBoxes[player] then return end
+    local box = {}
+    box.main = Drawing.new("Square")
+    box.main.Thickness = 2
+    box.main.Filled = false
+    box.main.Visible = false
+
+    box.name = Drawing.new("Text")
+    box.name.Size = 16
+    box.name.Center = true
+    box.name.Outline = true
+    box.name.Visible = false
+
+    box.tracer = Drawing.new("Line")
+    box.tracer.Thickness = 2
+    box.tracer.Visible = false
+
+    espBoxes[player] = box
+end
+
+local function removeESP(player)
+    local box = espBoxes[player]
+    if box then
+        pcall(function()
+            box.main:Remove()
+            box.name:Remove()
+            box.tracer:Remove()
+        end)
+        espBoxes[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if not DrawingAvailable then return end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                if espEnabled then
+                    createESP(player)
+                    local box = espBoxes[player]
+                    local root = player.Character.HumanoidRootPart
+                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+                    if onScreen then
+                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
+                        local size = Vector2.new(scale * 0.6, scale)
+                        local center = Vector2.new(pos.X, pos.Y)
+
+                        box.main.Size = size
+                        box.main.Position = center - size/2
+                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
+                        box.main.Visible = true
+
+                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
+                        box.name.Text = player.Name .. ((autoTarget == player) and " [🔒LOCKED]" or "")
+                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
+                        box.name.Visible = true
+
+                        if espTraceEnabled then
+                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                            box.tracer.From = screenCenter
+                            box.tracer.To = center
+                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
+                            box.tracer.Visible = true
+                        end
+                    else
+                        box.main.Visible = false
+                        box.name.Visible = false
+                        box.tracer.Visible = false
+                    end
+                else
+                    removeESP(player)
+                end
+            else
+                removeESP(player)
+            end
+        else
+            removeESP(player)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(removeESP)
+
+--// ESP UI
+ESPTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น [🔍]")
+
+ESPTab:CreateToggle({
+    Name = "🔍 เปิดการมองเห็นคน",
+    CurrentValue = false,
+    Callback = function(val)
+        espEnabled = val
+        if not val then
+            for p,_ in pairs(espBoxes) do removeESP(p) end
+        end
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🔍 เปิดเส้นแบบอัตโนมัต",
+    CurrentValue = true,
+    Callback = function(val)
+        espTraceEnabled = val
+    end
+})
+
+-- แท็บตัวละคร
+local MainTab = Window:CreateTab("ตัวละคร", "home")
+local MainSection = MainTab:CreateSection("[🛸] โซนบินและปรับความเร็วบิน [🛸]")
+ 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.Space then
+		ascend = false
+	elseif input.KeyCode == Enum.KeyCode.LeftShift then
+		descend = false
+	end
+end)
+
+-- ตัวแปรระบบ
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local humanoid = char:WaitForChild("Humanoid")
+ 
+-- ตัวแปรฟังก์ชัน
+local flying = false
+local vv, gyro
+local flySpeed = 50
+local superSpeed = false
+local runSpeed = 32
+local noclipEnabled = false
+local infJumpEnabled = false
+ 
+-- ฟังก์ชันบิน
+local function startFlying()
+    if flying then return end
+    flying = true
+    humanoid.PlatformStand = true
+ 
+    vv = Instance.new("BodyVelocity")
+    vv.MaxForce = Vector3.new(1e5,1e5,1e5)
+    vv.P = 1250
+    vv.Velocity = Vector3.zero
+    vv.Parent = hrp
+ 
+    gyro = Instance.new("BodyGyro")
+    gyro.MaxTorque = Vector3.new(4e5,4e5,4e5)
+    gyro.P = 3000
+    gyro.CFrame = hrp.CFrame
+    gyro.Parent = hrp
+ 
+    Rayfield:Notify({
+        Title = "🛸 โหมดบินเปิด!",
+        Content = "ใช้ W,A,S,D,Space,Ctrl เพื่อควบคุม",
+        Duration = 3,
+        Image = 4483362458
+    })
+end
+ 
+local function stopFlying()
+    if not flying then return end
+    flying = false
+    if vv then vv:Destroy() vv=nil end
+    if gyro then gyro:Destroy() gyro=nil end
+    humanoid.PlatformStand = false
+ 
+    Rayfield:Notify({
+        Title = "🛬 โหมดบินปิด",
+        Content = "ลงจอดเรียบร้อย",
+        Duration = 3,
+        Image = 6026568198
+    })
+end
+ 
+-- ฟังก์ชันวิ่งเร็ว
+local function toggleSpeed(on)
+    superSpeed = on
+    humanoid.WalkSpeed = superSpeed and runSpeed or 16
+    Rayfield:Notify({
+        Title = superSpeed and "🏃‍♂️ วิ่งเร็ว ✅" or "🚶‍♂️ วิ่งเร็ว 🛑",
+        Content = superSpeed and "วิ่งเร็วสุดขีด!" or "กลับสู่ความเร็วปกติ",
+        Duration = 3,
+        Image = 4483362458
+    })
+end
+
+local flyToggle = MainTab:CreateToggle({Name="🛸 เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
+local flySlider = MainTab:CreateSlider({Name="📏 ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+ 
+local Section2 = MainTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็วและกระโดดไม่จำกัด [🏃‍♂️]")
+
+local speedToggle = MainTab:CreateToggle({Name="🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = MainTab:CreateSlider({Name="📏 ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+ 
+--// สร้างเสียง
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://942127495"
+sound.Volume = 1
+sound.Parent = player:WaitForChild("PlayerGui")
+
+local infJumpToggle = MainTab:CreateToggle({Name="🦘 เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
