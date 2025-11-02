@@ -451,61 +451,14 @@ local function toggleSpeed(on)
         Image = 4483362458
     })
 end
+
+local flyToggle = MainTab:CreateToggle({Name="🛸 เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
+local flySlider = MainTab:CreateSlider({Name="📏 ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
--- Toggle & Slider UI
-local flyToggle = MainTab:CreateToggle({
-    Name="🛸 เปิด/ปิด การบินแบบธรรมดา",
-    CurrentValue=false,
-    Flag="FlyToggle",
-    Callback=function(val)
-        if val then startFlying() else stopFlying() end
-    end
-})
- 
-local flySlider = MainTab:CreateSlider({
-    Name="📏 ปรับความเร็วในการบิน",
-    Range={1,500},
-    Increment=1,
-    Suffix=" Speed",
-    CurrentValue=50,
-    Flag="FlySpeed",
-    Callback=function(val)
-        flySpeed=val
-        Rayfield:Notify({
-            Title="🚀 ปรับความเร็วบิน",
-            Content="ตั้งความเร็วบินเป็น "..val,
-            Duration=2,
-            Image = 4483362458
-        })
-    end
-})
- 
-local Section2 = MainTab:CreateSection("[🏃‍♂️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
-local speedToggle = MainTab:CreateToggle({
-    Name="🏃‍♂️ เปิด/ปิด วิ่งเร็ว",
-    CurrentValue=false,
-    Flag="SpeedToggle",
-    Callback=toggleSpeed
-})
- 
-local speedSlider = MainTab:CreateSlider({
-    Name="📏 ความเร็วในการวิ่ง",
-    Range={1,500},
-    Increment=1,
-    Suffix=" Speed",
-    CurrentValue=32,
-    Flag="RunSpeed",
-    Callback=function(val)
-        runSpeed=val
-        if superSpeed then humanoid.WalkSpeed=runSpeed end
-        Rayfield:Notify({
-            Title="📏 ปรับความเร็ววิ่ง",
-            Content="ตั้งความเร็ววิ่งเป็น "..val,
-            Duration=2,
-            Image=4483362458
-        })
-    end
-})
+local Section2 = MainTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
+
+local speedToggle = MainTab:CreateToggle({Name="🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = MainTab:CreateSlider({Name="📏 ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
  
 local Section4 = MainTab:CreateSection("[🧱] โซนล่องหนและทะลุกำแพงและกระโดดไม่จำกัด [🦘]")
 
@@ -581,12 +534,7 @@ local function toggleInvisibility()
     end
 end
 
-MainTab:CreateButton({
-    Name = "👻 กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]",
-    Callback = function()
-        toggleInvisibility()
-    end
-})
+MainTab:CreateButton({Name = "👻 กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]", Callback = function() toggleInvisibility() end})
 
 player.CharacterAdded:Connect(function(character)
     isSpeedBoosted = false
@@ -602,35 +550,8 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
     end
 end)
 
-local noclipToggle = MainTab:CreateToggle({
-    Name="🧱 เปิด/ปิด Noclip",
-    CurrentValue=false,
-    Flag="NoclipToggle",
-    Callback=function(val)
-        noclipEnabled=val
-        Rayfield:Notify({
-            Title=val and "🧱 Noclip เปิด" or "🛑 Noclip ปิด",
-            Content=val and "เดินทะลุวัตถุได้!" or "กลับปกติ",
-            Duration=3,
-            Image=4483362458
-        })
-    end
-})
- 
-local infJumpToggle = MainTab:CreateToggle({
-    Name="🦘 เปิด/ปิด Infinite Jump",
-    CurrentValue=false,
-    Flag="InfJumpToggle",
-    Callback=function(val)
-        infJumpEnabled=val
-        Rayfield:Notify({
-            Title=val and "🦘 Infinite Jump เปิด" or "🛑 Infinite Jump ปิด",
-            Content=val and "กระโดดไม่จำกัด!" or "กลับสู่ปกติ",
-            Duration=3,
-            Image=4483362458
-        })
-    end
-})
+local noclipToggle = MainTab:CreateToggle({Name="🧱 เปิด/ปิด การทะลุกำแพง", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
+local infJumpToggle = MainTab:CreateToggle({Name="🦘 เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
 
 local Section5 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
 
