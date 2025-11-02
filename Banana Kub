@@ -15,7 +15,7 @@ wait(1)
 
 local Window = Rayfield:CreateWindow({
    Name = "  [  🎯  ]  |  ProJect  Mesui   [ V-8.0 ]",
-   Icon = "book-alert",
+   Icon = "notebook-tabs",
    LoadingTitle = "💤 Mesui X 💤   กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "💤",
@@ -1037,6 +1037,6 @@ player.CharacterAdded:Connect(function(c)
     stopFlying()
     toggleSpeed(false)
     noclipEnabled=false
-  infJumpEnabled=false
+    infJumpEnabled=false
     Rayfield:LoadConfiguration()
 end)
