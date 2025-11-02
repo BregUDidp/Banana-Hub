@@ -1,18 +1,24 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[ Aimbot Function ]",
+    Title = "🗺️ [ รันได้ทุกแมพ ] 🗺️",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ สร้างโดย ] 💤 - ZelX - 💤",
     Text = "________________________________________________________",
     Duration = 10
 })
 wait(1)
 
 local Window = Rayfield:CreateWindow({
-   Name = "[  🎯 Aimbot | Nare | Soru ]",
-   Icon = "locate-fixed",
-   LoadingTitle = "🎯 Aimbot Bypass   กำลังโหลด...",
-   LoadingSubtitle = "[ .UNDETECTED. ]",
-   ShowText = "🎯",
+   Name = "  [  🎯  ]  |  ProJect  Mesui   [ V-8.0 ]",
+   Icon = "mouse-pointer-click",
+   LoadingTitle = "💤 Mesui X 💤   กำลังโหลด...",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "💤",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -44,7 +50,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local ESPTab = Window:CreateTab("Aimbot/Smooth", "crosshair")
+local ESPTab = Window:CreateTab("Aimbot/ESP", "crosshair")
 local Section = ESPTab:CreateSection("[🎯] โซนล็อคเป๋าหมายคน [🎯]")
 
 local Players       = game:GetService("Players")
@@ -301,7 +307,7 @@ RunService.RenderStepped:Connect(function()
                         box.main.Visible = true
 
                         box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
-                        box.name.Text = player.Name .. ((autoTarget == player) and " [ 🎯 ล็อคตัวละครฝังตรงข้ามแล้ว ]" or "")
+                        box.name.Text = player.Name .. ((autoTarget == player) and " [🔒LOCKED]" or "")
                         box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
                         box.name.Visible = true
 
@@ -331,8 +337,8 @@ end)
 
 Players.PlayerRemoving:Connect(removeESP)
 
-local EyeTab = Window:CreateTab("ESP Zone", "eye") -- Title, Image
-EyeTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น/มองตัวคน [🔍]")
+--// ESP UI
+ESPTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น [🔍]")
 
 -- ตัวแปร
 local Highlights = {}
@@ -396,8 +402,10 @@ local function StopRainbow()
     end
 end
 
+Players.PlayerRemoving:Connect(removeESP)
+
 -- Toggle เปิด/ปิด Rainbow
-EyeTab:CreateToggle({
+ESPTab:CreateToggle({
     Name = "🌈 เปิดการมองตัวคน",
     CurrentValue = false,
     Flag = "RainbowToggle",
@@ -415,7 +423,8 @@ EyeTab:CreateToggle({
     end,
 })
 
-EyeTab:CreateToggle({
+
+ESPTab:CreateToggle({
     Name = "🔍 เปิดการมองเห็นคน",
     CurrentValue = false,
     Callback = function(val)
@@ -426,7 +435,7 @@ EyeTab:CreateToggle({
     end
 })
 
-EyeTab:CreateToggle({
+ESPTab:CreateToggle({
     Name = "🔍 เปิดเส้นแบบอัตโนมัต",
     CurrentValue = true,
     Callback = function(val)
@@ -529,15 +538,507 @@ end
 local flyToggle = MainTab:CreateToggle({Name="🛸 เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
 local flySlider = MainTab:CreateSlider({Name="📏 ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
-local Section2 = MainTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็วและกระโดดไม่จำกัด [🏃‍♂️]")
+local Section2 = MainTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
 
 local speedToggle = MainTab:CreateToggle({Name="🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
 local speedSlider = MainTab:CreateSlider({Name="📏 ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
  
+local Section4 = MainTab:CreateSection("[🧱] โซนล่องหนและทะลุกำแพงและกระโดดไม่จำกัด [🦘]")
+
+--// ตั้งค่าเริ่มต้น
+local player = game.Players.LocalPlayer
+local defaultSpeed = 16
+local boostedSpeed = 48
+local invis_on = false
+local isSpeedBoosted = false
+local key = Enum.KeyCode.X
+
 --// สร้างเสียง
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://942127495"
 sound.Volume = 1
 sound.Parent = player:WaitForChild("PlayerGui")
 
+--// ฟังก์ชันตั้งค่าความโปร่งใส
+local function setTransparency(character, transparency)
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") or part:IsA("Decal") then
+            part.Transparency = transparency
+        end
+    end
+end
+
+--// ฟังก์ชันล่องหน
+local function toggleInvisibility()
+    invis_on = not invis_on
+    sound:Play()
+
+    if invis_on then
+        local character = player.Character or player.CharacterAdded:Wait()
+        local root = character:WaitForChild("HumanoidRootPart")
+        local savedpos = root.CFrame
+
+        wait()
+        root.CFrame = CFrame.new(-25.95, 84, 3537.55)
+
+        wait(0.15)
+        local Seat = Instance.new("Seat", workspace)
+        Seat.Anchored = false
+        Seat.CanCollide = false
+        Seat.Name = "invischair"
+        Seat.Transparency = 1
+        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
+
+        local Weld = Instance.new("Weld", Seat)
+        Weld.Part0 = Seat
+        Weld.Part1 = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+
+        wait()
+        Seat.CFrame = savedpos
+        setTransparency(character, 0.5)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "การล่องหน [ ✅ ]",
+            Text = "สถานะ: ล่องหน 👻",
+            Duration = 3
+        })
+    else
+        local invisChair = workspace:FindFirstChild("invischair")
+        if invisChair then
+            invisChair:Destroy()
+        end
+        setTransparency(player.Character, 0)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "การล่องหน [ 🛑 ]",
+            Text = "สถานะ: คนเป็นปกติ",
+            Duration = 3
+        })
+    end
+end
+
+MainTab:CreateButton({Name = "👻 กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]", Callback = function() toggleInvisibility() end})
+
+player.CharacterAdded:Connect(function(character)
+    isSpeedBoosted = false
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = defaultSpeed
+end)
+
+--// คีย์ลัดกด X
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == key then
+        toggleInvisibility()
+    end
+end)
+
+local noclipToggle = MainTab:CreateToggle({Name="🧱 เปิด/ปิด การทะลุกำแพง", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
 local infJumpToggle = MainTab:CreateToggle({Name="🦘 เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+
+local Section5 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
+
+local friendTab = Window:CreateTab("วาปไปหาคน", "door-open")
+local Section = friendTab:CreateSection("[👥]  โซน วาปไปหาเพื่อน      [👥] ")
+
+local function getPlayerList()
+    local list = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(list, p.DisplayName.." ("..p.Name..")")
+        end
+    end
+    return list
+end
+ 
+local friendDropdown = friendTab:CreateDropdown({
+    Name = "👥 เลือกเพื่อน [ .ที่เราจะวาป. ]",
+    Options = getPlayerList(),
+    CurrentOption = {},
+    Flag = "FriendSelect"
+})
+ 
+friendTab:CreateButton({
+    Name = "📌 วาปไปหาเพื่อน [ .ที่เราเลือกเอาไว้. ]",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected or selected == "" then
+            Rayfield:Notify({
+                Title = "❌ Error",
+                Content = "กรุณาเลือกเพื่อนก่อน!",
+                Duration = 3,
+                Image = 4483362458
+            })
+            return
+        end
+ 
+        local friendName = selected:match("%((.-)%)") or selected
+ 
+        if not hrp or not hrp.Parent then
+            char = player.Character or player.CharacterAdded:Wait()
+            hrp = char:WaitForChild("HumanoidRootPart")
+            humanoid = char:WaitForChild("Humanoid")
+        end
+ 
+        local targetCFrame = nil
+        local targetPlayer = Players:FindFirstChild(friendName)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            targetCFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+        else
+            for _, obj in pairs(workspace:GetChildren()) do
+                if obj:IsA("Model") and obj.Name:lower() == friendName:lower() then
+                    local part = obj:FindFirstChildWhichIsA("BasePart")
+                    if part then
+                        targetCFrame = part.CFrame
+                        break
+                    end
+                end
+            end
+        end
+ 
+        if targetCFrame then
+            hrp.CFrame = targetCFrame + Vector3.new(0,3,0)
+            Rayfield:Notify({
+                Title = "✅ วาปไปหาคนนั้น สำเร็จ",
+                Content = "คุณได้ไปหา "..friendName,
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "❌ ไม่พบเป้าหมายที่เราเลือก",
+                Content = "เพื่อนไม่ออนไลน์ หรือโมเดลไม่อยู่",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end
+})
+ 
+friendTab:CreateButton({
+    Name = "🔄 รีผู้เล่นที่เราเลือก",
+    Callback = function()
+        friendDropdown:Set(getPlayerList())
+        Rayfield:Notify({
+            Title = "🔄 รายชื่ออัปเดตแล้ว [ รีเฟรชที่รายชื่อผูเล่น ]",
+            Content = "✅ โหลดรายชื่อผู้เล่นใหม่สำเร็จ!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+})
+
+local Section3 = friendTab:CreateSection("[🌲]  โซนลากศพใน 99 คืน [ เวลาเพื่อนตาย ]     [🌲]")
+
+-- === ลากศพเฉพาะชื่อ ===
+local DragOffset = 5
+local DragDelay = 0.2
+
+friendTab:CreateSlider({
+    Name = "📏 ปรับระยะห่างการลากศพเพื่อน",
+    Range = {1, 15},
+    Increment = 1,
+    CurrentValue = 5,
+    Flag = "DragOffset",
+    Callback = function(val) DragOffset = val end
+})
+
+friendTab:CreateSlider({
+    Name = "📏 ปรับการดีเลย์การลากศพเพื่อน",
+    Range = {0.05, 1},
+    Increment = 0.05,
+    CurrentValue = 0.2,
+    Flag = "DragDelay",
+    Callback = function(val) DragDelay = val end
+})
+
+friendTab:CreateButton({
+    Name = "⚔️ ลากศพเพื่อนตามชื่อที่เราเลือก",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "กรุณาเลือกชื่อก่อน!", Duration = 3})
+            return
+        end
+        local displayName = selected:match("^(.+) %(") or selected
+
+        char = player.Character or player.CharacterAdded:Wait()
+        hrp = char:WaitForChild("HumanoidRootPart")
+
+        local itemsFolder = Workspace:WaitForChild("Characters", 10)
+        local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents", 10)
+        if not itemsFolder or not remoteEvents then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ Characters หรือ RemoteEvents", Duration = 5})
+            return
+        end
+
+        local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem", 5)
+        local stopDragging = remoteEvents:WaitForChild("StopDraggingItem", 5)
+        if not startDragging or not stopDragging then
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
+            return
+        end
+
+        local targetName = displayName .. " Body"
+        local bodies = {}
+        for _, obj in pairs(itemsFolder:GetChildren()) do
+            if obj.Name == targetName then
+                table.insert(bodies, obj)
+            end
+        end
+
+        if #bodies == 0 then
+            Rayfield:Notify({Title = "ไม่พบศพ", Content = "ไม่มีศพชื่อ \""..targetName.."\"", Duration = 4})
+            return
+        end
+
+        Rayfield:Notify({Title = "กำลังลากศพ", Content = "พบ "..#bodies.." ตัว", Duration = 3})
+
+        task.spawn(function()
+            for i, body in ipairs(bodies) do
+                local clone = cloneref and cloneref(body) or body
+                startDragging:FireServer(clone)
+                task.wait(0.02)
+                if body.PrimaryPart then
+                    body:PivotTo(hrp.CFrame * CFrame.new(0, 0, -DragOffset))
+                end
+                task.wait(0.05)
+                stopDragging:FireServer(clone)
+                task.wait(DragDelay)
+            end
+            Rayfield:Notify({Title = "สำเร็จ!", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
+        end)
+    end
+})
+
+local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
+local Section1 = extraTab:CreateSection("[ Teleport to Campfire [- 99 Night Forest -] ]")
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Variables
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local GodModeEnabled = false
+
+-- Teleport Positions (Approximate; adjust based on your server/map)
+local Positions = {
+    Stronghold = Vector3.new(1500, 50, 1200),  -- Common spawn; check map diamond icon
+    Campfire = Vector3.new(0, 10, 0),           -- Your base
+    Traders = Vector3.new(-500, 20, 300)        -- Trader NPC area
+}
+
+-- TP Function
+local function teleportTo(pos, name)
+    if HumanoidRootPart then
+        HumanoidRootPart.CFrame = CFrame.new(pos)
+        Rayfield:Notify({
+            Title = "วาปสำเร็จ [✅]",
+            Content = "Teleported to " .. name .. "!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Error",
+            Content = "Character not loaded!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+end
+
+extraTab:CreateButton({
+    Name = "⛺ วาปไปแคมไฟ",
+    Callback = function()
+        teleportTo(Positions.Campfire, "Campfire")
+    end
+})
+
+local Section2 = extraTab:CreateSection("[🌲]  โซนอมตะและลบหมอก     [🌲]")
+
+extraTab:CreateToggle({
+    Name = "[G] รัน God Mode   [G]",
+    CurrentValue = false,
+    Callback = function(Value)
+        GodModeEnabled = Value
+        if Value then
+            local Humanoid = Character:WaitForChild("Humanoid")
+            Humanoid.MaxHealth = math.huge
+            Humanoid.Health = math.huge
+            Rayfield:Notify({Title = "God Mode ON", Content = "You are invincible!", Duration = 3})
+        else
+            local Humanoid = Character:WaitForChild("Humanoid")
+            Humanoid.MaxHealth = 100
+            Humanoid.Health = 100
+            Rayfield:Notify({Title = "God Mode OFF", Content = "Normal health restored.", Duration = 3})
+        end
+    end
+})
+
+-- === ลบหมอกถาวร ===
+local OriginalFogEnd = game:GetService("Lighting").FogEnd
+local OriginalFogStart = game:GetService("Lighting").FogStart
+local FogLoopConnection = nil
+
+local ToggleFog = extraTab:CreateToggle({
+    Name = "[D] กด Deleth Fog    [D]",
+    CurrentValue = false,
+    Flag = "ToggleFog",
+    Callback = function(val)
+        local Lighting = game:GetService("Lighting")
+        if val then
+            if OriginalFogEnd == nil then OriginalFogEnd = Lighting.FogEnd end
+            if OriginalFogStart == nil then OriginalFogStart = Lighting.FogStart end
+            if FogLoopConnection then FogLoopConnection:Disconnect() end
+            FogLoopConnection = RS.Heartbeat:Connect(function()
+                if not ToggleFog.CurrentValue then return end
+                Lighting.FogEnd = 1000
+                Lighting.FogStart = 1000
+            end)
+            Lighting.FogEnd = 1000
+            Lighting.FogStart = 1000
+            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกหายถาวร!", Duration = 3})
+        else
+            if FogLoopConnection then FogLoopConnection:Disconnect() FogLoopConnection = nil end
+            Lighting.FogEnd = OriginalFogEnd or 100000
+            Lighting.FogStart = OriginalFogStart or 0
+            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกกลับมาแล้ว", Duration = 3})
+        end
+    end
+})
+
+-- รองรับ Load Config
+task.spawn(function()
+    task.wait(1)
+    if ToggleFog.CurrentValue then
+        ToggleFog.Callback(true)
+    end
+end)
+
+local Section2 = extraTab:CreateSection("[ - 99 Night Forest - ]")
+
+extraTab:CreateButton({Name = "[S]  รัน Somtank Hub [ - สคริปแนะนำ - 1 - ]  [S]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
+extraTab:CreateButton({Name = "[F]  รัน FoxName Hub [ - สคริปแนะนำ - 2 - ]  [F]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
+extraTab:CreateButton({Name = "[R]  รัน RaBade [ - สคริปแนะนำ - 3 - ]   [R]", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
+
+local Section3 = extraTab:CreateSection("[ - โซนดึงของ - ]")
+
+extraTab:CreateButton({Name = "[C] เติมแคมไฟ   [C]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getfire"))() end})
+extraTab:CreateButton({Name = "[B] ดึงผ้าพันแผลเข้าตัวละคร   [B]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getbandage"))() end})
+extraTab:CreateButton({Name = "[O] ดึงเหล็กเข้าตัวละคร   [O]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+
+local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
+local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
+
+mamaTab:CreateButton({Name = "[I]  รัน Infinite Yield      [I]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))() end})
+mamaTab:CreateButton({Name = "[T]  รัน Teleport Hub    [T]", Callback = function()  loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))() end})
+mamaTab:CreateButton({Name = "[D]  รันประตูมิติ  [ .กดตัว T. ]   [D]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Mesui%20Hub%20V2"))() end})
+
+local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
+
+mamaTab:CreateButton({Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))() end})
+
+local Section2 = mamaTab:CreateSection("[ - สคริประยะการโจมตี  -")
+
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 50 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))() end})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 20 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/BXXEmeE1"))() end})
+mamaTab:CreateButton({Name = "[H]  ปิด Hitbox [ - ปิด - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/RYHm668P"))() end})
+
+local Section3 = mamaTab:CreateSection("[ - สคริปรวม  -")
+
+mamaTab:CreateButton({Name = "[F]  รัน Touch Fling     [F]", Callback = function() loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))() end})
+
+local creditTab = Window:CreateTab("fps/Executer", "square-activity")
+local Section1 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateButton({Name = "[K]  รัน Kick เพื่อเช็คตัวรัน Xeno     [K]", Callback = function() game.Players.LocalPlayer:Kick("1️⃣ [ Mesui X On Top ] 1️⃣") end})
+
+local Section2 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel("fps   | & 57.0 |")
+creditTab:CreateLabel("Executer Use / ตัวรันที่ใช้   | .Xeno. |")
+creditTab:CreateLabel("แมพที่เขียนสคริปหรือโปร [ - Public Office Simulator - ]")
+
+local Section3 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Computer.  1. Wave 2. Zenith 3. Valex 4. Swift 5. Xeno 6. Solara")
+
+local Section4 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Mobile.  1. Delta 2. Krl 3. Cryptic 4. Evon 5. CodeX 6. Trigon")
+
+local Section5 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Mac.  1. Hydrogen 2. Macsploit 3. Synapse Mac")
+
+local Section6 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+creditTab:CreateLabel(".Executer Exeternel.  1. Valex 2. DX9 Ware 3. Ronin 4. Serotonin 5. Photon 6. Isabelle 7. Melatonin 8. Assembly 9. Yerba 10. Matrix Hub 11. Matcha")
+
+local Section7 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
+
+-- อัปเดตลูป
+RS.RenderStepped:Connect(function()
+    if flying and vv and gyro and hrp and humanoid then
+        local cam = workspace.CurrentCamera
+        if not cam then return end
+ 
+        local flatForward = Vector3.new(cam.CFrame.LookVector.X,0,cam.CFrame.LookVector.Z)
+        local forward = flatForward.Magnitude > 0 and flatForward.Unit or Vector3.zero
+        local right = Vector3.new(cam.CFrame.RightVector.X,0,cam.CFrame.RightVector.Z)
+        if right.Magnitude > 0 then right = right.Unit end
+ 
+        local moveVec = Vector3.zero
+        if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + Vector3.new(0,0,1) end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec + Vector3.new(0,0,-1) end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec + Vector3.new(-1,0,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + Vector3.new(1,0,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0,1,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec = moveVec + Vector3.new(0,-1,0) end
+ 
+        local desired = forward*moveVec.Z + right*moveVec.X + Vector3.new(0,moveVec.Y,0)
+        if desired.Magnitude>0 then desired = desired.Unit*flySpeed end
+        vv.Velocity = desired
+ 
+        if desired.Magnitude>1 then
+            local flatDir = Vector3.new(desired.X,0,desired.Z)
+            if flatDir.Magnitude>0 then gyro.CFrame = CFrame.new(hrp.Position,hrp.Position+flatDir) end
+        end
+    end
+end)
+ 
+RS.Stepped:Connect(function()
+    if noclipEnabled and char then
+        for _,part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide=false end
+        end
+    end
+end)
+ 
+UIS.JumpRequest:Connect(function()
+    if infJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    if infJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+ 
+-- รีเซ็ตตัวละครเมื่อ respawn
+player.CharacterAdded:Connect(function(c)
+    char=c
+    hrp=c:WaitForChild("HumanoidRootPart")
+    humanoid=c:WaitForChild("Humanoid")
+    stopFlying()
+    toggleSpeed(false)
+    noclipEnabled=false
+  infJumpEnabled=false
+    Rayfield:LoadConfiguration()
+end)
