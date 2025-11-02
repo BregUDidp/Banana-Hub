@@ -47,7 +47,7 @@ KeyTab:CreateParagraph({
 
 local Dropdown = KeyTab:CreateDropdown({
    Name = "แมพที่มีฟังชั่นเล่นของสคริป",
-   Options = {"" ,"[ 99 Night Forest ]","[ Arsenal ]","[ FPS Flick ]","[ Ability Wars ]","[ Be A Parkour Ninja ]"},
+   Options = {"" ,"[ 99 Night Forest ]","[ Arsenal ]","[ FPS Flick ]","[ Ability Wars ]","[ Be A Parkour Ninja ]","[ Natural Disaster Survival ]"},
    CurrentOption = {"ดูแมพอื่นๆ"},
    MultipleOptions = false,
    Flag = "Dropdown1",
@@ -68,7 +68,9 @@ local Section1 = ATab:CreateSection("[ เลือกสคริปแต่�
 
 ATab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริปเลยตรงคำว่าการล็อคเป๋าหมาย"
+    Content = "สคริปตรงโซนพวกนี้สามารถรันได้เลย"
 })
 
-ATab:CreateButton({Name = "[ 🎯 ] กดรันสคริป การล็อคเป๋าหมาย ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+ATab:CreateButton({Name = "[ 🎯 ] กดรันสคริป การล็อคเป๋าหมายแมพที่ใช้การล็อคเป๋า ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+ATab:CreateButton({Name = "[ 🌲 ] กดรันสคริป แมพ 99 คืน ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/99%20Night"))() end})
+ATab:CreateButton({Name = "[ 👻 ] กดรันสคริป แกล้งคนแมพพัยพิบัติ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/axioshubxmirror/ScriptLoader/refs/heads/main/Mirror"))() end})
