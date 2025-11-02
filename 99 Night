@@ -45,7 +45,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
-local Section1 = extraTab:CreateSection("[🌲]  โซนดึงของ  [🌲]")
+local Section1 = extraTab:CreateSection("[🌲]  โซนวาป  [🌲]")
 
 -- Services
 local Players = game:GetService("Players")
@@ -85,23 +85,9 @@ local function teleportTo(pos, name)
 end
 
 extraTab:CreateButton({
-    Name = "🦁 วาปไปลงดันหรือสตรองโหว์",
-    Callback = function()
-        teleportTo(Positions.Stronghold, "Stronghold")
-    end
-})
-
-extraTab:CreateButton({
     Name = "⛺ วาปไปแคมไฟ",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
-    end
-})
-
-extraTab:CreateButton({
-    Name = "🦌 วาปไปหาคนเทรดเดอร์",
-    Callback = function()
-        teleportTo(Positions.Traders, "Traders")
     end
 })
 
@@ -166,7 +152,7 @@ task.spawn(function()
     end
 end)
 
-local Section = extraTab:CreateSection("[🌲] โซนสคริป 99 คืน [🌲]")
+local Section = extraTab:CreateSection("[🌲] โซนสคริป 99 คืนและดึงของ [🌲]")
 
 extraTab:CreateButton({Name = "[S]  รัน Somtank Hub [ - สคริปแนะนำ - 1 - ]  [S]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
 extraTab:CreateButton({Name = "[F]  รัน FoxName Hub [ - สคริปแนะนำ - 2 - ]  [F]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
