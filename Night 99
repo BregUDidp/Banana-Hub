@@ -1,0 +1,114 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+    Name = "99 Nights in the Forest Hub",
+    LoadingTitle = "Loading Survival Tools...",
+    LoadingSubtitle = "by Grok Assistant",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "99NightsHub",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false,
+    },
+    KeySystem = false
+})
+
+local TeleportTab = Window:CreateTab("Teleports", 4483362458)
+local CombatTab = Window:CreateTab("Combat", 4483362458)
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Variables
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local GodModeEnabled = false
+
+-- Teleport Positions (Approximate; adjust based on your server/map)
+local Positions = {
+    Stronghold = Vector3.new(1500, 50, 1200),  -- Common spawn; check map diamond icon
+    Campfire = Vector3.new(0, 10, 0),           -- Your base
+    Traders = Vector3.new(-500, 20, 300)        -- Trader NPC area
+}
+
+-- TP Function
+local function teleportTo(pos, name)
+    if HumanoidRootPart then
+        HumanoidRootPart.CFrame = CFrame.new(pos)
+        Rayfield:Notify({
+            Title = "Teleport Success",
+            Content = "Teleported to " .. name .. "!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Error",
+            Content = "Character not loaded!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+end
+
+-- Teleport Tab
+local StrongholdSection = TeleportTab:CreateSection("Locations")
+
+TeleportTab:CreateButton({
+    Name = "TP to Stronghold",
+    Callback = function()
+        teleportTo(Positions.Stronghold, "Stronghold")
+    end
+})
+
+TeleportTab:CreateButton({
+    Name = "TP to Campfire",
+    Callback = function()
+        teleportTo(Positions.Campfire, "Campfire")
+    end
+})
+
+TeleportTab:CreateButton({
+    Name = "TP to Traders",
+    Callback = function()
+        teleportTo(Positions.Traders, "Traders")
+    end
+})
+
+-- Combat Tab: God Mode Toggle
+local GodSection = CombatTab:CreateSection("God Mode")
+
+CombatTab:CreateToggle({
+    Name = "God Mode (Infinite Health)",
+    CurrentValue = false,
+    Callback = function(Value)
+        GodModeEnabled = Value
+        if Value then
+            local Humanoid = Character:WaitForChild("Humanoid")
+            Humanoid.MaxHealth = math.huge
+            Humanoid.Health = math.huge
+            Rayfield:Notify({Title = "God Mode ON", Content = "You are invincible!", Duration = 3})
+        else
+            local Humanoid = Character:WaitForChild("Humanoid")
+            Humanoid.MaxHealth = 100
+            Humanoid.Health = 100
+            Rayfield:Notify({Title = "God Mode OFF", Content = "Normal health restored.", Duration = 3})
+        end
+    end
+})
+
+-- Auto-reconnect on character respawn
+LocalPlayer.CharacterAdded:Connect(function(newChar)
+    Character = newChar
+    HumanoidRootPart = newChar:WaitForChild("HumanoidRootPart")
+end)
+
+Rayfield:Notify({
+    Title = "Hub Loaded",
+    Content = "Enjoy surviving 99 nights! Raid the Stronghold for diamonds.",
+    Duration = 5,
+    Image = 4483362458
+})
