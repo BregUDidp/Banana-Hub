@@ -6,7 +6,6 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 10
 })
 
-
 game.StarterGui:SetCore("SendNotification", {
     Title = "[ สร้างโดย ] 💤 - ZelX - 💤",
     Text = "________________________________________________________",
