@@ -815,7 +815,7 @@ local OriginalFogStart = game:GetService("Lighting").FogStart
 local FogLoopConnection = nil
 
 local ToggleFog = extraTab:CreateToggle({
-    Name = "[D] กด Delth Fog    [D]",
+    Name = "[D] กด Deleth Fog    [D]",
     CurrentValue = false,
     Flag = "ToggleFog",
     Callback = function(val)
