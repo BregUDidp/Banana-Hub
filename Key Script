@@ -56,11 +56,11 @@ local Dropdown = KeyTab:CreateDropdown({
    end,
 })
 
-KeyTab:CreateButton({Name = "กดรับสคริปล่าสุด", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริปล่าสุด", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริป"
+    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
 })
 
 local ATab = Window:CreateTab("เลือกสคริปที่จะเล่น", "settings")
@@ -68,7 +68,7 @@ local Section1 = ATab:CreateSection("[ เลือกสคริปแต่�
 
 ATab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริป"
+    Content = "กดรันสคริปเลยตรงคำว่าการล็อคเป๋าหมาย"
 })
 
 ATab:CreateButton({Name = "[ 🎯 ] กดรันสคริป การล็อคเป๋าหมาย ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
