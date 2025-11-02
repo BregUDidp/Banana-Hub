@@ -1,24 +1,11 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
-game.StarterGui:SetCore("SendNotification", {
-    Title = "🗺️ [ รันได้ทุกแมพ ] 🗺️",
-    Text = "________________________________________________________",
-    Duration = 10
-})
-
-game.StarterGui:SetCore("SendNotification", {
-    Title = "[ สร้างโดย ] 💤 - ZelX - 💤",
-    Text = "________________________________________________________",
-    Duration = 10
-})
-wait(1)
-
 local Window = Rayfield:CreateWindow({
-   Name = "  [  🎯  ]  |  ProJect  Mesui   [ V-8.0 ]",
+   Name = "  [  🎯  ]  |  Project  Mesui   [ V-8.0 ]",
    Icon = "notebook-tabs",
-   LoadingTitle = "💤 Mesui X 💤   กำลังโหลด...",
+   LoadingTitle = "[ ⭐ ] .UNDETECTED. 100% [ ⭐ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "💤",
+   ShowText = "🎯",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -850,7 +837,7 @@ local function teleportTo(pos, name)
 end
 
 extraTab:CreateButton({
-    Name = "⛺ วาปไปแคมไฟ",
+    Name = "[C] วาปไปแคมไฟ   [C]",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
     end
@@ -934,7 +921,7 @@ local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมม
 
 mamaTab:CreateButton({Name = "[I]  รัน Infinite Yield      [I]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))() end})
 mamaTab:CreateButton({Name = "[T]  รัน Teleport Hub    [T]", Callback = function()  loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))() end})
-mamaTab:CreateButton({Name = "[D]  รันประตูมิติ  [ .กดตัว T. ]   [D]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Mesui%20Hub%20V2"))() end})
+mamaTab:CreateButton({Name = "[D]  รัน Kamui Hub  [ .กดตัว T. ]   [D]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/0gtJbYWV"))() end})
 
 local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
 
