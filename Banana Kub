@@ -871,140 +871,36 @@ task.spawn(function()
     end
 end)
 
-local Section2 = extraTab:CreateSection("[ Kill Aura [- 99 Night Forest -] ]")
-
-extraTab:CreateButton({
-    Name = "[K]  รัน Kill Aura [ .กดตัว Z. ]    [K]",
-    Callback = function()
-        Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/raXZPKJ7"))()
-    end
-})
-
 local Section2 = extraTab:CreateSection("[ - 99 Night Forest - ]")
 
-extraTab:CreateButton({
-    Name = "[S]  รัน Somtank Hub [ - สคริปแนะนำ - 1 - ]  [S]",
-    Callback = function()
-        Rayfield:Notify({Title = "💣 กำลังโหลด สคริป 💣...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[F]  รัน FoxName Hub [ - สคริปแนะนำ - 2 - ]  [F]",
-    Callback = function()
-        Rayfield:Notify({Title = "🦊 กำลังโหลด สคริป 🦊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[C]  รัน  CPS Hub   [C]",
-    Callback = function()
-        Rayfield:Notify({Title = "🍊 กำลังโหลด สคริป 🍊...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Rx1m/CpsHub/refs/heads/main/Hub",true))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[E]  รัน Elude Hub  [E]",
-    Callback = function()
-        Rayfield:Notify({Title = "🍷 กำลังโหลด สคริป 🍷...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkenedEssence/Elude/refs/heads/main/Loader.lua"))()
-    end
-})
-
-extraTab:CreateButton({
-    Name = "[R]  รัน RaBade [ - สคริปแนะนำ - 3 - ]   [R]",
-    Callback = function()
-        Rayfield:Notify({Title = "🟪 กำลังโหลด สคริป 🟪...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))()
-    end
-})
+extraTab:CreateButton({Name = "[S]  รัน Somtank Hub [ - สคริปแนะนำ - 1 - ]  [S]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
+extraTab:CreateButton({Name = "[F]  รัน FoxName Hub [ - สคริปแนะนำ - 2 - ]  [F]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
+extraTab:CreateButton({Name = "[R]  รัน RaBade [ - สคริปแนะนำ - 3 - ]   [R]", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
 
 local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
 local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
 
-mamaTab:CreateButton({
-    Name = "[I]  รัน Infinite Yield      [I]",
-    Callback = function()
-        Rayfield:Notify({Title = "♾️ กำลังโหลด สคริป ♾️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
-    end
-})
-
-mamaTab:CreateButton({
-   Name = "[T]  รัน Teleport Hub    [T]",
-   Callback = function()
-       Rayfield:Notify({Title = "📱 กำลังโหลด สคริป 📱...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
-   end,
-})
+mamaTab:CreateButton({Name = "[I]  รัน Infinite Yield      [I]", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))() end})
+mamaTab:CreateButton({Name = "[T]  รัน Teleport Hub    [T]", Callback = function()  loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))() end})
 
 local Section1 = mamaTab:CreateSection("[ - สคริปแปลงร่าง - ]")
 
-mamaTab:CreateButton({
-    Name = "[S]  รัน Sandeviston [ - กดตัว F - ]       [S]",
-    Callback = function()
-        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/idbiRMZG"))()
-    end
-})
-
-mamaTab:CreateButton({
-    Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]",
-    Callback = function()
-        Rayfield:Notify({Title = "👟 กำลังโหลด สคริป 👟...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-        loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))()
-    end
-})
+mamaTab:CreateButton({Name = "[W]  รัน Wally West [ - กดตัว Q - ]       [W]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/VDxFA1Ze"))() end})
 
 local Section2 = mamaTab:CreateSection("[ - สคริประยะการโจมตี  -")
 
-mamaTab:CreateButton({
-   Name = "[H]  รัน Hitbox [ - 50 - ]    [H]",
-   Callback = function()
-       Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))()
-   end,
-})
-
-mamaTab:CreateButton({
-   Name = "[H]  รัน Hitbox [ - 20 - ]    [H]",
-   Callback = function()
-       Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Hitbox"))()
-   end,
-})
-
-mamaTab:CreateButton({
-   Name = "[H]  ปิด Hitbox [ - ปิด - ]    [H]",
-   Callback = function()
-       Rayfield:Notify({Title = "⚔️ กำลังโหลด สคริป ⚔️...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://pastebin.com/raw/RYHm668P"))()
-   end,
-})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 50 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))() end})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 20 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Hitbox"))() end})
+mamaTab:CreateButton({Name = "[H]  ปิด Hitbox [ - ปิด - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/RYHm668P"))() end})
 
 local Section3 = mamaTab:CreateSection("[ - สคริปรวม  -")
 
-mamaTab:CreateButton({
-   Name = "[F]  รัน Touch Fling     [F]",
-   Callback = function()
-       Rayfield:Notify({Title = "🌀 กำลังโหลด สคริป 🌀...", Content = "กรุณารอสักครู่", Duration = 3, Image = 4483362458})
-       loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))()
-   end,
-})
+mamaTab:CreateButton({Name = "[F]  รัน Touch Fling     [F]", Callback = function() loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))() end})
 
 local creditTab = Window:CreateTab("fps/Executer", "square-activity")
 local Section1 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
-creditTab:CreateButton({
-   Name = "[K]  รัน Kick เพื่อเช็คตัวรัน Xeno     [K]",
-   Callback = function()
-       game.Players.LocalPlayer:Kick("1️⃣ [ Mesui X On Top ] 1️⃣")
-   end,
-})
+creditTab:CreateButton({Name = "[K]  รัน Kick เพื่อเช็คตัวรัน Xeno     [K]", Callback = function() game.Players.LocalPlayer:Kick("1️⃣ [ Mesui X On Top ] 1️⃣") end})
 
 local Section2 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
