@@ -73,4 +73,3 @@ ATab:CreateParagraph({
 
 ATab:CreateButton({Name = "[ 🎯 ] กดรันสคริป การล็อคเป๋าหมายแมพที่ใช้การล็อคเป๋า ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
 ATab:CreateButton({Name = "[ 🌲 ] กดรันสคริป แมพ 99 คืน ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/99%20Night"))() end})
-ATab:CreateButton({Name = "[ 👻 ] กดรันสคริป แกล้งคนแมพพัยพิบัติ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/axioshubxmirror/ScriptLoader/refs/heads/main/Mirror"))() end})
