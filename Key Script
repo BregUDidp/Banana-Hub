@@ -11,18 +11,18 @@ local Window = Rayfield:CreateWindow({
    ToggleUIKeybind = "F",
 
    DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+   DisableBuildWarnings = false,
 
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
+      FolderName = nil,
       FileName = "Big Hub"
    },
 
    Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "ABCD", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+      Enabled = false,
+      Invite = "ABCD",
+      RememberJoins = true
    },
 
    KeySystem = false,
@@ -40,15 +40,7 @@ local Window = Rayfield:CreateWindow({
 local KeyTab = Window:CreateTab("Bypass Setting", "cog")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
-local Toggle = KeyTab:CreateToggle({
-   Name = "[ 🎁 Click Bypass ]",
-   CurrentValue = false,
-   Flag = "Toggle1",
-   Callback = function(Value)
-       Rayfield:Notify({Title = "Bypass Script กำลังโหลด... ✅", Content = "กรุณารอสักครู่ใกล้จะเสร็จแล้ว", Duration = 3, Image = 4483362458})
-	   Rayfield:Notify({Title = "เปิด Bypass แล้วพร้อมรันสคริป", Content = "รันสคริปค่ายของเรา", Duration = 3, Image = 4483362458})
-   end,
-})
+KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ   ✅ ]", Duration = 1, Image = "toggle-right"}) end})
 
 local Section2 = KeyTab:CreateSection("[ Bypass Ban ]")
 
