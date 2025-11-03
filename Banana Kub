@@ -845,24 +845,7 @@ extraTab:CreateButton({
 
 local Section2 = extraTab:CreateSection("[🌲]  โซนอมตะและลบหมอก     [🌲]")
 
-extraTab:CreateToggle({
-    Name = "[G] รัน God Mode   [G]",
-    CurrentValue = false,
-    Callback = function(Value)
-        GodModeEnabled = Value
-        if Value then
-            local Humanoid = Character:WaitForChild("Humanoid")
-            Humanoid.MaxHealth = math.huge
-            Humanoid.Health = math.huge
-            Rayfield:Notify({Title = "God Mode ON", Content = "You are invincible!", Duration = 3})
-        else
-            local Humanoid = Character:WaitForChild("Humanoid")
-            Humanoid.MaxHealth = 100
-            Humanoid.Health = 100
-            Rayfield:Notify({Title = "God Mode OFF", Content = "Normal health restored.", Duration = 3})
-        end
-    end
-})
+extraTab:CreateButton({Name = "[G]  รัน อมตะ   [G]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/godmode"))() end})
 
 -- === ลบหมอกถาวร ===
 local OriginalFogEnd = game:GetService("Lighting").FogEnd
@@ -912,9 +895,9 @@ extraTab:CreateButton({Name = "[R]  รัน RaBade [ - สคริปแน�
 
 local Section3 = extraTab:CreateSection("[ - โซนดึงของ - ]")
 
-extraTab:CreateButton({Name = "[C] เติมแคมไฟ   [C]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getfire"))() end})
-extraTab:CreateButton({Name = "[B] ดึงผ้าพันแผลเข้าตัวละคร   [B]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getbandage"))() end})
-extraTab:CreateButton({Name = "[O] ดึงเหล็กเข้าตัวละคร   [O]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+extraTab:CreateButton({Name = "[C]  เติมแคมไฟ   [C]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getfire"))() end})
+extraTab:CreateButton({Name = "[B]  ดึงผ้าพันแผลเข้าตัวละคร   [B]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getbandage"))() end})
+extraTab:CreateButton({Name = "[O]  ดึงเหล็กเข้าตัวละคร   [O]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
 
 local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
 local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
