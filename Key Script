@@ -63,6 +63,7 @@ local Dropdown = KeyTab:CreateDropdown({
 })
 
 KeyTab:CreateButton({Name = "กดรันสคริปล่าสุด", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริปล็อคเป๋า", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
