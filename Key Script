@@ -42,7 +42,9 @@ local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
 KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ   ✅ ]", Duration = 1, Image = "toggle-right"}) end})
 
-local Section2 = KeyTab:CreateSection("[ Bypass Ban ]")
+local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
+
+wait(2)
 
 KeyTab:CreateParagraph({
     Title = "เลือกดูแมพ",
