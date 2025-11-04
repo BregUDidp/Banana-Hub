@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "  [  🎯  ]  |  Project  Mesui   [ V-8.0 ]",
-   Icon = "notebook-tabs",
+   Name = "   |  Project  Mesui   [ V-8.1 ]",
+   Icon = "webhook",
    LoadingTitle = "[ ⭐ ] .UNDETECTED. 100% [ ⭐ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🎯",
