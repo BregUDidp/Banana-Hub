@@ -1,0 +1,540 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+   Name = "   |  Aimbot  |  Mesui  [ V-8.2 ]",
+   Icon = "scan-eye",
+   LoadingTitle = "[ 🎯 |  Aimbot   Function ]",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "1",
+   Theme = "Brown",
+
+   ToggleUIKeybind = "F",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local ESPTab = Window:CreateTab("Aimbot / ESP  [ 1 ]", "crosshair")
+local Section = ESPTab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนและมองคน [🎯]")
+
+local Players       = game:GetService("Players")
+local LocalPlayer   = Players.LocalPlayer
+local Camera        = workspace.CurrentCamera
+local UserInput     = game:GetService("UserInputService")
+local RunService    = game:GetService("RunService")
+
+local fovEnabled = false
+local fovRadius = 150
+local fovThickness = 2
+local fovSpeed = 0.6
+local fovFollowMouse = false
+local fovCircle = nil
+local DrawingAvailable = (typeof(Drawing) == "table" and typeof(Drawing.new) == "function")
+
+--// Rainbow Color
+local function getRainbowColor(speed, offset)
+    local hue = (tick() * (speed or 1) + (offset or 0)) % 1
+    return Color3.fromHSV(hue, 1, 1)
+end
+
+--// Create FOV Circle
+local function createFOVCircle()
+    if not DrawingAvailable or fovCircle then return end
+    fovCircle = Drawing.new("Circle")
+    fovCircle.Visible = false
+    fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.NumSides = 100
+    fovCircle.Filled = false
+    fovCircle.Transparency = 1
+end
+
+--// FOV Render
+RunService.RenderStepped:Connect(function()
+    if not fovEnabled or not fovCircle then
+        if fovCircle then fovCircle.Visible = false end
+        return
+    end
+
+    local pos
+    if fovFollowMouse then
+        local mouse = UserInput:GetMouseLocation()
+        pos = Vector2.new(mouse.X, mouse.Y)
+    else
+        local size = Camera.ViewportSize
+        pos = Vector2.new(size.X / 2, size.Y / 2)
+    end
+
+    fovCircle.Position = pos
+    fovCircle.Radius = fovRadius
+    fovCircle.Thickness = fovThickness
+    fovCircle.Color = autoTarget and Color3.fromRGB(255, 0, 0) or getRainbowColor(fovSpeed)
+    fovCircle.Visible = true
+end)
+
+--// Find Closest in FOV
+local function GetClosestInFOV()
+    local closest = nil
+    local closestDist = math.huge
+    local mousePos = UserInput:GetMouseLocation()
+    local centerPos = fovFollowMouse and mousePos or Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local headPos = player.Character.Head.Position
+                local screenPos, onScreen = Camera:WorldToViewportPoint(headPos)
+
+                if onScreen then
+                    local screenPoint = Vector2.new(screenPos.X, screenPos.Y)
+                    local distToCenter = (screenPoint - centerPos).Magnitude
+
+                    if distToCenter <= fovRadius then
+                        local distToMouse = (screenPoint - mousePos).Magnitude
+                        if distToMouse < closestDist then
+                            closestDist = distToMouse
+                            closest = player
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+--// 🔥 SMOOTH AIMBOT TOGGLE (ด้านบนสุด)
+ESPTab:CreateToggle({
+    Name = "🎯 การล็อคเป๋าหมายคน [ .ต้องเปิดวงกลมก่อน. ]",
+    CurrentValue = false,
+    Callback = function(val)
+        aimbotOn = val
+        if not val then autoTarget = nil end
+    end
+})
+
+--// Smooth Aimbot Toggle
+ESPTab:CreateToggle({
+    Name = "✨ การล็อคเป๋าหมายคนแบบลื่นๆ [ .ปิดและเปิดใหม่. ]",
+    CurrentValue = true,
+    Callback = function(val)
+        smoothEnabled = val
+    end
+})
+
+--// Smooth Speed Slider
+ESPTab:CreateSlider({
+    Name = "⚡ ความเร็วของการล็อคเป๋าหมายคน",
+    Range = {1, 30},
+    Increment = 1,
+    CurrentValue = 8,
+    Suffix = "x",
+    Callback = function(val)
+        smoothSpeed = 0.12 / (val / 8)  -- แปลง 1-30 → 0.22-0.03
+    end
+})
+
+--// 🔥 SMOOTH AIMBOT LOOP (นุ่มนวล 100%)
+RunService.RenderStepped:Connect(function()
+    if aimbotOn and fovEnabled then
+        autoTarget = GetClosestInFOV()
+        
+        if autoTarget and autoTarget.Character and autoTarget.Character:FindFirstChild("Head") then
+            local targetPos = autoTarget.Character.Head.Position
+            
+            if smoothEnabled then
+                -- 🔥 SMOOTH AIM: หมุนกล้องแบบนุ่มนวล
+                local currentCFrame = Camera.CFrame
+                local targetCFrame = CFrame.new(currentCFrame.Position, targetPos)
+                Camera.CFrame = currentCFrame:lerp(targetCFrame, smoothSpeed)
+            else
+                -- Instant Aim
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPos)
+            end
+        end
+    else
+        autoTarget = nil
+    end
+end)
+
+ESPTab:CreateSection("[🌀] โซนเปิดวงกลมตรงหน้าจอ [🌀]")
+
+ESPTab:CreateToggle({
+    Name = "🌀 เปิดวงกลม",
+    CurrentValue = false,
+    Callback = function(val)
+        fovEnabled = val
+        if val then createFOVCircle() end
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🖱️ วงกลมตามเมาส์",
+    CurrentValue = false,
+    Callback = function(val)
+        fovFollowMouse = val
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ปรับเส้นวงกลมให้ใหญ่ขึ้น",
+    Range = {10, 1000},
+    Increment = 1,
+    CurrentValue = 150,
+    Suffix = "px",
+    Callback = function(val)
+        fovRadius = val
+        if fovCircle then fovCircle.Radius = val end
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "📏 ปรับความหนาของเส้นวงกลม",
+    Range = {1, 10},
+    Increment = 1,
+    CurrentValue = 2,
+    Suffix = "px",
+    Callback = function(val)
+        fovThickness = val
+        if fovCircle then fovCircle.Thickness = val end
+    end
+})
+
+--// =================================== --
+--//                ESP                 --
+--// =================================== --
+
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
+
+local function rainbow(speed, offset)
+    local t = tick() * (speed or 1) + (offset or 0)
+    return Color3.fromHSV(t % 1, 1, 1)
+end
+
+local function createESP(player)
+    if not DrawingAvailable or espBoxes[player] then return end
+    local box = {}
+    box.main = Drawing.new("Square")
+    box.main.Thickness = 2
+    box.main.Filled = false
+    box.main.Visible = false
+
+    box.name = Drawing.new("Text")
+    box.name.Size = 16
+    box.name.Center = true
+    box.name.Outline = true
+    box.name.Visible = false
+
+    box.tracer = Drawing.new("Line")
+    box.tracer.Thickness = 2
+    box.tracer.Visible = false
+
+    espBoxes[player] = box
+end
+
+local function removeESP(player)
+    local box = espBoxes[player]
+    if box then
+        pcall(function()
+            box.main:Remove()
+            box.name:Remove()
+            box.tracer:Remove()
+        end)
+        espBoxes[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if not DrawingAvailable then return end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                if espEnabled then
+                    createESP(player)
+                    local box = espBoxes[player]
+                    local root = player.Character.HumanoidRootPart
+                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+                    if onScreen then
+                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
+                        local size = Vector2.new(scale * 0.6, scale)
+                        local center = Vector2.new(pos.X, pos.Y)
+
+                        box.main.Size = size
+                        box.main.Position = center - size/2
+                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
+                        box.main.Visible = true
+
+                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
+                        box.name.Text = player.Name .. ((autoTarget == player) and " 🎯 เล็งหัวตัวละครแล้ว" or "")
+                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
+                        box.name.Visible = true
+
+                        if espTraceEnabled then
+                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                            box.tracer.From = screenCenter
+                            box.tracer.To = center
+                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
+                            box.tracer.Visible = true
+                        end
+                    else
+                        box.main.Visible = false
+                        box.name.Visible = false
+                        box.tracer.Visible = false
+                    end
+                else
+                    removeESP(player)
+                end
+            else
+                removeESP(player)
+            end
+        else
+            removeESP(player)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(removeESP)
+
+--// ESP UI
+ESPTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น [🔍]")
+
+ESPTab:CreateToggle({
+    Name = "🔍 เปิดการมองเห็นคน",
+    CurrentValue = false,
+    Callback = function(val)
+        espEnabled = val
+        if not val then
+            for p,_ in pairs(espBoxes) do removeESP(p) end
+        end
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "🔍 เปิดเส้นแบบอัตโนมัต",
+    CurrentValue = true,
+    Callback = function(val)
+        espTraceEnabled = val
+    end
+})
+
+local ATab = Window:CreateTab("Aimbot  [ 2 ]", "target")
+local Section = ATab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนแบบดี [🎯]")
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local cam = workspace.CurrentCamera
+local input = game:GetService("UserInputService")
+local run = game:GetService("RunService")
+local screenSize = cam.ViewportSize
+
+-- Settings
+local target = nil
+local fovRadius = 120
+local showFov = false  -- เริ่มปิด
+local smoothness = 0.12
+local prediction = 0.135
+local rainbowSpeed = 3
+local rainbowHue = 0
+
+-- Drawing Objects
+local fovCircle = nil
+local lockLine = nil
+local targetName = nil
+local hpText = nil
+
+-- Rainbow Function
+local function getRainbow()
+    rainbowHue = (rainbowHue + (rainbowSpeed / 1000)) % 1
+    return Color3.fromHSV(rainbowHue, 1, 1)
+end
+
+-- Create FOV Circle
+local function createFovCircle()
+    if fovCircle then fovCircle:Remove() end
+    local c = Drawing.new("Circle")
+    c.Thickness = 3
+    c.Filled = false
+    c.Transparency = 1
+    c.NumSides = 80
+    c.Position = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+    return c
+end
+
+-- Create Lock Line
+local function createLockLine()
+    if lockLine then lockLine:Remove() end
+    local l = Drawing.new("Line")
+    l.Thickness = 3
+    l.Transparency = 1
+    return l
+end
+
+-- Create Target Name
+local function createTargetName()
+    if targetName then targetName:Remove() end
+    local t = Drawing.new("Text")
+    t.Size = 18
+    t.Center = true
+    t.Outline = true
+    t.Font = 2
+    return t
+end
+
+-- Create HP Text
+local function createHpText()
+    if hpText then hpText:Remove() end
+    local t = Drawing.new("Text")
+    t.Size = 16
+    t.Center = true
+    t.Outline = true
+    t.Font = 2
+    return t
+end
+
+-- Initialize
+fovCircle = createFovCircle()
+lockLine = createLockLine()
+targetName = createTargetName()
+hpText = createHpText()
+
+-- Get Closest in FOV
+local function GetClosestInFOV()
+    local closest = nil
+    local dist = math.huge
+    local center = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+
+    for _, v in pairs(plrs:GetPlayers()) do
+        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local head = v.Character.Head
+            local pos, onScreen = cam:WorldToViewportPoint(head.Position)
+            if onScreen then
+                local screenPos = Vector2.new(pos.X, pos.Y)
+                local mag = (screenPos - center).Magnitude
+                if mag <= fovRadius and mag < dist then
+                    dist = mag
+                    closest = v
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Predict Position
+local function getPredictedPosition(head)
+    local root = head.Parent:FindFirstChild("HumanoidRootPart")
+    if root then
+        local v = root.Velocity
+        local d = (cam.CFrame.Position - head.Position).Magnitude
+        return head.Position + (v * d * prediction / 100)
+    end
+    return head.Position
+end
+
+-- Main Loop
+run.RenderStepped:Connect(function()
+    local rainbow = getRainbow()
+    local center = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+
+    -- FOV Circle + Aimbot Control
+    if showFov then
+        fovCircle.Position = center
+        fovCircle.Radius = fovRadius
+        fovCircle.Color = rainbow
+        fovCircle.Visible = true
+
+        -- Aimbot ทำงานเมื่อ FOV เปิด
+        target = GetClosestInFOV()
+        if target and target.Character and target.Character:FindFirstChild("Head") and target.Character:FindFirstChild("Humanoid") then
+            local head = target.Character.Head
+            local hum = target.Character.Humanoid
+            local pred = getPredictedPosition(head)
+            local targetCF = CFrame.new(cam.CFrame.Position, pred)
+            cam.CFrame = cam.CFrame:Lerp(targetCF, smoothness)
+
+            -- Lock Line
+            local headPos = cam:WorldToViewportPoint(pred)
+            lockLine.From = center
+            lockLine.To = Vector2.new(headPos.X, headPos.Y)
+            lockLine.Color = rainbow
+            lockLine.Visible = true
+
+            -- Target Name
+            targetName.Text = target.DisplayName
+            targetName.Position = Vector2.new(headPos.X, headPos.Y - 40)
+            targetName.Color = rainbow
+            targetName.Visible = true
+
+            -- HP in FOV
+            local hpPercent = math.floor((hum.Health / hum.MaxHealth) * 100)
+            hpText.Text = hum.Health .. "/" .. hum.MaxHealth .. " (" .. hpPercent .. "%)"
+            hpText.Position = center
+            hpText.Color = rainbow
+            hpText.Visible = true
+
+            fovCircle.Thickness = 4  -- หนาเมื่อล็อค
+        else
+            lockLine.Visible = false
+            targetName.Visible = false
+            hpText.Visible = false
+            fovCircle.Thickness = 3
+        end
+    else
+        -- ปิด FOV = ปิด Aimbot
+        fovCircle.Visible = false
+        lockLine.Visible = false
+        targetName.Visible = false
+        hpText.Visible = false
+        target = nil
+    end
+end)
+
+-- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
+ATab:CreateToggle({
+    Name = "[ 🎯 ]  ปิด/เปิด การล็อคเป๋าหมายคนแบบลื่นๆ",
+    CurrentState = false,
+    Callback = function(v) 
+        showFov = v
+    end
+})
+
+ATab:CreateSlider({
+    Name = "[ 📏 ]  ปรับเส้นวงกลม",
+    Range = {50, 300}, Increment = 5, CurrentValue = 120,
+    Callback = function(v) fovRadius = v end
+})
+
+ATab:CreateSlider({
+    Name = "[ ⚡ ]  ปรับความลื่นไหลของล็อคเป่า",
+    Range = {1, 30}, Increment = 1, CurrentValue = 12,
+    Callback = function(v) smoothness = v / 100 end
+})
