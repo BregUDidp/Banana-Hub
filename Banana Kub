@@ -86,48 +86,6 @@ extraTab:CreateButton({
 
 extraTab:CreateButton({Name = "[ 💖 ]  รัน อมตะ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/god%20mode"))() end})
 
-local Section2 = extraTab:CreateSection("[ 🌲 ]  โซนลบหมอก")
-
--- === ลบหมอกถาวร ===
-local OriginalFogEnd = game:GetService("Lighting").FogEnd
-local OriginalFogStart = game:GetService("Lighting").FogStart
-local FogLoopConnection = nil
-
-local ToggleFog = extraTab:CreateToggle({
-    Name = "[ 🌫️ ]  กดลบหมอก",
-    CurrentValue = false,
-    Flag = "ToggleFog",
-    Callback = function(val)
-        local Lighting = game:GetService("Lighting")
-        if val then
-            if OriginalFogEnd == nil then OriginalFogEnd = Lighting.FogEnd end
-            if OriginalFogStart == nil then OriginalFogStart = Lighting.FogStart end
-            if FogLoopConnection then FogLoopConnection:Disconnect() end
-            FogLoopConnection = RS.Heartbeat:Connect(function()
-                if not ToggleFog.CurrentValue then return end
-                Lighting.FogEnd = 1000
-                Lighting.FogStart = 1000
-            end)
-            Lighting.FogEnd = 1000
-            Lighting.FogStart = 1000
-            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกหายถาวร!", Duration = 3})
-        else
-            if FogLoopConnection then FogLoopConnection:Disconnect() FogLoopConnection = nil end
-            Lighting.FogEnd = OriginalFogEnd or 100000
-            Lighting.FogStart = OriginalFogStart or 0
-            Rayfield:Notify({Title = "ลบหมอก", Content = "หมอกกลับมาแล้ว", Duration = 3})
-        end
-    end
-})
-
--- รองรับ Load Config
-task.spawn(function()
-    task.wait(1)
-    if ToggleFog.CurrentValue then
-        ToggleFog.Callback(true)
-    end
-end)
-
 local Section2 = extraTab:CreateSection("[  🌲  ]  99 Night Forest")
 
 extraTab:CreateButton({Name = "[ 💣 ]  รัน Somtank Hub", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
