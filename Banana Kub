@@ -1022,8 +1022,9 @@ mamaTab:CreateButton({Name = "[W]  รัน Wally West [ - กดตัว Q - 
 
 local Section2 = mamaTab:CreateSection("[ - สคริประยะการโจมตี  -")
 
-mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 50 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))() end})
-mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 20 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/BXXEmeE1"))() end})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 100 - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/WE5CwsDd"))() end})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 50 - ]     [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))() end})
+mamaTab:CreateButton({Name = "[H]  รัน Hitbox [ - 20 - ]     [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/BXXEmeE1"))() end})
 mamaTab:CreateButton({Name = "[H]  ปิด Hitbox [ - ปิด - ]    [H]", Callback = function() loadstring(game:HttpGet("https://pastebin.com/raw/RYHm668P"))() end})
 
 local Section3 = mamaTab:CreateSection("[ - สคริปรวม  -")
