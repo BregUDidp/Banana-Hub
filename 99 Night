@@ -93,24 +93,7 @@ extraTab:CreateButton({
 
 local Section = extraTab:CreateSection("[🌲] โซนอมตะและลบหมอก [🌲]")
 
-extraTab:CreateToggle({
-    Name = "[G] รัน God Mode   [G]",
-    CurrentValue = false,
-    Callback = function(Value)
-        GodModeEnabled = Value
-        if Value then
-            local Humanoid = Character:WaitForChild("Humanoid")
-            Humanoid.MaxHealth = math.huge
-            Humanoid.Health = math.huge
-            Rayfield:Notify({Title = "God Mode ON", Content = "You are invincible!", Duration = 3})
-        else
-            local Humanoid = Character:WaitForChild("Humanoid")
-            Humanoid.MaxHealth = 100
-            Humanoid.Health = 100
-            Rayfield:Notify({Title = "God Mode OFF", Content = "Normal health restored.", Duration = 3})
-        end
-    end
-})
+extraTab:CreateButton({Name = "[G]  รัน อมตะ   [G]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/godmode"))() end})
 
 -- === ลบหมอกถาวร ===
 local OriginalFogEnd = game:GetService("Lighting").FogEnd
@@ -308,7 +291,7 @@ friendTab:CreateButton({
 Players.PlayerAdded:Connect(function() friendDropdown:Set(getPlayerList()) end)
 Players.PlayerRemoving:Connect(function() friendDropdown:Set(getPlayerList()) end)
 
-local MainTab = Window:CreateTab("ตัวละคร", "home")
+local MainTab = Window:CreateTab("Player", "contact")
 local MainSection = MainTab:CreateSection("[🛸] โซนบินและปรับความเร็วบิน [🛸]")
  
 local Players = game:GetService("Players")
