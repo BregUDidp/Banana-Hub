@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 game.StarterGui:SetCore("SendNotification", {
-    Title = "99 Night in The Forest",
+    Title = "[  99 Night in The Forest  ]",
     Text = "________________________________________________________",
     Duration = 10
 })
