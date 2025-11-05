@@ -539,7 +539,7 @@ ESPTab:CreateToggle({
 })
 
 -- แท็บตัวละคร
-local MainTab = Window:CreateTab("ตัวละคร", "home")
+local MainTab = Window:CreateTab("Player", "contact")
 local MainSection = MainTab:CreateSection("[🛸] โซนบินและปรับความเร็วบิน [🛸]")
  
 local Players = game:GetService("Players")
