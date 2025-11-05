@@ -11,7 +11,7 @@ local Workspace = cloneref(game:GetService("Workspace"))
 
 -- ====== ตั้งค่า ======
 -- ใส่ชื่อไอเทมได้หลายชิ้น เช่น {"Carrot", "Potato", "Onion"}
-local itemNames = {"Carrot", "Pumpkin", "Berry", "Morsel", "Steak"}
+local itemNames = {"Carrot", "Pumpkin", "Morsel", "Steak"}
 
 local offsetDistance = 0
 local delayBetweenItems = 0 -- เร็วจี๊ด
