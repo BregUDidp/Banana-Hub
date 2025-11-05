@@ -1,5 +1,12 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
- 
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[  Aimbot Function  ]",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+wait(1)
+
 local Window = Rayfield:CreateWindow({
    Name = "   |  Aimbot  |  Mesui  [ V-8.2 ]",
    Icon = "scan-eye",
