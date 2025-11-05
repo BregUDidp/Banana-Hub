@@ -906,7 +906,7 @@ friendTab:CreateButton({
     end
 })
 
-local extraTab = Window:CreateTab("สคริปต์ 99 คืน", "tree-pine")
+local extraTab = Window:CreateTab("สคริปต์ 99 คืนและอื่นๆ", "tree-pine")
 local Section1 = extraTab:CreateSection("[ Teleport to Campfire [- 99 Night Forest -] ]")
 
 -- Services
