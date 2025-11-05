@@ -3,9 +3,9 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "   |  Project  Mesui   [ V-8.1 ]",
    Icon = "webhook",
-   LoadingTitle = "[ ⭐ ] .UNDETECTED. 100% [ ⭐ ]",
+   LoadingTitle = "[ ⛺ ]  Mesui Hub  [ ⛺ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "🎯",
+   ShowText = "⛺",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -947,7 +947,7 @@ local function teleportTo(pos, name)
 end
 
 extraTab:CreateButton({
-    Name = "[C] วาปไปแคมไฟ   [C]",
+    Name = "[ ⛺ ]  วาปไปแคมไฟ",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
     end
@@ -1005,9 +1005,11 @@ extraTab:CreateButton({Name = "[R]  รัน RaBade [ - สคริปแน�
 
 local Section3 = extraTab:CreateSection("[ - โซนดึงของ - ]")
 
-extraTab:CreateButton({Name = "[C]  เติมแคมไฟ   [C]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getfire"))() end})
-extraTab:CreateButton({Name = "[B]  ดึงผ้าพันแผลเข้าตัวละคร   [B]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getbandage"))() end})
-extraTab:CreateButton({Name = "[O]  ดึงเหล็กเข้าตัวละคร   [O]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+extraTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getfire"))() end})
+extraTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getbandage"))() end})
+extraTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
+extraTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+extraTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
 
 local mamaTab = Window:CreateTab("สคริปต์รวม", "swords")
 local Section0 = mamaTab:CreateSection("[ - สคริปรวมคอมมาน/สคริปวาป - ]")
