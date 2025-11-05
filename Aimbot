@@ -155,7 +155,7 @@ ESPTab:CreateToggle({
 
 --// Smooth Speed Slider
 ESPTab:CreateSlider({
-    Name = "[ ⚡ ] ความเร็วของการล็อคเป๋าหมายคน  [ .จะปรับความเร็วล็อคเป๋า. ]",
+    Name = "[ ⚡ ] ความเร็วของล็อคเป๋าหมายคน  [ .ปรับความเร็วล็อคเป๋า. ]",
     Range = {1, 30},
     Increment = 1,
     CurrentValue = 8,
