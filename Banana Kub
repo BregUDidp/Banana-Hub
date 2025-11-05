@@ -224,6 +224,198 @@ ESPTab:CreateSlider({
     end
 })
 
+local Section = ESPTab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนแบบดี [🎯]")
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local cam = workspace.CurrentCamera
+local input = game:GetService("UserInputService")
+local run = game:GetService("RunService")
+local screenSize = cam.ViewportSize
+
+-- Settings
+local target = nil
+local fovRadius = 120
+local showFov = false  -- เริ่มปิด
+local smoothness = 0.12
+local prediction = 0.135
+local rainbowSpeed = 3
+local rainbowHue = 0
+
+-- Drawing Objects
+local fovCircle = nil
+local lockLine = nil
+local targetName = nil
+local hpText = nil
+
+-- Rainbow Function
+local function getRainbow()
+    rainbowHue = (rainbowHue + (rainbowSpeed / 1000)) % 1
+    return Color3.fromHSV(rainbowHue, 1, 1)
+end
+
+-- Create FOV Circle
+local function createFovCircle()
+    if fovCircle then fovCircle:Remove() end
+    local c = Drawing.new("Circle")
+    c.Thickness = 3
+    c.Filled = false
+    c.Transparency = 1
+    c.NumSides = 80
+    c.Position = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+    return c
+end
+
+-- Create Lock Line
+local function createLockLine()
+    if lockLine then lockLine:Remove() end
+    local l = Drawing.new("Line")
+    l.Thickness = 3
+    l.Transparency = 1
+    return l
+end
+
+-- Create Target Name
+local function createTargetName()
+    if targetName then targetName:Remove() end
+    local t = Drawing.new("Text")
+    t.Size = 18
+    t.Center = true
+    t.Outline = true
+    t.Font = 2
+    return t
+end
+
+-- Create HP Text
+local function createHpText()
+    if hpText then hpText:Remove() end
+    local t = Drawing.new("Text")
+    t.Size = 16
+    t.Center = true
+    t.Outline = true
+    t.Font = 2
+    return t
+end
+
+-- Initialize
+fovCircle = createFovCircle()
+lockLine = createLockLine()
+targetName = createTargetName()
+hpText = createHpText()
+
+-- Get Closest in FOV
+local function GetClosestInFOV()
+    local closest = nil
+    local dist = math.huge
+    local center = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+
+    for _, v in pairs(plrs:GetPlayers()) do
+        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            local head = v.Character.Head
+            local pos, onScreen = cam:WorldToViewportPoint(head.Position)
+            if onScreen then
+                local screenPos = Vector2.new(pos.X, pos.Y)
+                local mag = (screenPos - center).Magnitude
+                if mag <= fovRadius and mag < dist then
+                    dist = mag
+                    closest = v
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Predict Position
+local function getPredictedPosition(head)
+    local root = head.Parent:FindFirstChild("HumanoidRootPart")
+    if root then
+        local v = root.Velocity
+        local d = (cam.CFrame.Position - head.Position).Magnitude
+        return head.Position + (v * d * prediction / 100)
+    end
+    return head.Position
+end
+
+-- Main Loop
+run.RenderStepped:Connect(function()
+    local rainbow = getRainbow()
+    local center = Vector2.new(screenSize.X / 2, screenSize.Y / 2)
+
+    -- FOV Circle + Aimbot Control
+    if showFov then
+        fovCircle.Position = center
+        fovCircle.Radius = fovRadius
+        fovCircle.Color = rainbow
+        fovCircle.Visible = true
+
+        -- Aimbot ทำงานเมื่อ FOV เปิด
+        target = GetClosestInFOV()
+        if target and target.Character and target.Character:FindFirstChild("Head") and target.Character:FindFirstChild("Humanoid") then
+            local head = target.Character.Head
+            local hum = target.Character.Humanoid
+            local pred = getPredictedPosition(head)
+            local targetCF = CFrame.new(cam.CFrame.Position, pred)
+            cam.CFrame = cam.CFrame:Lerp(targetCF, smoothness)
+
+            -- Lock Line
+            local headPos = cam:WorldToViewportPoint(pred)
+            lockLine.From = center
+            lockLine.To = Vector2.new(headPos.X, headPos.Y)
+            lockLine.Color = rainbow
+            lockLine.Visible = true
+
+            -- Target Name
+            targetName.Text = target.DisplayName
+            targetName.Position = Vector2.new(headPos.X, headPos.Y - 40)
+            targetName.Color = rainbow
+            targetName.Visible = true
+
+            -- HP in FOV
+            local hpPercent = math.floor((hum.Health / hum.MaxHealth) * 100)
+            hpText.Text = hum.Health .. "/" .. hum.MaxHealth .. " (" .. hpPercent .. "%)"
+            hpText.Position = center
+            hpText.Color = rainbow
+            hpText.Visible = true
+
+            fovCircle.Thickness = 4  -- หนาเมื่อล็อค
+        else
+            lockLine.Visible = false
+            targetName.Visible = false
+            hpText.Visible = false
+            fovCircle.Thickness = 3
+        end
+    else
+        -- ปิด FOV = ปิด Aimbot
+        fovCircle.Visible = false
+        lockLine.Visible = false
+        targetName.Visible = false
+        hpText.Visible = false
+        target = nil
+    end
+end)
+
+-- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
+ESPTab:CreateToggle({
+    Name = "[ 🎯 ]  ปิด/เปิด การล็อคเป๋าหมายคนแบบลื่นๆ",
+    CurrentState = false,
+    Callback = function(v) 
+        showFov = v
+    end
+})
+
+ESPTab:CreateSlider({
+    Name = "[ 📏 ]  ปรับเส้นวงกลม",
+    Range = {50, 300}, Increment = 5, CurrentValue = 120,
+    Callback = function(v) fovRadius = v end
+})
+
+ESPTab:CreateSlider({
+    Name = "[ ⚡ ]  ปรับความลื่นไหลของล็อคเป่า",
+    Range = {1, 30}, Increment = 1, CurrentValue = 12,
+    Callback = function(v) smoothness = v / 100 end
+})
+
 --// =================================== --
 --//                ESP                 --
 --// =================================== --
