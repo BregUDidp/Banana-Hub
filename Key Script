@@ -40,15 +40,6 @@ local Window = Rayfield:CreateWindow({
 local KeyTab = Window:CreateTab("Section Scripts", "cog")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
-KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
-
-local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
-
-KeyTab:CreateParagraph({
-    Title = "เลือกดูแมพ",
-    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
-})
-
 local Dropdown = KeyTab:CreateDropdown({
    Name = "แมพที่มีฟังชั่นเล่นของสคริป",
    Options = {"" ,"[ 99 Night Forest ]","[ Arsenal ]","[ FPS Flick ]","[ Ability Wars ]","[ Be A Parkour Ninja ]","[ Natural Disaster Survival ]"},
@@ -60,8 +51,21 @@ local Dropdown = KeyTab:CreateDropdown({
    end,
 })
 
+KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
+
+local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
+
+KeyTab:CreateParagraph({
+    Title = "เลือกดูแมพ",
+    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
+})
+
 KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+
+local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
+
 KeyTab:CreateButton({Name = "กดรันสคริป  |   ล็อคเป๋า   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   99 คืน   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/99%20Night"))() end})
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
