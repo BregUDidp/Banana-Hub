@@ -1,3 +1,9 @@
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ 🌲 ]   ดึงไม้สำเร็จ",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+
 -- เสี่ยโอนไวโหมด: ลากได้หลายชื่อไอเทม
 local Players = cloneref(game:GetService("Players"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
