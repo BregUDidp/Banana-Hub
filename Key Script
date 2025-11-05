@@ -1,11 +1,11 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "Bypass Script",
-   Icon = "settings",
-   LoadingTitle = "⚙️ Bypass Anti Cheat ⚙️  กำลังโหลด...",
+   Name = "  |  Xoulz  Hub   🍬  | ",
+   Icon = "candy",
+   LoadingTitle = "Script  Xoulz |  Xolup  💭.  กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "⚙️",
+   ShowText = "🍬",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -37,14 +37,12 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local KeyTab = Window:CreateTab("Bypass Setting", "cog")
+local KeyTab = Window:CreateTab("Section Scripts", "cog")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
-KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ   ✅ ]", Duration = 1, Image = "toggle-right"}) end})
+KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
 
 local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
-
-wait(2)
 
 KeyTab:CreateParagraph({
     Title = "เลือกดูแมพ",
@@ -62,10 +60,32 @@ local Dropdown = KeyTab:CreateDropdown({
    end,
 })
 
-KeyTab:CreateButton({Name = "กดรันสคริปล่าสุด", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
-KeyTab:CreateButton({Name = "กดรันสคริปล็อคเป๋า", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   ล็อคเป๋า   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
     Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
+})
+
+local ATab = Window:CreateTab("Webhook  Auto", "fingerprint")
+local Section = ATab:CreateSection("[ Webhook The Script ]")
+
+ATab:CreateParagraph({
+    Title = "กดเว็บหูก",
+    Content = "กดรันสคริปแบบเว็บหูก"
+})
+
+ATab:CreateButton({Name = "[   ❎    กดเว็บหูกเพื่อรับสคริป ]", Callback = function() Rayfield:Notify({Title = "[   Webhook gg.   🌐  ]", Content = "[   Webhook gg.salad   🕸️  ]", Duration = 1, Image = "toggle-right"}) end})
+ATab:CreateButton({Name = "[   ✅    กดเว็บหูกอีกครั้งเพื่อลิ้งเสีย ]", Callback = function() Rayfield:Notify({Title = "[   ลิ้งได้แก้ไขแล้ว   🌐  ]", Content = "[   Webhook gg.salad   🕸️  ]", Duration = 1, Image = "toggle-right"}) end})
+
+local Section = ATab:CreateSection("[ Check The Webhook ]")
+
+ATab:CreateParagraph({
+    Title = "",
+    Content = "✅ - สคริปเว็บหูก -"
+})
+ATab:CreateParagraph({
+    Title = "",
+    Content = "✅ - กดรันสคริป -"
 })
