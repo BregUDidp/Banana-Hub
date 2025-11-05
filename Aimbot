@@ -146,7 +146,7 @@ ESPTab:CreateToggle({
 
 --// Smooth Aimbot Toggle
 ESPTab:CreateToggle({
-    Name = "[ ✨ ] การล็อคเป๋าหมายคนแบบลื่นๆ  [ .ปิดและเปิดใหม่. ]",
+    Name = "[ ✨ ] การล็อคเป๋าหมายคนแบบลื่นๆ  [ ✨ ]",
     CurrentValue = true,
     Callback = function(val)
         smoothEnabled = val
@@ -155,7 +155,7 @@ ESPTab:CreateToggle({
 
 --// Smooth Speed Slider
 ESPTab:CreateSlider({
-    Name = "[ ⚡ ] ความเร็วของการล็อคเป๋าหมายคน  [ .ต้องเปิดการล็อคแบบลื่นๆก่อน. ]",
+    Name = "[ ⚡ ] ความเร็วของการล็อคเป๋าหมายคน  [ ⚡ ]",
     Range = {1, 30},
     Increment = 1,
     CurrentValue = 8,
