@@ -353,7 +353,7 @@ ESPTab:CreateToggle({
     end
 })
 
-local ATab = Window:CreateTab("Aimbot  [  2️⃣  ]", "target")
+local ATab = Window:CreateTab("Aimbot / ESP  [  2️⃣  ]", "target")
 local Section = ATab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนแบบดี [🎯]")
 
 local plrs = game:GetService("Players")
