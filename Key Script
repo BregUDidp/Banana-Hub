@@ -60,11 +60,11 @@ KeyTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   ล็อคเป๋า   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   ล็อคเป๋า   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
