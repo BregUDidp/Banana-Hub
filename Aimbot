@@ -44,7 +44,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local ESPTab = Window:CreateTab("Aimbot / ESP  [ 1 ]", "crosshair")
+local ESPTab = Window:CreateTab("Aimbot / ESP  [  1️⃣  ]", "crosshair")
 local Section = ESPTab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนและมองคน [🎯]")
 
 local Players       = game:GetService("Players")
@@ -353,7 +353,7 @@ ESPTab:CreateToggle({
     end
 })
 
-local ATab = Window:CreateTab("Aimbot  [ 2 ]", "target")
+local ATab = Window:CreateTab("Aimbot  [  2️⃣  ]", "target")
 local Section = ATab:CreateSection("[🎯] โซนล็อคเป๋าหมายคนแบบดี [🎯]")
 
 local plrs = game:GetService("Players")
