@@ -674,7 +674,150 @@ ATab:CreateToggle({
     end
 })
 
-local DTab = Window:CreateTab("Rainbow Gun  [  🔫  ]", "rainbow")
-local Section = DTab:CreateSection("[ 🔫 ] โซนปืนสีรุ่ง [ 🔫 ]")
+local DipTab = Window:CreateTab("Rainbow Gun  [  🔫  ]", "rainbow")
+local Section = DipTab:CreateSection("[ 🔫 ] โซนปืนสีรุ่ง [ 🔫 ]")
 
-DTab:CreateButton({Name = "[ 🔫 ]  กด ปืนมีสีสายรุ่ง", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Gun"))() end})
+--// ตัวแปร Rainbow Gun
+local rainbowGunEnabled = false
+local currentGun = nil
+local highlight = nil
+local hue = 0
+local gunConnections = {}
+local rainbowLoop = nil
+
+--// ตัวแปร ESP
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
+
+--// ============================================== --
+--//               RAINBOW GUN SYSTEM              --
+--// ============================================== --
+
+local function createHighlight(tool)
+    if highlight then highlight:Destroy() end
+    highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromHSV(0, 1, 1)
+    highlight.OutlineColor = Color3.fromHSV(0, 1, 1)
+    highlight.FillTransparency = 0.3
+    highlight.OutlineTransparency = 0
+    highlight.Parent = tool
+    highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function updateRainbowGun()
+    if not rainbowGunEnabled or not currentGun or not highlight then return end
+    hue = (hue + 0.01) % 1
+    local color = Color3.fromHSV(hue, 1, 1)
+    highlight.FillColor = color
+    highlight.OutlineColor = color
+    for _, part in pairs(currentGun:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Color = color
+        end
+    end
+end
+
+local function onToolEquipped(tool)
+    if not rainbowGunEnabled then return end
+    currentGun = tool
+    task.wait(0.1)
+    createHighlight(tool)
+end
+
+local function onToolUnequipped()
+    if currentGun and highlight then
+        highlight:Destroy()
+        highlight = nil
+    end
+    currentGun = nil
+end
+
+local function setupGunDetection(char)
+    for _, conn in pairs(gunConnections) do conn:Disconnect() end
+    gunConnections = {}
+
+    local function connectTool(tool)
+        table.insert(gunConnections, tool.Equipped:Connect(function() onToolEquipped(tool) end))
+        table.insert(gunConnections, tool.Unequipped:Connect(onToolUnequipped))
+    end
+
+    for _, child in pairs(char:GetChildren()) do
+        if child:IsA("Tool") then connectTool(child) end
+    end
+    table.insert(gunConnections, char.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then connectTool(child) end
+    end))
+
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+    for _, child in pairs(backpack:GetChildren()) do
+        if child:IsA("Tool") then connectTool(child) end
+    end
+    table.insert(gunConnections, backpack.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then connectTool(child) end
+    end))
+end
+
+local function toggleRainbowGun(state)
+    rainbowGunEnabled = state
+    if state then
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "✅ เปิด ปืนสีสายรุ้งแล้ว!",
+            Text = "✅ ระบบสีรุ้งถูกเปิดแล้ว",
+            Duration = 6
+        })
+        if not rainbowLoop then
+            rainbowLoop = RunService.Heartbeat:Connect(updateRainbowGun)
+        end
+        if LocalPlayer.Character then setupGunDetection(LocalPlayer.Character) end
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "❌ ปิด ปืนสีสายรุ้งแล้ว!",
+            Text = "❌ ระบบสีรุ้งถูกปิดแล้ว",
+            Duration = 4
+        })
+        if rainbowLoop then rainbowLoop:Disconnect() rainbowLoop = nil end
+        if highlight then highlight:Destroy() highlight = nil end
+        currentGun = nil
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(setupGunDetection)
+if LocalPlayer.Character then setupGunDetection(LocalPlayer.Character) end
+
+DipTab:CreateParagraph({
+    Title = "คีย์ลัดปุ่มสายรุ่ง",
+    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
+})
+
+DipTab:CreateParagraph({
+    Title = "_______________________________________________________________________",
+    Content = "_______________________________________________________________________"
+})
+
+local Dropdown = DipTab:CreateDropdown({
+   Name = "แมพที่มีฟังชัjนลองรับเล่นปืนสายรุ่ง",
+   Options = {"" ,"[ FPS ] Flick"},
+   CurrentOption = {"ฟังชั่นรองรับสคริป"},
+   MultipleOptions = false,
+   Flag = "Dropdown1",
+   Callback = function(Options)
+       
+   end,
+})
+
+DipTab:CreateToggle({
+    Name = "[ 🌈 ]  เปิด/ปิด  ปืนสีสายรุ่ง",
+    CurrentValue = false,
+    Callback = function(state) toggleRainbowGun(state) end
+})
+
+DipTab:CreateParagraph({
+    Title = "_______________________________________________________________________",
+    Content = "_______________________________________________________________________"
+})
+
+DipTab:CreateParagraph({
+    Title = "คีย์ลัดปุ่มสายรุ่ง",
+    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
+})
