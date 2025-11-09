@@ -9,8 +9,8 @@ Library.ShowToggleFrameInKeybinds = true
 
 -- สร้างหน้าต่างหลัก
 local Window = Library:CreateWindow({
-    Title = "Xoulz Hub",
-    Footer = "Xoulz Hub",
+    Title = "Akari Hub",
+    Footer = "Akari Hub",
     Icon = "webhook",
     NotifySide = "Right",
     ShowCustomCursor = true,
@@ -301,13 +301,13 @@ flyToggle:OnChanged(function(val) if val then startFlying() else stopFlying() en
 PlayerLeft:AddSlider("FlySpeed", { Text = "📏 ปรับความเร็วบิน", Min = 1, Max = 1000, Default = 50, Suffix = " Speed" })
 PlayerLeft:AddSlider("FlySpeed", { Callback = function(val) flySpeed = val end })
 
-local PlayerRight = Tabs.Player:AddRightGroupbox("[🏃‍♀️] โซนวิ่งเร็ว")
+local PlayerLeft = Tabs.Player:AddLeftGroupbox("[🏃‍♀️] โซนวิ่งเร็ว")
 
-local speedToggle = PlayerRight:AddToggle("SpeedToggle", { Text = "🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", Default = false })
+local speedToggle = PlayerLeft:AddToggle("SpeedToggle", { Text = "🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", Default = false })
 speedToggle:OnChanged(function(val) toggleSpeed(val) end)
 
-PlayerRight:AddSlider("RunSpeed", { Text = "📏 ความเร็วในการวิ่ง", Min = 1, Max = 1000, Default = 32, Suffix = " Speed" })
-PlayerRight:AddSlider("RunSpeed", { Callback = function(val) runSpeed = val if superSpeed then Humanoid.WalkSpeed = runSpeed end end })
+PlayerLeft:AddSlider("RunSpeed", { Text = "📏 ความเร็วในการวิ่ง", Min = 1, Max = 1000, Default = 32, Suffix = " Speed" })
+PlayerLeft:AddSlider("RunSpeed", { Callback = function(val) runSpeed = val if superSpeed then Humanoid.WalkSpeed = runSpeed end end })
 
 local ExtraBox = Tabs.Player:AddLeftGroupbox("[🧱] โซนล่องหนและทะลุกำแพง")
 
@@ -370,7 +370,7 @@ FriendBox:AddButton({
 local DragOffset = 5
 local DragDelay = 0.2
 
-local DragBox = Tabs.Friends:AddRightGroupbox("[🌲] โซนลากศพ")
+local DragBox = Tabs.Friends:AddLeftGroupbox("[🌲] โซนลากศพ")
 
 DragBox:AddSlider("DragOffset", { Text = "📏 ระยะห่างลากศพ", Min = 1, Max = 15, Default = 5, Suffix = " หน่วย" })
 DragBox:AddSlider("DragOffset", { Callback = function(val) DragOffset = val end })
