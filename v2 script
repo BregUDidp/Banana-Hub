@@ -13,7 +13,7 @@ local Window = Library:CreateWindow({
     Footer = "Akari Hub",
     Icon = "webhook",
     NotifySide = "Right",
-    ShowCustomCursor = true,
+    ShowCustomCursor = false,
 })
 
 -- Services
