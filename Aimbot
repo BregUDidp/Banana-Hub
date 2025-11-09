@@ -44,8 +44,8 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local ESPTab = Window:CreateTab("Aimbot  [  1️⃣  ]", "crosshair")
-local Section = ESPTab:CreateSection("___🎯 Aimbot Visual______________________________________")
+local espTab = Window:CreateTab("Aimbot  [  1️⃣  ]", "crosshair")
+local Section = espTab:CreateSection("___🎯 Aimbot Visual______________________________________")
 
 local plrs = game:GetService("Players")
 local plr = plrs.LocalPlayer
@@ -216,13 +216,13 @@ run.RenderStepped:Connect(function()
     end
 end)
 
-ESPTab:CreateParagraph({
+espTab:CreateParagraph({
     Title = "เลือกดูสคริป",
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
 -- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
-ESPTab:CreateToggle({
+espTab:CreateToggle({
     Name = "[ 🎯 ]  ปิด/เปิด การล็อคเป๋าหมายคนแบบลื่นๆ  [ 🎯 ]",
     CurrentState = false,
     Callback = function(v) 
@@ -230,19 +230,19 @@ ESPTab:CreateToggle({
     end
 })
 
-ESPTab:CreateSlider({
+espTab:CreateSlider({
     Name = "[ 📏 ]  ปรับเส้นวงกลม  [ 📏 ]",
     Range = {50, 300}, Increment = 5, CurrentValue = 120,
     Callback = function(v) fovRadius = v end
 })
 
-ESPTab:CreateSlider({
+espTab:CreateSlider({
     Name = "[ ⚡ ]  ปรับความลื่นไหลของล็อคเป่า  [ ⚡ ]",
     Range = {1, 30}, Increment = 1, CurrentValue = 12,
     Callback = function(v) smoothness = v / 100 end
 })
 
-ESPTab:CreateParagraph({
+espTab:CreateParagraph({
     Title = "เลือกดูสคริปการมองดูคน",
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
@@ -344,9 +344,9 @@ end)
 Players.PlayerRemoving:Connect(removeESP)
 
 --// ESP UI
-ESPTab:CreateSection("___👁️ ESP Visual______________________________________")
+espTab:CreateSection("___👁️ ESP Visual______________________________________")
 
-ESPTab:CreateToggle({
+espTab:CreateToggle({
     Name = "[ 🔍 ] เปิดการมองเห็นคน  [ .จะเป็นแบบเส้นตรง. ]",
     CurrentValue = false,
     Callback = function(val)
@@ -357,7 +357,7 @@ ESPTab:CreateToggle({
     end
 })
 
-ESPTab:CreateToggle({
+espTab:CreateToggle({
     Name = "[ 🔍 ] เปิดเส้นแบบอัตโนมัต  [ .แบบอัตโนมัต. ]",
     CurrentValue = true,
     Callback = function(val)
