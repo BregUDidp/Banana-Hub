@@ -1,11 +1,11 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Project  Xoulz   [ V-8.1 ]",
+   Name = "   |  Project  Akari   [ V-8.1 ]",
    Icon = "webhook",
-   LoadingTitle = "[ ⛺ ]  Xoulzs Hub  [ ⛺ ]",
+   LoadingTitle = "[ 👁️ ]  Akari Hub  [ 👁️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "⛺",
+   ShowText = "👁️",
    Theme = "Brown",
 
    ToggleUIKeybind = "F",
@@ -295,7 +295,7 @@ local infJumpToggle = MainTab:CreateToggle({Name="🦘 เปิด/ปิด �
 
 local Section5 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
 
-local friendTab = Window:CreateTab("วาปไปหาคน", "door-open")
+local friendTab = Window:CreateTab("Teleport", "door-open")
 local Section = friendTab:CreateSection("[👥]  โซน วาปไปหาเพื่อน      [👥] ")
 
 local function getPlayerList()
@@ -469,35 +469,6 @@ friendTab:CreateButton({
         end)
     end
 })
-
-local creditTab = Window:CreateTab("fps/Executer", "square-activity")
-local Section1 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateButton({Name = "[K]  รัน Kick เพื่อเช็คตัวรัน Xeno     [K]", Callback = function() game.Players.LocalPlayer:Kick("1️⃣ [ Mesui X On Top ] 1️⃣") end})
-
-local Section2 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateLabel("fps   | & 57.0 |")
-creditTab:CreateLabel("Executer Use / ตัวรันที่ใช้   | .Xeno. |")
-creditTab:CreateLabel("แมพที่เขียนสคริปหรือโปร [ - Public Office Simulator - ]")
-
-local Section3 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateLabel(".Executer Computer.  1. Wave 2. Zenith 3. Valex 4. Swift 5. Xeno 6. Solara")
-
-local Section4 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateLabel(".Executer Mobile.  1. Delta 2. Krl 3. Cryptic 4. Evon 5. CodeX 6. Trigon")
-
-local Section5 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateLabel(".Executer Mac.  1. Hydrogen 2. Macsploit 3. Synapse Mac")
-
-local Section6 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
-
-creditTab:CreateLabel(".Executer Exeternel.  1. Valex 2. DX9 Ware 3. Ronin 4. Serotonin 5. Photon 6. Isabelle 7. Melatonin 8. Assembly 9. Yerba 10. Matrix Hub 11. Matcha")
-
-local Section7 = creditTab:CreateSection("_______________________________________________________________________________________________________________________________________________________________________")
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
