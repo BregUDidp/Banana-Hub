@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "|  🎯  |  Aimbot   Function ",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "Aimbot",
-   Theme = "Brown",
+   Theme = "Amethyst",
 
    ToggleUIKeybind = "F",
 
@@ -344,7 +344,7 @@ end)
 Players.PlayerRemoving:Connect(removeESP)
 
 --// ESP UI
-ESPTab:CreateSection("[🔍] โซนมองดูคนแบบเส็น/ไม่เส้น [🔍]")
+ESPTab:CreateSection("___👁️ ESP Visual______________________________________")
 
 ESPTab:CreateToggle({
     Name = "[ 🔍 ] เปิดการมองเห็นคน  [ .จะเป็นแบบเส้นตรง. ]",
@@ -366,7 +366,7 @@ ESPTab:CreateToggle({
 })
 
 local DipTab = Window:CreateTab("Rainbow Gun  [  🔫  ]", "rainbow")
-local Section = DipTab:CreateSection("[ 🔫 ] โซนปืนสีรุ่ง [ 🔫 ]")
+local Section = DipTab:CreateSection("___🏳️‍🌈 Gun Visual______________________________________")
 
 --// ตัวแปร Rainbow Gun
 local rainbowGunEnabled = false
