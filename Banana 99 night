@@ -91,16 +91,6 @@ extraTab:CreateButton({Name = "[ 🦊 ]  รัน FoxName Hub", Callback = func
 extraTab:CreateButton({Name = "[ 🟣 ]  รัน RaBade Hub", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
 
 local ExTab = Window:CreateTab("[ - Bring / Explore 99 คืน - ]", "flame-kindling")
-local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำรวจแมพ")
-
--- ปุ่ม Explore Map (สแกนแมพ + อัปเดต Dropdown)
-ExTab:CreateButton({
-    Name = "[ 🍁 ]  กดสำหรวจแมพ",
-    Callback = function()
-        spawn(exploreMapAndRefresh)
-    end,
-})
-
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
 
 -- Services
@@ -129,6 +119,16 @@ ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข
 ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
 ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
 ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำหรวจแมพ")
+
+-- ปุ่ม Explore Map (สแกนแมพ + อัปเดต Dropdown)
+ExTab:CreateButton({
+    Name = "[ 🍁 ]  กดสำหรวจแมพ",
+    Callback = function()
+        spawn(exploreMapAndRefresh)
+    end,
+})
 
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของแบบเลือก")
 
