@@ -6,39 +6,33 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "[ 👁️ ]  Akari Hub  [ 👁️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "👁️",
-   Theme = "Brown",
-
+   Theme = "DarkBlue",
    ToggleUIKeybind = "F",
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil, -- Create a custom folder for your hub/game
       FileName = "Big Hub"
    },
-
    Discord = {
       Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
       RememberJoins = true
    },
-
    KeySystem = false,
    KeySettings = {
       Title = "",
       Subtitle = "",
       Note = "",
       FileName = "",
-      SaveKey = false,
+      SaveKey = true,
       GrabKeyFromSite = false,
       Key = {"67"}
    }
 })
 
 local extraTab = Window:CreateTab("[ - 99 คืน - ]", "tree-pine")
-local Section1 = extraTab:CreateSection("[ 🌲 ]  โซนอมตะและวาป")
 
 -- Services
 local Players = game:GetService("Players")
@@ -77,12 +71,16 @@ local function teleportTo(pos, name)
     end
 end
 
+local Section1 = extraTab:CreateSection("[  🌲  ]  โซนวาป")
+
 extraTab:CreateButton({
     Name = "[  ⛺  ]  วาปไปแคมไฟ",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
     end
 })
+
+local Section1 = extraTab:CreateSection("[  🌲  ]  โซนอมตะ")
 
 extraTab:CreateButton({Name = "[ 💖 ]  รัน อมตะ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/god%20mode"))() end})
 
@@ -92,17 +90,291 @@ extraTab:CreateButton({Name = "[ 💣 ]  รัน Somtank Hub", Callback = func
 extraTab:CreateButton({Name = "[ 🦊 ]  รัน FoxName Hub", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
 extraTab:CreateButton({Name = "[ 🟣 ]  รัน RaBade Hub", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
 
-local Section3 = extraTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+local ExTab = Window:CreateTab("[ - Bring / Explore 99 คืน - ]", "flame-kindling")
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำรวจแมพ")
 
-extraTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
-extraTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
-extraTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
-extraTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
-extraTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+-- ปุ่ม Explore Map (สแกนแมพ + อัปเดต Dropdown)
+ExTab:CreateButton({
+    Name = "[ 🍁 ]  กดสำหรวจแมพ",
+    Callback = function()
+        spawn(exploreMapAndRefresh)
+    end,
+})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+
+-- Services
+local Players = cloneref(game:GetService("Players"))
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+local Workspace = cloneref(game:GetService("Workspace"))
+
+-- ====== ปุ่มเติมไฟอัตโนมัติ (หลัก!) ======
+local autoFuelRunning = false
+ExTab:CreateToggle({
+    Name = "[ 🔥 ]  เติมไฟอัตโนมัติ",
+    CurrentValue = false,
+    Flag = "AutoFuel",
+    Callback = function(Value)
+        autoFuelRunning = Value
+        if Value then
+            spawn(autoFuelLoop)
+        end
+    end,
+})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+
+ExTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
+ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
+ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
+ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของแบบเลือก")
+
+-- ตัวแปรสำหรับเลือกไอเทม
+local selectedItems = {}
+
+-- Dropdown เลือกไอเทม (หลายตัว)
+local Dropdown = ExTab:CreateDropdown({
+    Name = "[ 💦 ]  เลือกไอเทมที่จะลาก",
+    Options = {"Coal", "Oil Barrel", "Fuel Canister", "Biofuel"},
+    CurrentOption = {"Coal"},
+    MultipleOptions = true,
+    Callback = function(Options)
+        selectedItems = Options
+        Rayfield:Notify({
+            Title = "เลือกไอเทม",
+            Content = "เลือก " .. #Options .. " รายการ",
+            Duration = 3
+        })
+    end,
+})
+
+-- Slider ระยะห่าง
+local OffsetSlider = ExTab:CreateSlider({
+    Name = "[ 🧙 ]  ระยะห่างจากตัวละคร",
+    Range = {0, 50},
+    Increment = 1,
+    Suffix = " studs",
+    CurrentValue = 0,
+    Flag = "OffsetDistance"
+})
+
+-- Slider ดีเลย์
+local DelaySlider = ExTab:CreateSlider({
+    Name = "[ 🐌 ]  ดีเลย์การลากไอเทม",
+    Range = {0, 1},
+    Increment = 0.05,
+    Suffix = " วินาที",
+    CurrentValue = 0,
+    Flag = "DelayBetweenItems"
+})
+
+-- ปุ่มลากไอเทม
+ExTab:CreateButton({
+    Name = "[ 🧱 ]  ลากไอเทมทั้งหมด",
+    Callback = function()
+        spawn(dragAllItemsToPlayer)
+    end,
+})
+
+-- ปุ่มรีเฟรชรายการ (สำรอง)
+ExTab:CreateButton({
+    Name = "[ 🔄️ ]  รีเฟรชรายการไอเทมในแมพ",
+    Callback = function()
+        spawn(refreshItemList)
+    end,
+})
+
+-- Toggle Auto Drag
+local AutoDragToggle = ExTab:CreateToggle({
+    Name = "[ ♾️ ]  กดลากของอัตโนมัต",
+    CurrentValue = false,
+    Flag = "AutoDragEnabled",
+    Callback = function(Value)
+        getgenv().AutoDragEnabled = Value
+        if Value then autoDragLoop() end
+    end,
+})
+
+-- === แท็บวาป + ลากศพ (เวอร์ชันแยกหน้าที่เรียบร้อย) ===
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local player = Players.LocalPlayer
+
+-- สร้างแท็บ
+local friendTab = Window:CreateTab("[ - วาป - ]", "door-open")
+
+-- ===== Helpers =====
+local function getPlayerList()
+    local list = {}
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
+        end
+    end
+    return list
+end
+
+-- ดึงศพทั้งหมดที่ลงท้ายชื่อด้วย " Body" จากโฟลเดอร์ Characters
+local function getAllBodies()
+    local folder = Workspace:FindFirstChild("Characters")
+    if not folder then return {} end
+    local bodies = {}
+    for _, obj in ipairs(folder:GetChildren()) do
+        if typeof(obj) == "Instance" and typeof(obj.Name) == "string" then
+            if obj.Name:sub(-5) == " Body" then
+                table.insert(bodies, obj)
+            end
+        end
+    end
+    return bodies
+end
+
+-- หา BasePart ใดๆ ในโมเดล (กันกรณีไม่มี PrimaryPart)
+local function findAnyBasePart(model)
+    if not model or not model:IsA("Model") then return nil end
+    if model.PrimaryPart then return model.PrimaryPart end
+    for _, d in ipairs(model:GetDescendants()) do
+        if d:IsA("BasePart") then
+            return d
+        end
+    end
+    return nil
+end
+
+-- ===== UI: Dropdown เพื่อน (ใช้เฉพาะ “วาปไปหาเพื่อน”) =====
+local friendDropdown = friendTab:CreateDropdown({
+    Name = "[ 👥 ]  - เลือกเพื่อน -",
+    Options = getPlayerList(),
+    CurrentOption = {},
+    Flag = "FriendSelect"
+})
+
+-- ปุ่มวาปไปหาเพื่อน (ใช้ dropdown)
+friendTab:CreateButton({
+    Name = "[ 📌 ]  - วาปไปหาเพื่อน -",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected or selected == "" then
+            Rayfield:Notify({Title = "Error", Content = "กรุณาเลือกเพื่อนก่อน!", Duration = 3})
+            return
+        end
+
+        local friendName = selected:match("%((.-)%)") or selected
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        local targetPlayer = Players:FindFirstChild(friendName)
+        if targetPlayer and targetPlayer.Character then
+            local thrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if thrp then
+                hrp.CFrame = thrp.CFrame + Vector3.new(0, 3, 0)
+                Rayfield:Notify({Title = "Teleport สำเร็จ", Content = "ไปหา "..friendName, Duration = 3})
+                return
+            end
+        end
+        Rayfield:Notify({Title = "ไม่พบเป้าหมาย", Content = "เพื่อนไม่ออนไลน์/ไม่มี HRP", Duration = 3})
+    end
+})
+
+-- ===== ตัวปรับค่า ลากศพ =====
+local DragOffset = 5
+local DragDelay = 0.2
+
+friendTab:CreateSlider({
+    Name = "[ 📏 ]  - ระยะห่างลากศพ -",
+    Range = {1, 15},
+    Increment = 1,
+    CurrentValue = DragOffset,
+    Flag = "DragOffset",
+    Callback = function(val) DragOffset = val end
+})
+
+friendTab:CreateSlider({
+    Name = "[ 📏 ]  - ดีเลย์การลากศพ -",
+    Range = {0.05, 1},
+    Increment = 0.05,
+    CurrentValue = DragDelay,
+    Flag = "DragDelay",
+    Callback = function(val) DragDelay = val end
+})
+
+-- ===== ปุ่ม “ลากศพทั้งหมด” (ไม่ใช้ dropdown) =====
+friendTab:CreateButton({
+    Name = "[ 💀 ]  - ลากศพทั้งหมด - [ - ไม่ต้องเลือกชื่อ - ]",
+    Callback = function()
+        -- เตรียมตัวเรา
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        -- เตรียม RemoteEvents
+        local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+        local startDragging = remoteEvents and remoteEvents:FindFirstChild("RequestStartDraggingItem")
+        local stopDragging  = remoteEvents and remoteEvents:FindFirstChild("StopDraggingItem")
+
+        if not (startDragging and stopDragging) then
+            Rayfield:Notify({Title = "ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
+            return
+        end
+
+        -- หา “ศพทั้งหมด”
+        local bodies = getAllBodies()
+        if #bodies == 0 then
+            Rayfield:Notify({Title = "ไม่พบศพ", Content = "ตอนนี้ยังไม่มีใครตาย", Duration = 4})
+            return
+        end
+
+        Rayfield:Notify({Title = "กำลังลากศพ", Content = "พบ "..#bodies.." ตัว", Duration = 3})
+
+        task.spawn(function()
+            for _, body in ipairs(bodies) do
+                -- กันกรณีออบเจ็กต์หายระหว่างทาง
+                if body and body.Parent then
+                    local inst = (typeof(cloneref) == "function") and cloneref(body) or body
+                    startDragging:FireServer(inst)
+                    task.wait(0.02)
+
+                    -- เลือกพาร์ทอ้างอิงเพื่อวางให้ใกล้ตัวเรา
+                    local refPart = findAnyBasePart(body)
+                    if refPart then
+                        -- ใช้ PivotTo ให้ทั้งโมเดลเลื่อนมาหน้าเรา
+                        body:PivotTo(hrp.CFrame * CFrame.new(0, 0, -DragOffset))
+                    end
+
+                    task.wait(0.05)
+                    stopDragging:FireServer(inst)
+                    task.wait(DragDelay)
+                end
+            end
+
+            Rayfield:Notify({Title = "สำเร็จ!", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
+        end)
+    end
+})
+
+-- ปุ่มรีเฟรชรายชื่อ (มีผลเฉพาะ dropdown วาปเพื่อน)
+friendTab:CreateButton({
+    Name = "[ 🔄️ ]  - รีเฟรชรายชื่อ -",
+    Callback = function()
+        friendDropdown:Set(getPlayerList())
+        Rayfield:Notify({Title = "อัปเดตแล้ว", Content = "รีเฟรชรายชื่อสำเร็จ", Duration = 3})
+    end
+})
+
+-- อัปเดต Dropdown อัตโนมัติ เมื่อมีคนเข้า/ออก (เฉพาะวาปเพื่อน)
+Players.PlayerAdded:Connect(function()
+    friendDropdown:Set(getPlayerList())
+end)
+Players.PlayerRemoving:Connect(function()
+    friendDropdown:Set(getPlayerList())
+end)
 
 -- แท็บตัวละคร
-local MainTab = Window:CreateTab("Player", "contact")
-local MainSection = MainTab:CreateSection("[🛸] โซนบินและปรับความเร็วบิน [🛸]")
+local PTab = Window:CreateTab("[ - Player - ]", "contact")
+local MainSection = PTab:CreateSection("[ 🛸 ]  โซนบินและปรับความเร็วบิน")
  
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -111,7 +383,6 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local character = player.Character or player.CharacterAdded:Wait()
-
 
 UserInputService.InputEnded:Connect(function(input)
 	if input.KeyCode == Enum.KeyCode.Space then
@@ -192,15 +463,15 @@ local function toggleSpeed(on)
     })
 end
 
-local flyToggle = MainTab:CreateToggle({Name="🛸 เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = MainTab:CreateSlider({Name="📏 ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
+local flySlider = PTab:CreateSlider({Name="[ 📏 ] ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
-local Section2 = MainTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
+local Section2 = PTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
 
-local speedToggle = MainTab:CreateToggle({Name="🏃‍♀️ เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = MainTab:CreateSlider({Name="📏 ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ] ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
  
-local Section4 = MainTab:CreateSection("[🧱] โซนล่องหนและทะลุกำแพงและกระโดดไม่จำกัด [🦘]")
+local Section4 = PTab:CreateSection("[ 🧱 ] โซนล่องหนและทะลุกำแพงและกระโดดไม่จำกัด")
 
 --// ตั้งค่าเริ่มต้น
 local player = game.Players.LocalPlayer
@@ -274,7 +545,7 @@ local function toggleInvisibility()
     end
 end
 
-MainTab:CreateButton({Name = "👻 กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]", Callback = function() toggleInvisibility() end})
+PTab:CreateButton({Name = "[ 👻 ] กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]", Callback = function() toggleInvisibility() end})
 
 player.CharacterAdded:Connect(function(character)
     isSpeedBoosted = false
@@ -290,185 +561,8 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
     end
 end)
 
-local noclipToggle = MainTab:CreateToggle({Name="🧱 เปิด/ปิด การทะลุกำแพง", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
-local infJumpToggle = MainTab:CreateToggle({Name="🦘 เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
-
-local Section5 = MainTab:CreateSection("[⚔️]  สคริปด้านบนเป็นสคริปที่ทำเองและเป็นสคริปที่โหดมาก  [⚔️]")
-
-local friendTab = Window:CreateTab("Teleport", "door-open")
-local Section = friendTab:CreateSection("[👥]  โซน วาปไปหาเพื่อน      [👥] ")
-
-local function getPlayerList()
-    local list = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p ~= player then
-            table.insert(list, p.DisplayName.." ("..p.Name..")")
-        end
-    end
-    return list
-end
- 
-friendTab:CreateButton({Name = "[ 📱 ]  กด อาวุธวาป", Callback = function()  loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))() end})
-
-local friendDropdown = friendTab:CreateDropdown({
-    Name = "👥 เลือกเพื่อน [ .ที่เราจะวาป. ]",
-    Options = getPlayerList(),
-    CurrentOption = {},
-    Flag = "FriendSelect"
-})
- 
-friendTab:CreateButton({
-    Name = "📌 วาปไปหาเพื่อน [ .ที่เราเลือกเอาไว้. ]",
-    Callback = function()
-        local selected = friendDropdown.CurrentOption[1]
-        if not selected or selected == "" then
-            Rayfield:Notify({
-                Title = "❌ Error",
-                Content = "กรุณาเลือกเพื่อนก่อน!",
-                Duration = 3,
-                Image = 4483362458
-            })
-            return
-        end
- 
-        local friendName = selected:match("%((.-)%)") or selected
- 
-        if not hrp or not hrp.Parent then
-            char = player.Character or player.CharacterAdded:Wait()
-            hrp = char:WaitForChild("HumanoidRootPart")
-            humanoid = char:WaitForChild("Humanoid")
-        end
- 
-        local targetCFrame = nil
-        local targetPlayer = Players:FindFirstChild(friendName)
-        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            targetCFrame = targetPlayer.Character.HumanoidRootPart.CFrame
-        else
-            for _, obj in pairs(workspace:GetChildren()) do
-                if obj:IsA("Model") and obj.Name:lower() == friendName:lower() then
-                    local part = obj:FindFirstChildWhichIsA("BasePart")
-                    if part then
-                        targetCFrame = part.CFrame
-                        break
-                    end
-                end
-            end
-        end
- 
-        if targetCFrame then
-            hrp.CFrame = targetCFrame + Vector3.new(0,3,0)
-            Rayfield:Notify({
-                Title = "✅ วาปไปหาคนนั้น สำเร็จ",
-                Content = "คุณได้ไปหา "..friendName,
-                Duration = 3,
-                Image = 4483362458
-            })
-        else
-            Rayfield:Notify({
-                Title = "❌ ไม่พบเป้าหมายที่เราเลือก",
-                Content = "เพื่อนไม่ออนไลน์ หรือโมเดลไม่อยู่",
-                Duration = 3,
-                Image = 4483362458
-            })
-        end
-    end
-})
- 
-friendTab:CreateButton({
-    Name = "🔄 รีผู้เล่นที่เราเลือก",
-    Callback = function()
-        friendDropdown:Set(getPlayerList())
-        Rayfield:Notify({
-            Title = "🔄 รายชื่ออัปเดตแล้ว [ รีเฟรชที่รายชื่อผูเล่น ]",
-            Content = "✅ โหลดรายชื่อผู้เล่นใหม่สำเร็จ!",
-            Duration = 3,
-            Image = 4483362458
-        })
-    end
-})
-
-local Section3 = friendTab:CreateSection("[🌲]  โซนลากศพใน 99 คืน [ เวลาเพื่อนตาย ]     [🌲]")
-
--- === ลากศพเฉพาะชื่อ ===
-local DragOffset = 5
-local DragDelay = 0.2
-
-friendTab:CreateSlider({
-    Name = "📏 ปรับระยะห่างการลากศพเพื่อน",
-    Range = {1, 15},
-    Increment = 1,
-    CurrentValue = 5,
-    Flag = "DragOffset",
-    Callback = function(val) DragOffset = val end
-})
-
-friendTab:CreateSlider({
-    Name = "📏 ปรับการดีเลย์การลากศพเพื่อน",
-    Range = {0.05, 1},
-    Increment = 0.05,
-    CurrentValue = 0.2,
-    Flag = "DragDelay",
-    Callback = function(val) DragDelay = val end
-})
-
-friendTab:CreateButton({
-    Name = "⚔️ ลากศพเพื่อนตามชื่อที่เราเลือก",
-    Callback = function()
-        local selected = friendDropdown.CurrentOption[1]
-        if not selected then
-            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "กรุณาเลือกชื่อก่อน!", Duration = 3})
-            return
-        end
-        local displayName = selected:match("^(.+) %(") or selected
-
-        char = player.Character or player.CharacterAdded:Wait()
-        hrp = char:WaitForChild("HumanoidRootPart")
-
-        local itemsFolder = Workspace:WaitForChild("Characters", 10)
-        local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents", 10)
-        if not itemsFolder or not remoteEvents then
-            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ Characters หรือ RemoteEvents", Duration = 5})
-            return
-        end
-
-        local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem", 5)
-        local stopDragging = remoteEvents:WaitForChild("StopDraggingItem", 5)
-        if not startDragging or not stopDragging then
-            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
-            return
-        end
-
-        local targetName = displayName .. " Body"
-        local bodies = {}
-        for _, obj in pairs(itemsFolder:GetChildren()) do
-            if obj.Name == targetName then
-                table.insert(bodies, obj)
-            end
-        end
-
-        if #bodies == 0 then
-            Rayfield:Notify({Title = "ไม่พบศพ", Content = "ไม่มีศพชื่อ \""..targetName.."\"", Duration = 4})
-            return
-        end
-
-        Rayfield:Notify({Title = "กำลังลากศพ", Content = "พบ "..#bodies.." ตัว", Duration = 3})
-
-        task.spawn(function()
-            for i, body in ipairs(bodies) do
-                local clone = cloneref and cloneref(body) or body
-                startDragging:FireServer(clone)
-                task.wait(0.02)
-                if body.PrimaryPart then
-                    body:PivotTo(hrp.CFrame * CFrame.new(0, 0, -DragOffset))
-                end
-                task.wait(0.05)
-                stopDragging:FireServer(clone)
-                task.wait(DragDelay)
-            end
-            Rayfield:Notify({Title = "สำเร็จ!", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
-        end)
-    end
-})
+local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] เปิด/ปิด การทะลุกำแพง", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
+local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
@@ -531,3 +625,192 @@ player.CharacterAdded:Connect(function(c)
     infJumpEnabled=false
     Rayfield:LoadConfiguration()
 end)
+
+-- ====== ตัวแปร Global ======
+getgenv().AutoDragEnabled = false
+local offsetDistance = 0
+local delayBetweenItems = 0
+local itemsFolder = Workspace:WaitForChild("Items")
+local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
+local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
+local stopDragging = remoteEvents:WaitForChild("StopDraggingItem")
+
+-- ====== ตัวละคร ======
+local player = Players.LocalPlayer
+local function getCharacter()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+-- ====== ฟังก์ชันลากไอเทม ======
+local function dragItemToPosition(itemToDrag, position)
+    local clonedItem = cloneref(itemToDrag)
+    startDragging:FireServer(clonedItem)
+    task.spawn(function()
+        if clonedItem:IsA("BasePart") then
+            clonedItem.CFrame = CFrame.new(position)
+        elseif clonedItem:IsA("Model") and clonedItem.PrimaryPart then
+            clonedItem:SetPrimaryPartCFrame(CFrame.new(position))
+        end
+    end)
+    task.wait(0.05)
+    stopDragging:FireServer(clonedItem)
+end
+
+-- ====== ลากทุกไอเทมที่เลือก ======
+function dragAllItemsToPlayer()
+    if #selectedItems == 0 then
+        Rayfield:Notify({Title="ผิดพลาด", Content="กรุณาเลือกไอเทมก่อน!", Duration=4})
+        return
+    end
+
+    local character = getCharacter()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    local targetPos = (hrp.CFrame * CFrame.new(0, 0, -offsetDistance)).Position
+
+    local itemsToDrag = {}
+    for _, item in ipairs(itemsFolder:GetChildren()) do
+        if table.find(selectedItems, item.Name) then
+            table.insert(itemsToDrag, item)
+        end
+    end
+
+    if #itemsToDrag == 0 then
+        Rayfield:Notify({Title="ไม่พบไอเทม", Content="ไม่พบไอเทมที่เลือกในแมพ!", Duration=4})
+        return
+    end
+
+    Rayfield:Notify({Title="เริ่มลาก", Content="พบ " .. #itemsToDrag .. " ไอเทม", Duration=3})
+
+    for _, item in ipairs(itemsToDrag) do
+        dragItemToPosition(item, targetPos)
+        task.wait(delayBetweenItems)
+    end
+
+    Rayfield:Notify({Title="สำเร็จ", Content="ลาก " .. #itemsToDrag .. " ไอเทมเรียบร้อย!", Duration=5})
+end
+
+-- ====== Auto Drag Loop ======
+function autoDragLoop()
+    spawn(function()
+        while getgenv().AutoDragEnabled do
+            dragAllItemsToPlayer()
+            task.wait(1)
+        end
+    end)
+end
+
+-- ====== อัปเดตค่า Slider ======
+task.spawn(function()
+    while true do
+        offsetDistance = OffsetSlider.CurrentValue
+        delayBetweenItems = DelaySlider.CurrentValue
+        task.wait(0.1)
+    end
+end)
+
+-- ====== รีเฟรชรายการไอเทม (แบบเก่า) ======
+function refreshItemList()
+    local found = {}
+    for _, obj in ipairs(itemsFolder:GetChildren()) do
+        local n = obj.Name
+        if n ~= "" and not table.find(found, n) then
+            table.insert(found, n)
+        end
+    end
+    table.sort(found)
+    Dropdown:Refresh(found, false)
+    Rayfield:Notify({Title="รีเฟรชสำเร็จ", Content="พบ " .. #found .. " ไอเทม", Duration=4})
+end
+
+-- ====== Explore Map (สแกนแมพ + อัปเดต Dropdown) ======
+function exploreMapAndRefresh()
+    Rayfield:Notify({Title="กำลังสแกนแมพ...", Content="ค้นหาไอเท็มทั้งหมด", Duration=3})
+
+    local foundItems = {}
+    for _, obj in ipairs(itemsFolder:GetChildren()) do
+        local name = obj.Name
+        if name and name ~= "" and not table.find(foundItems, name) then
+            table.insert(foundItems, name)
+        end
+    end
+
+    table.sort(foundItems)
+
+    if #foundItems == 0 then
+        Rayfield:Notify({Title="ไม่พบไอเท็ม", Content="ไม่มีไอเท็มใน Items Folder", Duration=5})
+        return
+    end
+
+    Dropdown:Refresh(foundItems, false)
+
+    Rayfield:Notify({
+        Title = "สแกนแมพสำเร็จ!",
+        Content = "พบ " .. #foundItems .. " ไอเท็ม\nตัวอย่าง: " .. table.concat(foundItems, ", ", 1, math.min(5, #foundItems)),
+        Duration = 6
+    })
+
+    -- ตั้งค่าเริ่มต้นถ้ายังไม่เลือก
+    if #selectedItems == 0 and #foundItems > 0 then
+        selectedItems = {foundItems[1]}
+        Dropdown:Set(foundItems[1])
+    end
+end
+
+-- รัน Explore Map อัตโนมัติตอนเริ่ม
+task.wait(1)
+exploreMapAndRefresh()
+
+-- ====== ตัวแปร ======
+local itemsFolder = Workspace:WaitForChild("Items")
+local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
+local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
+local stopDragging = remoteEvents:WaitForChild("StopDraggingItem")
+local campfireCenter = Workspace:WaitForChild("Map"):WaitForChild("Campground"):WaitForChild("MainFire"):WaitForChild("Center")
+
+local fuelItems = {"Biofuel","Coal","Fuel Canister","Oil Barrel"}
+local heightOffset = 15
+local distanceOffset = 1
+local delayBetweenItems = 0
+
+-- ====== ฟังก์ชันลากไอเทม ======
+local function dragItemToPosition(itemToDrag, position)
+    local clonedItem = cloneref(itemToDrag)
+    startDragging:FireServer(clonedItem)
+    task.spawn(function()
+        if clonedItem:IsA("BasePart") then
+            clonedItem.CFrame = CFrame.new(position)
+        elseif clonedItem:IsA("Model") and clonedItem.PrimaryPart then
+            clonedItem:SetPrimaryPartCFrame(CFrame.new(position))
+        end
+    end)
+    task.wait(0.05)
+    stopDragging:FireServer(clonedItem)
+end
+
+-- ====== เติมไฟ ======
+function dragAllFuelToFire()
+    local campfireCFrame = campfireCenter.CFrame
+    local targetPosition = (campfireCFrame * CFrame.new(0, heightOffset, -distanceOffset)).Position
+    
+    local itemsToDrag = {}
+    for _, item in ipairs(itemsFolder:GetChildren()) do
+        if table.find(fuelItems, item.Name) then
+            table.insert(itemsToDrag, item)
+        end
+    end
+    
+    if #itemsToDrag > 0 then
+        for _, item in ipairs(itemsToDrag) do
+            dragItemToPosition(item, targetPosition)
+            task.wait(delayBetweenItems)
+        end
+    end
+end
+
+-- ====== Auto Fuel Loop ======
+function autoFuelLoop()
+    while autoFuelRunning do
+        dragAllFuelToFire()
+        task.wait(2) -- ทุก 2 วินาที
+    end
+end
