@@ -210,7 +210,6 @@ local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 local character = player.Character or player.CharacterAdded:Wait()
 
-
 UserInputService.InputEnded:Connect(function(input)
 	if input.KeyCode == Enum.KeyCode.Space then
 		ascend = false
