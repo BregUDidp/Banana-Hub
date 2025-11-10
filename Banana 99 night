@@ -1,0 +1,178 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+   Name = "   |  Project  Akari   [ V-8.1 ]",
+   Icon = "webhook",
+   LoadingTitle = "[ 👁️ ]  Akari Hub  [ 👁️ ]",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "👁️",
+   Theme = "Brown",
+
+   ToggleUIKeybind = "F",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = false,
+      GrabKeyFromSite = false,
+      Key = {"67"}
+   }
+})
+
+local extraTab = Window:CreateTab("[ - 99 คืน - ]", "tree-pine")
+local Section1 = extraTab:CreateSection("[ 🌲 ]  โซนอมตะและวาป")
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Variables
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local GodModeEnabled = false
+
+-- Teleport Positions (Approximate; adjust based on your server/map)
+local Positions = {
+    Stronghold = Vector3.new(1500, 50, 1200),  -- Common spawn; check map diamond icon
+    Campfire = Vector3.new(0, 10, 0),           -- Your base
+    Traders = Vector3.new(-500, 20, 300)        -- Trader NPC area
+}
+
+-- TP Function
+local function teleportTo(pos, name)
+    if HumanoidRootPart then
+        HumanoidRootPart.CFrame = CFrame.new(pos)
+        Rayfield:Notify({
+            Title = "วาปสำเร็จ [✅]",
+            Content = "Teleported to " .. name .. "!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    else
+        Rayfield:Notify({
+            Title = "Error",
+            Content = "Character not loaded!",
+            Duration = 3,
+            Image = 4483362458
+        })
+    end
+end
+
+extraTab:CreateButton({
+    Name = "[  ⛺  ]  วาปไปแคมไฟ",
+    Callback = function()
+        teleportTo(Positions.Campfire, "Campfire")
+    end
+})
+
+extraTab:CreateButton({Name = "[ 💖 ]  รัน อมตะ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/god%20mode"))() end})
+
+local Section2 = extraTab:CreateSection("[  🌲  ]  99 Night Forest")
+
+extraTab:CreateButton({Name = "[ 💣 ]  รัน Somtank Hub", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
+extraTab:CreateButton({Name = "[ 🦊 ]  รัน FoxName Hub", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
+extraTab:CreateButton({Name = "[ 🟣 ]  รัน RaBade Hub", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
+
+local Section3 = extraTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+
+extraTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
+extraTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
+extraTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
+extraTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+extraTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+
+-- Services
+local Players = cloneref(game:GetService("Players"))
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+local Workspace = cloneref(game:GetService("Workspace"))
+
+local ETab = Window:CreateTab("[ - Macro 99 คืน - ]", "flame-kindling")
+local Section3 = ETab:CreateSection("[ 🌲 ]  โซนมาโคว")
+
+-- ====== ปุ่มเติมไฟอัตโนมัติ (หลัก!) ======
+local autoFuelRunning = false
+ETab:CreateToggle({
+    Name = "🔥 เติมไฟอัตโนมัติ",
+    CurrentValue = false,
+    Flag = "AutoFuel",
+    Callback = function(Value)
+        autoFuelRunning = Value
+        if Value then
+            spawn(autoFuelLoop)
+        end
+    end,
+})
+
+-- ====== ตัวแปร ======
+local itemsFolder = Workspace:WaitForChild("Items")
+local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
+local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
+local stopDragging = remoteEvents:WaitForChild("StopDraggingItem")
+local campfireCenter = Workspace:WaitForChild("Map"):WaitForChild("Campground"):WaitForChild("MainFire"):WaitForChild("Center")
+
+local fuelItems = {"Biofuel","Coal","Fuel Canister","Oil Barrel"}
+local heightOffset = 15
+local distanceOffset = 1
+local delayBetweenItems = 0
+
+-- ====== ฟังก์ชันลากไอเทม ======
+local function dragItemToPosition(itemToDrag, position)
+    local clonedItem = cloneref(itemToDrag)
+    startDragging:FireServer(clonedItem)
+    task.spawn(function()
+        if clonedItem:IsA("BasePart") then
+            clonedItem.CFrame = CFrame.new(position)
+        elseif clonedItem:IsA("Model") and clonedItem.PrimaryPart then
+            clonedItem:SetPrimaryPartCFrame(CFrame.new(position))
+        end
+    end)
+    task.wait(0.05)
+    stopDragging:FireServer(clonedItem)
+end
+
+-- ====== เติมไฟ ======
+function dragAllFuelToFire()
+    local campfireCFrame = campfireCenter.CFrame
+    local targetPosition = (campfireCFrame * CFrame.new(0, heightOffset, -distanceOffset)).Position
+    
+    local itemsToDrag = {}
+    for _, item in ipairs(itemsFolder:GetChildren()) do
+        if table.find(fuelItems, item.Name) then
+            table.insert(itemsToDrag, item)
+        end
+    end
+    
+    if #itemsToDrag > 0 then
+        for _, item in ipairs(itemsToDrag) do
+            dragItemToPosition(item, targetPosition)
+            task.wait(delayBetweenItems)
+        end
+    end
+end
+
+-- ====== Auto Fuel Loop ======
+function autoFuelLoop()
+    while autoFuelRunning do
+        dragAllFuelToFire()
+        task.wait(2) -- ทุก 2 วินาที
+    end
+end
