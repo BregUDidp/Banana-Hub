@@ -6,39 +6,33 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "[ 👁️ ]  Akari Hub  [ 👁️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "👁️",
-   Theme = "Brown",
-
+   Theme = "DarkBlue",
    ToggleUIKeybind = "F",
-
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil, -- Create a custom folder for your hub/game
       FileName = "Big Hub"
    },
-
    Discord = {
       Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
       RememberJoins = true
    },
-
    KeySystem = false,
    KeySettings = {
       Title = "",
       Subtitle = "",
       Note = "",
       FileName = "",
-      SaveKey = false,
+      SaveKey = true,
       GrabKeyFromSite = false,
       Key = {"67"}
    }
 })
 
 local extraTab = Window:CreateTab("[ - 99 คืน - ]", "tree-pine")
-local Section1 = extraTab:CreateSection("[ 🌲 ]  โซนอมตะและวาป")
 
 -- Services
 local Players = game:GetService("Players")
@@ -77,12 +71,16 @@ local function teleportTo(pos, name)
     end
 end
 
+local Section1 = extraTab:CreateSection("[  🌲  ]  โซนวาป")
+
 extraTab:CreateButton({
     Name = "[  ⛺  ]  วาปไปแคมไฟ",
     Callback = function()
         teleportTo(Positions.Campfire, "Campfire")
     end
 })
+
+local Section1 = extraTab:CreateSection("[  🌲  ]  โซนอมตะ")
 
 extraTab:CreateButton({Name = "[ 💖 ]  รัน อมตะ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/god%20mode"))() end})
 
@@ -92,26 +90,28 @@ extraTab:CreateButton({Name = "[ 💣 ]  รัน Somtank Hub", Callback = func
 extraTab:CreateButton({Name = "[ 🦊 ]  รัน FoxName Hub", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
 extraTab:CreateButton({Name = "[ 🟣 ]  รัน RaBade Hub", Callback = function()         loadstring(game:HttpGet("https://pastebin.com/raw/RZK9XdtH"))() end})
 
-local Section3 = extraTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+local ExTab = Window:CreateTab("[ - Bring / Explore 99 คืน - ]", "flame-kindling")
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำรวจแมพ")
 
-extraTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
-extraTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
-extraTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
-extraTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
-extraTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+-- ปุ่ม Explore Map (สแกนแมพ + อัปเดต Dropdown)
+ExTab:CreateButton({
+    Name = "[ 🍁 ]  กดสำหรวจแมพ",
+    Callback = function()
+        spawn(exploreMapAndRefresh)
+    end,
+})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
 
 -- Services
 local Players = cloneref(game:GetService("Players"))
 local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
 local Workspace = cloneref(game:GetService("Workspace"))
 
-local ETab = Window:CreateTab("[ - Macro 99 คืน - ]", "flame-kindling")
-local Section3 = ETab:CreateSection("[ 🌲 ]  โซนมาโคว")
-
 -- ====== ปุ่มเติมไฟอัตโนมัติ (หลัก!) ======
 local autoFuelRunning = false
-ETab:CreateToggle({
-    Name = "🔥 เติมไฟอัตโนมัติ",
+ExTab:CreateToggle({
+    Name = "[ 🔥 ]  เติมไฟอัตโนมัติ",
     CurrentValue = false,
     Flag = "AutoFuel",
     Callback = function(Value)
@@ -121,6 +121,471 @@ ETab:CreateToggle({
         end
     end,
 })
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+
+ExTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
+ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
+ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
+ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/getiron"))() end})
+ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของแบบเลือก")
+
+-- ตัวแปรสำหรับเลือกไอเทม
+local selectedItems = {}
+
+-- Dropdown เลือกไอเทม (หลายตัว)
+local Dropdown = ExTab:CreateDropdown({
+    Name = "[ 💦 ]  เลือกไอเทมที่จะลาก",
+    Options = {"Coal", "Oil Barrel", "Fuel Canister", "Biofuel"},
+    CurrentOption = {"Coal"},
+    MultipleOptions = true,
+    Callback = function(Options)
+        selectedItems = Options
+        Rayfield:Notify({
+            Title = "เลือกไอเทม",
+            Content = "เลือก " .. #Options .. " รายการ",
+            Duration = 3
+        })
+    end,
+})
+
+-- Slider ระยะห่าง
+local OffsetSlider = ExTab:CreateSlider({
+    Name = "[ 🧙 ]  ระยะห่างจากตัวละคร",
+    Range = {0, 50},
+    Increment = 1,
+    Suffix = " studs",
+    CurrentValue = 0,
+    Flag = "OffsetDistance"
+})
+
+-- Slider ดีเลย์
+local DelaySlider = ExTab:CreateSlider({
+    Name = "[ 🐌 ]  ดีเลย์การลากไอเทม",
+    Range = {0, 1},
+    Increment = 0.05,
+    Suffix = " วินาที",
+    CurrentValue = 0,
+    Flag = "DelayBetweenItems"
+})
+
+-- ปุ่มลากไอเทม
+ExTab:CreateButton({
+    Name = "[ 🧱 ]  ลากไอเทมทั้งหมด",
+    Callback = function()
+        spawn(dragAllItemsToPlayer)
+    end,
+})
+
+-- ปุ่มรีเฟรชรายการ (สำรอง)
+ExTab:CreateButton({
+    Name = "[ 🔄️ ]  รีเฟรชรายการไอเทมในแมพ",
+    Callback = function()
+        spawn(refreshItemList)
+    end,
+})
+
+-- Toggle Auto Drag
+local AutoDragToggle = ExTab:CreateToggle({
+    Name = "[ ♾️ ]  กดลากของอัตโนมัต",
+    CurrentValue = false,
+    Flag = "AutoDragEnabled",
+    Callback = function(Value)
+        getgenv().AutoDragEnabled = Value
+        if Value then autoDragLoop() end
+    end,
+})
+
+-- แท็บตัวละคร
+local PTab = Window:CreateTab("[ - Player - ]", "contact")
+local MainSection = PTab:CreateSection("[ 🛸 ]  โซนบินและปรับความเร็วบิน")
+ 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.Space then
+		ascend = false
+	elseif input.KeyCode == Enum.KeyCode.LeftShift then
+		descend = false
+	end
+end)
+
+-- ตัวแปรระบบ
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local humanoid = char:WaitForChild("Humanoid")
+ 
+-- ตัวแปรฟังก์ชัน
+local flying = false
+local vv, gyro
+local flySpeed = 50
+local superSpeed = false
+local runSpeed = 32
+local noclipEnabled = false
+local infJumpEnabled = false
+ 
+-- ฟังก์ชันบิน
+local function startFlying()
+    if flying then return end
+    flying = true
+    humanoid.PlatformStand = true
+ 
+    vv = Instance.new("BodyVelocity")
+    vv.MaxForce = Vector3.new(1e5,1e5,1e5)
+    vv.P = 1250
+    vv.Velocity = Vector3.zero
+    vv.Parent = hrp
+ 
+    gyro = Instance.new("BodyGyro")
+    gyro.MaxTorque = Vector3.new(4e5,4e5,4e5)
+    gyro.P = 3000
+    gyro.CFrame = hrp.CFrame
+    gyro.Parent = hrp
+ 
+    Rayfield:Notify({
+        Title = "🛸 โหมดบินเปิด!",
+        Content = "ใช้ W,A,S,D,Space,Ctrl เพื่อควบคุม",
+        Duration = 3,
+        Image = 4483362458
+    })
+end
+ 
+local function stopFlying()
+    if not flying then return end
+    flying = false
+    if vv then vv:Destroy() vv=nil end
+    if gyro then gyro:Destroy() gyro=nil end
+    humanoid.PlatformStand = false
+ 
+    Rayfield:Notify({
+        Title = "🛬 โหมดบินปิด",
+        Content = "ลงจอดเรียบร้อย",
+        Duration = 3,
+        Image = 6026568198
+    })
+end
+ 
+-- ฟังก์ชันวิ่งเร็ว
+local function toggleSpeed(on)
+    superSpeed = on
+    humanoid.WalkSpeed = superSpeed and runSpeed or 16
+    Rayfield:Notify({
+        Title = superSpeed and "🏃‍♂️ วิ่งเร็ว ✅" or "🚶‍♂️ วิ่งเร็ว 🛑",
+        Content = superSpeed and "วิ่งเร็วสุดขีด!" or "กลับสู่ความเร็วปกติ",
+        Duration = 3,
+        Image = 4483362458
+    })
+end
+
+local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
+local flySlider = PTab:CreateSlider({Name="[ 📏 ] ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+ 
+local Section2 = PTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
+
+local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] เปิด/ปิด การวิ่งเร็ว", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ] ความเร็วในการวิ่ง", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+ 
+local Section4 = PTab:CreateSection("[ 🧱 ] โซนล่องหนและทะลุกำแพงและกระโดดไม่จำกัด")
+
+--// ตั้งค่าเริ่มต้น
+local player = game.Players.LocalPlayer
+local defaultSpeed = 16
+local boostedSpeed = 48
+local invis_on = false
+local isSpeedBoosted = false
+local key = Enum.KeyCode.X
+
+--// สร้างเสียง
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://942127495"
+sound.Volume = 1
+sound.Parent = player:WaitForChild("PlayerGui")
+
+--// ฟังก์ชันตั้งค่าความโปร่งใส
+local function setTransparency(character, transparency)
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") or part:IsA("Decal") then
+            part.Transparency = transparency
+        end
+    end
+end
+
+--// ฟังก์ชันล่องหน
+local function toggleInvisibility()
+    invis_on = not invis_on
+    sound:Play()
+
+    if invis_on then
+        local character = player.Character or player.CharacterAdded:Wait()
+        local root = character:WaitForChild("HumanoidRootPart")
+        local savedpos = root.CFrame
+
+        wait()
+        root.CFrame = CFrame.new(-25.95, 84, 3537.55)
+
+        wait(0.15)
+        local Seat = Instance.new("Seat", workspace)
+        Seat.Anchored = false
+        Seat.CanCollide = false
+        Seat.Name = "invischair"
+        Seat.Transparency = 1
+        Seat.Position = Vector3.new(-25.95, 84, 3537.55)
+
+        local Weld = Instance.new("Weld", Seat)
+        Weld.Part0 = Seat
+        Weld.Part1 = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+
+        wait()
+        Seat.CFrame = savedpos
+        setTransparency(character, 0.5)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "การล่องหน [ ✅ ]",
+            Text = "สถานะ: ล่องหน 👻",
+            Duration = 3
+        })
+    else
+        local invisChair = workspace:FindFirstChild("invischair")
+        if invisChair then
+            invisChair:Destroy()
+        end
+        setTransparency(player.Character, 0)
+
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "การล่องหน [ 🛑 ]",
+            Text = "สถานะ: คนเป็นปกติ",
+            Duration = 3
+        })
+    end
+end
+
+PTab:CreateButton({Name = "[ 👻 ] กดปุ่มล่องหน [ .กดตัว X. ]  [ .กดอีกทีเพื่อปิด. [ 🛑 ]", Callback = function() toggleInvisibility() end})
+
+player.CharacterAdded:Connect(function(character)
+    isSpeedBoosted = false
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = defaultSpeed
+end)
+
+--// คีย์ลัดกด X
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == key then
+        toggleInvisibility()
+    end
+end)
+
+local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] เปิด/ปิด การทะลุกำแพง", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
+local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] เปิด/ปิด กระโดดไม่จำกัด", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+
+-- อัปเดตลูป
+RS.RenderStepped:Connect(function()
+    if flying and vv and gyro and hrp and humanoid then
+        local cam = workspace.CurrentCamera
+        if not cam then return end
+ 
+        local flatForward = Vector3.new(cam.CFrame.LookVector.X,0,cam.CFrame.LookVector.Z)
+        local forward = flatForward.Magnitude > 0 and flatForward.Unit or Vector3.zero
+        local right = Vector3.new(cam.CFrame.RightVector.X,0,cam.CFrame.RightVector.Z)
+        if right.Magnitude > 0 then right = right.Unit end
+ 
+        local moveVec = Vector3.zero
+        if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + Vector3.new(0,0,1) end
+        if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec + Vector3.new(0,0,-1) end
+        if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec + Vector3.new(-1,0,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + Vector3.new(1,0,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0,1,0) end
+        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec = moveVec + Vector3.new(0,-1,0) end
+ 
+        local desired = forward*moveVec.Z + right*moveVec.X + Vector3.new(0,moveVec.Y,0)
+        if desired.Magnitude>0 then desired = desired.Unit*flySpeed end
+        vv.Velocity = desired
+ 
+        if desired.Magnitude>1 then
+            local flatDir = Vector3.new(desired.X,0,desired.Z)
+            if flatDir.Magnitude>0 then gyro.CFrame = CFrame.new(hrp.Position,hrp.Position+flatDir) end
+        end
+    end
+end)
+ 
+RS.Stepped:Connect(function()
+    if noclipEnabled and char then
+        for _,part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide=false end
+        end
+    end
+end)
+ 
+UIS.JumpRequest:Connect(function()
+    if infJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+UIS.JumpRequest:Connect(function()
+    if infJumpEnabled and humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+ 
+-- รีเซ็ตตัวละครเมื่อ respawn
+player.CharacterAdded:Connect(function(c)
+    char=c
+    hrp=c:WaitForChild("HumanoidRootPart")
+    humanoid=c:WaitForChild("Humanoid")
+    stopFlying()
+    toggleSpeed(false)
+    noclipEnabled=false
+    infJumpEnabled=false
+    Rayfield:LoadConfiguration()
+end)
+
+-- ====== ตัวแปร Global ======
+getgenv().AutoDragEnabled = false
+local offsetDistance = 0
+local delayBetweenItems = 0
+local itemsFolder = Workspace:WaitForChild("Items")
+local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
+local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
+local stopDragging = remoteEvents:WaitForChild("StopDraggingItem")
+
+-- ====== ตัวละคร ======
+local player = Players.LocalPlayer
+local function getCharacter()
+    return player.Character or player.CharacterAdded:Wait()
+end
+
+-- ====== ฟังก์ชันลากไอเทม ======
+local function dragItemToPosition(itemToDrag, position)
+    local clonedItem = cloneref(itemToDrag)
+    startDragging:FireServer(clonedItem)
+    task.spawn(function()
+        if clonedItem:IsA("BasePart") then
+            clonedItem.CFrame = CFrame.new(position)
+        elseif clonedItem:IsA("Model") and clonedItem.PrimaryPart then
+            clonedItem:SetPrimaryPartCFrame(CFrame.new(position))
+        end
+    end)
+    task.wait(0.05)
+    stopDragging:FireServer(clonedItem)
+end
+
+-- ====== ลากทุกไอเทมที่เลือก ======
+function dragAllItemsToPlayer()
+    if #selectedItems == 0 then
+        Rayfield:Notify({Title="ผิดพลาด", Content="กรุณาเลือกไอเทมก่อน!", Duration=4})
+        return
+    end
+
+    local character = getCharacter()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+    local targetPos = (hrp.CFrame * CFrame.new(0, 0, -offsetDistance)).Position
+
+    local itemsToDrag = {}
+    for _, item in ipairs(itemsFolder:GetChildren()) do
+        if table.find(selectedItems, item.Name) then
+            table.insert(itemsToDrag, item)
+        end
+    end
+
+    if #itemsToDrag == 0 then
+        Rayfield:Notify({Title="ไม่พบไอเทม", Content="ไม่พบไอเทมที่เลือกในแมพ!", Duration=4})
+        return
+    end
+
+    Rayfield:Notify({Title="เริ่มลาก", Content="พบ " .. #itemsToDrag .. " ไอเทม", Duration=3})
+
+    for _, item in ipairs(itemsToDrag) do
+        dragItemToPosition(item, targetPos)
+        task.wait(delayBetweenItems)
+    end
+
+    Rayfield:Notify({Title="สำเร็จ", Content="ลาก " .. #itemsToDrag .. " ไอเทมเรียบร้อย!", Duration=5})
+end
+
+-- ====== Auto Drag Loop ======
+function autoDragLoop()
+    spawn(function()
+        while getgenv().AutoDragEnabled do
+            dragAllItemsToPlayer()
+            task.wait(1)
+        end
+    end)
+end
+
+-- ====== อัปเดตค่า Slider ======
+task.spawn(function()
+    while true do
+        offsetDistance = OffsetSlider.CurrentValue
+        delayBetweenItems = DelaySlider.CurrentValue
+        task.wait(0.1)
+    end
+end)
+
+-- ====== รีเฟรชรายการไอเทม (แบบเก่า) ======
+function refreshItemList()
+    local found = {}
+    for _, obj in ipairs(itemsFolder:GetChildren()) do
+        local n = obj.Name
+        if n ~= "" and not table.find(found, n) then
+            table.insert(found, n)
+        end
+    end
+    table.sort(found)
+    Dropdown:Refresh(found, false)
+    Rayfield:Notify({Title="รีเฟรชสำเร็จ", Content="พบ " .. #found .. " ไอเทม", Duration=4})
+end
+
+-- ====== Explore Map (สแกนแมพ + อัปเดต Dropdown) ======
+function exploreMapAndRefresh()
+    Rayfield:Notify({Title="กำลังสแกนแมพ...", Content="ค้นหาไอเท็มทั้งหมด", Duration=3})
+
+    local foundItems = {}
+    for _, obj in ipairs(itemsFolder:GetChildren()) do
+        local name = obj.Name
+        if name and name ~= "" and not table.find(foundItems, name) then
+            table.insert(foundItems, name)
+        end
+    end
+
+    table.sort(foundItems)
+
+    if #foundItems == 0 then
+        Rayfield:Notify({Title="ไม่พบไอเท็ม", Content="ไม่มีไอเท็มใน Items Folder", Duration=5})
+        return
+    end
+
+    Dropdown:Refresh(foundItems, false)
+
+    Rayfield:Notify({
+        Title = "สแกนแมพสำเร็จ!",
+        Content = "พบ " .. #foundItems .. " ไอเท็ม\nตัวอย่าง: " .. table.concat(foundItems, ", ", 1, math.min(5, #foundItems)),
+        Duration = 6
+    })
+
+    -- ตั้งค่าเริ่มต้นถ้ายังไม่เลือก
+    if #selectedItems == 0 and #foundItems > 0 then
+        selectedItems = {foundItems[1]}
+        Dropdown:Set(foundItems[1])
+    end
+end
+
+-- รัน Explore Map อัตโนมัติตอนเริ่ม
+task.wait(1)
+exploreMapAndRefresh()
 
 -- ====== ตัวแปร ======
 local itemsFolder = Workspace:WaitForChild("Items")
