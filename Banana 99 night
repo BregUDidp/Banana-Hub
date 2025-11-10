@@ -271,11 +271,11 @@ friendTab:CreateButton({
             local thrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             if thrp then
                 hrp.CFrame = thrp.CFrame + Vector3.new(0, 3, 0)
-                Rayfield:Notify({Title = "Teleport สำเร็จ", Content = "ไปหา "..friendName, Duration = 3})
+                Rayfield:Notify({Title = "Teleport สำเร็จ ✅", Content = "ไปหา "..friendName, Duration = 3})
                 return
             end
         end
-        Rayfield:Notify({Title = "ไม่พบเป้าหมาย", Content = "เพื่อนไม่ออนไลน์/ไม่มี HRP", Duration = 3})
+        Rayfield:Notify({Title = "❌ ไม่พบเป้าหมาย", Content = "เพื่อนไม่ออนไลน์/ไม่มี HRP", Duration = 3})
     end
 })
 
@@ -315,18 +315,18 @@ friendTab:CreateButton({
         local stopDragging  = remoteEvents and remoteEvents:FindFirstChild("StopDraggingItem")
 
         if not (startDragging and stopDragging) then
-            Rayfield:Notify({Title = "ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
+            Rayfield:Notify({Title = "❌ ผิดพลาด", Content = "ไม่พบ RemoteEvent ลากศพ", Duration = 5})
             return
         end
 
         -- หา “ศพทั้งหมด”
         local bodies = getAllBodies()
         if #bodies == 0 then
-            Rayfield:Notify({Title = "ไม่พบศพ", Content = "ตอนนี้ยังไม่มีใครตาย", Duration = 4})
+            Rayfield:Notify({Title = "❌ ไม่พบศพ", Content = "❌ ตอนนี้ยังไม่มีใครตาย", Duration = 4})
             return
         end
 
-        Rayfield:Notify({Title = "กำลังลากศพ", Content = "พบ "..#bodies.." ตัว", Duration = 3})
+        Rayfield:Notify({Title = "กำลังลากศพ ✅", Content = "พบ "..#bodies.." ตัว", Duration = 3})
 
         task.spawn(function()
             for _, body in ipairs(bodies) do
@@ -349,7 +349,7 @@ friendTab:CreateButton({
                 end
             end
 
-            Rayfield:Notify({Title = "สำเร็จ!", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
+            Rayfield:Notify({Title = "สำเร็จ ✅", Content = "ลากศพทั้งหมด "..#bodies.." ตัว!", Duration = 4})
         end)
     end
 })
@@ -359,7 +359,7 @@ friendTab:CreateButton({
     Name = "[ 🔄️ ]  - รีเฟรชรายชื่อ -",
     Callback = function()
         friendDropdown:Set(getPlayerList())
-        Rayfield:Notify({Title = "อัปเดตแล้ว", Content = "รีเฟรชรายชื่อสำเร็จ", Duration = 3})
+        Rayfield:Notify({Title = "อัปเดตแล้ว ✅", Content = "รีเฟรชรายชื่อสำเร็จ ✅", Duration = 3})
     end
 })
 
