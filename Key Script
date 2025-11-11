@@ -60,6 +60,7 @@ KeyTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
+KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
 KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
