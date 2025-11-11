@@ -13,12 +13,12 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "|  🎯  |  Aimbot   Function ",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "Aimbot",
-   Theme = "Amethyst",
+   Theme = "DarkBlue",
 
    ToggleUIKeybind = "F",
 
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
 
    ConfigurationSaving = {
       Enabled = true,
@@ -247,102 +247,6 @@ espTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
-local espEnabled = false
-local espTraceEnabled = true
-local espBoxes = {}
-
-local function rainbow(speed, offset)
-    local t = tick() * (speed or 1) + (offset or 0)
-    return Color3.fromHSV(t % 1, 1, 1)
-end
-
-local function createESP(player)
-    if not DrawingAvailable or espBoxes[player] then return end
-    local box = {}
-    box.main = Drawing.new("Square")
-    box.main.Thickness = 2
-    box.main.Filled = false
-    box.main.Visible = false
-
-    box.name = Drawing.new("Text")
-    box.name.Size = 16
-    box.name.Center = true
-    box.name.Outline = true
-    box.name.Visible = false
-
-    box.tracer = Drawing.new("Line")
-    box.tracer.Thickness = 2
-    box.tracer.Visible = false
-
-    espBoxes[player] = box
-end
-
-local function removeESP(player)
-    local box = espBoxes[player]
-    if box then
-        pcall(function()
-            box.main:Remove()
-            box.name:Remove()
-            box.tracer:Remove()
-        end)
-        espBoxes[player] = nil
-    end
-end
-
-RunService.RenderStepped:Connect(function()
-    if not DrawingAvailable then return end
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                if espEnabled then
-                    createESP(player)
-                    local box = espBoxes[player]
-                    local root = player.Character.HumanoidRootPart
-                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
-
-                    if onScreen then
-                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
-                        local size = Vector2.new(scale * 0.6, scale)
-                        local center = Vector2.new(pos.X, pos.Y)
-
-                        box.main.Size = size
-                        box.main.Position = center - size/2
-                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
-                        box.main.Visible = true
-
-                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
-                        box.name.Text = player.Name .. ((autoTarget == player) and " 🎯 เล็งหัวตัวละครแล้ว" or "")
-                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
-                        box.name.Visible = true
-
-                        if espTraceEnabled then
-                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-                            box.tracer.From = screenCenter
-                            box.tracer.To = center
-                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
-                            box.tracer.Visible = true
-                        end
-                    else
-                        box.main.Visible = false
-                        box.name.Visible = false
-                        box.tracer.Visible = false
-                    end
-                else
-                    removeESP(player)
-                end
-            else
-                removeESP(player)
-            end
-        else
-            removeESP(player)
-        end
-    end
-end)
-
-Players.PlayerRemoving:Connect(removeESP)
-
 --// ESP UI
 espTab:CreateSection("___👁️ ESP Visual______________________________________")
 
@@ -367,6 +271,43 @@ espTab:CreateToggle({
 
 local DipTab = Window:CreateTab("Rainbow Gun  [  🔫  ]", "rainbow")
 local Section = DipTab:CreateSection("___🏳️‍🌈 Gun Visual______________________________________")
+
+DipTab:CreateParagraph({
+    Title = "คีย์ลัดปุ่มสายรุ่ง",
+    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
+})
+
+DipTab:CreateParagraph({
+    Title = "_______________________________________________________________________",
+    Content = "_______________________________________________________________________"
+})
+
+local Dropdown = DipTab:CreateDropdown({
+   Name = "แมพที่มีฟังชัjนลองรับเล่นปืนสายรุ่ง",
+   Options = {"" ,"[ FPS ] Flick"},
+   CurrentOption = {"ฟังชั่นรองรับสคริป"},
+   MultipleOptions = false,
+   Flag = "Dropdown1",
+   Callback = function(Options)
+       
+   end,
+})
+
+DipTab:CreateToggle({
+    Name = "[ 🌈 ]  เปิด/ปิด  ปืนสีสายรุ่ง",
+    CurrentValue = false,
+    Callback = function(state) toggleRainbowGun(state) end
+})
+
+DipTab:CreateParagraph({
+    Title = "_______________________________________________________________________",
+    Content = "_______________________________________________________________________"
+})
+
+DipTab:CreateParagraph({
+    Title = "คีย์ลัดปุ่มสายรุ่ง",
+    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
+})
 
 --// ตัวแปร Rainbow Gun
 local rainbowGunEnabled = false
@@ -476,39 +417,98 @@ end
 LocalPlayer.CharacterAdded:Connect(setupGunDetection)
 if LocalPlayer.Character then setupGunDetection(LocalPlayer.Character) end
 
-DipTab:CreateParagraph({
-    Title = "คีย์ลัดปุ่มสายรุ่ง",
-    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
-})
+local espEnabled = false
+local espTraceEnabled = true
+local espBoxes = {}
 
-DipTab:CreateParagraph({
-    Title = "_______________________________________________________________________",
-    Content = "_______________________________________________________________________"
-})
+local function rainbow(speed, offset)
+    local t = tick() * (speed or 1) + (offset or 0)
+    return Color3.fromHSV(t % 1, 1, 1)
+end
 
-local Dropdown = DipTab:CreateDropdown({
-   Name = "แมพที่มีฟังชัjนลองรับเล่นปืนสายรุ่ง",
-   Options = {"" ,"[ FPS ] Flick"},
-   CurrentOption = {"ฟังชั่นรองรับสคริป"},
-   MultipleOptions = false,
-   Flag = "Dropdown1",
-   Callback = function(Options)
-       
-   end,
-})
+local function createESP(player)
+    if not DrawingAvailable or espBoxes[player] then return end
+    local box = {}
+    box.main = Drawing.new("Square")
+    box.main.Thickness = 2
+    box.main.Filled = false
+    box.main.Visible = false
 
-DipTab:CreateToggle({
-    Name = "[ 🌈 ]  เปิด/ปิด  ปืนสีสายรุ่ง",
-    CurrentValue = false,
-    Callback = function(state) toggleRainbowGun(state) end
-})
+    box.name = Drawing.new("Text")
+    box.name.Size = 16
+    box.name.Center = true
+    box.name.Outline = true
+    box.name.Visible = false
 
-DipTab:CreateParagraph({
-    Title = "_______________________________________________________________________",
-    Content = "_______________________________________________________________________"
-})
+    box.tracer = Drawing.new("Line")
+    box.tracer.Thickness = 2
+    box.tracer.Visible = false
 
-DipTab:CreateParagraph({
-    Title = "คีย์ลัดปุ่มสายรุ่ง",
-    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
-})
+    espBoxes[player] = box
+end
+
+local function removeESP(player)
+    local box = espBoxes[player]
+    if box then
+        pcall(function()
+            box.main:Remove()
+            box.name:Remove()
+            box.tracer:Remove()
+        end)
+        espBoxes[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if not DrawingAvailable then return end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                if espEnabled then
+                    createESP(player)
+                    local box = espBoxes[player]
+                    local root = player.Character.HumanoidRootPart
+                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+                    if onScreen then
+                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
+                        local size = Vector2.new(scale * 0.6, scale)
+                        local center = Vector2.new(pos.X, pos.Y)
+
+                        box.main.Size = size
+                        box.main.Position = center - size/2
+                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
+                        box.main.Visible = true
+
+                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
+                        box.name.Text = player.Name .. ((autoTarget == player) and " 🎯 เล็งหัวตัวละครแล้ว" or "")
+                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
+                        box.name.Visible = true
+
+                        if espTraceEnabled then
+                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                            box.tracer.From = screenCenter
+                            box.tracer.To = center
+                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
+                            box.tracer.Visible = true
+                        end
+                    else
+                        box.main.Visible = false
+                        box.name.Visible = false
+                        box.tracer.Visible = false
+                    end
+                else
+                    removeESP(player)
+                end
+            else
+                removeESP(player)
+            end
+        else
+            removeESP(player)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(removeESP)
