@@ -32,7 +32,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local extraTab = Window:CreateTab("[ - 99 คืน - ]", "tree-pine")
+local extraTab = Window:CreateTab("|| -  99 คืนในป่า", "tree-pine")
 
 -- Services
 local Players = game:GetService("Players")
@@ -89,7 +89,7 @@ local Section2 = extraTab:CreateSection("[  🌲  ]  โซนสคริป 99
 extraTab:CreateButton({Name = "[ 💣 ]  รัน Somtank Hub", Callback = function() loadstring(game:HttpGet('https://raw.githubusercontent.com/MQPS7/99-Night-in-the-Forset/refs/heads/main/99Nightv1'))() end})
 extraTab:CreateButton({Name = "[ 🦊 ]  รัน FoxName Hub", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))() end})
 
-local ExTab = Window:CreateTab("[ - Bring / Explore 99 คืน - ]", "flame-kindling")
+local ExTab = Window:CreateTab("|| -  ดึงของอัตโนมัต", "flame-kindling")
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนเติมไฟอัตโนมัต")
 
 -- Services
@@ -203,8 +203,222 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 local player = Players.LocalPlayer
 
+-- === แท็บ Kill Aura สุดโหด (15 อาวุธ + Attack Speed) ===
+local killAuraTab = Window:CreateTab("|| -  ฆ่าอัตโนมัต", "axe")
+local Section1 = killAuraTab:CreateSection("[ 🌲 ]  โซนการฆ่า")
+
+-- ตัวแปร Kill Aura
+local killAuraEnabled = false
+local killAuraRange = 150
+local killAuraCount = 0
+local killAuraHitDelay = 0  -- Delay เริ่มต้น (ยิ่งน้อย = ตีเร็ว)
+local Characters = Workspace:WaitForChild("Characters")
+
+-- รายการอาวุธทั้งหมด (15 ชิ้น)
+local allWeapons = {
+    "Spear","Infernal Sword", "Morningstar", "Katana", "Laser Sword", "Ice Sword",
+    "Trident", "Poison Spear", "Infernal Sword", "Cultist King Mace",
+    "Obsidiron Hammer", "Scythe", "Vampire Scythe", "Axe", "Strong Axe", "Good Axe"
+}
+
+-- ฟังก์ชันหา Weapon (Priority)
+local function getWeapon()
+    if not player:FindFirstChild("Inventory") then return nil end
+    
+    local priorityWeapons = {"Infernal Sword","Strong Axe","Good Axe", "Vampire Scythe", "Laser Sword", "Infernal Sword", "Ice Sword", "Poison Spear"}
+    local normalWeapons = {"Katana", "Spear", "Trident", "Scythe", "Morningstar", "Axe", "Cultist King Mace", "Obsidiron Hammer"}
+    
+    for _, weaponName in ipairs(priorityWeapons) do
+        local weapon = player.Inventory:FindFirstChild(weaponName)
+        if weapon then return weapon end
+    end
+    
+    for _, weaponName in ipairs(normalWeapons) do
+        local weapon = player.Inventory:FindFirstChild(weaponName)
+        if weapon then return weapon end
+    end
+    
+    return nil
+end
+
+-- ฟังก์ชันส่งดาเมจ
+local function damage(target, tool)
+    if not tool then return end
+    local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+    if not remoteEvents then return end
+    local evt = remoteEvents:FindFirstChild("ToolDamageObject")
+    if not evt then return end
+    
+    local hrp = target:FindFirstChild("HumanoidRootPart")
+    local cf = hrp and hrp.CFrame or CFrame.new()
+    
+    evt:InvokeServer(target, tool, tostring(killAuraCount).."_7367831688", cf)
+end
+
+-- Toggle Kill Aura
+killAuraTab:CreateToggle({
+    Name = "[ 🔥 ]  เปิด/ปิด การฆ่า",
+    CurrentValue = false,
+    Flag = "KillAuraToggle",
+    Callback = function(bool)
+        killAuraEnabled = bool
+        Rayfield:Notify({
+            Title = "Kill Aura",
+            Content = bool and "⚔️ เปิด - ตีเร็วสุด!" or "❌ ปิดแล้ว",
+            Duration = 3,
+            Image = 6026568198
+        })
+    end,
+})
+
+-- **🚀 SLIDER ปรับความเร็วตี (ใหม่!)**
+killAuraTab:CreateSlider({
+    Name = "[ ⚡ ]  ความเร็วในการโจมตี",
+    Range = {0, 0.5},
+    Increment = 0.01,
+    CurrentValue = 0,
+    Flag = "HitSpeedSlider",
+    Callback = function(val)
+        killAuraHitDelay = val
+        Rayfield:Notify({
+            Title = "ปรับความเร็วตี",
+            Content = "Delay: " .. val .. "s (ยิ่งต่ำยิ่งเร็ว)",
+            Duration = 2
+        })
+    end,
+})
+
+-- Dropdown โหมดอาวุธ
+local weaponModes = {"Auto (Priority)", "Good Axe Only", "Vampire Scythe Only", "Laser Sword Only", "All Weapons (Random)"}
+local selectedMode = "Auto (Priority)"
+killAuraTab:CreateDropdown({
+    Name = "[ ⚔️ ]  เลือกโหมดอาวุธ",
+    Options = weaponModes,
+    CurrentOption = {selectedMode},
+    Flag = "WeaponMode",
+    Callback = function(option)
+        selectedMode = option[1]
+    end,
+})
+
+-- Slider ระยะ
+killAuraTab:CreateSlider({
+    Name = "[ 📏 ]  ระยะการฆ่าสัตว์",
+    Range = {50, 500},
+    Increment = 10,
+    CurrentValue = 150,
+    Flag = "KillAuraRange",
+    Callback = function(val)
+        killAuraRange = val
+    end,
+})
+
+local Section1 = killAuraTab:CreateSection("[ 🌲 ]  โซนดูการฆ่า")
+
+-- Label สถิติ
+local statusLabel = killAuraTab:CreateLabel("Kills: 0 | Range: 150 | Speed: 0.03s | Weapon: Ready")
+
+local Section1 = killAuraTab:CreateSection("[ 🌲 ]  โซนรีเฟรชการฆ่า")
+
+-- Reset Stats
+killAuraTab:CreateButton({
+    Name = "[ 🔄 ]  รีเฟรชการฆ่า",
+    Callback = function()
+        killAuraCount = 0
+        statusLabel:Set("Kills: 0 | Range: " .. killAuraRange .. " | Speed: " .. killAuraHitDelay .. "s | Weapon: Ready")
+    end,
+})
+
+-- ตรวจสอบ Inventory
+killAuraTab:CreateButton({
+    Name = "[ 📋 ]  ตรวจสอบของ",
+    Callback = function()
+        local inv = player:FindFirstChild("Inventory")
+        if not inv then return Rayfield:Notify({Title="❌ Error", Content="ไม่พบ Inventory", Duration=3}) end
+        
+        local found = 0
+        for _, wName in ipairs(allWeapons) do
+            if inv:FindFirstChild(wName) then found += 1 end
+        end
+        
+        Rayfield:Notify({
+            Title = "Inventory Scan",
+            Content = "พบ " .. found .. "/15 อาวุธ",
+            Duration = 4
+        })
+    end,
+})
+
+-- === Kill Aura Loop (ปรับ Speed แล้ว) ===
+task.spawn(function()
+    while task.wait() do
+        if not killAuraEnabled then 
+            statusLabel:Set("Kills: " .. killAuraCount .. " | Range: " .. killAuraRange .. " | OFF")
+            task.wait(0.5)  -- ลด load เมื่อปิด
+            continue 
+        end
+        
+        local weapon
+        if selectedMode == "Auto (Priority)" then
+            weapon = getWeapon()
+        elseif selectedMode == "All Weapons (Random)" then
+            local available = {}
+            for _, wName in ipairs(allWeapons) do
+                local w = player.Inventory:FindFirstChild(wName)
+                if w then table.insert(available, w) end
+            end
+            if #available > 0 then weapon = available[math.random(1, #available)] end
+        else
+            local targetName = selectedMode:match("Only") and selectedMode:gsub(" Only", "")
+            weapon = player.Inventory:FindFirstChild(targetName)
+        end
+        
+        local myChar = player.Character
+        if not myChar or not myChar:FindFirstChild("HumanoidRootPart") or not weapon then 
+            statusLabel:Set("Kills: " .. killAuraCount .. " | ❌ ไม่พบอาวุธ")
+            continue 
+        end
+        
+        local myHRP = myChar.HumanoidRootPart
+        statusLabel:Set("Kills: " .. killAuraCount .. " | Range: " .. killAuraRange .. " | Speed: " .. killAuraHitDelay .. "s | " .. weapon.Name)
+        
+        -- Loop ตี (ใช้ delay ใหม่)
+        for _, v in ipairs(Characters:GetChildren()) do
+            if v:IsA("Model") and v ~= myChar and v:FindFirstChild("HumanoidRootPart") and not v.Name:find(" Body") then
+                local dist = (v.HumanoidRootPart.Position - myHRP.Position).Magnitude
+                if dist <= killAuraRange then
+                    killAuraCount += 1
+                    damage(v, weapon)
+                    statusLabel:Set("Kills: " .. killAuraCount .. " | ⚔️ ATTACKING")
+                    task.wait(killAuraHitDelay)  -- <<<< ที่นี่! ปรับความเร็วตี
+                end
+            end
+        end
+    end
+end)
+
+-- Auto Equip
+killAuraTab:CreateToggle({
+    Name = "[ 🔧 ]  ออโต้การใช้ของ",
+    CurrentValue = false,
+    Flag = "AutoEquip",
+    Callback = function(bool)
+        task.spawn(function()
+            while bool do
+                task.wait(0.5)
+                local weapon = getWeapon()
+                if weapon and player.Character then
+                    local humanoid = player.Character:FindFirstChild("Humanoid")
+                    if humanoid then humanoid:EquipTool(weapon) end
+                end
+            end
+        end)
+    end,
+})
+
 -- สร้างแท็บ
-local friendTab = Window:CreateTab("[ - วาป - ]", "door-open")
+local friendTab = Window:CreateTab("|| -  วาปอัตโนมัต", "door-open")
+local Section1 = friendTab:CreateSection("[ 🌲 ]  โซนวาป")
 
 -- ===== Helpers =====
 local function getPlayerList()
@@ -371,8 +585,124 @@ Players.PlayerRemoving:Connect(function()
     friendDropdown:Set(getPlayerList())
 end)
 
+-- === แท็บวาปสถานที่ ===
+local tpTab = Window:CreateTab("|| -  วาปไปโซนอัตโนมัต", "door-open")
+local Section1 = tpTab:CreateSection("[ 🌲 ]  โซนวาปไปที่ต่างๆ")
+
+local Paragraph = tpTab:CreateParagraph({Title = "[ : เข้าแมพก่อน ]", Content = "[ - 99 คืนในป่า - ]"})
+
+-- ตัวแปรเก็บปุ่มเพื่อลบตอนรีเฟรช
+local currentButtons = {}
+local locationLabel
+
+-- ประกาศ player ก่อนใช้
+local player = game.Players.LocalPlayer
+
+-- เก็บ Locations ไว้นอกฟังก์ชัน (สำคัญมาก!)
+local Locations = {}
+
+-- ชื่อภาษาไทย
+local thaiNames = {
+    StrongHold = "ปราสาทเพชร",
+    Fairy_House = "บ้านนางฟ้า", 
+    Ice_Temple = "วิหารน้ำแข็ง",
+    Jail_Cellar1 = "ห้องขังใต้ดิน 1",
+    Jail_Cellar2 = "ห้องขังใต้ดิน 2", 
+    Jail_Cellar3 = "ห้องขังใต้ดิน 3",
+    Jail_Cellar4 = "ห้องขังใต้ดิน 4",
+    SkillsBuilding = "อาคารฝึกสกิล",
+    Snow_Clothing_Shop = "ร้านเสื้อผ้าหิมะ",
+    ToolWorkshop = "โรงงานเครื่องมือ"
+}
+
+-- ฟังก์ชันดึง CFrame จาก landmark
+local function getCFrameFromLandmark(landmark)
+    if landmark:IsA("Model") then
+        if landmark.PrimaryPart then
+            return landmark.PrimaryPart.CFrame
+        else
+            for _, part in pairs(landmark:GetChildren()) do
+                if part:IsA("BasePart") then
+                    return part.CFrame
+                end
+            end
+        end
+    elseif landmark:IsA("BasePart") then
+        return landmark.CFrame
+    end
+    return nil
+end
+
+-- ฟังก์ชันรีเฟรชสถานที่
+local function refreshLocations()
+    -- ลบปุ่มเก่า
+    for _, btn in pairs(currentButtons) do
+        if btn.Remove then btn:Remove() end
+    end
+    currentButtons = {}
+
+    -- รีเซ็ต Locations
+    Locations = {}
+
+    local folder = Workspace:FindFirstChild("Map") and Workspace.Map:FindFirstChild("Landmarks")
+    
+    if folder then
+        for _, landmark in pairs(folder:GetChildren()) do
+            local name = landmark.Name
+            local cf = getCFrameFromLandmark(landmark)
+            
+            if cf then
+                local pos = cf.Position
+                local displayName = thaiNames[name] or name:gsub("_", " ")
+                Locations[name] = {
+                    CFrame = CFrame.new(pos.X, pos.Y + 3, pos.Z), -- +3 เพื่อไม่ติดพื้น
+                    Display = displayName
+                }
+            end
+        end
+    end
+    
+    -- สร้างปุ่มใหม่
+    for key, data in pairs(Locations) do
+        local btn = tpTab:CreateButton({
+            Name = "📍 " .. data.Display,
+            Callback = function()
+                local char = player.Character or player.CharacterAdded:Wait()
+                local hrp = char:WaitForChild("HumanoidRootPart")
+                hrp.CFrame = data.CFrame
+                Rayfield:Notify({
+                    Title = "วาปสำเร็จ! 🚀",
+                    Content = "ไป " .. data.Display .. " แล้ว",
+                    Duration = 3,
+                    Image = 13014647359
+                })
+            end
+        })
+        table.insert(currentButtons, btn)
+    end
+    
+    -- อัพเดท Label
+    if locationLabel then locationLabel:Remove() end
+    locationLabel = tpTab:CreateLabel("📍 พบสถานที่: " .. #Locations .. " ที่")
+    
+    Rayfield:Notify({
+        Title = "รีเฟรชสำเร็จ!",
+        Content = "พบ " .. #Locations .. " สถานที่",
+        Duration = 4
+    })
+end
+
+-- ปุ่มรีเฟรช
+tpTab:CreateButton({
+    Name = "🔄 รีเฟรชพิกัดทั้งหมด",
+    Callback = refreshLocations
+})
+
+-- รันครั้งแรกตอนเปิดสคริปต์
+refreshLocations()
+
 -- แท็บตัวละคร
-local PTab = Window:CreateTab("[ - Player - ]", "contact")
+local PTab = Window:CreateTab("|| -  ตัวละคร", "contact")
 local MainSection = PTab:CreateSection("[ 🗺️ ]  โซนวาปไปที่จุดเกิด")
  
 local Players = game:GetService("Players")
@@ -509,7 +839,7 @@ PTab:CreateButton({
 local MainSection = PTab:CreateSection("[ 🛸 ]  โซนบินและปรับความเร็วบิน")
 
 local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] เปิด/ปิด การบิน", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = PTab:CreateSlider({Name="[ 📏 ] ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+local flySlider = PTab:CreateSlider({Name="[ 📏 ] ปรับความเร็วบิน", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=1000, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
 local Section2 = PTab:CreateSection("[🏃‍♀️] โซนวิ่งเร็วและปรับความเร็ว [🏃‍♂️]")
 
