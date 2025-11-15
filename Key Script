@@ -40,17 +40,6 @@ local Window = Rayfield:CreateWindow({
 local KeyTab = Window:CreateTab("||  Section Scripts", "cog")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
-local Dropdown = KeyTab:CreateDropdown({
-   Name = "แมพที่มีฟังชั่นเล่นของสคริป",
-   Options = {"" ,"[ 99 Night Forest ]","[ Arsenal ]","[ FPS Flick ]","[ Ability Wars ]","[ Be A Parkour Ninja ]","[ Natural Disaster Survival ]"},
-   CurrentOption = {"ฟังชั่นรองรับสคริป"},
-   MultipleOptions = false,
-   Flag = "Dropdown1",
-   Callback = function(Options)
-       
-   end,
-})
-
 KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
 
 local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
@@ -62,6 +51,10 @@ KeyTab:CreateParagraph({
 
 KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ [ 1 ]  DarkBlue   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
 KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบับ [ 2 ]  Amethyst   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Kub"))() end})
+
+local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
+
+KeyTab:CreateButton({Name = "กดรันสคริป  |   แกล้งคน   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Hub%20Prank"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
