@@ -274,13 +274,29 @@ ExTab:CreateToggle({
     end,
 })
 
-local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ")
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ [ สำหรับตัวเรา ]")
 
-ExTab:CreateButton({Name = "[ 🔥 ]  เติมแคมไฟ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
-ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผลเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
-ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้เข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
-ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็กเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20iron"))() end})
-ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหารเข้าตัวละคร", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+ExTab:CreateButton({Name = "[ 🔥 ]  ดึงไฟ [ เข้าตัวละคร ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Player%20Item%201"))() end})
+ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผล [ เข้าตัวละคร ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20badge"))() end})
+ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้ [ เข้าตัวละคร ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20wood"))() end})
+ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็ก [ เข้าตัวละคร ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20iron"))() end})
+ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหาร [ เข้าตัวละคร ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Player%20Item%205"))() end})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ [ สำหรับแคมไฟ ]")
+
+ExTab:CreateButton({Name = "[ 🔥 ]  ดึงไฟ [ เข้าแคมไฟ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/bring%20campfire"))() end})
+ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผล [ เข้าแคมไฟ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Player%20Item%203"))() end})
+ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้ [ เข้าแคมไฟ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Player%20Item%204"))() end})
+ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็ก [ เข้าแคมไฟ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Player%20Item%202"))() end})
+ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหาร [ เข้าแคมไฟ ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/item%20cook"))() end})
+
+local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนดึงของ [ สำหรับเครื่องบด ]")
+
+ExTab:CreateButton({Name = "[ 🔥 ]  ดึงไฟ [ เข้าเครื่องบด ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%201"))() end})
+ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผล [ เข้าเครื่องบด ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%204"))() end})
+ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้ [ เข้าเครื่องบด ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%205"))() end})
+ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็ก [ เข้าเครื่องบด ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%203"))() end})
+ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหาร [ เข้าเครื่องบด ]", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%202"))() end})
 
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำหรวจแมพ")
 
