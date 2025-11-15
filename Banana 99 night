@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Project  Akari   [ V-8.1 ]",
+   Name = "   |  99 Night in The Forest   [ V-8.1 ]",
    Icon = "webhook",
    LoadingTitle = "[ 👁️ ]  Akari Hub  [ 👁️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
