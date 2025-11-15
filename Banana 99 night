@@ -299,7 +299,7 @@ ExTab:CreateButton({Name = "[ 📛 ]  ดึงผ้าพันแผล [ เ
 ExTab:CreateButton({Name = "[ 🌲 ]  ดึงไม้ [ เข้าเครื่องบด ]  🦾", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%205"))() end})
 ExTab:CreateButton({Name = "[ 🔩 ]  ดึงเหล็ก [ เข้าเครื่องบด ]  🦾", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%203"))() end})
 ExTab:CreateButton({Name = "[ 🥧 ]  ดึงอาหาร [ เข้าเครื่องบด ]  🦾", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%202"))() end})
-ExTab:CreateButton({Name = "[ 🦿 ]  ดึงชุดเกราะ [ เข้าตัวละคร ]  🦾", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%206"))() end})
+ExTab:CreateButton({Name = "[ 🦿 ]  ดึงชุดเกราะ [ เข้าเครื่องบด ]  🦾", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Camp-fire/refs/heads/main/Scapper%206"))() end})
 
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนสำหรวจแมพ")
 
