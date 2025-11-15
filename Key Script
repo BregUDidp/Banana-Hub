@@ -37,7 +37,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local KeyTab = Window:CreateTab("Section Scripts", "cog")
+local KeyTab = Window:CreateTab("||  Section Scripts", "cog")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
 local Dropdown = KeyTab:CreateDropdown({
