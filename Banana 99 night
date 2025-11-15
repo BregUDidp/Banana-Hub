@@ -37,212 +37,174 @@ local Section2 = extraTab:CreateSection("[  🌲  ]  โซนอมตะ")
 
 extraTab:CreateButton({Name = "[ 💖 ]  รัน อมตะ", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/god%20mode"))() end})
 
-local Section2 = extraTab:CreateSection("[  🌲  ]  โซนสคริป 99 คืนในป่า")
+local Section2 = extraTab:CreateSection("[  🌲  ]  โซนฆ่าอัตโนมัต")
+
+-- บริการหลัก
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = Players.LocalPlayer
+local Characters = Workspace:WaitForChild("Characters")
 
 -- ตัวแปร Kill Aura
 local killAuraEnabled = false
-local killAuraRange = 150
+local killAuraRange = 100
 local killAuraCount = 0
-local killAuraHitDelay = 0  -- Delay เริ่มต้น (ยิ่งน้อย = ตีเร็ว)
-local Characters = Workspace:WaitForChild("Characters")
+local killAuraHitDelay = 0
+local selectedMode = "Auto (Priority)"
 
--- รายการอาวุธทั้งหมด (15 ชิ้น)
+-- รายการอาวุธทั้งหมด
 local allWeapons = {
     "Scythe","Spear","Infernal Sword", "Morningstar", "Katana", "Laser Sword", "Ice Sword",
     "Trident", "Poison Spear", "Infernal Sword", "Cultist King Mace",
     "Obsidiron Hammer", "Scythe", "Vampire Scythe", "Old Axe", "Strong Axe", "Good Axe"
 }
 
--- ฟังก์ชันหา Weapon (Priority)
+-- หาอาวุธตามโหมด
 local function getWeapon()
     if not player:FindFirstChild("Inventory") then return nil end
-    
-    local priorityWeapons = {"Scythe","Infernal Sword","Strong Axe","Good Axe", "Vampire Scythe", "Laser Sword", "Infernal Sword", "Ice Sword", "Poison Spear"}
-    local normalWeapons = {"Katana", "Spear", "Trident", "Scythe", "Morningstar", "Old Axe", "Cultist King Mace", "Obsidiron Hammer"}
-    
-    for _, weaponName in ipairs(priorityWeapons) do
-        local weapon = player.Inventory:FindFirstChild(weaponName)
-        if weapon then return weapon end
+
+    if selectedMode == "Auto (Priority)" then
+        local priority = {"Scythe","Infernal Sword","Strong Axe","Good Axe", "Vampire Scythe", "Laser Sword", "Ice Sword", "Poison Spear"}
+        for _, w in ipairs(priority) do
+            local tool = player.Inventory:FindFirstChild(w)
+            if tool then return tool end
+        end
+    elseif selectedMode:find("Only") then
+        local name = selectedMode:gsub(" Only", "")
+        return player.Inventory:FindFirstChild(name)
+    elseif selectedMode == "All Weapons (Random)" then
+        local available = {}
+        for _, w in ipairs(allWeapons) do
+            local tool = player.Inventory:FindFirstChild(w)
+            if tool then table.insert(available, tool) end
+        end
+        if #available > 0 then return available[math.random(1, #available)] end
     end
-    
-    for _, weaponName in ipairs(normalWeapons) do
-        local weapon = player.Inventory:FindFirstChild(weaponName)
-        if weapon then return weapon end
+
+    -- fallback
+    for _, w in ipairs(allWeapons) do
+        local tool = player.Inventory:FindFirstChild(w)
+        if tool then return tool end
     end
-    
     return nil
 end
 
--- ฟังก์ชันส่งดาเมจ
+-- ส่งดาเมจ
 local function damage(target, tool)
     if not tool then return end
     local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
     if not remoteEvents then return end
     local evt = remoteEvents:FindFirstChild("ToolDamageObject")
     if not evt then return end
-    
+
     local hrp = target:FindFirstChild("HumanoidRootPart")
-    local cf = hrp and hrp.CFrame or CFrame.new()
-    
-    evt:InvokeServer(target, tool, tostring(killAuraCount).."_7367831688", cf)
+    if not hrp then return end
+
+    evt:InvokeServer(target, tool, tostring(killAuraCount).."_7367831688", hrp.CFrame)
 end
 
--- Toggle Kill Aura
+-- Toggle
 extraTab:CreateToggle({
-    Name = "[ 🔥 ] เปิด/ปิด การฆ่าอัตโนมัต",
+    Name = "[ ⚔️ ]  เปิด/ปิด การฆ่าอัตโนมัต",
     CurrentValue = false,
-    Flag = "KillAuraToggle",
-    Callback = function(bool)
-        killAuraEnabled = bool
-        Rayfield:Notify({
-            Title = "Kill Aura",
-            Content = bool and "⚔️ เปิด - ตีเร็วสุด!" or "❌ ปิดแล้ว",
-            Duration = 3,
-            Image = 6026568198
-        })
-    end,
-})
-
--- **🚀 SLIDER ปรับความเร็วตี (ใหม่!)**
-extraTab:CreateSlider({
-    Name = "[ ⚡ ] ปรับความเร็วตี",
-    Range = {0, 0.5},
-    Increment = 0.1,
-    CurrentValue = 0,
-    Flag = "HitSpeedSlider",
-    Callback = function(val)
-        killAuraHitDelay = val
-        Rayfield:Notify({
-            Title = "ปรับความเร็วตี",
-            Content = "Delay: " .. val .. "s (ยิ่งต่ำยิ่งเร็ว)",
-            Duration = 2
-        })
-    end,
-})
-
--- Dropdown โหมดอาวุธ
-local weaponModes = {"Auto (Priority)", "Good Axe Only", "Vampire Scythe Only", "Laser Sword Only", "All Weapons (Random)"}
-local selectedMode = "Auto (Priority)"
-extraTab:CreateDropdown({
-    Name = "[ ⚔️ ]  เลือกโหมดอาวุธ",
-    Options = weaponModes,
-    CurrentOption = {selectedMode},
-    Flag = "WeaponMode",
-    Callback = function(option)
-        selectedMode = option[1]
-    end,
+    Callback = function(v)
+        killAuraEnabled = v
+        Rayfield:Notify({Title = "Kill Aura", Content = v and "เปิดแล้ว!" or "ปิดแล้ว", Duration = 2})
+    end
 })
 
 -- Slider ระยะ
 extraTab:CreateSlider({
-    Name = "[ 📏 ]  ปรับระยะการฆ่า",
-    Range = {50, 100},
+    Name = "[ 📏 ]  ระยะการโจมตี",
+    Range = {50, 150},
     Increment = 5,
     CurrentValue = 100,
-    Flag = "KillAuraRange",
-    Callback = function(val)
-        killAuraRange = val
-    end,
+    Callback = function(v) killAuraRange = v end
+})
+
+-- Slider ความเร็วตี
+extraTab:CreateSlider({
+    Name = "[ 📏 ]  ปรับความเร็วตี",
+    Range = {0, 0.5},
+    Increment = 0.05,
+    CurrentValue = 0,
+    Callback = function(v)
+        killAuraHitDelay = v
+        Rayfield:Notify({Title = "Speed", Content = "Delay: "..v.."s", Duration = 1.5})
+    end
+})
+
+-- Dropdown โหมดอาวุธ
+local modes = {"Auto (Priority)", "Good Axe Only", "Vampire Scythe Only", "Laser Sword Only", "All Weapons (Random)"}
+extraTab:CreateDropdown({
+    Name = "[ ⚔️ ]  โหมดเลือกอาวุธ",
+    Options = modes,
+    CurrentOption = {"Auto (Priority)"},
+    Callback = function(v) selectedMode = v[1] end
 })
 
 -- Label สถิติ
-local statusLabel = extraTab:CreateLabel("Kills: 0 | Range: 150 | Speed: 0.03s | Weapon: Ready")
+local statusLabel = extraTab:CreateLabel("Kills: 0 | Range: 100 | Speed: 0s | Weapon: -")
 
 -- Reset Stats
 extraTab:CreateButton({
-    Name = "[ 🔄 ]  Reset Stats",
+    Name = "[ 🔄️ ]  รีเฟรชสแต็ด",
     Callback = function()
         killAuraCount = 0
-        statusLabel:Set("Kills: 0 | Range: " .. killAuraRange .. " | Speed: " .. killAuraHitDelay .. "s | Weapon: Ready")
-    end,
+        statusLabel:Set("Kills: 0 | Range: "..killAuraRange.." | Speed: "..killAuraHitDelay.."s | Weapon: Ready")
+    end
 })
 
--- ตรวจสอบ Inventory
-extraTab:CreateButton({
-    Name = "[ 📋 ]  ตรวจสอบอาวุธ",
-    Callback = function()
-        local inv = player:FindFirstChild("Inventory")
-        if not inv then return Rayfield:Notify({Title="❌ Error", Content="ไม่พบ Inventory", Duration=3}) end
-        
-        local found = 0
-        for _, wName in ipairs(allWeapons) do
-            if inv:FindFirstChild(wName) then found += 1 end
-        end
-        
-        Rayfield:Notify({
-            Title = "Inventory Scan",
-            Content = "พบ " .. found .. "/15 อาวุธ",
-            Duration = 4
-        })
-    end,
+-- Auto Equip
+extraTab:CreateToggle({
+    Name = "[ ♾️ ]  ออโต้การถืออาวุธ",
+    CurrentValue = false,
+    Callback = function(enabled)
+        task.spawn(function()
+            while enabled and task.wait(0.5) do
+                local tool = getWeapon()
+                if tool and player.Character then
+                    local hum = player.Character:FindFirstChild("Humanoid")
+                    if hum then hum:EquipTool(tool) end
+                end
+            end
+        end)
+    end
 })
 
--- === Kill Aura Loop (ปรับ Speed แล้ว) ===
+-- === ลูปหลัก Kill Aura ===
 task.spawn(function()
     while task.wait() do
-        if not killAuraEnabled then 
-            statusLabel:Set("Kills: " .. killAuraCount .. " | Range: " .. killAuraRange .. " | OFF")
-            task.wait(0.5)  -- ลด load เมื่อปิด
-            continue 
+        if not killAuraEnabled then
+            statusLabel:Set("OFF | Kills: "..killAuraCount)
+            task.wait(0.5)
+            continue
         end
-        
-        local weapon
-        if selectedMode == "Auto (Priority)" then
-            weapon = getWeapon()
-        elseif selectedMode == "All Weapons (Random)" then
-            local available = {}
-            for _, wName in ipairs(allWeapons) do
-                local w = player.Inventory:FindFirstChild(wName)
-                if w then table.insert(available, w) end
-            end
-            if #available > 0 then weapon = available[math.random(1, #available)] end
-        else
-            local targetName = selectedMode:match("Only") and selectedMode:gsub(" Only", "")
-            weapon = player.Inventory:FindFirstChild(targetName)
-        end
-        
+
+        local weapon = getWeapon()
         local myChar = player.Character
-        if not myChar or not myChar:FindFirstChild("HumanoidRootPart") or not weapon then 
-            statusLabel:Set("Kills: " .. killAuraCount .. " | ❌ ไม่พบอาวุธ")
-            continue 
+        if not myChar or not myChar:FindFirstChild("HumanoidRootPart") or not weapon then
+            statusLabel:Set("Kills: "..killAuraCount.." | ไม่มีอาวุธ")
+            task.wait(0.5)
+            continue
         end
-        
+
         local myHRP = myChar.HumanoidRootPart
-        statusLabel:Set("Kills: " .. killAuraCount .. " | Range: " .. killAuraRange .. " | Speed: " .. killAuraHitDelay .. "s | " .. weapon.Name)
-        
-        -- Loop ตี (ใช้ delay ใหม่)
+        statusLabel:Set("Kills: "..killAuraCount.." | "..weapon.Name.." | R:"..killAuraRange)
+
         for _, v in ipairs(Characters:GetChildren()) do
             if v:IsA("Model") and v ~= myChar and v:FindFirstChild("HumanoidRootPart") and not v.Name:find(" Body") then
                 local dist = (v.HumanoidRootPart.Position - myHRP.Position).Magnitude
                 if dist <= killAuraRange then
                     killAuraCount += 1
                     damage(v, weapon)
-                    statusLabel:Set("Kills: " .. killAuraCount .. " | ⚔️ ATTACKING")
-                    task.wait(killAuraHitDelay)  -- <<<< ที่นี่! ปรับความเร็วตี
+                    task.wait(killAuraHitDelay)
                 end
             end
         end
     end
 end)
-
--- Auto Equip
-extraTab:CreateToggle({
-    Name = "[ 🔧 ]  Auto Equip",
-    CurrentValue = false,
-    Flag = "AutoEquip",
-    Callback = function(bool)
-        task.spawn(function()
-            while bool do
-                task.wait(0.5)
-                local weapon = getWeapon()
-                if weapon and player.Character then
-                    local humanoid = player.Character:FindFirstChild("Humanoid")
-                    if humanoid then humanoid:EquipTool(weapon) end
-                end
-            end
-        end)
-    end,
-})
 
 local ExTab = Window:CreateTab("|| -  ดึงของอัตโนมัต", "flame-kindling")
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนวาป")
