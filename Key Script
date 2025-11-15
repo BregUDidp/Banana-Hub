@@ -6,12 +6,12 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Script  Akari |  Merdel  💭.  กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🍬",
-   Theme = "Brown",
+   Theme = "DarkBlue",
 
    ToggleUIKeybind = "F",
 
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
 
    ConfigurationSaving = {
       Enabled = true,
