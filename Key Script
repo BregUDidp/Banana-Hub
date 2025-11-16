@@ -49,10 +49,15 @@ KeyTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
+local Section3 = KeyTab:CreateSection("[ โซนสคริป เอมบอท ]")
+
 KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ Aimbots ]  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+
+local Section3 = KeyTab:CreateSection("[ โซนสคริป 99 คืนในป่า ]")
+
 KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ 99 Night Forest ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
 
-local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
+local Section3 = KeyTab:CreateSection("[ โซนสคริปรันได้ทุกแมพ ]")
 
 KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ All Map ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
 
