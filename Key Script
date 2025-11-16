@@ -49,12 +49,12 @@ KeyTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari Aimbots  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari 99 Night Forest   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ Aimbots ]  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ 99 Night Forest ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari All Map   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ All Map ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนดูฟังชั่นเพื่มเติม ]")
 
