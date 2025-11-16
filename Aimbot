@@ -20,7 +20,7 @@ local UserInputService = game:GetService("UserInputService")
 
 --// Rayfield Window
 local Window = Rayfield:CreateWindow({
-    Name = "   |  Aimbot  |  Akari  [ V-8.2 ]",
+    Name = "   |  Aimbot  |  Akari  [ V-0.1 ]",
     Icon = "scan-eye",
     LoadingTitle = "|  🎯  |  Aimbot   Function ",
     LoadingSubtitle = string.rep("_", 150),
@@ -34,8 +34,8 @@ local Window = Rayfield:CreateWindow({
 })
 
 --// Tabs
-local AimbotTab = Window:CreateTab("Aimbot  [ 1️⃣ ]", "crosshair")
-local RainbowTab = Window:CreateTab("Rainbow Gun  [ 🔫 ]", "rainbow")
+local AimbotTab = Window:CreateTab("||   - Aimbot", "dices")
+local RainbowTab = Window:CreateTab("||   - Gun", "axe")
 
 --// ============================================== --
 --//               AIMBOT SETTINGS                 --
@@ -210,9 +210,11 @@ run.RenderStepped:Connect(function()
     end
 end)
 
+AimbotTab:CreateSection("")
+
 -- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
 AimbotTab:CreateToggle({
-    Name = "[ 🎯 ]  ปิด/เปิด การล็อคเป๋าหมายคนแบบลื่นๆ  [ 🎯 ]",
+    Name = "[ 🎯 ]  Akari Aimbots",
     CurrentState = false,
     Callback = function(v) 
         showFov = v
@@ -220,13 +222,13 @@ AimbotTab:CreateToggle({
 })
 
 AimbotTab:CreateSlider({
-    Name = "[ 📏 ]  ปรับเส้นวงกลม  [ 📏 ]",
+    Name = "[ 📏 ]  Slider FOV Circle",
     Range = {50, 300}, Increment = 5, CurrentValue = 120,
     Callback = function(v) fovRadius = v end
 })
 
 AimbotTab:CreateSlider({
-    Name = "[ ⚡ ]  ปรับความลื่นไหลของล็อคเป่า  [ ⚡ ]",
+    Name = "[ ⚡ ]  Slider Smooth Aimbot",
     Range = {1, 30}, Increment = 1, CurrentValue = 12,
     Callback = function(v) smoothness = v / 100 end
 })
@@ -426,30 +428,25 @@ if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 --// ============================================== --
 
 --// ESP Tab (ใช้ AimbotTab ต่อ)
-AimbotTab:CreateSection("___👁️ ESP Visual______________________________________")
+AimbotTab:CreateSection("")
 
 AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  เปิด ESP (กล่อง + ชื่อ)",
+    Name = "[ 🔍 ]  ESP Player",
     CurrentValue = false,
     Callback = function(v) ESP.Enabled = v end
 })
 
 AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  เปิด Tracer อัตโนมัติ",
+    Name = "[ 🔍 ]  Tracer ESP Automatic",
     CurrentValue = true,
     Callback = function(v) ESP.Tracer = v end
 })
 
 --// Rainbow Gun Tab
-RainbowTab:CreateSection("___🏳️‍🌈 Rainbow Gun______________________________________")
+RainbowTab:CreateSection("")
 
 RainbowTab:CreateToggle({
-    Name = "[ 🌈 ]  เปิด/ปิด ปืนสีสายรุ้ง",
+    Name = "[ 🌈 ]  Rainbow Gun",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
-})
-
-RainbowTab:CreateParagraph({
-    Title = "วิธีใช้",
-    Content = "ถือปืน → เปิดสวิตช์ → ปืนจะเปลี่ยนสีแบบสายรุ้งอัตโนมัติ"
 })
