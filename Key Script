@@ -54,10 +54,6 @@ KeyTab:CreateButton({Name = "กดรันสคริป  |   ต้นฉบ
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   แกล้งคน   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%20Hub%20Prank"))() end})
-
-local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
-
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
     Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
