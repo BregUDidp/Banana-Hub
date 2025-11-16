@@ -1,0 +1,31 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
+local Tab = Window:NewTab("[ 🕸️ ]  Tab Script")
+local Section = Tab:NewSection("[ 🕸️ ]  Script Dance")
+
+Section:NewButton("🤺   Dance Hubs", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/yunus154524/scripts/refs/heads/main/anim2gui.lua"))()
+end)
+
+local Section = Tab:NewSection("[ 🕸️ ]  Script Admin")
+
+Section:NewButton("🔥   Jordy Hubs", "ButtonInfo", function()
+    print("Clicked")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/topwatereeee-pixel/Jordy-Scripts/refs/heads/main/Roblox%20JordyHub"))()
+end)
+
+Section:NewButton("🎩   Void Hubs", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://pastefy.app/PU6VWuJk/raw"))()
+end)
+
+Section:NewButton("🔪   Tools Giver Hubs", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Tools-giver-26246"))()
+end)
+
+Section:NewButton("🌓   COOLCLAN Gui Hubs", "ButtonInfo", function()
+    print("Clicked")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", true))()
+end)
