@@ -229,7 +229,7 @@ AimbotTab:CreateSlider({
 
 AimbotTab:CreateSlider({
     Name = "[ ⚡ ]  Slider Smooth Aimbot",
-    Range = {1, 30}, Increment = 1, CurrentValue = 12,
+    Range = {1, 30}, Increment = 1, CurrentValue = 30,
     Callback = function(v) smoothness = v / 100 end
 })
 
