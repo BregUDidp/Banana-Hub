@@ -1,51 +1,45 @@
+--// ============================================== --
+--//          AIMBOT + ESP + RAINBOW TOOL HUB      --
+--// ============================================== --
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+-- Notification
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[  Aimbot Function  ]",
+    Title = "[ Aimbot Function ]",
     Text = "________________________________________________________",
     Duration = 10
 })
-wait(1)
 
+--// Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+--// Rayfield Window
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Aimbot  |  Akari  [ V-8.2 ]",
-   Icon = "scan-eye",
-   LoadingTitle = "|  🎯  |  Aimbot   Function ",
-   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
-   ShowText = "Aimbot",
-   Theme = "DarkBlue",
-
-   ToggleUIKeybind = "F",
-
-   DisableRayfieldPrompts = true,
-   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
-      FileName = "Big Hub"
-   },
-
-   Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
-      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
-   },
-
-   KeySystem = false,
-   KeySettings = {
-      Title = "",
-      Subtitle = "",
-      Note = "",
-      FileName = "",
-      SaveKey = false, -- The user's key will be saved, but if you change the key, they will be unable to use your script
-      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
-      Key = {"67"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
-   }
+    Name = "   |  Aimbot  |  Akari  [ V-8.2 ]",
+    Icon = "scan-eye",
+    LoadingTitle = "|  🎯  |  Aimbot   Function ",
+    LoadingSubtitle = string.rep("_", 150),
+    ShowText = "Aimbot",
+    Theme = "DarkBlue",
+    ToggleUIKeybind = "F",
+    DisableRayfieldPrompts = true,
+    DisableBuildWarnings = true,
+    ConfigurationSaving = { Enabled = true, FolderName = nil, FileName = "Big Hub" },
+    KeySystem = false
 })
 
-local espTab = Window:CreateTab("Aimbot  [  1️⃣  ]", "crosshair")
-local Section = espTab:CreateSection("___🎯 Aimbot Visual______________________________________")
+--// Tabs
+local AimbotTab = Window:CreateTab("Aimbot  [ 1️⃣ ]", "crosshair")
+local RainbowTab = Window:CreateTab("Rainbow Gun  [ 🔫 ]", "rainbow")
+
+--// ============================================== --
+--//               AIMBOT SETTINGS                 --
+--// ============================================== --
 
 local plrs = game:GetService("Players")
 local plr = plrs.LocalPlayer
@@ -216,13 +210,8 @@ run.RenderStepped:Connect(function()
     end
 end)
 
-espTab:CreateParagraph({
-    Title = "เลือกดูสคริป",
-    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
-})
-
 -- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
-espTab:CreateToggle({
+AimbotTab:CreateToggle({
     Name = "[ 🎯 ]  ปิด/เปิด การล็อคเป๋าหมายคนแบบลื่นๆ  [ 🎯 ]",
     CurrentState = false,
     Callback = function(v) 
@@ -230,285 +219,237 @@ espTab:CreateToggle({
     end
 })
 
-espTab:CreateSlider({
+AimbotTab:CreateSlider({
     Name = "[ 📏 ]  ปรับเส้นวงกลม  [ 📏 ]",
     Range = {50, 300}, Increment = 5, CurrentValue = 120,
     Callback = function(v) fovRadius = v end
 })
 
-espTab:CreateSlider({
+AimbotTab:CreateSlider({
     Name = "[ ⚡ ]  ปรับความลื่นไหลของล็อคเป่า  [ ⚡ ]",
     Range = {1, 30}, Increment = 1, CurrentValue = 12,
     Callback = function(v) smoothness = v / 100 end
 })
 
-espTab:CreateParagraph({
-    Title = "เลือกดูสคริปการมองดูคน",
-    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
-})
-
---// ESP UI
-espTab:CreateSection("___👁️ ESP Visual______________________________________")
-
-espTab:CreateToggle({
-    Name = "[ 🔍 ] เปิดการมองเห็นคน  [ .จะเป็นแบบเส้นตรง. ]",
-    CurrentValue = false,
-    Callback = function(val)
-        espEnabled = val
-        if not val then
-            for p,_ in pairs(espBoxes) do removeESP(p) end
-        end
-    end
-})
-
-espTab:CreateToggle({
-    Name = "[ 🔍 ] เปิดเส้นแบบอัตโนมัต  [ .แบบอัตโนมัต. ]",
-    CurrentValue = true,
-    Callback = function(val)
-        espTraceEnabled = val
-    end
-})
-
-local DipTab = Window:CreateTab("Rainbow Gun  [  🔫  ]", "rainbow")
-local Section = DipTab:CreateSection("___🏳️‍🌈 Gun Visual______________________________________")
-
-DipTab:CreateParagraph({
-    Title = "คีย์ลัดปุ่มสายรุ่ง",
-    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
-})
-
-DipTab:CreateParagraph({
-    Title = "_______________________________________________________________________",
-    Content = "_______________________________________________________________________"
-})
-
-local Dropdown = DipTab:CreateDropdown({
-   Name = "แมพที่มีฟังชัjนลองรับเล่นปืนสายรุ่ง",
-   Options = {"" ,"[ FPS ] Flick"},
-   CurrentOption = {"ฟังชั่นรองรับสคริป"},
-   MultipleOptions = false,
-   Flag = "Dropdown1",
-   Callback = function(Options)
-       
-   end,
-})
-
-DipTab:CreateToggle({
-    Name = "[ 🌈 ]  เปิด/ปิด  ปืนสีสายรุ่ง",
-    CurrentValue = false,
-    Callback = function(state) toggleRainbowGun(state) end
-})
-
-DipTab:CreateParagraph({
-    Title = "_______________________________________________________________________",
-    Content = "_______________________________________________________________________"
-})
-
-DipTab:CreateParagraph({
-    Title = "คีย์ลัดปุ่มสายรุ่ง",
-    Content = "กดปุ่ม ปืนสีสายรุ่งก็จะเป็นปืนสีสายรุ่งแล้ว"
-})
-
---// ตัวแปร Rainbow Gun
-local rainbowGunEnabled = false
-local currentGun = nil
-local highlight = nil
-local hue = 0
-local gunConnections = {}
-local rainbowLoop = nil
-
---// ตัวแปร ESP
-local espEnabled = false
-local espTraceEnabled = true
-local espBoxes = {}
-
 --// ============================================== --
---//               RAINBOW GUN SYSTEM              --
+--//                   ESP SYSTEM                  --
 --// ============================================== --
+local ESP = {
+    Enabled = false,
+    Tracer = true,
+    Boxes = {},
+    RainbowSpeed = 1
+}
 
-local function createHighlight(tool)
-    if highlight then highlight:Destroy() end
-    highlight = Instance.new("Highlight")
-    highlight.FillColor = Color3.fromHSV(0, 1, 1)
-    highlight.OutlineColor = Color3.fromHSV(0, 1, 1)
-    highlight.FillTransparency = 0.3
-    highlight.OutlineTransparency = 0
-    highlight.Parent = tool
-    highlight.Adornee = tool:FindFirstChild("Handle") or tool
+local function Rainbow(t, offset)
+    return Color3.fromHSV((tick() * ESP.RainbowSpeed + (offset or 0)) % 1, 1, 1)
 end
 
-local function updateRainbowGun()
-    if not rainbowGunEnabled or not currentGun or not highlight then return end
-    hue = (hue + 0.01) % 1
-    local color = Color3.fromHSV(hue, 1, 1)
-    highlight.FillColor = color
-    highlight.OutlineColor = color
-    for _, part in pairs(currentGun:GetDescendants()) do
+local function CreateESP(player)
+    if ESP.Boxes[player] then return end
+    local box = {}
+    box.Square = Drawing.new("Square")
+    box.Square.Thickness = 2
+    box.Square.Filled = false
+    box.Square.Visible = false
+
+    box.Name = Drawing.new("Text")
+    box.Name.Size = 16
+    box.Name.Center = true
+    box.Name.Outline = true
+    box.Name.Visible = false
+
+    box.Tracer = Drawing.new("Line")
+    box.Tracer.Thickness = 2
+    box.Tracer.Visible = false
+
+    ESP.Boxes[player] = box
+end
+
+local function RemoveESP(player)
+    local box = ESP.Boxes[player]
+    if box then
+        for _, v in pairs(box) do pcall(v.Remove, v) end
+        ESP.Boxes[player] = nil
+    end
+end
+
+--// ESP Loop
+RunService.RenderStepped:Connect(function()
+    if not ESP.Enabled then
+        for p, _ in pairs(ESP.Boxes) do RemoveESP(p) end
+        return
+    end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local hum = player.Character:FindFirstChild("Humanoid")
+            if hum and hum.Health > 0 then
+                CreateESP(player)
+                local box = ESP.Boxes[player]
+                local root = player.Character.HumanoidRootPart
+                local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+                if onScreen then
+                    local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
+                    local size = Vector2.new(scale * 0.6, scale)
+                    local center = Vector2.new(pos.X, pos.Y)
+
+                    -- Box
+                    box.Square.Size = size
+                    box.Square.Position = center - size/2
+                    box.Square.Color = Rainbow(1, 0)
+                    box.Square.Visible = true
+
+                    -- Name
+                    box.Name.Position = center + Vector2.new(0, -size.Y/2 - 18)
+                    box.Name.Text = player.Name
+                    box.Name.Color = Rainbow(1, 0.15)
+                    box.Name.Visible = true
+
+                    -- Tracer
+                    if ESP.Tracer then
+                        local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                        box.Tracer.From = screenCenter
+                        box.Tracer.To = center
+                        box.Tracer.Color = Rainbow(1, 0.25)
+                        box.Tracer.Visible = true
+                    end
+                else
+                    box.Square.Visible = false
+                    box.Name.Visible = false
+                    box.Tracer.Visible = false
+                end
+            else
+                RemoveESP(player)
+            end
+        else
+            RemoveESP(player)
+        end
+    end
+end)
+
+Players.PlayerRemoving:Connect(RemoveESP)
+
+--// ============================================== --
+--//              RAINBOW GUN SYSTEM               --
+--// ============================================== --
+local RainbowGun = {
+    Enabled = false,
+    Current = nil,
+    Highlight = nil,
+    Hue = 0,
+    Connections = {},
+    Loop = nil
+}
+
+local function CreateHighlight(tool)
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() end
+    RainbowGun.Highlight = Instance.new("Highlight")
+    RainbowGun.Highlight.FillTransparency = 0.3
+    RainbowGun.Highlight.OutlineTransparency = 0
+    RainbowGun.Highlight.Parent = tool
+    RainbowGun.Highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function UpdateRainbowGun()
+    if not RainbowGun.Enabled or not RainbowGun.Current or not RainbowGun.Highlight then return end
+    RainbowGun.Hue = (RainbowGun.Hue + 0.01) % 1
+    local color = Color3.fromHSV(RainbowGun.Hue, 1, 1)
+    RainbowGun.Highlight.FillColor = color
+    RainbowGun.Highlight.OutlineColor = color
+    for _, part in pairs(RainbowGun.Current:GetDescendants()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
             part.Color = color
         end
     end
 end
 
-local function onToolEquipped(tool)
-    if not rainbowGunEnabled then return end
-    currentGun = tool
+local function OnEquipped(tool)
+    if not RainbowGun.Enabled then return end
+    RainbowGun.Current = tool
     task.wait(0.1)
-    createHighlight(tool)
+    CreateHighlight(tool)
 end
 
-local function onToolUnequipped()
-    if currentGun and highlight then
-        highlight:Destroy()
-        highlight = nil
-    end
-    currentGun = nil
+local function OnUnequipped()
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+    RainbowGun.Current = nil
 end
 
-local function setupGunDetection(char)
-    for _, conn in pairs(gunConnections) do conn:Disconnect() end
-    gunConnections = {}
+local function SetupGun(char)
+    for _, c in pairs(RainbowGun.Connections) do c:Disconnect() end
+    RainbowGun.Connections = {}
 
-    local function connectTool(tool)
-        table.insert(gunConnections, tool.Equipped:Connect(function() onToolEquipped(tool) end))
-        table.insert(gunConnections, tool.Unequipped:Connect(onToolUnequipped))
+    local function ConnectTool(tool)
+        table.insert(RainbowGun.Connections, tool.Equipped:Connect(function() OnEquipped(tool) end))
+        table.insert(RainbowGun.Connections, tool.Unequipped:Connect(OnUnequipped))
     end
 
     for _, child in pairs(char:GetChildren()) do
-        if child:IsA("Tool") then connectTool(child) end
+        if child:IsA("Tool") then ConnectTool(child) end
     end
-    table.insert(gunConnections, char.ChildAdded:Connect(function(child)
-        if child:IsA("Tool") then connectTool(child) end
+    table.insert(RainbowGun.Connections, char.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
     end))
 
     local backpack = LocalPlayer:WaitForChild("Backpack")
     for _, child in pairs(backpack:GetChildren()) do
-        if child:IsA("Tool") then connectTool(child) end
+        if child:IsA("Tool") then ConnectTool(child) end
     end
-    table.insert(gunConnections, backpack.ChildAdded:Connect(function(child)
-        if child:IsA("Tool") then connectTool(child) end
+    table.insert(RainbowGun.Connections, backpack.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
     end))
 end
 
-local function toggleRainbowGun(state)
-    rainbowGunEnabled = state
+local function ToggleRainbowGun(state)
+    RainbowGun.Enabled = state
     if state then
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "✅ เปิด ปืนสีสายรุ้งแล้ว!",
-            Text = "✅ ระบบสีรุ้งถูกเปิดแล้ว",
-            Duration = 6
-        })
-        if not rainbowLoop then
-            rainbowLoop = RunService.Heartbeat:Connect(updateRainbowGun)
+        game.StarterGui:SetCore("SendNotification", {Title="เปิดปืนสายรุ้ง", Text="ระบบสีรุ้งทำงานแล้ว", Duration=6})
+        if not RainbowGun.Loop then
+            RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
         end
-        if LocalPlayer.Character then setupGunDetection(LocalPlayer.Character) end
+        if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "❌ ปิด ปืนสีสายรุ้งแล้ว!",
-            Text = "❌ ระบบสีรุ้งถูกปิดแล้ว",
-            Duration = 4
-        })
-        if rainbowLoop then rainbowLoop:Disconnect() rainbowLoop = nil end
-        if highlight then highlight:Destroy() highlight = nil end
-        currentGun = nil
+        game.StarterGui:SetCore("SendNotification", {Title="ปิดปืนสายรุ้ง", Text="ระบบสีรุ้งปิดแล้ว", Duration=4})
+        if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
+        if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+        RainbowGun.Current = nil
     end
 end
 
-LocalPlayer.CharacterAdded:Connect(setupGunDetection)
-if LocalPlayer.Character then setupGunDetection(LocalPlayer.Character) end
+LocalPlayer.CharacterAdded:Connect(SetupGun)
+if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
-local espEnabled = false
-local espTraceEnabled = true
-local espBoxes = {}
+--// ============================================== --
+--//                  GUI CONTROLS                 --
+--// ============================================== --
 
-local function rainbow(speed, offset)
-    local t = tick() * (speed or 1) + (offset or 0)
-    return Color3.fromHSV(t % 1, 1, 1)
-end
+--// ESP Tab (ใช้ AimbotTab ต่อ)
+AimbotTab:CreateSection("___👁️ ESP Visual______________________________________")
 
-local function createESP(player)
-    if not DrawingAvailable or espBoxes[player] then return end
-    local box = {}
-    box.main = Drawing.new("Square")
-    box.main.Thickness = 2
-    box.main.Filled = false
-    box.main.Visible = false
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  เปิด ESP (กล่อง + ชื่อ)",
+    CurrentValue = false,
+    Callback = function(v) ESP.Enabled = v end
+})
 
-    box.name = Drawing.new("Text")
-    box.name.Size = 16
-    box.name.Center = true
-    box.name.Outline = true
-    box.name.Visible = false
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  เปิด Tracer อัตโนมัติ",
+    CurrentValue = true,
+    Callback = function(v) ESP.Tracer = v end
+})
 
-    box.tracer = Drawing.new("Line")
-    box.tracer.Thickness = 2
-    box.tracer.Visible = false
+--// Rainbow Gun Tab
+RainbowTab:CreateSection("___🏳️‍🌈 Rainbow Gun______________________________________")
 
-    espBoxes[player] = box
-end
+RainbowTab:CreateToggle({
+    Name = "[ 🌈 ]  เปิด/ปิด ปืนสีสายรุ้ง",
+    CurrentValue = false,
+    Callback = function(v) ToggleRainbowGun(v) end
+})
 
-local function removeESP(player)
-    local box = espBoxes[player]
-    if box then
-        pcall(function()
-            box.main:Remove()
-            box.name:Remove()
-            box.tracer:Remove()
-        end)
-        espBoxes[player] = nil
-    end
-end
-
-RunService.RenderStepped:Connect(function()
-    if not DrawingAvailable then return end
-
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local humanoid = player.Character:FindFirstChild("Humanoid")
-            if humanoid and humanoid.Health > 0 then
-                if espEnabled then
-                    createESP(player)
-                    local box = espBoxes[player]
-                    local root = player.Character.HumanoidRootPart
-                    local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
-
-                    if onScreen then
-                        local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
-                        local size = Vector2.new(scale * 0.6, scale)
-                        local center = Vector2.new(pos.X, pos.Y)
-
-                        box.main.Size = size
-                        box.main.Position = center - size/2
-                        box.main.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0)
-                        box.main.Visible = true
-
-                        box.name.Position = center + Vector2.new(0, -size.Y/2 - 18)
-                        box.name.Text = player.Name .. ((autoTarget == player) and " 🎯 เล็งหัวตัวละครแล้ว" or "")
-                        box.name.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.15)
-                        box.name.Visible = true
-
-                        if espTraceEnabled then
-                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
-                            box.tracer.From = screenCenter
-                            box.tracer.To = center
-                            box.tracer.Color = (autoTarget == player) and Color3.fromRGB(255, 0, 0) or rainbow(1, 0.25)
-                            box.tracer.Visible = true
-                        end
-                    else
-                        box.main.Visible = false
-                        box.name.Visible = false
-                        box.tracer.Visible = false
-                    end
-                else
-                    removeESP(player)
-                end
-            else
-                removeESP(player)
-            end
-        else
-            removeESP(player)
-        end
-    end
-end)
-
-Players.PlayerRemoving:Connect(removeESP)
+RainbowTab:CreateParagraph({
+    Title = "วิธีใช้",
+    Content = "ถือปืน → เปิดสวิตช์ → ปืนจะเปลี่ยนสีแบบสายรุ้งอัตโนมัติ"
+})
