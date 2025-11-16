@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
  
 local Window = Rayfield:CreateWindow({
-   Name = "  |  Akari  Hub   🍬  | ",
-   Icon = "candy",
+   Name = "  |  Scripts Loader Hub   📺  | ",
+   Icon = "anchor",
    LoadingTitle = "Script  Akari |  Merdel  💭.  กำลังโหลด...",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🍬",
@@ -37,7 +37,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local KeyTab = Window:CreateTab("||  Section Scripts", "cog")
+local KeyTab = Window:CreateTab("||  Section Scripts", "play")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
 KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
@@ -54,8 +54,9 @@ KeyTab:CreateButton({Name = "กดรันสคริป  |   99 คืนใ
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
 KeyTab:CreateButton({Name = "กดรันสคริป  |   All Map   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari Aimbots  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
 
-local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
+local Section3 = KeyTab:CreateSection("[ โซนดูฟังชั่นเพื่มเติม ]")
 
 KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
