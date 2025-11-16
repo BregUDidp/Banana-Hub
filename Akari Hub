@@ -1,23 +1,23 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
- 
+
 local Window = Rayfield:CreateWindow({
-   Name = "   |  All Map   [ V-0.1 ]",
+   Name = "   |  Akari Hub   [ V-0.1 ]",
    Icon = "webhook",
-   LoadingTitle = "[ 🕸️ ]  Akari Hub  [ 🕸️ ]",
+   LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🕸️",
    Theme = "DarkBlue",
    ToggleUIKeybind = "F",
    DisableRayfieldPrompts = true,
-   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+   DisableBuildWarnings = true,
    ConfigurationSaving = {
       Enabled = true,
-      FolderName = nil, -- Create a custom folder for your hub/game
+      FolderName = nil,
       FileName = "Big Hub"
    },
    Discord = {
-      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
-      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      Enabled = false,
+      Invite = "noinvitelink",
       RememberJoins = true
    },
    KeySystem = false,
@@ -32,61 +32,49 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local PTab = Window:CreateTab("||   - Player", "anchor")
-local Section = PTab:CreateSection("")
-
+--// Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
 
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-local character = player.Character or player.CharacterAdded:Wait()
+--// === PLAYER TAB ===
+local PTab = Window:CreateTab("||   - Player", "anchor")
+local Section = PTab:CreateSection("")
 
-UserInputService.InputEnded:Connect(function(input)
-	if input.KeyCode == Enum.KeyCode.Space then
-		ascend = false
-	elseif input.KeyCode == Enum.KeyCode.LeftShift then
-		descend = false
-	end
-end)
-
--- ตัวแปรระบบ
-local Players = game:GetService("Players")
-local RS = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
-local player = Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-local humanoid = char:WaitForChild("Humanoid")
- 
--- ตัวแปรฟังก์ชัน
+--// Flying System
 local flying = false
 local vv, gyro
 local flySpeed = 50
-local superSpeed = false
-local runSpeed = 32
-local noclipEnabled = false
-local infJumpEnabled = false
- 
--- ฟังก์ชันบิน
+local humanoid = nil
+local hrp = nil
+
+local function getChar()
+    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+end
+
 local function startFlying()
     if flying then return end
+    local char = getChar()
+    humanoid = char:WaitForChild("Humanoid")
+    hrp = char:WaitForChild("HumanoidRootPart")
+    
     flying = true
     humanoid.PlatformStand = true
- 
+
     vv = Instance.new("BodyVelocity")
-    vv.MaxForce = Vector3.new(1e5,1e5,1e5)
+    vv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
     vv.P = 1250
     vv.Velocity = Vector3.zero
     vv.Parent = hrp
- 
+
     gyro = Instance.new("BodyGyro")
-    gyro.MaxTorque = Vector3.new(4e5,4e5,4e5)
+    gyro.MaxTorque = Vector3.new(4e5, 4e5, 4e5)
     gyro.P = 3000
     gyro.CFrame = hrp.CFrame
     gyro.Parent = hrp
- 
+
     Rayfield:Notify({
         Title = "🛸 โหมดบินเปิด!",
         Content = "ใช้ W,A,S,D,Space,Ctrl เพื่อควบคุม",
@@ -94,14 +82,13 @@ local function startFlying()
         Image = 4483362458
     })
 end
- 
+
 local function stopFlying()
     if not flying then return end
     flying = false
-    if vv then vv:Destroy() vv=nil end
-    if gyro then gyro:Destroy() gyro=nil end
-    humanoid.PlatformStand = false
- 
+    if vv then vv:Destroy() vv = nil end
+    if gyro then gyro:Destroy() gyro = nil end
+    if humanoid then humanoid.PlatformStand = false end
     Rayfield:Notify({
         Title = "🛬 โหมดบินปิด",
         Content = "ลงจอดเรียบร้อย",
@@ -109,11 +96,16 @@ local function stopFlying()
         Image = 6026568198
     })
 end
- 
--- ฟังก์ชันวิ่งเร็ว
+
+--// Speed System
+local superSpeed = false
+local runSpeed = 32
+
 local function toggleSpeed(on)
     superSpeed = on
-    humanoid.WalkSpeed = superSpeed and runSpeed or 16
+    if humanoid then
+        humanoid.WalkSpeed = superSpeed and runSpeed or 16
+    end
     Rayfield:Notify({
         Title = superSpeed and "🏃‍♂️ วิ่งเร็ว ✅" or "🚶‍♂️ วิ่งเร็ว 🛑",
         Content = superSpeed and "วิ่งเร็วสุดขีด!" or "กลับสู่ความเร็วปกติ",
@@ -122,139 +114,145 @@ local function toggleSpeed(on)
     })
 end
 
--- Services
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local RunService = game:GetService("RunService")
+--// Noclip & InfJump
+local noclipEnabled = false
+local infJumpEnabled = false
 
--- Variables
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-local GodModeEnabled = false
+--// UI Controls
+local flyToggle = PTab:CreateToggle({
+    Name = "[ 🛸 ] Flying",
+    CurrentValue = false,
+    Flag = "FlyToggle",
+    Callback = function(val) if val then startFlying() else stopFlying() end end
+})
 
-local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] Flying", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=1000, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
- 
+local flySlider = PTab:CreateSlider({
+    Name = "[ 📏 ] Slider Flying",
+    Range = {1, 1000},
+    Increment = 1,
+    Suffix = " Speed",
+    CurrentValue = 50,
+    Flag = "FlySpeed",
+    Callback = function(val) flySpeed = val end
+})
+
 local Section2 = PTab:CreateSection("")
 
-local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
- 
-local Section2 = PTab:CreateSection("")
+local speedToggle = PTab:CreateToggle({
+    Name = "[ 🏃‍♀️ ] Walk Or Run",
+    CurrentValue = false,
+    Flag = "SpeedToggle",
+    Callback = toggleSpeed
+})
 
-local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] Noclips", CurrentValue=false, Flag="NoclipToggle", Callback=function(val) noclipEnabled=val end})
-local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+local speedSlider = PTab:CreateSlider({
+    Name = "[ 📏 ] Slider Walk Or Run",
+    Range = {1, 1000},
+    Increment = 1,
+    Suffix = " Speed",
+    CurrentValue = 32,
+    Flag = "RunSpeed",
+    Callback = function(val)
+        runSpeed = val
+        if superSpeed and humanoid then
+            humanoid.WalkSpeed = runSpeed
+        end
+    end
+})
 
--- อัปเดตลูป
-RS.RenderStepped:Connect(function()
+local Section3 = PTab:CreateSection("")
+
+local noclipToggle = PTab:CreateToggle({
+    Name = "[ 🧱 ] Noclips",
+    CurrentValue = false,
+    Flag = "NoclipToggle",
+    Callback = function(val) noclipEnabled = val end
+})
+
+local infJumpToggle = PTab:CreateToggle({
+    Name = "[ 🦘 ] Infinite Jump",
+    CurrentValue = false,
+    Flag = "InfJumpToggle",
+    Callback = function(val) infJumpEnabled = val end
+})
+
+--// Fly Loop
+RunService.RenderStepped:Connect(function()
     if flying and vv and gyro and hrp and humanoid then
-        local cam = workspace.CurrentCamera
+        local cam = Workspace.CurrentCamera
         if not cam then return end
- 
-        local flatForward = Vector3.new(cam.CFrame.LookVector.X,0,cam.CFrame.LookVector.Z)
+
+        local look = cam.CFrame.LookVector
+        local flatForward = Vector3.new(look.X, 0, look.Z)
         local forward = flatForward.Magnitude > 0 and flatForward.Unit or Vector3.zero
-        local right = Vector3.new(cam.CFrame.RightVector.X,0,cam.CFrame.RightVector.Z)
+        local right = cam.CFrame.RightVector
+        right = Vector3.new(right.X, 0, right.Z)
         if right.Magnitude > 0 then right = right.Unit end
- 
+
         local moveVec = Vector3.zero
-        if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + Vector3.new(0,0,1) end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec + Vector3.new(0,0,-1) end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec + Vector3.new(-1,0,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + Vector3.new(1,0,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0,1,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec = moveVec + Vector3.new(0,-1,0) end
- 
-        local desired = forward*moveVec.Z + right*moveVec.X + Vector3.new(0,moveVec.Y,0)
-        if desired.Magnitude>0 then desired = desired.Unit*flySpeed end
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveVec += Vector3.new(0, 0, 1) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveVec += Vector3.new(0, 0, -1) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveVec += Vector3.new(-1, 0, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveVec += Vector3.new(1, 0, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveVec += Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec += Vector3.new(0, -1, 0) end
+
+        local desired = forward * moveVec.Z + right * moveVec.X + Vector3.new(0, moveVec.Y, 0)
+        if desired.Magnitude > 0 then desired = desired.Unit * flySpeed end
         vv.Velocity = desired
- 
-        if desired.Magnitude>1 then
-            local flatDir = Vector3.new(desired.X,0,desired.Z)
-            if flatDir.Magnitude>0 then gyro.CFrame = CFrame.new(hrp.Position,hrp.Position+flatDir) end
+
+        if desired.Magnitude > 1 then
+            local flatDir = Vector3.new(desired.X, 0, desired.Z)
+            if flatDir.Magnitude > 0 then
+                gyro.CFrame = CFrame.new(hrp.Position, hrp.Position + flatDir)
+            end
         end
     end
 end)
- 
-RS.Stepped:Connect(function()
-    if noclipEnabled and char then
-        for _,part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then part.CanCollide=false end
+
+--// Noclip Loop
+RunService.Stepped:Connect(function()
+    if noclipEnabled and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
         end
     end
 end)
- 
-UIS.JumpRequest:Connect(function()
+
+--// Infinite Jump
+UserInputService.JumpRequest:Connect(function()
     if infJumpEnabled and humanoid then
         humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
 
-UIS.JumpRequest:Connect(function()
-    if infJumpEnabled and humanoid then
-        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
- 
--- รีเซ็ตตัวละครเมื่อ respawn
-player.CharacterAdded:Connect(function(c)
-    char=c
-    hrp=c:WaitForChild("HumanoidRootPart")
-    humanoid=c:WaitForChild("Humanoid")
+--// Character Respawn Handler
+LocalPlayer.CharacterAdded:Connect(function(char)
+    humanoid = char:WaitForChild("Humanoid")
+    hrp = char:WaitForChild("HumanoidRootPart")
     stopFlying()
     toggleSpeed(false)
-    noclipEnabled=false
-    infJumpEnabled=false
+    noclipEnabled = false
+    infJumpEnabled = false
     Rayfield:LoadConfiguration()
 end)
 
--- === แท็บวาป + ลากศพ (เวอร์ชันแยกหน้าที่เรียบร้อย) ===
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local player = Players.LocalPlayer
-
+--// === TELEPORT TAB ===
 local friendTab = Window:CreateTab("||   - Teleports", "door-open")
 local Section1 = friendTab:CreateSection("")
 
--- ===== Helpers =====
 local function getPlayerList()
     local list = {}
     for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= player then
+        if p ~= LocalPlayer then
             table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
         end
     end
     return list
 end
 
--- ดึงศพทั้งหมดที่ลงท้ายชื่อด้วย " Body" จากโฟลเดอร์ Characters
-local function getAllBodies()
-    local folder = Workspace:FindFirstChild("Characters")
-    if not folder then return {} end
-    local bodies = {}
-    for _, obj in ipairs(folder:GetChildren()) do
-        if typeof(obj) == "Instance" and typeof(obj.Name) == "string" then
-            if obj.Name:sub(-5) == " Body" then
-                table.insert(bodies, obj)
-            end
-        end
-    end
-    return bodies
-end
-
--- หา BasePart ใดๆ ในโมเดล (กันกรณีไม่มี PrimaryPart)
-local function findAnyBasePart(model)
-    if not model or not model:IsA("Model") then return nil end
-    if model.PrimaryPart then return model.PrimaryPart end
-    for _, d in ipairs(model:GetDescendants()) do
-        if d:IsA("BasePart") then
-            return d
-        end
-    end
-    return nil
-end
-
--- ===== UI: Dropdown เพื่อน (ใช้เฉพาะ “วาปไปหาเพื่อน”) =====
 local friendDropdown = friendTab:CreateDropdown({
     Name = "[ 👥 ]  Dropdown Player",
     Options = getPlayerList(),
@@ -262,7 +260,6 @@ local friendDropdown = friendTab:CreateDropdown({
     Flag = "FriendSelect"
 })
 
--- ปุ่มวาปไปหาเพื่อน (ใช้ dropdown)
 friendTab:CreateButton({
     Name = "[ 📌 ]  Teleport To Player",
     Callback = function()
@@ -273,7 +270,7 @@ friendTab:CreateButton({
         end
 
         local friendName = selected:match("%((.-)%)") or selected
-        local char = player.Character or player.CharacterAdded:Wait()
+        local char = getChar()
         local hrp = char:WaitForChild("HumanoidRootPart")
 
         local targetPlayer = Players:FindFirstChild(friendName)
@@ -289,7 +286,6 @@ friendTab:CreateButton({
     end
 })
 
--- ปุ่มรีเฟรชรายชื่อ (มีผลเฉพาะ dropdown วาปเพื่อน)
 friendTab:CreateButton({
     Name = "[ 🔄️ ]  Reset Player",
     Callback = function()
@@ -298,32 +294,158 @@ friendTab:CreateButton({
     end
 })
 
--- อัปเดต Dropdown อัตโนมัติ เมื่อมีคนเข้า/ออก (เฉพาะวาปเพื่อน)
-Players.PlayerAdded:Connect(function()
-    friendDropdown:Set(getPlayerList())
-end)
-Players.PlayerRemoving:Connect(function()
-    friendDropdown:Set(getPlayerList())
-end)
+Players.PlayerAdded:Connect(function() friendDropdown:Set(getPlayerList()) end)
+Players.PlayerRemoving:Connect(function() friendDropdown:Set(getPlayerList()) end)
 
-local STab = Window:CreateTab("||   - Invisible / Tools", "axe")
-local Section1 = STab:CreateSection("")
+--// === ESP TAB (Local ESP - Rainbow Edition) ===
+local espTab = Window:CreateTab("||   - ESP - Invisible - Tools", "eye")
+local espSection = espTab:CreateSection("")
 
---// ตั้งค่าเริ่มต้น
-local player = game.Players.LocalPlayer
-local defaultSpeed = 16
-local boostedSpeed = 48
+local ESPEnabled = false
+local ESPObjects = {}
+local rainbowHue = 0
+
+local function getRainbowColor()
+    rainbowHue = (rainbowHue + 0.001) % 1
+    return Color3.fromHSV(rainbowHue, 1, 1)
+end
+
+local function createESP(player)
+    if player == LocalPlayer then return end
+    local char = player.Character
+    if not char then return end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
+    if not hrp then return end
+
+    -- Rainbow Box ESP
+    local box = Drawing.new("Square")
+    box.Thickness = 2
+    box.Filled = false
+    box.Transparency = 1
+    box.Visible = false
+
+    -- Rainbow Name ESP
+    local name = Drawing.new("Text")
+    name.Text = player.DisplayName
+    name.Size = 16
+    name.Center = true
+    name.Outline = true
+    name.Font = Drawing.Fonts.UI
+    name.Visible = false
+
+    -- Health Bar (Rainbow Border)
+    local healthBG = Drawing.new("Square")
+    healthBG.Thickness = 1
+    healthBG.Filled = true
+    healthBG.Color = Color3.fromRGB(0, 0, 0)
+    healthBG.Transparency = 0.5
+    healthBG.Visible = false
+
+    local healthFG = Drawing.new("Square")
+    healthFG.Thickness = 1
+    healthFG.Filled = true
+    healthFG.Visible = false
+
+    ESPObjects[player] = {box = box, name = name, healthBG = healthBG, healthFG = healthFG, lastChar = char}
+end
+
+local function updateESP()
+    if not ESPEnabled then return end
+
+    local cam = Workspace.CurrentCamera
+    local rainbowColor = getRainbowColor()
+
+    for player, esp in pairs(ESPObjects) do
+        local char = player.Character
+        if char and char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart") then
+            local hrp = char.HumanoidRootPart
+            local hum = char.Humanoid
+            local head = char:FindFirstChild("Head")
+            if not head then continue end
+
+            local rootPos, onScreen = cam:WorldToViewportPoint(hrp.Position)
+            local headPos = cam:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
+            local legPos = cam:WorldToViewportPoint(hrp.Position - Vector3.new(0, 3, 0))
+
+            if onScreen then
+                local height = math.abs(headPos.Y - legPos.Y)
+                local width = height * 0.5
+
+                -- Rainbow Box
+                esp.box.Size = Vector2.new(width, height)
+                esp.box.Position = Vector2.new(rootPos.X - width/2, rootPos.Y - height/2)
+                esp.box.Color = rainbowColor
+                esp.box.Visible = true
+
+                -- Rainbow Name
+                esp.name.Position = Vector2.new(rootPos.X, rootPos.Y - height/2 - 20)
+                esp.name.Color = rainbowColor
+                esp.name.Visible = true
+
+                -- Health Bar
+                local health = hum.Health / hum.MaxHealth
+                local barHeight = height
+                local barWidth = 4
+
+                esp.healthBG.Size = Vector2.new(barWidth, barHeight)
+                esp.healthBG.Position = Vector2.new(rootPos.X - width/2 - barWidth - 2, rootPos.Y - height/2)
+
+                esp.healthFG.Size = Vector2.new(barWidth, barHeight * health)
+                esp.healthFG.Position = Vector2.new(rootPos.X - width/2 - barWidth - 2, rootPos.Y - height/2 + (barHeight * (1 - health)))
+                esp.healthFG.Color = Color3.fromHSV(health * 0.33, 1, 1)
+
+                esp.healthBG.Visible = true
+                esp.healthFG.Visible = true
+            else
+                esp.box.Visible = false
+                esp.name.Visible = false
+                esp.healthBG.Visible = false
+                esp.healthFG.Visible = false
+            end
+        else
+            esp.box.Visible = false
+            esp.name.Visible = false
+            esp.healthBG.Visible = false
+            esp.healthFG.Visible = false
+        end
+    end
+end
+
+local espToggle = espTab:CreateToggle({
+    Name = "[ 👁️ ]   ESP Player",
+    CurrentValue = false,
+    Callback = function(val)
+        ESPEnabled = val
+        if val then
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer then
+                    createESP(p)
+                end
+            end
+            Rayfield:Notify({Title = "ESP สายรุ้ง เปิด ✅", Content = "ESP แบบสีรุ้ง (เห็นเฉพาะคุณ)", Duration = 3})
+        else
+            for _, esp in pairs(ESPObjects) do
+                esp.box:Remove()
+                esp.name:Remove()
+                esp.healthBG:Remove()
+                esp.healthFG:Remove()
+            end
+            ESPObjects = {}
+            Rayfield:Notify({Title = "ESP ปิด 🛑", Content = "ESP สายรุ้งถูกปิดแล้ว", Duration = 3})
+        end
+    end
+})
+
+local Section2 = espTab:CreateSection("")
+
 local invis_on = false
-local isSpeedBoosted = false
 local key = Enum.KeyCode.X
-
---// สร้างเสียง
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://942127495"
 sound.Volume = 1
-sound.Parent = player:WaitForChild("PlayerGui")
+sound.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
---// ฟังก์ชันตั้งค่าความโปร่งใส
 local function setTransparency(character, transparency)
     for _, part in pairs(character:GetDescendants()) do
         if part:IsA("BasePart") or part:IsA("Decal") then
@@ -332,21 +454,21 @@ local function setTransparency(character, transparency)
     end
 end
 
---// ฟังก์ชันล่องหน
 local function toggleInvisibility()
     invis_on = not invis_on
     sound:Play()
 
     if invis_on then
-        local character = player.Character or player.CharacterAdded:Wait()
-        local root = character:WaitForChild("HumanoidRootPart")
+        local char = getChar()
+        local root = char:WaitForChild("HumanoidRootPart")
+        local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
         local savedpos = root.CFrame
 
-        wait()
+        task.wait()
         root.CFrame = CFrame.new(-25.95, 84, 3537.55)
 
-        wait(0.15)
-        local Seat = Instance.new("Seat", workspace)
+        task.wait(0.15)
+        local Seat = Instance.new("Seat", Workspace)
         Seat.Anchored = false
         Seat.CanCollide = false
         Seat.Name = "invischair"
@@ -355,11 +477,11 @@ local function toggleInvisibility()
 
         local Weld = Instance.new("Weld", Seat)
         Weld.Part0 = Seat
-        Weld.Part1 = character:FindFirstChild("Torso") or character:FindFirstChild("UpperTorso")
+        Weld.Part1 = torso
 
-        wait()
+        task.wait()
         Seat.CFrame = savedpos
-        setTransparency(character, 0.5)
+        setTransparency(char, 0.5)
 
         game.StarterGui:SetCore("SendNotification", {
             Title = "การล่องหน [ ✅ ]",
@@ -367,11 +489,9 @@ local function toggleInvisibility()
             Duration = 3
         })
     else
-        local invisChair = workspace:FindFirstChild("invischair")
-        if invisChair then
-            invisChair:Destroy()
-        end
-        setTransparency(player.Character, 0)
+        local invisChair = Workspace:FindFirstChild("invischair")
+        if invisChair then invisChair:Destroy() end
+        setTransparency(getChar(), 0)
 
         game.StarterGui:SetCore("SendNotification", {
             Title = "การล่องหน [ 🛑 ]",
@@ -381,102 +501,64 @@ local function toggleInvisibility()
     end
 end
 
-STab:CreateButton({Name = "[ 👻 ]  Invisible", Callback = function() toggleInvisibility() end})
+espTab:CreateButton({Name = "[ 👻 ]  Invisible", Callback = toggleInvisibility})
 
-local Section2 = STab:CreateSection("")
-
-player.CharacterAdded:Connect(function(character)
-    isSpeedBoosted = false
-    local humanoid = character:WaitForChild("Humanoid")
-    humanoid.WalkSpeed = defaultSpeed
-end)
-
---// คีย์ลัดกด X
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
     if input.KeyCode == key then
         toggleInvisibility()
     end
 end)
 
-local Button = STab:CreateButton({
-   Name = "[ 📱 ]  Tools TP",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
-   end,
+local Section2 = espTab:CreateSection("")
+
+espTab:CreateButton({
+    Name = "[ 📱 ]  Tools TP",
+    Callback = function()
+        loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
+    end
 })
 
+Players.PlayerAdded:Connect(function(p)
+    if ESPEnabled and p ~= LocalPlayer then
+        p.CharacterAdded:Connect(function() createESP(p) end)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+    if ESPObjects[p] then
+        for _, obj in pairs(ESPObjects[p]) do
+            if typeof(obj) == "Instance" and obj.Remove then
+                obj:Remove()
+            end
+        end
+        ESPObjects[p] = nil
+    end
+end)
+
+RunService.RenderStepped:Connect(updateESP)
+
+--// === HITBOX TAB ===
 local FTab = Window:CreateTab("||   - Hitbox", "dices")
-local Section1 = FTab:CreateSection("")
+local hitSection = FTab:CreateSection("")
 
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 0",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/RYHm668P"))()
-   end,
-})
+local hitboxSizes = {0, 20, 50, 100, 200, 300, 500, 1000}
+local hitboxScripts = {
+    "RYHm668P", "BXXEmeE1", "SeUzxcLb", "WE5CwsDd",
+    "zdRdyuZW", "kHXF6bh3", "TuTmir1v", "mbyBb11C"
+}
 
-local Section1 = FTab:CreateSection("")
+for i, size in ipairs(hitboxSizes) do
+    FTab:CreateButton({
+        Name = "[ 🤺 ]  Hitbox " .. size,
+        Callback = function()
+            loadstring(game:HttpGet("https://pastebin.com/raw/" .. hitboxScripts[i]))()
+        end
+    })
+    if i < #hitboxSizes then
+        FTab:CreateSection("")
+    end
+end
 
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 20",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/BXXEmeE1"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 50",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/SeUzxcLb"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 100",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/WE5CwsDd"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 200",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/zdRdyuZW"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 300",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/kHXF6bh3"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 500",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/TuTmir1v"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
-
-local Button = FTab:CreateButton({
-   Name = "[ 🤺 ]  Hitbox 1000",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/mbyBb11C"))()
-   end,
-})
-
-local Section1 = FTab:CreateSection("")
+--// Load Config on Start
+Rayfield:LoadConfiguration()
