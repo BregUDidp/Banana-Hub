@@ -40,7 +40,7 @@ local Window = Rayfield:CreateWindow({
 local KeyTab = Window:CreateTab("||  Section Scripts", "play")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
-KeyTab:CreateButton({Name = "[   💥    กดบายพาสเพื่อกันแบนสคริป ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
+KeyTab:CreateButton({Name = "[   💥    Click Bypasses ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
 
 local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
 
@@ -49,12 +49,12 @@ KeyTab:CreateParagraph({
     Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
 })
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   99 คืนในป่า   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari Aimbots  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari 99 Night Forest   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนสคริปเพื่มเติม ]")
 
-KeyTab:CreateButton({Name = "กดรันสคริป  |   All Map   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari Aimbots  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari All Map   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
 
 local Section3 = KeyTab:CreateSection("[ โซนดูฟังชั่นเพื่มเติม ]")
 
