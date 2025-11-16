@@ -407,13 +407,13 @@ end
 local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
-        game.StarterGui:SetCore("SendNotification", {Title="เปิดปืนสายรุ้ง", Text="ระบบสีรุ้งทำงานแล้ว", Duration=6})
+        game.StarterGui:SetCore("SendNotification", {Title="[ 🌈 ]  เปิดปืนสายรุ้ง", Text="[ 🌈 ]  ระบบสีรุ้งทำงานแล้ว", Duration=6})
         if not RainbowGun.Loop then
             RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
         end
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
-        game.StarterGui:SetCore("SendNotification", {Title="ปิดปืนสายรุ้ง", Text="ระบบสีรุ้งปิดแล้ว", Duration=4})
+        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ]  ปิดปืนสายรุ้ง", Text="[ ❌ ]  ระบบสีรุ้งปิดแล้ว", Duration=4})
         if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
         if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
         RainbowGun.Current = nil
