@@ -4,6 +4,12 @@ game.StarterGui:SetCore("SendNotification", {
     Duration = 10
 })
 
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ Made By Akari 💻 ]",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Script")
