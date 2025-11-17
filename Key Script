@@ -37,7 +37,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local KeyTab = Window:CreateTab("||  Section Scripts", "play")
+local KeyTab = Window:CreateTab("||  - Tab Misc", "play")
 local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
 
 KeyTab:CreateButton({Name = "[   💥    Click Bypasses ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
@@ -67,3 +67,26 @@ KeyTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
     Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
 })
+
+local CTab = Window:CreateTab("||  - Tab Scripts", "dices")
+local Section = CTab:CreateSection("[ - Script Another Akari - ]")
+
+CTab:CreateParagraph({
+    Title = "กดยอมรับถ้าดูเสร็จ",
+    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
+})
+
+local Button = CTab:CreateButton({
+   Name = "- Akari -  [ - Admin - ]",
+   Callback = function()
+       Rayfield:Notify({Title = "[  - Loaded Admin Hubs - Akari -  ]", Content = "", Duration = 1, Image = "play"})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))()
+   end,
+})
+
+CTab:CreateParagraph({
+    Title = "กดยอมรับถ้าดูเสร็จ",
+    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
+})
+
+local Section = CTab:CreateSection("[ - Script Another Akari - ]")
