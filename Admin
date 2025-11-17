@@ -5,7 +5,7 @@ game.StarterGui:SetCore("SendNotification", {
 })
 
 game.StarterGui:SetCore("SendNotification", {
-    Title = "[ Made By Akari 💻 ]",
+    Title = "[ Made By Akari 🕸️ ]",
     Text = "________________________________________________________",
     Duration = 10
 })
