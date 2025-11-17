@@ -22,6 +22,11 @@ end)
 
 local Section = Tab:NewSection("[ 🕸️ ]  Script Admin")
 
+Section:NewButton("♾️   Infinite Yield Hubs", "ButtonInfo", function()
+    print("Clicked")
+loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+end)
+
 Section:NewButton("🔥   Jordy Hubs", "ButtonInfo", function()
     print("Clicked")
 loadstring(game:HttpGet("https://raw.githubusercontent.com/topwatereeee-pixel/Jordy-Scripts/refs/heads/main/Roblox%20JordyHub"))()
