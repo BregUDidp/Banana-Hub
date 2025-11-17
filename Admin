@@ -29,3 +29,25 @@ Section:NewButton("🌓   COOLCLAN Gui Hubs", "ButtonInfo", function()
     print("Clicked")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", true))()
 end)
+
+local Tab = Window:NewTab("[ 🕸️ ] Speeds Walk")
+local Section = Tab:NewSection("🕸️ Speed Slider Walk")
+
+Section:NewSlider("Slider Run", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+local Section = Tab:NewSection("🕸️ Speed TextBox Walk")
+
+Section:NewTextBox("Number For Run", "TextboxInfo", function(txt)
+	print(txt)
+	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
+end)
+
+
+local Tab = Window:NewTab("[ 🕸️ ] KeyBlinds")
+local Section = Tab:NewSection("🕸️ KeyBlinds")
+
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.F, function()
+	Library:ToggleUI()
+end)
