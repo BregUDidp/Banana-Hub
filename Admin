@@ -48,6 +48,6 @@ end)
 local Tab = Window:NewTab("[ 🕸️ ] KeyBlinds")
 local Section = Tab:NewSection("🕸️ KeyBlinds")
 
-Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.F, function()
+Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.H, function()
 	Library:ToggleUI()
 end)
