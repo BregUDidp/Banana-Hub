@@ -36,6 +36,11 @@ Section:NewButton("Voids Hubs   [ - BlackHole - ]", "ButtonInfo", function()
 	loadstring(game:HttpGet("https://pastefy.app/PU6VWuJk/raw"))()
 end)
 
+Section:NewButton("Rings Hubs   [ - Tornado - ]", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://pastebin.com/raw/RXUicki8"))()
+end)
+
 Section:NewButton("COOLCLAN Gui Hubs", "ButtonInfo", function()
     print("Clicked")
     loadstring(game:HttpGet("https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", true))()
