@@ -16,9 +16,14 @@ local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Script")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
-Section:NewButton("Dance Hubs", "ButtonInfo", function()
+Section:NewButton("[ 1 ] Dance Hubs", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/yunus154524/scripts/refs/heads/main/anim2gui.lua"))()
+end)
+
+Section:NewButton("[ 2 ] Dance Hubs", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://pastebin.com/raw/1nJD7PkH",true))()
 end)
 
 Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
