@@ -1,3 +1,9 @@
+game.StarterGui:SetCore("SendNotification", {
+    Title = "[ Admin Function 💻 ]",
+    Text = "________________________________________________________",
+    Duration = 10
+})
+
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Script")
