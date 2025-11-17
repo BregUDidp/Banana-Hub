@@ -84,6 +84,10 @@ local Button = CTab:CreateButton({
    end,
 })
 
+local Section = CTab:CreateSection("[ - Script Combo Akari - ]")
+
+CTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ - All Map - ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
+
 CTab:CreateParagraph({
     Title = "กดยอมรับถ้าดูเสร็จ",
     Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
