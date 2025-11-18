@@ -1,0 +1,168 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+ 
+local Window = Rayfield:CreateWindow({
+   Name = "   |  Teleport   [ V-8.1 ]",
+   Icon = "webhook",
+   LoadingTitle = "[ 🕸️ ]  Akari Hub  [ 🕸️ ]",
+   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   ShowText = "🕸️",
+   Theme = "DarkBlue",
+   ToggleUIKeybind = "F",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🕸️"}
+   }
+})
+
+-- === แท็บวาป + ลากศพ (เวอร์ชันใหม่: Auto TP to Friend ไม่ต้องกดปุ่ม) ===
+local friendTab = Window:CreateTab("|| -  วาปอัตโนมัต", "door-open")
+local Section1 = friendTab:CreateSection("[ 👥 ]  โซนวาปไปหาเพื่อน (อัตโนมัติ)")
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local autoTPConnection
+
+-- ตัวแปรเก็บเพื่อนที่เลือก
+local selectedFriendName = nil
+
+-- ฟังก์ชันอัปเดตรายชื่อใน Dropdown
+local function updatePlayerList()
+    local list = {}
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(list, p.DisplayName .. " (@" .. p.Name .. ")")
+        end
+    end
+    return list
+end
+
+-- Dropdown เลือกเพื่อน (เลือกแล้ววาปทันที)
+local friendDropdown = friendTab:CreateDropdown({
+    Name = "[ 👥 ]  เลือกเพื่อน (วาปอัตโนมัติ)",
+    Options = updatePlayerList(),
+    CurrentOption = {""},
+    MultipleOptions = false,
+    Callback = function(Option)
+        if Option[1] == nil or Option[1] == "" then
+            selectedFriendName = nil
+            if autoTPConnection then autoTPConnection:Disconnect() end
+            Rayfield:Notify({
+                Title = "หยุดวาปอัตโนมัติ",
+                Content = "ยกเลิกการวาปไปหาเพื่อน",
+                Duration = 3
+            })
+            return
+        end
+
+        local friendName = Option[1]:match("@(.+)%)") or Option[1]
+        selectedFriendName = friendName
+
+        local targetPlayer = Players:FindFirstChild(friendName)
+        if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            Rayfield:Notify({
+                Title = "❌ ไม่พบเพื่อน",
+                Content = friendName .. " ยังไม่โหลดตัวละครหรือไม่ออนไลน์",
+                Duration = 4
+            })
+            return
+        end
+
+        Rayfield:Notify({
+            Title = "🚀 วาปไปหา " .. targetPlayer.DisplayName,
+            Content = "กำลังวาปอัตโนมัติทุก ๆ 0.5 วินาที",
+            Duration = 4
+        })
+
+        -- ยกเลิกการเชื่อมต่อเก่า (ถ้ามี)
+        if autoTPConnection then autoTPConnection:Disconnect() end
+
+        -- สร้างการวาปอัตโนมัติ
+        autoTPConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not selectedFriendName then return end
+
+            local me = player.Character or player.CharacterAdded:Wait()
+            local myHRP = me:FindFirstChild("HumanoidRootPart")
+            if not myHRP then return end
+
+            local target = Players:FindFirstChild(selectedFriendName)
+            if target and target.Character then
+                local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
+                if targetHRP then
+                    myHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0) -- วาปเหนือหัวนิดนึง
+                end
+            end
+        end)
+    end
+})
+
+local Section1 = friendTab:CreateSection("[ 👥 ]  โซนลบเพื่อน")
+
+-- ปุ่มหยุดวาป/ออกจากการติดตาม (กดปุ่มแดงเด่น ๆ)
+friendTab:CreateButton({
+    Name = "[ 🛑 ] หยุดวาปไปหาเพื่อน",
+    Callback = function()
+        selectedFriendName = nil
+        
+        if autoTPConnection then
+            autoTPConnection:Disconnect()
+            autoTPConnection = nil
+        end
+        
+        -- รีเซ็ต Dropdown ให้กลับมาเป็นค่าว่าง
+        friendDropdown:Set({""})
+        
+        Rayfield:Notify({
+            Title = "🛑 หยุดวาปสำเร็จ",
+            Content = "ยกเลิกการติดตามเพื่อนแล้ว",
+            Duration = 4,
+            Image = 4483362458
+        })
+    end
+})
+
+local Section1 = friendTab:CreateSection("[ 👥 ]  โซนรีเฟรชเพื่อน")
+
+-- ปุ่มรีเฟรชรายชื่อ
+friendTab:CreateButton({
+    Name = "[ 🔄 ]  รีเฟรชรายชื่อเพื่อน",
+    Callback = function()
+        friendDropdown:Refresh(updatePlayerList(), true)
+        Rayfield:Notify({Title = "อัปเดตแล้ว ✅", Content = "รีเฟรชรายชื่อเพื่อนเรียบร้อย", Duration = 3})
+    end
+})
+
+-- อัปเดตอัตโนมัติเมื่อมีคนเข้า/ออก
+Players.PlayerAdded:Connect(function()
+    friendDropdown:Refresh(updatePlayerList(), true)
+end)
+
+Players.PlayerRemoving:Connect(function()
+    task.wait(1) -- รอให้ออกจริง ๆ
+    friendDropdown:Refresh(updatePlayerList(), true)
+end)
+
+-- หยุดวาปอัตโนมัติเมื่อตัวละครตาย/รีสปาวน์
+player.CharacterRemoving:Connect(function()
+    if autoTPConnection then
+        autoTPConnection:Disconnect()
+        autoTPConnection = nil
+    end
+end)
