@@ -1,7 +1,7 @@
 game.StarterGui:SetCore("SendNotification", {
     Title = "[ 🔩 ]   ดึงเหล็กสำเร็จ",
     Text = "________________________________________________________",
-    Duration = 10
+    Duration = 1
 })
 
 
