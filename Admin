@@ -59,6 +59,19 @@ Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
 	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Tools-giver-26246"))()
 end)
 
+local Tab = Window:NewTab("[ 🕸️ ]  Tab Teleport")
+local Section = Tab:NewSection("[ 🕸️ ]  Script Teleport")
+
+Section:NewButton("Script Teleport", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20to%20Friend'))()
+end)
+
+Section:NewButton("Script Akari Hub", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub'))()
+end)
+
 local Tab = Window:NewTab("[ 🕸️ ] Speeds Walk")
 local Section = Tab:NewSection("🕸️ Speed Slider Walk")
 
@@ -72,7 +85,6 @@ Section:NewTextBox("Number For Run", "TextboxInfo", function(txt)
 	print(txt)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
 end)
-
 
 local Tab = Window:NewTab("[ 🕸️ ] KeyBlinds")
 local Section = Tab:NewSection("🕸️ KeyBlinds")
