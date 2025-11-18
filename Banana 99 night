@@ -57,7 +57,7 @@ local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไ�
 
 -- Toggles
 StrongholdTab:CreateToggle({
-    Name = "เปิดใช้งาน Stronghold Countdown",
+    Name = "[ ☀️ ]  เค้าดาวเวลาสตรองโฮว์",
     CurrentValue = true,
     Callback = function(val)
         CountdownEnabled = val
@@ -65,7 +65,7 @@ StrongholdTab:CreateToggle({
 })
 
 StrongholdTab:CreateToggle({
-    Name = "🚀 ออโต้วาปไปสตรองโฮว์",
+    Name = "[ 🚀 ]  ออโต้วาปไปสตรองโฮว์",
     CurrentValue = true,
     Callback = function(val)
         AutoTeleportEnabled = val
@@ -76,7 +76,7 @@ local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไ�
 
 -- ปุ่มทดสอบวาร์ป (สำคัญมาก!)
 StrongholdTab:CreateButton({
-    Name = "🧪 วาปไปสตรองโฮว์",
+    Name = "[ 🧪 ]  วาปไปสตรองโฮว์",
     Callback = function()
         ManualTeleport()
     end
