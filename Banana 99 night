@@ -65,7 +65,7 @@ StrongholdTab:CreateToggle({
 })
 
 StrongholdTab:CreateToggle({
-    Name = "🚀 AUTO TELEPORT (วาร์ปทันที)",
+    Name = "🚀 ออโต้วาปไปสตรองโฮว์",
     CurrentValue = true,
     Callback = function(val)
         AutoTeleportEnabled = val
@@ -76,7 +76,7 @@ local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไ�
 
 -- ปุ่มทดสอบวาร์ป (สำคัญมาก!)
 StrongholdTab:CreateButton({
-    Name = "🧪 ทดสอบวาร์ป (กดตอนเจอ SH)",
+    Name = "🧪 วาปไปสตรองโฮว์",
     Callback = function()
         ManualTeleport()
     end
