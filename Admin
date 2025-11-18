@@ -13,7 +13,7 @@ game.StarterGui:SetCore("SendNotification", {
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Script")
+local Tab = Window:NewTab("[ 🕸️ ]  Tab Admin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
 Section:NewButton("[ 1 ] Dance Hubs", "ButtonInfo", function()
@@ -59,7 +59,7 @@ Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
 	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Tools-giver-26246"))()
 end)
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Teleport")
+local Tab = Window:NewTab("[ 🕸️ ]  Tab Scripts")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Teleport")
 
 Section:NewButton("Script Teleport", "ButtonInfo", function()
@@ -70,6 +70,11 @@ end)
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub'))()
+end)
+
+Section:NewButton("Script SYSTEMBROKEN Hub", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script'))()
 end)
 
 local Tab = Window:NewTab("[ 🕸️ ] Speeds Walk")
