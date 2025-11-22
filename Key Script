@@ -93,4 +93,13 @@ CTab:CreateParagraph({
     Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
 })
 
+local Section = CTab:CreateSection("[ - Script Power Panel  🌀 - ]")
+
+CTab:CreateButton({Name = "กดรันสคริป  |   Power Panel  🌀   [ - 99 Night - ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/Script"))() end})
+
+CTab:CreateParagraph({
+    Title = "กดยอมรับถ้าดูเสร็จ",
+    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
+})
+
 local Section = CTab:CreateSection("[ - Script Another Akari - ]")
