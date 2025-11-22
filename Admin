@@ -13,6 +13,14 @@ game.StarterGui:SetCore("SendNotification", {
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
 
+local Tab = Window:NewTab("[ 🕸️ ]  Tab Rejoin")
+local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
+
+Section:NewButton("Rejoins  One Click", "ButtonInfo", function()
+    print("Clicked")
+	
+end)
+
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Admin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
