@@ -32,291 +32,6 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local StrongholdTab = Window:CreateTab("||  -  วาปไปสตรองโฮว์อัตโนมัต","play")
-local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
-
-local LevelColors = {
-    [1] = Color3.fromRGB(195, 255, 0),
-    [2] = Color3.fromRGB(255, 238, 0),
-    [3] = Color3.fromRGB(255, 157, 0),
-    [4] = Color3.fromRGB(255, 64, 0),
-    [5] = Color3.fromRGB(255, 0, 0)
-}
-
-local LastStronghold = nil
-local LastUpdateTime = 0
-local UPDATE_INTERVAL = 0.3  -- เช็คถี่ขึ้น
-local CountdownEnabled = true
-local AutoTeleportEnabled = true
-local LastTeleportKey = nil   -- ✅ กันวาร์ปซ้ำในรอบเดียว
-
-local StatusLabel = StrongholdTab:CreateLabel("กำลังค้นหา Stronghold...")
-local InfoLabel = StrongholdTab:CreateLabel("ระดับ: -\nสถานะ: รอเปิด\nเหลือเวลา: --:--")
-
-local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
-
--- Toggles
-StrongholdTab:CreateToggle({
-    Name = "[ ☀️ ]  เค้าดาวเวลาสตรองโฮว์",
-    CurrentValue = true,
-    Callback = function(val)
-        CountdownEnabled = val
-    end
-})
-
-StrongholdTab:CreateToggle({
-    Name = "[ 🚀 ]  ออโต้วาปไปสตรองโฮว์",
-    CurrentValue = true,
-    Callback = function(val)
-        AutoTeleportEnabled = val
-    end
-})
-
-local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
-
--- ปุ่มทดสอบวาร์ป (สำคัญมาก!)
-StrongholdTab:CreateButton({
-    Name = "[ 🧪 ]  วาปไปสตรองโฮว์",
-    Callback = function()
-        ManualTeleport()
-    end
-})
-
--- ฟังก์ชันวาร์ปที่เสถียร 100%
-function ManualTeleport()
-    if not LastStronghold then
-        Rayfield:Notify({Title = "❌", Content = "ยังไม่เจอ Stronghold", Duration = 3})
-        return
-    end
-
-    print("🔥 เริ่มวาร์ป Stronghold:", LastStronghold.Name)
-
-    -- หาตำแหน่งปลอดภัยหลายวิธี
-    local targetPos
-    local func = LastStronghold:FindFirstChild("Functional")
-
-    -- วิธี 1: PrimaryPart
-    if LastStronghold.PrimaryPart then
-        targetPos = LastStronghold.PrimaryPart.CFrame + Vector3.new(0, 15, 10)
-    end
-
-    -- วิธี 2: Functional.Position (สำรอง)
-    if func and not targetPos then
-        targetPos = CFrame.new(func.Position + Vector3.new(0, 20, 15))
-    end
-
-    -- วิธี 3: หา Part ใหญ่สุด
-    if not targetPos then
-        for _, part in pairs(LastStronghold:GetChildren()) do
-            if part:IsA("BasePart") and part.Size.Magnitude > 10 then
-                targetPos = part.CFrame + Vector3.new(0, 15, 10)
-                break
-            end
-        end
-    end
-
-    if not targetPos then
-        Rayfield:Notify({Title = "❌", Content = "หาตำแหน่งไม่ได้", Duration = 3})
-        return
-    end
-
-    -- รอ Character พร้อม
-    local player = game.Players.LocalPlayer
-    local char = player.Character or player.CharacterAdded:Wait()
-    local root = char:WaitForChild("HumanoidRootPart", 5)
-
-    if root then
-        -- วาร์ปแบบเนียน
-        root.CFrame = targetPos
-        Rayfield:Notify({
-            Title = "🚀 วาร์ปสำเร็จ!",
-            Content = "ไป Stronghold แล้ว! 🎉",
-            Duration = 4
-        })
-        print("✅ วาร์ปสำเร็จ:", targetPos.Position)
-    else
-        Rayfield:Notify({Title = "❌", Content = "Character ไม่พร้อม", Duration = 3})
-    end
-end
-
--- ฟังก์ชันอัปเดตหลัก
-local function UpdateStronghold()
-    if not CountdownEnabled then return end
-
-    local now = tick()
-    if now - LastUpdateTime < UPDATE_INTERVAL then return end
-    LastUpdateTime = now
-
-    local sh = nil
-
-    -- ค้นหา Stronghold
-    if LastStronghold and LastStronghold.Parent and LastStronghold:FindFirstChild("Functional") then
-        sh = LastStronghold
-    else
-        for _, obj in workspace:GetDescendants() do
-            if obj:IsA("Model") and obj:FindFirstChild("Functional") and obj:HasTag("Stronghold") and obj.Name ~= "AlienMothership" then
-                sh = obj
-                LastStronghold = sh
-                break
-            end
-        end
-    end
-
-    if not sh then
-        StatusLabel:Set("❌ ไม่พบ Stronghold")
-        InfoLabel:Set("รอ Stronghold เกิดใหม่...")
-        return
-    end
-
-    local func = sh.Functional
-    local openTime = func:GetAttribute("OpenTime")
-    local level = func:GetAttribute("Level") or 1
-
-    if not openTime then return end
-
-    local timeLeft = openTime - workspace:GetServerTimeNow()
-    local timeStr, statusText
-
-    -- ✅ ใช้ key กันวาร์ปรอบเดิม
-    local teleportKey = tostring(sh:GetDebugId()) .. "|" .. tostring(openTime)
-
-    -- 🔥 AUTO TELEPORT แค่ครั้งเดียวต่อรอบ
-    if timeLeft <= 0 and AutoTeleportEnabled then
-        statusText = "✅ เปิดแล้ว!"
-
-        if LastTeleportKey ~= teleportKey then
-            -- ยังไม่เคยวาร์ปรอบนี้ -> วาร์ปเลย
-            LastTeleportKey = teleportKey
-            timeStr = "🚀 กำลังวาร์ป..."
-
-            task.spawn(function()
-                ManualTeleport()
-            end)
-        else
-            -- วาร์ปไปแล้วรอบนี้
-            timeStr = "✅ วาร์ปแล้ว รอรอบถัดไป"
-        end
-    else
-        statusText = "⏳ รอเปิด"
-        local mins = math.floor(timeLeft / 60)
-        local secs = math.floor(timeLeft % 60)
-        if timeLeft <= 30 then
-            timeStr = string.format("%d", secs)
-        else
-            timeStr = string.format("%d:%02d", mins, secs)
-        end
-    end
-
-    -- อัปเดต UI
-    StatusLabel:Set("Stronghold Lv." .. level .. " | AutoTP: " .. (AutoTeleportEnabled and "✅" or "❌"))
-    InfoLabel:Set(string.format("ระดับ: %d\n%s\nเหลือ: %s", level, statusText, timeStr))
-    InfoLabel.TextColor3 = LevelColors[level] or Color3.fromRGB(255, 0, 0)
-end
-
--- ลูปหลัก
-game:GetService("RunService").Heartbeat:Connect(function()
-    pcall(UpdateStronghold)
-end)
-
-UpdateStronghold()
-
-Rayfield:Notify({
-    Title = "🔥 Stronghold Auto TP พร้อม!",
-    Content = "เจอ SH แล้วกด '🧪 ทดสอบวาร์ป' ทดสอบก่อนได้",
-    Duration = 6
-})
-
--- === Drag Items (EZ) + Quantity (Simple UI) ===
-local cloneref = cloneref or function(x) return x end
-
--- Services & refs
-local Players          = cloneref(game:GetService("Players"))
-local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
-local Workspace        = cloneref(game:GetService("Workspace"))
-local RunService       = game:GetService("RunService")
-
-local player    = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp       = character:WaitForChild("HumanoidRootPart")
-
-local itemsFolder  = Workspace:WaitForChild("Items")
-local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
-local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
-local stopDragging  = remoteEvents:WaitForChild("StopDraggingItem")
-
--- ตั้งค่าเบื้องต้น
-local offsetDistance = 2       -- วางของไว้หน้าตัวละครกี่สตู
-local perItemDelay   = 0       -- เวอร์ชันง่าย: ลากรัว ๆ ไม่ต้องตั้งค่าใน UI
-
--- helper: Rayfield dropdown บางเวอร์ชันคืน table
-local function asString(opt)
-    if type(opt) == "table" then return tostring(opt[1]) end
-    return tostring(opt)
-end
-
--- รวบรวมชื่อทุกไอเทม เรียง A→Z
-local function getSortedItemNames()
-    local seen = {}
-    for _, it in ipairs(itemsFolder:GetChildren()) do
-        if it and it.Name then
-            seen[it.Name] = true
-        end
-    end
-
-    local names = {}
-    for n in pairs(seen) do
-        table.insert(names, n)
-    end
-
-    table.sort(names, function(a, b)
-        return string.lower(a) < string.lower(b)
-    end)
-
-    if #names == 0 then
-        names = {"(ไม่มีไอเทมใน Items)"}
-    end
-
-    return names
-end
-
--- หา “หลายชิ้น” ตามชื่อ (หยิบได้สูงสุด maxCount)
-local function findItemsByName(name, maxCount)
-    local list = {}
-    for _, it in ipairs(itemsFolder:GetChildren()) do
-        if it.Name == name then
-            table.insert(list, it)
-            if #list >= maxCount then
-                break
-            end
-        end
-    end
-    return list
-end
-
--- ลากของ 1 ชิ้นมาหน้าเรา
-local function dragOne(item)
-    if not (item and item.Parent) then return false end
-
-    local cloned = cloneref(item)
-
-    startDragging:FireServer(cloned)
-    RunService.Heartbeat:Wait() -- เผื่อให้สถานะลากเซิร์ฟเวอร์เซ็ตทัน
-
-    local pos = (hrp.CFrame * CFrame.new(0, 0, -offsetDistance)).Position
-
-    task.spawn(function()
-        if cloned:IsA("BasePart") then
-            cloned.CFrame = CFrame.new(pos)
-        elseif cloned:IsA("Model") and cloned.PrimaryPart then
-            cloned:SetPrimaryPartCFrame(CFrame.new(pos))
-        end
-    end)
-
-    task.wait(0.05)
-    stopDragging:FireServer(cloned)
-    return true
-end
-
 local ExTab = Window:CreateTab("||  -  ดึงของอัตโนมัต", "flame-kindling")
 local Section3 = ExTab:CreateSection("[ 🌲 ]  โซนวาป")
 
@@ -781,6 +496,291 @@ tpTab:CreateButton({
 
 -- รันครั้งแรกตอนเปิดสคริปต์
 refreshLocations()
+
+local StrongholdTab = Window:CreateTab("||  -  วาปไปสตรองโฮว์อัตโนมัต","play")
+local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
+
+local LevelColors = {
+    [1] = Color3.fromRGB(195, 255, 0),
+    [2] = Color3.fromRGB(255, 238, 0),
+    [3] = Color3.fromRGB(255, 157, 0),
+    [4] = Color3.fromRGB(255, 64, 0),
+    [5] = Color3.fromRGB(255, 0, 0)
+}
+
+local LastStronghold = nil
+local LastUpdateTime = 0
+local UPDATE_INTERVAL = 0.3  -- เช็คถี่ขึ้น
+local CountdownEnabled = true
+local AutoTeleportEnabled = true
+local LastTeleportKey = nil   -- ✅ กันวาร์ปซ้ำในรอบเดียว
+
+local StatusLabel = StrongholdTab:CreateLabel("กำลังค้นหา Stronghold...")
+local InfoLabel = StrongholdTab:CreateLabel("ระดับ: -\nสถานะ: รอเปิด\nเหลือเวลา: --:--")
+
+local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
+
+-- Toggles
+StrongholdTab:CreateToggle({
+    Name = "[ ☀️ ]  เค้าดาวเวลาสตรองโฮว์",
+    CurrentValue = true,
+    Callback = function(val)
+        CountdownEnabled = val
+    end
+})
+
+StrongholdTab:CreateToggle({
+    Name = "[ 🚀 ]  ออโต้วาปไปสตรองโฮว์",
+    CurrentValue = true,
+    Callback = function(val)
+        AutoTeleportEnabled = val
+    end
+})
+
+local Section = StrongholdTab:CreateSection("[ 🕳️ ]  โซนวาปไปสตรองโฮว์")
+
+-- ปุ่มทดสอบวาร์ป (สำคัญมาก!)
+StrongholdTab:CreateButton({
+    Name = "[ 🧪 ]  วาปไปสตรองโฮว์",
+    Callback = function()
+        ManualTeleport()
+    end
+})
+
+-- ฟังก์ชันวาร์ปที่เสถียร 100%
+function ManualTeleport()
+    if not LastStronghold then
+        Rayfield:Notify({Title = "❌", Content = "ยังไม่เจอ Stronghold", Duration = 3})
+        return
+    end
+
+    print("🔥 เริ่มวาร์ป Stronghold:", LastStronghold.Name)
+
+    -- หาตำแหน่งปลอดภัยหลายวิธี
+    local targetPos
+    local func = LastStronghold:FindFirstChild("Functional")
+
+    -- วิธี 1: PrimaryPart
+    if LastStronghold.PrimaryPart then
+        targetPos = LastStronghold.PrimaryPart.CFrame + Vector3.new(0, 15, 10)
+    end
+
+    -- วิธี 2: Functional.Position (สำรอง)
+    if func and not targetPos then
+        targetPos = CFrame.new(func.Position + Vector3.new(0, 20, 15))
+    end
+
+    -- วิธี 3: หา Part ใหญ่สุด
+    if not targetPos then
+        for _, part in pairs(LastStronghold:GetChildren()) do
+            if part:IsA("BasePart") and part.Size.Magnitude > 10 then
+                targetPos = part.CFrame + Vector3.new(0, 15, 10)
+                break
+            end
+        end
+    end
+
+    if not targetPos then
+        Rayfield:Notify({Title = "❌", Content = "หาตำแหน่งไม่ได้", Duration = 3})
+        return
+    end
+
+    -- รอ Character พร้อม
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local root = char:WaitForChild("HumanoidRootPart", 5)
+
+    if root then
+        -- วาร์ปแบบเนียน
+        root.CFrame = targetPos
+        Rayfield:Notify({
+            Title = "🚀 วาร์ปสำเร็จ!",
+            Content = "ไป Stronghold แล้ว! 🎉",
+            Duration = 4
+        })
+        print("✅ วาร์ปสำเร็จ:", targetPos.Position)
+    else
+        Rayfield:Notify({Title = "❌", Content = "Character ไม่พร้อม", Duration = 3})
+    end
+end
+
+-- ฟังก์ชันอัปเดตหลัก
+local function UpdateStronghold()
+    if not CountdownEnabled then return end
+
+    local now = tick()
+    if now - LastUpdateTime < UPDATE_INTERVAL then return end
+    LastUpdateTime = now
+
+    local sh = nil
+
+    -- ค้นหา Stronghold
+    if LastStronghold and LastStronghold.Parent and LastStronghold:FindFirstChild("Functional") then
+        sh = LastStronghold
+    else
+        for _, obj in workspace:GetDescendants() do
+            if obj:IsA("Model") and obj:FindFirstChild("Functional") and obj:HasTag("Stronghold") and obj.Name ~= "AlienMothership" then
+                sh = obj
+                LastStronghold = sh
+                break
+            end
+        end
+    end
+
+    if not sh then
+        StatusLabel:Set("❌ ไม่พบ Stronghold")
+        InfoLabel:Set("รอ Stronghold เกิดใหม่...")
+        return
+    end
+
+    local func = sh.Functional
+    local openTime = func:GetAttribute("OpenTime")
+    local level = func:GetAttribute("Level") or 1
+
+    if not openTime then return end
+
+    local timeLeft = openTime - workspace:GetServerTimeNow()
+    local timeStr, statusText
+
+    -- ✅ ใช้ key กันวาร์ปรอบเดิม
+    local teleportKey = tostring(sh:GetDebugId()) .. "|" .. tostring(openTime)
+
+    -- 🔥 AUTO TELEPORT แค่ครั้งเดียวต่อรอบ
+    if timeLeft <= 0 and AutoTeleportEnabled then
+        statusText = "✅ เปิดแล้ว!"
+
+        if LastTeleportKey ~= teleportKey then
+            -- ยังไม่เคยวาร์ปรอบนี้ -> วาร์ปเลย
+            LastTeleportKey = teleportKey
+            timeStr = "🚀 กำลังวาร์ป..."
+
+            task.spawn(function()
+                ManualTeleport()
+            end)
+        else
+            -- วาร์ปไปแล้วรอบนี้
+            timeStr = "✅ วาร์ปแล้ว รอรอบถัดไป"
+        end
+    else
+        statusText = "⏳ รอเปิด"
+        local mins = math.floor(timeLeft / 60)
+        local secs = math.floor(timeLeft % 60)
+        if timeLeft <= 30 then
+            timeStr = string.format("%d", secs)
+        else
+            timeStr = string.format("%d:%02d", mins, secs)
+        end
+    end
+
+    -- อัปเดต UI
+    StatusLabel:Set("Stronghold Lv." .. level .. " | AutoTP: " .. (AutoTeleportEnabled and "✅" or "❌"))
+    InfoLabel:Set(string.format("ระดับ: %d\n%s\nเหลือ: %s", level, statusText, timeStr))
+    InfoLabel.TextColor3 = LevelColors[level] or Color3.fromRGB(255, 0, 0)
+end
+
+-- ลูปหลัก
+game:GetService("RunService").Heartbeat:Connect(function()
+    pcall(UpdateStronghold)
+end)
+
+UpdateStronghold()
+
+Rayfield:Notify({
+    Title = "🔥 Stronghold Auto TP พร้อม!",
+    Content = "เจอ SH แล้วกด '🧪 ทดสอบวาร์ป' ทดสอบก่อนได้",
+    Duration = 6
+})
+
+-- === Drag Items (EZ) + Quantity (Simple UI) ===
+local cloneref = cloneref or function(x) return x end
+
+-- Services & refs
+local Players          = cloneref(game:GetService("Players"))
+local ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
+local Workspace        = cloneref(game:GetService("Workspace"))
+local RunService       = game:GetService("RunService")
+
+local player    = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp       = character:WaitForChild("HumanoidRootPart")
+
+local itemsFolder  = Workspace:WaitForChild("Items")
+local remoteEvents = ReplicatedStorage:WaitForChild("RemoteEvents")
+local startDragging = remoteEvents:WaitForChild("RequestStartDraggingItem")
+local stopDragging  = remoteEvents:WaitForChild("StopDraggingItem")
+
+-- ตั้งค่าเบื้องต้น
+local offsetDistance = 2       -- วางของไว้หน้าตัวละครกี่สตู
+local perItemDelay   = 0       -- เวอร์ชันง่าย: ลากรัว ๆ ไม่ต้องตั้งค่าใน UI
+
+-- helper: Rayfield dropdown บางเวอร์ชันคืน table
+local function asString(opt)
+    if type(opt) == "table" then return tostring(opt[1]) end
+    return tostring(opt)
+end
+
+-- รวบรวมชื่อทุกไอเทม เรียง A→Z
+local function getSortedItemNames()
+    local seen = {}
+    for _, it in ipairs(itemsFolder:GetChildren()) do
+        if it and it.Name then
+            seen[it.Name] = true
+        end
+    end
+
+    local names = {}
+    for n in pairs(seen) do
+        table.insert(names, n)
+    end
+
+    table.sort(names, function(a, b)
+        return string.lower(a) < string.lower(b)
+    end)
+
+    if #names == 0 then
+        names = {"(ไม่มีไอเทมใน Items)"}
+    end
+
+    return names
+end
+
+-- หา “หลายชิ้น” ตามชื่อ (หยิบได้สูงสุด maxCount)
+local function findItemsByName(name, maxCount)
+    local list = {}
+    for _, it in ipairs(itemsFolder:GetChildren()) do
+        if it.Name == name then
+            table.insert(list, it)
+            if #list >= maxCount then
+                break
+            end
+        end
+    end
+    return list
+end
+
+-- ลากของ 1 ชิ้นมาหน้าเรา
+local function dragOne(item)
+    if not (item and item.Parent) then return false end
+
+    local cloned = cloneref(item)
+
+    startDragging:FireServer(cloned)
+    RunService.Heartbeat:Wait() -- เผื่อให้สถานะลากเซิร์ฟเวอร์เซ็ตทัน
+
+    local pos = (hrp.CFrame * CFrame.new(0, 0, -offsetDistance)).Position
+
+    task.spawn(function()
+        if cloned:IsA("BasePart") then
+            cloned.CFrame = CFrame.new(pos)
+        elseif cloned:IsA("Model") and cloned.PrimaryPart then
+            cloned:SetPrimaryPartCFrame(CFrame.new(pos))
+        end
+    end)
+
+    task.wait(0.05)
+    stopDragging:FireServer(cloned)
+    return true
+end
 
 -- แท็บตัวละคร
 local PTab = Window:CreateTab("||  -  ตัวละคร", "contact")
