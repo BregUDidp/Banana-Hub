@@ -18,7 +18,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
 
 Section:NewButton("Rejoins  One Click", "ButtonInfo", function()
     print("Clicked")
-	
+	loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
 end)
 
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Admin")
