@@ -70,11 +70,6 @@ end)
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Scripts")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Teleport")
 
-Section:NewButton("Script Teleport", "ButtonInfo", function()
-    print("Clicked")
-	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Teleport%20to%20Friend'))()
-end)
-
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub'))()
