@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Akari Hub   [ V-0.3 ]",
+   Name = "   |  Akari Hub   [ V-0.5 ]",
    Icon = "webhook",
    LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
@@ -148,15 +148,7 @@ local Section4 = PTab:CreateSection("")
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] Noclips", Callback=function(val) noclipEnabled=val end})
 local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
 
-local CTab = Window:CreateTab("||   - Misc", "git-pull-request-closed")
-local Section = CTab:CreateSection("")
-
-local Button = CTab:CreateButton({
-   Name = "Rejoin Sever  [ - One Click - ]",
-   Callback = function()
-       loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
-   end,
-})
+local Section = PTab:CreateSection("")
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
@@ -706,5 +698,24 @@ for i, size in ipairs(hitboxSizes) do
     end
 end
 
+local hitSection = FTab:CreateSection("")
+
 --// Load Config on Start
 Rayfield:LoadConfiguration()
+
+local CTab = Window:CreateTab("||   - Rejoin Sever", "git-pull-request-closed")
+local Section = CTab:CreateSection("")
+
+local Button = CTab:CreateButton({
+   Name = "Rejoin Sever  [ - One Click - ]",
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
+   end,
+})
+
+local Section = CTab:CreateSection("")
+
+CTab:CreateParagraph({
+    Title = "Rejoin Sever One Click",
+    Content = "The Rejoin Sever Have a Mini Scipt  🌀"
+})
