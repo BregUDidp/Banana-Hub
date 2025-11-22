@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Akari Hub   [ V-0.1 ]",
+   Name = "   |  Akari Hub   [ V-0.3 ]",
    Icon = "webhook",
    LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
@@ -147,6 +147,16 @@ local Section4 = PTab:CreateSection("")
 
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] Noclips", Callback=function(val) noclipEnabled=val end})
 local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+
+local CTab = Window:CreateTab("||   - Misc", "git-pull-request-closed")
+local Section = CTab:CreateSection("")
+
+local Button = CTab:CreateButton({
+   Name = "Rejoin Sever  [ - One Click - ]",
+   Callback = function()
+       loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
+   end,
+})
 
 -- อัปเดตลูป
 RS.RenderStepped:Connect(function()
@@ -385,7 +395,7 @@ local friendDropdown = friendTab:CreateDropdown({
 
 -- ปุ่มหยุดวาป/ออกจากการติดตาม (กดปุ่มแดงเด่น ๆ)
 friendTab:CreateButton({
-    Name = "[ 🛑 ] Stop To Teleport To Player",
+    Name = "[ 🛑 ]  Stop Teleport To Player",
     Callback = function()
         selectedFriendName = nil
         
@@ -637,7 +647,7 @@ local function toggleInvisibility()
     end
 end
 
-espTab:CreateButton({Name = "[ 👻 ]  Invisible", Callback = toggleInvisibility})
+espTab:CreateButton({Name = "[ 👻 ]  Invisible  [ - Click X - ]", Callback = toggleInvisibility})
 
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp then return end
