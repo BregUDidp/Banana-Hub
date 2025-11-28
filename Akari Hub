@@ -698,30 +698,6 @@ end)
 
 RunService.RenderStepped:Connect(updateESP)
 
---// === HITBOX TAB ===
-local FTab = Window:CreateTab("||   - Hitbox", "dices")
-local hitSection = FTab:CreateSection("")
-
-local hitboxSizes = {0, 20, 50, 100, 200, 300, 500, 1000}
-local hitboxScripts = {
-    "RYHm668P", "BXXEmeE1", "SeUzxcLb", "WE5CwsDd",
-    "zdRdyuZW", "kHXF6bh3", "TuTmir1v", "mbyBb11C"
-}
-
-for i, size in ipairs(hitboxSizes) do
-    FTab:CreateButton({
-        Name = "[ 🤺 ]  Hitbox " .. size,
-        Callback = function()
-            loadstring(game:HttpGet("https://pastebin.com/raw/" .. hitboxScripts[i]))()
-        end
-    })
-    if i < #hitboxSizes then
-        FTab:CreateSection("")
-    end
-end
-
-local hitSection = FTab:CreateSection("")
-
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
 
