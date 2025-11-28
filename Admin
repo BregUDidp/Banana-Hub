@@ -1,13 +1,16 @@
+-- โทน "Dark Slate Gray" (ยอดนิยมมากใน Executor/Ui Library)
 local CustomTheme = {
-   	SchemeColor = Color3.fromRGB(85, 170, 255),  -- Brighter blue for better visibility
-    Background = Color3.fromRGB(15, 15, 25),     -- Darker background for contrast
-    Header = Color3.fromRGB(10, 10, 20),         -- Even darker header for hierarchy
-    TextColor = Color3.fromRGB(255, 255, 255),   -- White text for readability
-    ElementColor = Color3.fromRGB(25, 25, 40) 
+    SchemeColor = Color3.fromRGB(110, 120, 150),
+    Background = Color3.fromRGB(16, 16, 20),
+    Header = Color3.fromRGB(10, 10, 14),
+    TextColor = Color3.fromRGB(240, 240, 245),
+    ElementColor = Color3.fromRGB(32, 32, 42),
+    BorderColor = Color3.fromRGB(55, 55, 65),
+    HoverColor = Color3.fromRGB(50, 50, 65),
 }
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub")
+local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", CustomTheme)
 
 local Tab = Window:NewTab("|| -  Tab Rejoin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
