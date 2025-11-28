@@ -109,7 +109,7 @@ AkariSoundGroup.Parent = SoundService
 -- เสียงตอนกดปุ่ม (เสียง click เบา ๆ นุ่ม ๆ)
 local ClickSound = Instance.new("Sound")
 ClickSound.Name = "ButtonClick"
-ClickSound.SoundId = "rbxassetid://"  -- เสียง click สะอาด ๆ (ฟรีใช้ได้)
+ClickSound.SoundId = "rbxassetid://141319437"  -- เสียง click สะอาด ๆ (ฟรีใช้ได้)
 ClickSound.Volume = 0.4
 ClickSound.PlaybackSpeed = 1.2
 ClickSound.Parent = AkariSoundGroup
