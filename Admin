@@ -1,17 +1,13 @@
-game.StarterGui:SetCore("SendNotification", {
-    Title = "[ Admin Function 💻 ]",
-    Text = "________________________________________________________",
-    Duration = 10
-})
-
-game.StarterGui:SetCore("SendNotification", {
-    Title = "[ Made By Akari 🕸️ ]",
-    Text = "________________________________________________________",
-    Duration = 10
-})
+local CustomTheme = {
+   	SchemeColor = Color3.fromRGB(85, 170, 255),  -- Brighter blue for better visibility
+    Background = Color3.fromRGB(15, 15, 25),     -- Darker background for contrast
+    Header = Color3.fromRGB(10, 10, 20),         -- Even darker header for hierarchy
+    TextColor = Color3.fromRGB(255, 255, 255),   -- White text for readability
+    ElementColor = Color3.fromRGB(25, 25, 40) 
+}
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", "Sentinel")
+local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub")
 
 local Tab = Window:NewTab("[ 🕸️ ]  Tab Rejoin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
@@ -104,4 +100,141 @@ local Section = Tab:NewSection("🕸️ KeyBlinds")
 
 Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.G, function()
 	Library:ToggleUI()
+end)
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Name = "GrayTopCenterToggle"
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "MobileToggle"
+ToggleButton.Parent = ScreenGui
+ToggleButton.AnchorPoint = Vector2.new(0.5, 0)        -- ยึดจุดบนกึ่งกลาง
+ToggleButton.Position = UDim2.new(0.5, 0, 0.02, 0)      -- ตรงกลางด้านบน (เยื้องลงมานิดนึงให้สวย)
+ToggleButton.Size = UDim2.new(0, 74, 0, 74)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(34, 34, 44)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Text = "Akari"
+ToggleButton.TextSize = 27
+ToggleButton.Font = Enum.Font.GothamBlack
+ToggleButton.AutoButtonColor = false
+
+-- ขอบเหลี่ยมมนสวย
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 16)
+UICorner.Parent = ToggleButton
+
+-- เงาเบา ๆ
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Color = Color3.fromRGB(10, 10, 20)
+UIStroke.Transparency = 0.6
+UIStroke.Thickness = 3.5
+UIStroke.Parent = ToggleButton
+
+-- Gradient เทาเข้ม
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(52, 52, 68)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(24, 24, 34))
+}
+UIGradient.Rotation = 135
+UIGradient.Parent = ToggleButton
+
+-- Ripple
+local TouchRipple = Instance.new("Frame")
+TouchRipple.Name = "Ripple"
+TouchRipple.Parent = ToggleButton
+TouchRipple.AnchorPoint = Vector2.new(0.5, 0.5)
+TouchRipple.Position = UDim2.new(0.5, 0, 0.5, 0)
+TouchRipple.Size = UDim2.new(0, 0, 0, 0)
+TouchRipple.BackgroundColor3 = Color3.new(1, 1, 1)
+TouchRipple.BackgroundTransparency = 0.7
+TouchRipple.Visible = false
+TouchRipple.ZIndex = 10
+local RippleCorner = Instance.new("UICorner")
+RippleCorner.CornerRadius = UDim.new(0, 16)
+RippleCorner.Parent = TouchRipple
+
+-- หมุนช้า ๆ ตลอดเวลา
+spawn(function()
+    while ToggleButton and ToggleButton.Parent do
+        game:GetService("TweenService"):Create(ToggleButton,
+            TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1),
+            {Rotation = 360}
+        ):Play()
+        wait(30)
+    end
+end)
+
+-- ชื่อ Akari สีรุ้งลื่น ๆ
+spawn(function()
+    local hue = 0
+    while ToggleButton and ToggleButton.Parent do
+        hue = (hue + 0.001) % 1
+        ToggleButton.TextColor3 = Color3.fromHSV(hue, 1, 1)
+        wait()
+    end
+end)
+
+-- Hover effect
+ToggleButton.MouseEnter:Connect(function()
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(46, 46, 60)
+end)
+ToggleButton.MouseLeave:Connect(function()
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(34, 34, 44)
+end)
+
+-- กด + ลาก + Toggle
+local isDragging = false
+local dragStart, startPos
+
+local function updatePosition(input)
+    local delta = input.Position - dragStart
+    ToggleButton.Position = UDim2.new(
+        startPos.X.Scale, startPos.X.Offset + delta.X,
+        startPos.Y.Scale, startPos.Y.Offset + delta.Y
+    )
+end
+
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        
+        -- หมุนเร็วตอนกด
+        game:GetService("TweenService"):Create(ToggleButton,
+            TweenInfo.new(0.5, Enum.EasingStyle.Quint),
+            {Rotation = ToggleButton.Rotation + 360}
+        ):Play()
+
+        -- Ripple
+        TouchRipple.Visible = true
+        TouchRipple.Size = UDim2.new(0,0,0,0)
+        TouchRipple:TweenSize(UDim2.new(1.9,0,1.9,0), "Out", "Quad", 0.5, true)
+        task.delay(0.6, function() if TouchRipple then TouchRipple.Visible = false end end)
+
+        -- Toggle UI
+        if not isDragging then
+            Library:ToggleUI()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Akari Hub",
+                Text = "UI Toggled",
+                Duration = 2
+            })
+        end
+
+        isDragging = true
+        dragStart = input.Position
+        startPos = ToggleButton.Position
+    end
+end)
+
+ToggleButton.InputChanged:Connect(function(input)
+    if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        updatePosition(input)
+    end
+end)
+
+ToggleButton.InputEnded:Connect(function()
+    isDragging = false
 end)
