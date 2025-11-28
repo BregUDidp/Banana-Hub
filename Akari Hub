@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Akari Hub   [ V-0.5 ]",
+   Name = "   |  Akari Hub   [ V-1.0 ]",
    Icon = "webhook",
    LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
@@ -136,12 +136,12 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
 local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] Flying", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=1000, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={50,1000}, Increment=1, Suffix=" Speed", CurrentValue=1000, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
 local Section2 = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={1,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
  
 local Section4 = PTab:CreateSection("")
 
@@ -578,10 +578,105 @@ local espToggle = espTab:CreateToggle({
 local Section2 = espTab:CreateSection("")
 
 espTab:CreateButton({
-    Name = "[ 📱 ]  Tools TP",
+    Name = "[ 📱 ]   Tools TP",
     Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
     end
+})
+
+local Section2 = espTab:CreateSection("")
+
+local RainbowGun = {
+    Enabled = false,
+    Current = nil,
+    Highlight = nil,
+    Hue = 0,
+    Connections = {},
+    Loop = nil
+}
+
+local function CreateHighlight(tool)
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() end
+    RainbowGun.Highlight = Instance.new("Highlight")
+    RainbowGun.Highlight.FillTransparency = 0.3
+    RainbowGun.Highlight.OutlineTransparency = 0
+    RainbowGun.Highlight.Parent = tool
+    RainbowGun.Highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function UpdateRainbowGun()
+    if not RainbowGun.Enabled or not RainbowGun.Current or not RainbowGun.Highlight then return end
+    RainbowGun.Hue = (RainbowGun.Hue + 0.01) % 1
+    local color = Color3.fromHSV(RainbowGun.Hue, 1, 1)
+    RainbowGun.Highlight.FillColor = color
+    RainbowGun.Highlight.OutlineColor = color
+    for _, part in pairs(RainbowGun.Current:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Color = color
+        end
+    end
+end
+
+local function OnEquipped(tool)
+    if not RainbowGun.Enabled then return end
+    RainbowGun.Current = tool
+    task.wait(0.1)
+    CreateHighlight(tool)
+end
+
+local function OnUnequipped()
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+    RainbowGun.Current = nil
+end
+
+local function SetupGun(char)
+    for _, c in pairs(RainbowGun.Connections) do c:Disconnect() end
+    RainbowGun.Connections = {}
+
+    local function ConnectTool(tool)
+        table.insert(RainbowGun.Connections, tool.Equipped:Connect(function() OnEquipped(tool) end))
+        table.insert(RainbowGun.Connections, tool.Unequipped:Connect(OnUnequipped))
+    end
+
+    for _, child in pairs(char:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(RainbowGun.Connections, char.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+    for _, child in pairs(backpack:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(RainbowGun.Connections, backpack.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+end
+
+local function ToggleRainbowGun(state)
+    RainbowGun.Enabled = state
+    if state then
+        game.StarterGui:SetCore("SendNotification", {Title="[ 🌈 ]  เปิดปืนสายรุ้ง", Text="[ 🌈 ]  ระบบสีรุ้งทำงานแล้ว", Duration=6})
+        if not RainbowGun.Loop then
+            RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
+        end
+        if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
+    else
+        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ]  ปิดปืนสายรุ้ง", Text="[ ❌ ]  ระบบสีรุ้งปิดแล้ว", Duration=4})
+        if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
+        if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+        RainbowGun.Current = nil
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(SetupGun)
+if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
+
+espTab:CreateToggle({
+    Name = "[ 🌈 ]   Rainbow Tools",
+    CurrentValue = false,
+    Callback = function(v) ToggleRainbowGun(v) end
 })
 
 Players.PlayerAdded:Connect(function(p)
@@ -626,6 +721,18 @@ for i, size in ipairs(hitboxSizes) do
 end
 
 local hitSection = FTab:CreateSection("")
+
+local GTab = Window:CreateTab("||   - Script General", "globe")
+local Section = GTab:CreateSection("")
+
+local Button = GTab:CreateButton({Name = "|| -  Script-Admin", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
+
+local Section = GTab:CreateSection("")
+
+GTab:CreateParagraph({
+    Title = "Script Akari Hub Have So Many",
+    Content = "The Script Have a Good Scipt  📟"
+})
 
 --// Load Config on Start
 Rayfield:LoadConfiguration()
