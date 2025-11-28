@@ -9,7 +9,7 @@ local CustomTheme = {
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub")
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Rejoin")
+local Tab = Window:NewTab("|| -  Tab Rejoin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
 
 Section:NewButton("Rejoins  One Click", "ButtonInfo", function()
@@ -17,8 +17,8 @@ Section:NewButton("Rejoins  One Click", "ButtonInfo", function()
 	loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
 end)
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Admin")
-local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
+local Tab = Window:NewTab("|| -  Tab Admin")
+local Section = Tab:NewSection("[ 🕸️ ]  Script Dance")
 
 Section:NewButton("[ 1 ] Dance Hubs", "ButtonInfo", function()
     print("Clicked")
@@ -29,6 +29,8 @@ Section:NewButton("[ 2 ] Dance Hubs", "ButtonInfo", function()
     print("Clicked")
 	loadstring(game:HttpGet("https://pastebin.com/raw/1nJD7PkH",true))()
 end)
+
+local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
 Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
     print("Clicked")
@@ -55,7 +57,6 @@ Section:NewButton("COOLCLAN Gui Hubs", "ButtonInfo", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/cfsmi2/c00lguiv1/refs/heads/main/Main.lua", true))()
 end)
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Tools Giver")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Tools Giver")
 
 Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
@@ -68,7 +69,7 @@ Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
 	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Tools-giver-26246"))()
 end)
 
-local Tab = Window:NewTab("[ 🕸️ ]  Tab Scripts")
+local Tab = Window:NewTab("|| -  Tab Scripts")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Teleport")
 
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
@@ -81,7 +82,7 @@ Section:NewButton("Script SYSTEMBROKEN Hub", "ButtonInfo", function()
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script'))()
 end)
 
-local Tab = Window:NewTab("[ 🕸️ ] Speeds Walk")
+local Tab = Window:NewTab("|| -  Speeds Walk")
 local Section = Tab:NewSection("🕸️ Speed Slider Walk")
 
 Section:NewSlider("Slider Run", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
@@ -93,13 +94,6 @@ local Section = Tab:NewSection("🕸️ Speed TextBox Walk")
 Section:NewTextBox("Number For Run", "TextboxInfo", function(txt)
 	print(txt)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
-end)
-
-local Tab = Window:NewTab("[ 🕸️ ] KeyBlinds")
-local Section = Tab:NewSection("🕸️ KeyBlinds")
-
-Section:NewKeybind("KeybindText", "KeybindInfo", Enum.KeyCode.G, function()
-	Library:ToggleUI()
 end)
 
 local ScreenGui = Instance.new("ScreenGui")
