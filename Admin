@@ -96,6 +96,36 @@ Section:NewTextBox("Number For Run", "TextboxInfo", function(txt)
 	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
 end)
 
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
+
+-- สร้าง SoundGroup (เพื่อควบคุมระดับเสียงรวม)
+local AkariSoundGroup = Instance.new("SoundGroup")
+AkariSoundGroup.Name = "AkariHubSounds"
+AkariSoundGroup.Volume = 0.7
+AkariSoundGroup.Parent = SoundService
+
+-- เสียงตอนกดปุ่ม (เสียง click เบา ๆ นุ่ม ๆ)
+local ClickSound = Instance.new("Sound")
+ClickSound.Name = "ButtonClick"
+ClickSound.SoundId = "rbxassetid://6536597737"  -- เสียง click สะอาด ๆ (ฟรีใช้ได้)
+ClickSound.Volume = 0.4
+ClickSound.PlaybackSpeed = 1.2
+ClickSound.Parent = AkariSoundGroup
+
+-- เสียงตอนเปิด/ปิด UI (เสียง whoosh สั้น ๆ เท่ ๆ)
+local ToggleSound = Instance.new("Sound")
+ToggleSound.Name = "UIToggle"
+ToggleSound.SoundId = "rbxassetid://942127495"  -- เสียง whoosh เปิด/ปิด UI แบบโปร
+ToggleSound.Volume = 0.5
+ToggleSound.PlaybackSpeed = 1
+ToggleSound.Parent = AkariSoundGroup
+
+-- (ถ้าอยากเปลี่ยนเสียงเอง แค่เปลี่ยน SoundId เป็นอันที่ชอบได้เลย)
+
+-- ================== ส่วน GUI เดิมของคุณ (เพิ่มเสียงเข้าไป) ==================
+
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
@@ -105,8 +135,8 @@ ScreenGui.Name = "GrayTopCenterToggle"
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Name = "MobileToggle"
 ToggleButton.Parent = ScreenGui
-ToggleButton.AnchorPoint = Vector2.new(0.5, 0)        -- ยึดจุดบนกึ่งกลาง
-ToggleButton.Position = UDim2.new(0.5, 0, 0.02, 0)      -- ตรงกลางด้านบน (เยื้องลงมานิดนึงให้สวย)
+ToggleButton.AnchorPoint = Vector2.new(0.5, 0)
+ToggleButton.Position = UDim2.new(0.5, 0, 0.02, 0)
 ToggleButton.Size = UDim2.new(0, 74, 0, 74)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(34, 34, 44)
 ToggleButton.BorderSizePixel = 0
@@ -115,19 +145,16 @@ ToggleButton.TextSize = 27
 ToggleButton.Font = Enum.Font.GothamBlack
 ToggleButton.AutoButtonColor = false
 
--- ขอบเหลี่ยมมนสวย
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 16)
 UICorner.Parent = ToggleButton
 
--- เงาเบา ๆ
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Color = Color3.fromRGB(10, 10, 20)
 UIStroke.Transparency = 0.6
 UIStroke.Thickness = 3.5
 UIStroke.Parent = ToggleButton
 
--- Gradient เทาเข้ม
 local UIGradient = Instance.new("UIGradient")
 UIGradient.Color = ColorSequence.new{
     ColorSequenceKeypoint.new(0, Color3.fromRGB(52, 52, 68)),
@@ -154,15 +181,12 @@ RippleCorner.Parent = TouchRipple
 -- หมุนช้า ๆ ตลอดเวลา
 spawn(function()
     while ToggleButton and ToggleButton.Parent do
-        game:GetService("TweenService"):Create(ToggleButton,
-            TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1),
-            {Rotation = 360}
-        ):Play()
+        TweenService:Create(ToggleButton, TweenInfo.new(30, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {Rotation = 360}):Play()
         wait(30)
     end
 end)
 
--- ชื่อ Akari สีรุ้งลื่น ๆ
+-- ชื่อ Akari สีรุ้ง
 spawn(function()
     local hue = 0
     while ToggleButton and ToggleButton.Parent do
@@ -180,7 +204,7 @@ ToggleButton.MouseLeave:Connect(function()
     ToggleButton.BackgroundColor3 = Color3.fromRGB(34, 34, 44)
 end)
 
--- กด + ลาก + Toggle
+-- กด + ลาก + Toggle (เพิ่มเสียงตรงนี้)
 local isDragging = false
 local dragStart, startPos
 
@@ -195,24 +219,26 @@ end
 ToggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         
-        -- หมุนเร็วตอนกด
-        game:GetService("TweenService"):Create(ToggleButton,
-            TweenInfo.new(0.5, Enum.EasingStyle.Quint),
-            {Rotation = ToggleButton.Rotation + 360}
-        ):Play()
+        -- เสียงกดปุ่ม
+        ClickSound:Play()
 
-        -- Ripple
+        -- หมุนเร็วตอนกด
+        TweenService:Create(ToggleButton, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {Rotation = ToggleButton.Rotation + 360}):Play()
+
+        -- Ripple effect
         TouchRipple.Visible = true
         TouchRipple.Size = UDim2.new(0,0,0,0)
         TouchRipple:TweenSize(UDim2.new(1.9,0,1.9,0), "Out", "Quad", 0.5, true)
         task.delay(0.6, function() if TouchRipple then TouchRipple.Visible = false end end)
 
-        -- Toggle UI
+        -- Toggle UI + เสียงเปิด/ปิด
         if not isDragging then
             Library:ToggleUI()
-            game:GetService("StarterGui"):SetCore("SendNotification", {
+            ToggleSound:Play()  -- เสียงตอนเปิด/ปิด UI
+            
+            StarterGui:SetCore("SendNotification", {
                 Title = "Akari Hub",
-                Text = "UI Toggled",
+                Text = "Akari Hub - Have So Many Script ",
                 Duration = 2
             })
         end
