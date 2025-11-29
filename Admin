@@ -1,3 +1,16 @@
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Load-Akari-Hub Finish 🏁",
+    Text = "________________________________________________________",
+    Duration = 5
+})
+
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Enjoy You Script 👏",
+    Text = "________________________________________________________",
+    Duration = 5
+})
+wait(1)
+
 -- โทน "Dark Slate Gray" (ยอดนิยมมากใน Executor/Ui Library)
 local CustomTheme = {
     SchemeColor = Color3.fromRGB(110, 120, 150),
@@ -112,7 +125,7 @@ AkariSoundGroup.Parent = SoundService
 -- เสียงตอนกดปุ่ม (เสียง click เบา ๆ นุ่ม ๆ)
 local ClickSound = Instance.new("Sound")
 ClickSound.Name = "ButtonClick"
-ClickSound.SoundId = "rbxassetid://141319437"  -- เสียง click สะอาด ๆ (ฟรีใช้ได้)
+ClickSound.SoundId = "rbxassetid://"  -- เสียง click สะอาด ๆ (ฟรีใช้ได้)
 ClickSound.Volume = 0.4
 ClickSound.PlaybackSpeed = 1.2
 ClickSound.Parent = AkariSoundGroup
@@ -120,7 +133,7 @@ ClickSound.Parent = AkariSoundGroup
 -- เสียงตอนเปิด/ปิด UI (เสียง whoosh สั้น ๆ เท่ ๆ)
 local ToggleSound = Instance.new("Sound")
 ToggleSound.Name = "UIToggle"
-ToggleSound.SoundId = "rbxassetid://141319437"  -- เสียง whoosh เปิด/ปิด UI แบบโปร
+ToggleSound.SoundId = "rbxassetid://942127495"  -- เสียง whoosh เปิด/ปิด UI แบบโปร
 ToggleSound.Volume = 0.5
 ToggleSound.PlaybackSpeed = 1
 ToggleSound.Parent = AkariSoundGroup
