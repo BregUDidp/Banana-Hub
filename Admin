@@ -1,15 +1,219 @@
-game.StarterGui:SetCore("SendNotification", {
-    Title = "Load-Akari-Hub Finish 🏁",
-    Text = "________________________________________________________",
-    Duration = 5
-})
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
 
-game.StarterGui:SetCore("SendNotification", {
-    Title = "Enjoy You Script 👏",
-    Text = "________________________________________________________",
-    Duration = 5
-})
-wait(1)
+local LOADING_DURATION = 1  -- โหลด 25 วินาที
+local TOTAL_LINES = 10000
+
+-- สร้าง GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AkariLoading"
+screenGui.IgnoreGuiInset = true
+screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 999999
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
+mainFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+mainFrame.BackgroundTransparency = 1
+mainFrame.Parent = screenGui
+
+-- เสียง (ใช้ ID ที่เปิดได้ 100%)
+local matrixSound = Instance.new("Sound")
+matrixSound.SoundId = "rbxassetid://142376088"
+matrixSound.Volume = 0.25
+matrixSound.Looped = true
+matrixSound.Parent = screenGui
+matrixSound:Play()
+
+local beepSound = Instance.new("Sound")
+beepSound.SoundId = "rbxassetid://138087186"
+beepSound.Volume = 0.3
+beepSound.Parent = screenGui
+
+local completeSound = Instance.new("Sound")
+completeSound.SoundId = "rbxassetid://1847665952"
+completeSound.Volume = 0.9
+completeSound.Parent = screenGui
+
+-- Matrix Rain
+local matrixFrame = Instance.new("Frame")
+matrixFrame.Size = UDim2.new(1,0,1,0)
+matrixFrame.BackgroundTransparency = 1
+matrixFrame.Parent = mainFrame
+
+local columns = {}
+for i = 1, 60 do
+    local col = Instance.new("TextLabel")
+    col.Size = UDim2.new(1/60, 0, 15, 0)
+    col.Position = UDim2.new((i-1)/60, 0, -1, 0)
+    col.BackgroundTransparency = 1
+    col.Text = string.rep("01\n", 350)
+    col.TextColor3 = Color3.fromRGB(0, 255, 150)
+    col.Font = Enum.Font.Code
+    col.TextSize = 20
+    col.TextTransparency = 0.3
+    col.TextYAlignment = Enum.TextYAlignment.Top
+    col.Parent = matrixFrame
+    columns[i] = {label = col, speed = math.random(20, 60)/10, offset = math.random() * 15}
+end
+
+-- X ใหญ่ตรงกลาง
+local bigX = Instance.new("TextLabel")
+bigX.Size = UDim2.new(0.5, 0, 0.5, 0)
+bigX.Position = UDim2.new(0.5, 0, 0.5, 0)
+bigX.AnchorPoint = Vector2.new(0.5, 0.5)
+bigX.BackgroundTransparency = 1
+bigX.Text = ""
+bigX.Font = Enum.Font.GothamBlack
+bigX.TextSize = 420
+bigX.TextColor3 = Color3.fromRGB(0, 255, 150)
+bigX.TextTransparency = 0.92
+bigX.TextStrokeTransparency = 0.8
+bigX.TextStrokeColor3 = Color3.new(0,0,0)
+bigX.ZIndex = 2
+bigX.Parent = mainFrame
+
+local xStroke = Instance.new("UIStroke", bigX)
+xStroke.Thickness = 14
+xStroke.Color = Color3.fromRGB(0, 255, 200)
+xStroke.Transparency = 0.85
+
+-- กรอบ + ชื่อ
+local titleBox = Instance.new("Frame")
+titleBox.Size = UDim2.new(0.58, 0, 0.15, 100)
+titleBox.Position = UDim2.new(0.5, 0, 0.30, 0)
+titleBox.AnchorPoint = Vector2.new(0.5, 0.5)
+titleBox.BackgroundColor3 = Color3.new(0,0,0)
+titleBox.BackgroundTransparency = 10.0
+titleBox.BorderSizePixel = 0
+titleBox.ZIndex = 5
+titleBox.Parent = mainFrame
+Instance.new("UICorner", titleBox).CornerRadius = UDim.new(0, 14)
+
+local boxStroke = Instance.new("UIStroke", titleBox)
+boxStroke.Thickness = 5.0
+boxStroke.Color = Color3.fromRGB(0, 255, 150)
+boxStroke.Transparency = 0.7
+
+local title = Instance.new("TextLabel")
+title.Text = "🏁"
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 60
+title.Position = UDim2.new(0.5, 0, 0.30, 0)
+title.AnchorPoint = Vector2.new(0.5, 0.5)
+title.BackgroundTransparency = 1
+title.ZIndex = 6
+title.Parent = mainFrame
+
+local glow = Instance.new("UIStroke", title)
+glow.Thickness = 6
+glow.Color = Color3.fromRGB(0, 255, 100)
+glow.Transparency = 0.4
+
+-- Progress Bar
+local barBG = Instance.new("Frame")
+barBG.Size = UDim2.new(0.7, 0, 0.05, 0)
+barBG.Position = UDim2.new(0.15, 0, 0.5, 0)
+barBG.BackgroundColor3 = Color3.fromRGB(0, 40, 0)
+barBG.ZIndex = 6
+barBG.Parent = mainFrame
+Instance.new("UICorner", barBG).CornerRadius = UDim.new(0, 14)
+
+local barFill = Instance.new("Frame")
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(0, 255, 150)
+barFill.ZIndex = 8
+barFill.Parent = barBG
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(0, 14)
+
+local loadingText = Instance.new("TextLabel")
+loadingText.Text = "Loading line 0 / "..TOTAL_LINES
+loadingText.Font = Enum.Font.Code
+loadingText.TextSize = 42
+loadingText.TextColor3 = Color3.fromRGB(0, 255, 200)
+loadingText.BackgroundTransparency = 1
+loadingText.Position = UDim2.new(0.5, 0, 0.58, 0)
+loadingText.AnchorPoint = Vector2.new(0.5, 0)
+loadingText.ZIndex = 9
+loadingText.Parent = mainFrame
+
+-- Fade In
+TweenService:Create(mainFrame, TweenInfo.new(1.2), {BackgroundTransparency = 0.35}):Play()
+task.wait(1.3)
+
+local startTime = tick()
+local lastBeepTime = 0
+local hue = 0
+local rotation = 0
+local xRotation = 0
+
+-- ตัวนับหลัก (แก้บั๊กทั้งหมดแล้ว)
+local connection
+connection = RS.Heartbeat:Connect(function(dt)
+    local elapsed = tick() - startTime
+    local progress = math.clamp(elapsed / LOADING_DURATION, 0, 1)
+
+    -- Matrix Rain
+    for _, c in columns do
+        c.offset = (c.offset + dt * c.speed) % 15
+        local pos = c.offset % 1
+        c.label.Position = UDim2.new(0, 0, -pos, 0)
+        c.label.TextTransparency = math.clamp(pos - 0.4, 0, 0.6)
+    end
+
+    -- ชื่อหมุน + สีรุ้ง
+    hue = (hue + dt * 90) % 360
+    title.TextColor3 = Color3.fromHSV(hue/360, 1, 1)
+    rotation = (rotation + dt * 38) % 360
+    title.Rotation = rotation
+
+    -- X หมุนช้า + ชัดขึ้น
+    xRotation = (xRotation + dt * 15) % 360
+    bigX.Rotation = xRotation
+    bigX.TextTransparency = math.clamp(0.95 - progress * 0.75, 0.2, 0.95)
+    xStroke.Transparency = math.clamp(0.9 - progress * 0.75, 0.1, 0.9)
+
+    -- กรอบชัดขึ้น
+    boxStroke.Transparency = math.clamp(0.7 - progress * 0.6, 0.1, 0.7)
+    titleBox.BackgroundTransparency = math.clamp(0.85 - progress * 0.35, 0.5, 0.85)
+
+    -- Progress
+    barFill.Size = UDim2.new(progress, 0, 1, 0)
+    loadingText.Text = "Loading line "..math.floor(progress * TOTAL_LINES).." / "..TOTAL_LINES
+
+    -- Beep เร็วขึ้น
+    local beepDelay = math.max(0.04, 1.4 - progress * 1.35)
+    if tick() - lastBeepTime >= beepDelay then
+        beepSound:Play()
+        lastBeepTime = tick()
+    end
+
+    -- โหลดเสร็จ → ปิดฉาก
+    if progress >= 1 then
+        connection:Disconnect()
+        completeSound:Play()
+        matrixSound:Stop()
+
+        -- Fade Out ทั้งหมด
+        TweenService:Create(mainFrame, TweenInfo.new(1.2), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(title, TweenInfo.new(1.1), {TextTransparency = 1, Rotation = rotation + 720}):Play()
+        TweenService:Create(bigX, TweenInfo.new(1.2), {TextTransparency = 1}):Play()
+        TweenService:Create(titleBox, TweenInfo.new(1.1), {BackgroundTransparency = 1}):Play()
+        TweenService:Create(loadingText, TweenInfo.new(0.9), {TextTransparency = 1}):Play()
+        TweenService:Create(barBG, TweenInfo.new(0.9), {BackgroundTransparency = 1}):Play()
+
+        task.delay(1.4, function()
+            if screenGui and screenGui.Parent then
+                screenGui:Destroy()
+            end
+        end)
+    end
+end)
+
+
 
 -- โทน "Dark Slate Gray" (ยอดนิยมมากใน Executor/Ui Library)
 local CustomTheme = {
