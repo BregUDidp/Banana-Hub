@@ -45,7 +45,7 @@ local Keybind = CTab:CreateKeybind({
    CurrentKeybind = "[ 1 ]",
    HoldToInteract = false,
    Callback = function()
-       CTab:CreateButton({Name = "Loaded-Script-Hub--Finish", Callback = function() Rayfield:Notify({Title = "", Content = "", Duration = 1, Image = "bolt"}) end})
+       Rayfield:Notify({Title = "[ - Admin - ] -loading- --Finish--", Content = "-- Finish --", Duration = 2, Image = "bolt"})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))()
    end,
 })
@@ -57,7 +57,7 @@ local Keybind = CTab:CreateKeybind({
    CurrentKeybind = "[ 2 ]",
    HoldToInteract = false,
    Callback = function()
-       CTab:CreateButton({Name = "Loaded-Script-Hub--Finish", Callback = function() Rayfield:Notify({Title = "", Content = "", Duration = 1, Image = "bolt"}) end})
+       Rayfield:Notify({Title = "[ - All-Map - ] -loading- --Finish--", Content = "-- Finish --", Duration = 2, Image = "bolt"})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))()
    end,
 })
