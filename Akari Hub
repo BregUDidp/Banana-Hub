@@ -724,6 +724,7 @@ local Section = GTab:CreateSection("")
 local Button = GTab:CreateButton({
    Name = "|| -  Script Hitboxs",
    Callback = function()
+       Rayfield:Notify({Title = "[ - Hitboxs - ] -loading- --Finish--", Content = "-- Finish --", Duration = 2, Image = "bolt"})
        loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
    end,
 })
