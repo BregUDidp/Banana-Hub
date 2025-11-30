@@ -715,6 +715,19 @@ GTab:CreateParagraph({
     Content = "The Script Have a Good Scipt  📟"
 })
 
+local Section = GTab:CreateSection("")
+
+local Section = GTab:CreateSection("|| -  Script --Visual--  ||")
+
+local Section = GTab:CreateSection("")
+
+local Button = GTab:CreateButton({
+   Name = "|| -  Script Hitboxs",
+   Callback = function()
+       loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
+   end,
+})
+
 --// Load Config on Start
 Rayfield:LoadConfiguration()
 
