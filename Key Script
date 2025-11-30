@@ -37,69 +37,29 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local KeyTab = Window:CreateTab("||  - Tab Misc", "play")
-local Section1 = KeyTab:CreateSection("[ Clicking Bypass Anti Cheat ]")
+local CTab = Window:CreateTab("||  - Tab Misc", "play")
+local Section = CTab:CreateSection("")
 
-KeyTab:CreateButton({Name = "[   💥    Click Bypasses ]", Callback = function() Rayfield:Notify({Title = "[   UNDETECTED. - 100%.   ⭐  ]", Content = "[ กันแบนสำเร็จ  100%  ✅ ]", Duration = 1, Image = "toggle-right"}) end})
-
-local Section2 = KeyTab:CreateSection("[ Click The Bypass And Run Script ]")
-
-KeyTab:CreateParagraph({
-    Title = "เลือกดูแมพ",
-    Content = "[ เลือกดูแมพเสร็จเข้าแมพนั้นแล้วรันสคริป ]"
-})
-
-local Section3 = KeyTab:CreateSection("[ โซนสคริป เอมบอท ]")
-
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ Aimbots ]  |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
-
-local Section3 = KeyTab:CreateSection("[ โซนสคริป 99 คืนในป่า ]")
-
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ 99 Night Forest ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Banana%2099%20night"))() end})
-
-local Section3 = KeyTab:CreateSection("[ โซนสคริปรันได้ทุกแมพ ]")
-
-KeyTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ All Map ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
-
-local Section3 = KeyTab:CreateSection("[ โซนดูฟังชั่นเพื่มเติม ]")
-
-KeyTab:CreateParagraph({
-    Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
-})
-
-local CTab = Window:CreateTab("||  - Tab Scripts", "dices")
-local Section = CTab:CreateSection("[ - Script Another Akari - ]")
-
-CTab:CreateParagraph({
-    Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
-})
-
-local Button = CTab:CreateButton({
-   Name = "- Akari -  [ - Admin - ]",
+local Keybind = CTab:CreateKeybind({
+   Name = "Run-Scripts | Akari [ Admin ]",
+   CurrentKeybind = "[ 1 ]",
+   HoldToInteract = false,
    Callback = function()
-       Rayfield:Notify({Title = "[  - Loaded Admin Hubs - Akari -  ]", Content = "", Duration = 1, Image = "play"})
+       CTab:CreateButton({Name = "Loaded-Script-Hub--Finish", Callback = function() Rayfield:Notify({Title = "", Content = "", Duration = 1, Image = "bolt"}) end})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))()
    end,
 })
 
-local Section = CTab:CreateSection("[ - Script Combo Akari - ]")
+local Section = CTab:CreateSection("")
 
-CTab:CreateButton({Name = "กดรันสคริป  |   Akari   [ - All Map - ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))() end})
-
-CTab:CreateParagraph({
-    Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
+local Keybind = CTab:CreateKeybind({
+   Name = "Run-Scripts | Akari [ All-Map ]",
+   CurrentKeybind = "[ 2 ]",
+   HoldToInteract = false,
+   Callback = function()
+       CTab:CreateButton({Name = "Loaded-Script-Hub--Finish", Callback = function() Rayfield:Notify({Title = "", Content = "", Duration = 1, Image = "bolt"}) end})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))()
+   end,
 })
 
-local Section = CTab:CreateSection("[ - Script Power Panel  🌀 - ]")
-
-CTab:CreateButton({Name = "กดรันสคริป  |   Power Panel  🌀   [ - 99 Night - ]   |", Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/livezalaeveryday/99-Night-Forest/refs/heads/main/Script"))() end})
-
-CTab:CreateParagraph({
-    Title = "กดยอมรับถ้าดูเสร็จ",
-    Content = "กดรันสคริปเลยตรงคำว่าล่าสุด"
-})
-
-local Section = CTab:CreateSection("[ - Script Another Akari - ]")
+local Section = CTab:CreateSection("")
