@@ -257,6 +257,11 @@ Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
 end)
 
+Section:NewButton("Telekinesis Hubs", "ButtonInfo", function()
+    print("Clicked")
+	loadstring(game:HttpGet("https://pastebin.com/raw/XLQXhDQf"))()
+end)
+
 Section:NewButton("Hitboxs Hubs", "ButtonInfo", function()
     print("Clicked")
     loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
