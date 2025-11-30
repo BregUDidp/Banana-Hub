@@ -254,12 +254,17 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
 Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
     print("Clicked")
-loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
 end)
 
 Section:NewButton("Hitboxs Hubs", "ButtonInfo", function()
     print("Clicked")
-loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
+    loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
+end)
+
+Section:NewButton("Flings GUI Hubs", "ButtonInfo", function()
+    print("Clicked")
+    loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))()
 end)
 
 Section:NewButton("Voids Hubs   [ - BlackHole - ]", "ButtonInfo", function()
@@ -281,16 +286,16 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Tools Giver")
 
 Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
     print("Clicked")
-loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
 end)
 
 Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
     print("Clicked")
-	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Tools-giver-26246"))()
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
 end)
 
-local Tab = Window:NewTab("|| -  Tab Scripts")
-local Section = Tab:NewSection("[ 🕸️ ]  Script Teleport")
+local Tab = Window:NewTab("|| -  Tab Misc")
+local Section = Tab:NewSection("[ 🕸️ ]  Script All")
 
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
     print("Clicked")
@@ -302,18 +307,17 @@ Section:NewButton("Script SYSTEMBROKEN Hub", "ButtonInfo", function()
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script'))()
 end)
 
-local Tab = Window:NewTab("|| -  Speeds Walk")
-local Section = Tab:NewSection("🕸️ Speed Slider Walk")
+local Tab = Window:NewTab("|| -  Tab Script")
+local Section = Tab:NewSection("[ 🕸️ ]  Map | BARRY'S PRISON RUN! (OBBY) |")
 
-Section:NewSlider("Slider Run", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
-
-local Section = Tab:NewSection("🕸️ Speed TextBox Walk")
-
-Section:NewTextBox("Number For Run", "TextboxInfo", function(txt)
-	print(txt)
-	game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = txt
+Section:NewButton("Script | Admin Barry Hub", "ButtonInfo", function()
+    print("Clicked")
+	game.StarterGui:SetCore("SendNotification", {
+        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Text = "________________________________________________________",
+        Duration = 5
+      })
+	loadstring(game:HttpGet("https://pastebin.com/raw/zWX1TPEh"))()
 end)
 
 local SoundService = game:GetService("SoundService")
