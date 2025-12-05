@@ -40,7 +40,7 @@ local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
 --// === PLAYER TAB ===
-local PTab = Window:CreateTab("||   - Player", "anchor")
+local PTab = Window:CreateTab("||   - Player", "bot")
 local Section = PTab:CreateSection("")
  
 local Players = game:GetService("Players")
@@ -73,7 +73,7 @@ local flying = false
 local vv, gyro
 local flySpeed = 50
 local superSpeed = false
-local runSpeed = 32
+local runSpeed = 16
 local noclipEnabled = false
 local infJumpEnabled = false
  
@@ -136,12 +136,12 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
 local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] Flying", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={50,1000}, Increment=1, Suffix=" Speed", CurrentValue=1000, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
+local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={50,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
  
 local Section2 = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=32, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
  
 local Section4 = PTab:CreateSection("")
 
@@ -430,7 +430,7 @@ player.CharacterRemoving:Connect(function()
 end)
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
-local espTab = Window:CreateTab("||   - ESP - Tools", "magnet")
+local espTab = Window:CreateTab("||   - ESP - Tools", "hand")
 local espSection = espTab:CreateSection("")
 
 local ESPEnabled = false
