@@ -4,7 +4,7 @@ local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
 local LOADING_DURATION = 1  -- โหลด 25 วินาที
-local TOTAL_LINES = 10001
+local TOTAL_LINES = 10003
 
 -- สร้าง GUI
 local screenGui = Instance.new("ScreenGui")
