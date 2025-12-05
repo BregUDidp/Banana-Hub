@@ -213,14 +213,8 @@ player.CharacterAdded:Connect(function(c)
 end)
 
 --// === TELEPORT TAB ===
-local friendTab = Window:CreateTab("||   - Teleports", "door-open")
+local friendTab = Window:CreateTab("||   - Teleports", "map-pin")
 local Section1 = friendTab:CreateSection("")
-
--- === แท็บวาป + ลากศพ (เวอร์ชันแยกหน้าที่เรียบร้อย) ===
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local player = Players.LocalPlayer
 
 -- ===== Helpers =====
 local function getPlayerList()
