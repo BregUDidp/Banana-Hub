@@ -336,6 +336,16 @@ Section:NewButton("Flings GUI Hub", "ButtonInfo", function()
     loadstring(game:HttpGet("https://pastefy.app/59mJGQGe/raw"))()
 end)
 
+Section:NewButton("Fling Dropdown Player Hub", "ButtonInfo", function()
+    print("Clicked")
+	game.StarterGui:SetCore("SendNotification", {
+        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Text = "________________________________________________________",
+        Duration = 5
+      })
+    loadstring(game:HttpGet("https://pastebin.com/raw/VynRhxJV"))()
+end)
+
 Section:NewButton("Fling X Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
@@ -408,16 +418,6 @@ Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
         Duration = 5
       })
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
-end)
-
-Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
-    print("Clicked")
-	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
-        Text = "________________________________________________________",
-        Duration = 5
-      })
-	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
 end)
 
 local Tab = Window:NewTab("|| -  Tab Script [1]")
