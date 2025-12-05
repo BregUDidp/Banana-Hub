@@ -23,18 +23,18 @@ mainFrame.Parent = screenGui
 -- เสียง (ใช้ ID ที่เปิดได้ 100%)
 local matrixSound = Instance.new("Sound")
 matrixSound.SoundId = "rbxassetid://142376088"
-matrixSound.Volume = 0.25
+matrixSound.Volume = 0.26
 matrixSound.Looped = true
 matrixSound.Parent = screenGui
 matrixSound:Play()
 
 local beepSound = Instance.new("Sound")
-beepSound.SoundId = "rbxassetid://138087186"
+beepSound.SoundId = "rbxassetid://"
 beepSound.Volume = 0.3
 beepSound.Parent = screenGui
 
 local completeSound = Instance.new("Sound")
-completeSound.SoundId = "rbxassetid://1847665952"
+completeSound.SoundId = "rbxassetid://"
 completeSound.Volume = 0.9
 completeSound.Parent = screenGui
 
