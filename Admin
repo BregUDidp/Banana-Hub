@@ -237,6 +237,8 @@ Section:NewButton("Rejoins  One Click", "ButtonInfo", function()
 	loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))()
 end)
 
+local Section = Tab:NewSection("[ 🕸️ ]  Rejoin One Click")
+
 local Tab = Window:NewTab("|| -  Tab Admin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Dance")
 
@@ -272,7 +274,7 @@ end)
 
 local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 
-Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
+Section:NewButton("Infinite Yield Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
         Title = "โหลดสคริป สำเร็จ! 🏁",
@@ -282,7 +284,7 @@ Section:NewButton("Infinite Yield Hubs", "ButtonInfo", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
 end)
 
-Section:NewButton("Hitboxs Hubs", "ButtonInfo", function()
+Section:NewButton("Hitboxs Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
         Title = "โหลดสคริป สำเร็จ! 🏁",
@@ -292,7 +294,27 @@ Section:NewButton("Hitboxs Hubs", "ButtonInfo", function()
     loadstring(game:HttpGet("https://pastefy.app/ItfO0tdg/raw"))()
 end)
 
-Section:NewButton("COOLCLAN Gui Hubs", "ButtonInfo", function()
+Section:NewButton("Invisible Hub", "ButtonInfo", function()
+    print("Clicked")
+	game.StarterGui:SetCore("SendNotification", {
+        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Text = "________________________________________________________",
+        Duration = 5
+      })
+    loadstring(game:HttpGet("https://pastebin.com/raw/vP6CrQJj"))()
+end)
+
+Section:NewButton("Paranoia Hub", "ButtonInfo", function()
+    print("Clicked")
+	game.StarterGui:SetCore("SendNotification", {
+        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Text = "________________________________________________________",
+        Duration = 5
+      })
+    loadstring(game:HttpGet("https://idx.lol/latest.lua"))()
+end)
+
+Section:NewButton("COOLCLAN Gui Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
         Title = "โหลดสคริป สำเร็จ! 🏁",
@@ -385,7 +407,7 @@ Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
         Text = "________________________________________________________",
         Duration = 5
       })
-    loadstring(game:HttpGet("https://pastebin.com/raw/8SzsWBUt"))()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
 end)
 
 Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
@@ -399,7 +421,7 @@ Section:NewButton("Tools Giver Hubs", "ButtonInfo", function()
 end)
 
 local Tab = Window:NewTab("|| -  Tab Script [1]")
-local Section = Tab:NewSection("[ 🕸️ ]  Script All")
+local Section = Tab:NewSection("[ 🕸️ ]  Script Akari Hub")
 
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
     print("Clicked")
@@ -410,6 +432,8 @@ Section:NewButton("Script Akari Hub", "ButtonInfo", function()
       })
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub'))()
 end)
+
+local Section = Tab:NewSection("[ 🕸️ ]  Script All")
 
 Section:NewButton("Script SYSTEMBROKEN Hub", "ButtonInfo", function()
     print("Clicked")
@@ -433,6 +457,12 @@ Section:NewButton("Script | Admin Barry Hub", "ButtonInfo", function()
       })
 	loadstring(game:HttpGet("https://pastebin.com/raw/zWX1TPEh"))()
 end)
+
+
+
+
+
+
 
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
