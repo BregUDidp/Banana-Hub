@@ -635,7 +635,7 @@ espTab:CreateButton({
             Text = "________________________________________________________",
             Duration = 5
          })
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
+        loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
     end
 })
 
