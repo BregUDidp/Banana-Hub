@@ -630,11 +630,6 @@ local Section2 = espTab:CreateSection("")
 espTab:CreateButton({
     Name = "[ 📱 ]   Tools TP",
     Callback = function()
-	    game.StarterGui:SetCore("SendNotification", {
-            Title = "โหลด Teleport Tool 📱 สำเร็จ ",
-            Text = "________________________________________________________",
-            Duration = 5
-         })
         loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
     end
 })
