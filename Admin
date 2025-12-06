@@ -412,12 +412,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Tools Giver")
 
 Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
     print("Clicked")
-	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
-        Text = "________________________________________________________",
-        Duration = 5
-      })
-    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Teleport-Tools-34066"))()
+    loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
 end)
 
 local Tab = Window:NewTab("|| -  Tab Script [1]")
