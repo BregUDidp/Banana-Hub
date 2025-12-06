@@ -77,47 +77,6 @@ local runSpeed = 16
 local noclipEnabled = false
 local infJumpEnabled = false
  
--- ฟังก์ชันบิน
-local function startFlying()
-    if flying then return end
-    flying = true
-    humanoid.PlatformStand = true
- 
-    vv = Instance.new("BodyVelocity")
-    vv.MaxForce = Vector3.new(1e5,1e5,1e5)
-    vv.P = 1250
-    vv.Velocity = Vector3.zero
-    vv.Parent = hrp
- 
-    gyro = Instance.new("BodyGyro")
-    gyro.MaxTorque = Vector3.new(4e5,4e5,4e5)
-    gyro.P = 3000
-    gyro.CFrame = hrp.CFrame
-    gyro.Parent = hrp
- 
-    Rayfield:Notify({
-        Title = "🛸 โหมดบินเปิด!",
-        Content = "ใช้ W,A,S,D,Space,Ctrl เพื่อควบคุม",
-        Duration = 3,
-        Image = 4483362458
-    })
-end
- 
-local function stopFlying()
-    if not flying then return end
-    flying = false
-    if vv then vv:Destroy() vv=nil end
-    if gyro then gyro:Destroy() gyro=nil end
-    humanoid.PlatformStand = false
- 
-    Rayfield:Notify({
-        Title = "🛬 โหมดบินปิด",
-        Content = "ลงจอดเรียบร้อย",
-        Duration = 3,
-        Image = 6026568198
-    })
-end
- 
 -- ฟังก์ชันวิ่งเร็ว
 local function toggleSpeed(on)
     superSpeed = on
@@ -135,9 +94,106 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 
-local flyToggle = PTab:CreateToggle({Name="[ 🛸 ] Flying", CurrentValue=false, Flag="FlyToggle", Callback=function(val) if val then startFlying() else stopFlying() end end})
-local flySlider = PTab:CreateSlider({Name="[ 📏 ] Slider Flying", Range={50,1000}, Increment=1, Suffix=" Speed", CurrentValue=50, Flag="FlySpeed", Callback=function(val) flySpeed=val end})
- 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local flying = false
+local flySpeed = 50
+local flyConnection
+local bodyVelocity
+local bodyGyro
+
+local function updateFly()
+    local character = player.Character
+    if not character or not flying then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local camera = workspace.CurrentCamera
+    local horizontal = Vector3.new(0, 0, 0)
+    
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        horizontal = horizontal + camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        horizontal = horizontal - camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        horizontal = horizontal - camera.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        horizontal = horizontal + camera.CFrame.RightVector
+    end
+    
+    local vertical = 0
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        vertical = 1
+    elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+        vertical = -1
+    end
+    
+    local moveDir = horizontal + Vector3.new(0, vertical, 0)
+    if moveDir.Magnitude > 0 then
+        bodyVelocity.Velocity = moveDir.Unit * flySpeed
+    else
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    end
+    
+    bodyGyro.CFrame = camera.CFrame
+end
+
+local FlyToggle = PTab:CreateToggle({
+    Name = "[ 🛸 ] Flying",
+    CurrentValue = false,
+    Flag = "FlyEnabled",
+    Callback = function(Value)
+        flying = Value
+        
+        local character = player.Character
+        if not character then return end
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not humanoidRootPart then return end
+        
+        if Value then
+            humanoid.PlatformStand = true
+            
+            bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            bodyVelocity.Parent = humanoidRootPart
+            
+            bodyGyro = Instance.new("BodyGyro")
+            bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            bodyGyro.CFrame = humanoidRootPart.CFrame
+            bodyGyro.Parent = humanoidRootPart
+            
+            flyConnection = RunService.Heartbeat:Connect(updateFly)
+        else
+            humanoid.PlatformStand = false
+            if bodyVelocity then bodyVelocity:Destroy() end
+            if bodyGyro then bodyGyro:Destroy() end
+            if flyConnection then flyConnection:Disconnect() end
+        end
+    end,
+})
+
+local SpeedSlider = PTab:CreateSlider({
+    Name = "[ 📏 ] Slider Flying",
+    Range = {16, 1000},
+    Increment = 5,
+    Suffix = " Speed",
+    CurrentValue = 50,
+    Flag = "FlySpeed",
+    Callback = function(Value)
+        flySpeed = Value
+    end,
+})
+
 local Section2 = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
