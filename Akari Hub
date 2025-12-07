@@ -272,6 +272,41 @@ end)
 local friendTab = Window:CreateTab("||   - Teleports", "map-pin")
 local Section1 = friendTab:CreateSection("")
 
+local TPAllEnabled = false
+local connections = {}
+
+local Button = friendTab:CreateButton({
+   Name = "[ 📺 ]  Teleport Player All",
+   Callback = function()
+
+       local Players = game:GetService("Players")
+       local LocalPlayer = Players.LocalPlayer
+       local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+       local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+       local originalCFrame = HumanoidRootPart.CFrame  -- บันทึกตำแหน่งเดิม
+
+       local function TeleportToPlayer(targetPlayer)
+       if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+        wait(0)  -- รอ 1 วินาทีขณะวาปอยู่ที่เพื่อน
+        HumanoidRootPart.CFrame = originalCFrame  -- กลับตำแหน่งเดิม
+      end
+   end
+
+    for _, player in pairs(Players:GetPlayers()) do
+       if player ~= LocalPlayer then
+         TeleportToPlayer(player)
+         wait(0)  -- รอเวลาก่อนวาปหาเพื่อนคนถัดไป
+      end
+  end
+
+       Rayfield:Notify({Title = "⚔️  [ Teleport Player All ]  ⚔️", Content = "                     Finish 🏁", Duration = 2, lmage = "locate-fixed"})   
+   end,
+})
+
+local Section1 = friendTab:CreateSection("")
+
 -- ===== Helpers =====
 local function getPlayerList()
     local list = {}
@@ -314,7 +349,7 @@ end
 local friendDropdown = friendTab:CreateDropdown({
     Name = "[ 👥 ]  Dropdown Player",
     Options = getPlayerList(),
-    CurrentOption = {},
+    CurrentOption = {""},
     Flag = "FriendSelect"
 })
 
@@ -484,6 +519,8 @@ player.CharacterRemoving:Connect(function()
         autoTPConnection = nil
     end
 end)
+
+local Section1 = friendTab:CreateSection("")
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - ESP - Tools", "hand")
