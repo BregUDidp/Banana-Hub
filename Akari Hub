@@ -146,7 +146,7 @@ local function updateFly()
 end
 
 local FlyToggle = PTab:CreateToggle({
-    Name = "[ 🛸 ] Flying",
+    Name = "[ 🛸 ]  Flying",
     CurrentValue = false,
     Flag = "FlyEnabled",
     Callback = function(Value)
@@ -183,7 +183,7 @@ local FlyToggle = PTab:CreateToggle({
 })
 
 local SpeedSlider = PTab:CreateSlider({
-    Name = "[ 📏 ] Slider Flying",
+    Name = "[ 📏 ]  Slider Flying",
     Range = {16, 1000},
     Increment = 5,
     Suffix = " Speed",
@@ -196,13 +196,40 @@ local SpeedSlider = PTab:CreateSlider({
 
 local Section2 = PTab:CreateSection("")
 
-local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ] Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ] Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
- 
+local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+
 local Section4 = PTab:CreateSection("")
 
-local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ] Noclips", Callback=function(val) noclipEnabled=val end})
-local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ] Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walls", Callback=function(val) noclipEnabled=val end})
+local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ]  Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
+
+local InfiniteZoomToggle = PTab:CreateToggle({
+   Name = "[ 🔎 ]  Infinite Zoom",
+   CurrentValue = false,
+   Flag = "InfiniteZoomToggle",
+   Callback = function(Value)
+      local player = game.Players.LocalPlayer
+      
+      if Value then
+         player.CameraMaxZoomDistance = 1000
+         player.CameraMinZoomDistance = 0.5
+         Rayfield:Notify({
+            Title = "[ ✅ ]  Infinite Zoom ON",
+            Content = "[ ✅ ]  Infinite Zoom Finish",
+            Duration = 3,
+         })
+      else
+         player.CameraMaxZoomDistance = 400
+         player.CameraMinZoomDistance = 0.5
+         Rayfield:Notify({
+            Title = "[ 🛑 ]  Infinite Zoom OFF",
+            Content = "[ 🛑 ]  Infinite Zoom Become Normal",
+            Duration = 3,
+         })
+      end
+   end,
+})
 
 local Section = PTab:CreateSection("")
 
@@ -638,7 +665,7 @@ local function updateESP()
 end
 
 local espToggle = espTab:CreateToggle({
-    Name = "[ 👁️ ]   ESP Player",
+    Name = "[ 👁️ ]  ESP Player",
     CurrentValue = false,
     Callback = function(val)
         ESPEnabled = val
@@ -665,7 +692,7 @@ local espToggle = espTab:CreateToggle({
 local Section2 = espTab:CreateSection("")
 
 espTab:CreateButton({
-    Name = "[ 📱 ]   Tools TP",
+    Name = "[ 📱 ]  Tools TP",
     Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
     end
@@ -761,7 +788,7 @@ LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
 espTab:CreateToggle({
-    Name = "[ 🌈 ]   Rainbow Tools",
+    Name = "[ 🌈 ]  Rainbow Tools",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
