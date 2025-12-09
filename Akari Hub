@@ -810,7 +810,7 @@ local Button = NTab:CreateButton({
    end,
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Friend With 1 Second"})
+local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Player / Friend With 1 Second"})
 
 local Section = NTab:CreateSection("")
 
@@ -822,7 +822,7 @@ local Button = NTab:CreateButton({
    end,
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Friend With 1 Second"})
+local Paragraph = NTab:CreateParagraph({Title = "-- Fling To Player / Friend", Content = "-- Fling To Player / Friend With 5 Second"})
 
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
