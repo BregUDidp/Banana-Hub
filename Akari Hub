@@ -865,7 +865,7 @@ local function TeleportToPlayer(targetPlayer)
         
         -- วาปไปหาเป้าหมาย
         HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-        wait(0.1) -- รอสักครู่เพื่อเห็นเอฟเฟค
+        wait(0) -- รอสักครู่เพื่อเห็นเอฟเฟค
         
         -- กลับตำแหน่งเดิม
         HumanoidRootPart.CFrame = originalCFrame
