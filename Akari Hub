@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🕸️",
-   Theme = "DarkBlue",
+   Theme = "ThemeIdentifier",
    ToggleUIKeybind = "G",
    DisableRayfieldPrompts = true,
    DisableBuildWarnings = true,
@@ -297,41 +297,6 @@ end)
 
 --// === TELEPORT TAB ===
 local friendTab = Window:CreateTab("||   - Teleports", "map-pin")
-local Section1 = friendTab:CreateSection("")
-
-local TPAllEnabled = false
-local connections = {}
-
-local Button = friendTab:CreateButton({
-   Name = "[ 📺 ]  Teleport Player All",
-   Callback = function()
-
-       local Players = game:GetService("Players")
-       local LocalPlayer = Players.LocalPlayer
-       local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-       local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-
-       local originalCFrame = HumanoidRootPart.CFrame  -- บันทึกตำแหน่งเดิม
-
-       local function TeleportToPlayer(targetPlayer)
-       if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-        wait(0)  -- รอ 1 วินาทีขณะวาปอยู่ที่เพื่อน
-        HumanoidRootPart.CFrame = originalCFrame  -- กลับตำแหน่งเดิม
-      end
-   end
-
-    for _, player in pairs(Players:GetPlayers()) do
-       if player ~= LocalPlayer then
-         TeleportToPlayer(player)
-         wait(0)  -- รอเวลาก่อนวาปหาเพื่อนคนถัดไป
-      end
-  end
-
-       Rayfield:Notify({Title = "⚔️  [ Teleport Player All ]  ⚔️", Content = "                     Finish 🏁", Duration = 2, lmage = "locate-fixed"})   
-   end,
-})
-
 local Section1 = friendTab:CreateSection("")
 
 -- ===== Helpers =====
@@ -811,6 +776,53 @@ Players.PlayerRemoving:Connect(function(p)
 end)
 
 RunService.RenderStepped:Connect(updateESP)
+
+local NTab = Window:CreateTab("||   - Troll", "smile")
+local Section = NTab:CreateSection("")
+
+local Button = NTab:CreateButton({
+   Name = "[ 📺 ]  Teleport Player All",
+   Callback = function()
+
+       local Players = game:GetService("Players")
+       local LocalPlayer = Players.LocalPlayer
+       local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+       local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+       local originalCFrame = HumanoidRootPart.CFrame  -- บันทึกตำแหน่งเดิม
+
+       local function TeleportToPlayer(targetPlayer)
+       if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+        wait(0)  -- รอ 1 วินาทีขณะวาปอยู่ที่เพื่อน
+        HumanoidRootPart.CFrame = originalCFrame  -- กลับตำแหน่งเดิม
+      end
+   end
+
+    for _, player in pairs(Players:GetPlayers()) do
+       if player ~= LocalPlayer then
+         TeleportToPlayer(player)
+         wait(0)  -- รอเวลาก่อนวาปหาเพื่อนคนถัดไป
+      end
+  end
+
+       Rayfield:Notify({Title = "⚔️  [ Teleport Player All ]  ⚔️", Content = "                     Finish 🏁", Duration = 2, lmage = "locate-fixed"})   
+   end,
+})
+
+local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Friend With 1 Second"})
+
+local Section = NTab:CreateSection("")
+
+local Button = NTab:CreateButton({
+   Name = "[ 💫 ]  Fling Player All",
+   Callback = function()
+       Rayfield:Notify({Title = "💫  [ Fling Player All ]  💫", Content = "                     Finish 🏁", Duration = 2, lmage = "fan"})
+       loadstring(game:HttpGet("https://pastebin.com/raw/zqyDSUWX"))()
+   end,
+})
+
+local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Friend With 1 Second"})
 
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
