@@ -785,28 +785,103 @@ local Button = NTab:CreateButton({
    Callback = function()
 
        local Players = game:GetService("Players")
-       local LocalPlayer = Players.LocalPlayer
-       local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-       local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local originalCFrame = HumanoidRootPart.CFrame -- บันทึกตำแหน่งเดิม
 
-       local originalCFrame = HumanoidRootPart.CFrame  -- บันทึกตำแหน่งเดิม
+-- สร้าง Highlight (วงสีเขียวเข้ม)
+local function createHighlight(targetCharacter)
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(0, 120, 0) -- เขียวเข้ม (Fill)
+    highlight.OutlineColor = Color3.fromRGB(0, 180, 0) -- เขียวเข้มกว่าอีก (Outline)
+    highlight.FillTransparency = 0.4
+    highlight.OutlineTransparency = 0
+    highlight.Parent = targetCharacter
+    return highlight
+end
 
-       local function TeleportToPlayer(targetPlayer)
-       if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+local function removeHighlight(targetCharacter)
+    if targetCharacter:FindFirstChild("Highlight") then
+        targetCharacter.Highlight:Destroy()
+    end
+end
+
+-- สร้างแจ้งเตือนชื่อผู้เล่น (ScreenGui)
+local function createNotification(playerName)
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "TeleportNotification"
+    screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 300, 0, 80)
+    frame.Position = UDim2.new(0.5, -150, 0, 50)
+    frame.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+    frame.BorderSizePixel = 0
+    frame.Parent = screenGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = frame
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0.5, 0)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "Teleport To"
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextScaled = true
+    title.Font = Enum.Font.GothamBold
+    title.Parent = frame
+    
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0.5, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = playerName
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.TextScaled = true
+    nameLabel.Font = Enum.Font.Gotham
+    nameLabel.Parent = frame
+    
+    -- แอนิเมชันเข้า
+    frame:TweenPosition(UDim2.new(0.5, -150, 0.1, 0), "Out", "Quad", 0.3, true)
+    
+    wait(2)
+    
+    -- แอนิเมชันออก
+    frame:TweenPosition(UDim2.new(0.5, -150, -0.2, 0), "In", "Quad", 0.3, true)
+    wait(0.3)
+    screenGui:Destroy()
+end
+
+local function TeleportToPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        -- แจ้งเตือนชื่อผู้เล่น
+        spawn(function() createNotification(targetPlayer.Name) end)
+        
+        -- สร้างวงสีเขียวเข้มรอบเป้าหมาย
+        local highlight = createHighlight(targetPlayer.Character)
+        
+        -- วาปไปหาเป้าหมาย
         HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-        wait(0)  -- รอ 1 วินาทีขณะวาปอยู่ที่เพื่อน
-        HumanoidRootPart.CFrame = originalCFrame  -- กลับตำแหน่งเดิม
-      end
-   end
+        wait(0.1) -- รอสักครู่เพื่อเห็นเอฟเฟค
+        
+        -- กลับตำแหน่งเดิม
+        HumanoidRootPart.CFrame = originalCFrame
+        
+        -- ลบวงสีเขียวเข้ม
+        removeHighlight(targetPlayer.Character)
+    end
+end
 
-    for _, player in pairs(Players:GetPlayers()) do
-       if player ~= LocalPlayer then
-         TeleportToPlayer(player)
-         wait(0)  -- รอเวลาก่อนวาปหาเพื่อนคนถัดไป
-      end
-  end
-
-       Rayfield:Notify({Title = "⚔️  [ Teleport Player All ]  ⚔️", Content = "                     Finish 🏁", Duration = 2, lmage = "locate-fixed"})   
+-- วนลูปวาปหาทุกคน
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= LocalPlayer then
+        TeleportToPlayer(player)
+        wait(0.1) -- รอก่อนไปคนถัดไป (เพิ่มเวลาเพราะมี notification)
+    end
+end   
    end,
 })
 
