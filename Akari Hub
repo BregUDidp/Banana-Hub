@@ -299,6 +299,8 @@ end)
 local friendTab = Window:CreateTab("||   - Teleports", "map-pin")
 local Section1 = friendTab:CreateSection("")
 
+--0 [ Zone Dropdown ] 0 --
+
 -- ===== Helpers =====
 local function getPlayerList()
     local list = {}
@@ -657,7 +659,7 @@ local espToggle = espTab:CreateToggle({
 local Section2 = espTab:CreateSection("")
 
 espTab:CreateButton({
-    Name = "[ 📱 ]  Tools TP",
+    Name = "[ 📱 ]  Teleport Tool",
     Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
     end
@@ -777,7 +779,103 @@ end)
 
 RunService.RenderStepped:Connect(updateESP)
 
-local NTab = Window:CreateTab("||   - Troll", "smile")
+local NTab = Window:CreateTab("||   - Trolling - TP", "smile")
+local Section = NTab:CreateSection("")
+
+-- TextBox สำหรับพิมพ์ชื่อ (ย่อได้)
+local InputText = ""
+NTab:CreateInput({
+   Name = "[ 📷 ]  Type A Name Player",
+   PlaceholderText = "Name Selected",
+   RemoveTextAfterFocusLost = false,
+   Callback = function(Text)
+      InputText = Text
+      Rayfield:Notify({
+         Title = "📝 Save Name",
+         Content = "Name: " .. Text,
+         Duration = 2
+      })
+   end,
+})
+
+-- ปุ่ม TELEPORT (กดหลังพิมพ์ชื่อ)
+NTab:CreateButton({
+   Name = "[ 📌 ]  Teleport To Name Selected",
+   Callback = function()
+      local targetPlayer = GetPlayerByPartialName(InputText)
+      if targetPlayer and targetPlayer ~= LocalPlayer then
+         TeleportToPlayer(targetPlayer)
+         Rayfield:Notify({
+            Title = "[ ✅ ] Teleport Finish",
+            Content = "Teleport " .. targetPlayer.Name,
+            Duration = 3,
+            Image = 4483362458
+         })
+      else
+         Rayfield:Notify({
+            Title = "[ ❌ ] Not Found Player",
+            Content = "Name: " .. InputText,
+            Duration = 3,
+            Image = 4483362457
+         })
+      end
+   end,
+})
+
+-- ====== ฟังก์ชันหลัก ======
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local originalCFrame = HumanoidRootPart.CFrame
+
+function GetPlayerByPartialName(partialName)
+    if not partialName or partialName == "" then return nil end
+    
+    local lowerInput = string.lower(partialName)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if string.find(string.lower(player.Name), lowerInput, 1, true) or 
+           string.find(string.lower(player.DisplayName), lowerInput, 1, true) then
+            return player
+        end
+    end
+    return nil
+end
+
+function createHighlight(targetCharacter)
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "TP_Highlight"
+    highlight.FillColor = Color3.fromRGB(0, 120, 0)
+    highlight.OutlineColor = Color3.fromRGB(0, 180, 0)
+    highlight.FillTransparency = 0.4
+    highlight.OutlineTransparency = 0
+    highlight.Parent = targetCharacter
+    task.wait(0.5)
+    if highlight.Parent then highlight:Destroy() end
+end
+
+function TeleportToPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        createHighlight(targetPlayer.Character)
+        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+        task.wait(0.1)
+        HumanoidRootPart.CFrame = originalCFrame
+    end
+end
+
+-- อัพเดทลิสต์ทุก 5 วินาที
+spawn(function()
+   while task.wait(5) do
+      local names = {}
+      for _, plr in ipairs(Players:GetPlayers()) do
+         if plr ~= LocalPlayer then table.insert(names, plr.Name) end
+      end
+      PlayerList:Refresh(names, true)
+   end
+end)
+
+local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend Selected", Content = "-- Teleport To Player / Friend With 1 Second Selected"})
+
 local Section = NTab:CreateSection("")
 
 local Button = NTab:CreateButton({
@@ -884,7 +982,7 @@ end
    end,
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend", Content = "-- Teleport To Player / Friend With 1 Second"})
+local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend All", Content = "-- Teleport To Player / Friend With 1 Second All"})
 
 local Section = NTab:CreateSection("")
 
@@ -896,7 +994,9 @@ local Button = NTab:CreateButton({
    end,
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Fling To Player / Friend", Content = "-- Fling To Player / Friend With 5 Second"})
+local Paragraph = NTab:CreateParagraph({Title = "-- Fling To Player / Friend All", Content = "-- Fling To Player / Friend With 5 Second All"})
+
+local Section = NTab:CreateSection("")
 
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
