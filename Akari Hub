@@ -296,12 +296,16 @@ player.CharacterAdded:Connect(function(c)
 end)
 
 --// === TELEPORT TAB ===
-local friendTab = Window:CreateTab("||   - Teleports", "map-pin")
+local friendTab = Window:CreateTab("||   - Teleport", "map-pin")
 local Section1 = friendTab:CreateSection("")
 
---0 [ Zone Dropdown ] 0 --
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
--- ===== Helpers =====
+-- ตัวแปรเก็บตำแหน่งเดิมก่อนวาป
+local savedCFrame = nil
+
+-- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
     local list = {}
     for _, p in ipairs(Players:GetPlayers()) do
@@ -309,81 +313,99 @@ local function getPlayerList()
             table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
         end
     end
+    table.sort(list) -- เรียงชื่อให้สวย
     return list
 end
 
--- ดึงศพทั้งหมดที่ลงท้ายชื่อด้วย " Body" จากโฟลเดอร์ Characters
-local function getAllBodies()
-    local folder = Workspace:FindFirstChild("Characters")
-    if not folder then return {} end
-    local bodies = {}
-    for _, obj in ipairs(folder:GetChildren()) do
-        if typeof(obj) == "Instance" and typeof(obj.Name) == "string" then
-            if obj.Name:sub(-5) == " Body" then
-                table.insert(bodies, obj)
-            end
-        end
-    end
-    return bodies
-end
-
--- หา BasePart ใดๆ ในโมเดล (กันกรณีไม่มี PrimaryPart)
-local function findAnyBasePart(model)
-    if not model or not model:IsA("Model") then return nil end
-    if model.PrimaryPart then return model.PrimaryPart end
-    for _, d in ipairs(model:GetDescendants()) do
-        if d:IsA("BasePart") then
-            return d
-        end
-    end
-    return nil
-end
-
--- ===== UI: Dropdown เพื่อน (ใช้เฉพาะ “วาปไปหาเพื่อน”) =====
+-- ===== Dropdown เลือกเพื่อน =====
 local friendDropdown = friendTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player",
+    Name = "[ 👥 ] Dropdown Player",
     Options = getPlayerList(),
     CurrentOption = {""},
-    Flag = "FriendSelect"
+    Flag = "FriendSelect",
+    Callback = function() end
 })
 
--- ปุ่มวาปไปหาเพื่อน (ใช้ dropdown)
+-- อัปเดต Dropdown ทุกครั้งที่มีคนเข้า-ออก
+Players.PlayerAdded:Connect(function() 
+    friendDropdown:Refresh(getPlayerList(), true)
+end)
+Players.PlayerRemoving:Connect(function() 
+    friendDropdown:Refresh(getPlayerList(), true)
+end)
+
+-- ===== ปุ่มวาปไปหาเพื่อน + บันทึกตำแหน่งเดิม =====
 friendTab:CreateButton({
-    Name = "[ 📌 ]  Teleport To Player",
+    Name = "[ 📌 ] Teleport To Player",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            Rayfield:Notify({Title = "Error", Content = "กรุณาเลือกเพื่อนก่อน!", Duration = 3})
+            Rayfield:Notify({Title = "[ ⚠️ ] Error", Content = "Choose You Player / Friend!", Duration = 3})
             return
         end
 
         local friendName = selected:match("%((.-)%)") or selected
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart")
-
         local targetPlayer = Players:FindFirstChild(friendName)
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+
+        if not hrp then
+            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart ของคุณ", Duration = 4})
+            return
+        end
+
         if targetPlayer and targetPlayer.Character then
-            local thrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if thrp then
-                hrp.CFrame = thrp.CFrame + Vector3.new(0, 3, 0)
-                Rayfield:Notify({Title = "Teleport สำเร็จ", Content = "ไปหา "..friendName, Duration = 3})
+            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP then
+                -- บันทึกตำแหน่งเดิมก่อนวินาทีก่อนวาป
+                savedCFrame = hrp.CFrame
+
+                -- วาปไปหาเพื่อน (ยกขึ้นนิดนึงไม่ให้ติดพื้น/ตัวซ้อน)
+                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+
+                Rayfield:Notify({
+                    Title = "[ ✅ ] Teleport Finish!",
+                    Content = "Go To " .. targetPlayer.DisplayName .. "",
+                    Duration = 3
+                })
                 return
             end
         end
-        Rayfield:Notify({Title = "ไม่พบเป้าหมาย", Content = "เพื่อนไม่ออนไลน์/ไม่มี HRP", Duration = 3})
+
+        Rayfield:Notify({Title = "[ ❌ ] Not Get Target", Content = friendName .. " Offline Or No HRP", Duration = 3})
     end
 })
 
+-- ===== ปุ่มกลับจุดเดิม (จะใช้งานได้ก็ต่อเมื่อเคยวาปไปแล้ว) =====
 friendTab:CreateButton({
-    Name = "[ 🔄 ]  Refresh Player",
+    Name = "[ 🔖 ] Return To The Point",
     Callback = function()
-        friendDropdown:Set(getPlayerList())
-        Rayfield:Notify({Title = "อัปเดตแล้ว ✅", Content = "รีเฟรชรายชื่อสำเร็จ ✅", Duration = 3})
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+
+        if not hrp then
+            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart", Duration = 4})
+            return
+        end
+
+        if savedCFrame then
+            hrp.CFrame = savedCFrame
+            Rayfield:Notify({
+                Title = "[ ✅ ] Successfully returned to the starting point.!",
+                Content = "Welcome To Friendly ❤️",
+                Duration = 4
+            })
+            -- ล้างค่าเพื่อป้องกันการกลับซ้ำโดยไม่ตั้งใจ (ถ้าต้องการกลับอีกให้วาปใหม่ก่อน)
+            -- savedCFrame = nil 
+        else
+            Rayfield:Notify({
+                Title = "[ ⚠️ ] Not To Teleport",
+                Content = "[ ⚠️ ] Error You Cannot Teleport",
+                Duration = 5
+            })
+        end
     end
 })
-
-Players.PlayerAdded:Connect(function() friendDropdown:Set(getPlayerList()) end)
-Players.PlayerRemoving:Connect(function() friendDropdown:Set(getPlayerList()) end)
 
 local Section1 = friendTab:CreateSection("")
 
@@ -779,102 +801,102 @@ end)
 
 RunService.RenderStepped:Connect(updateESP)
 
-local NTab = Window:CreateTab("||   - Trolling - TP", "smile")
+local NTab = Window:CreateTab("||   - Trolling Player", "smile")
 local Section = NTab:CreateSection("")
 
--- TextBox สำหรับพิมพ์ชื่อ (ย่อได้)
-local InputText = ""
-NTab:CreateInput({
-   Name = "[ 📷 ]  Type A Name Player",
-   PlaceholderText = "Name Selected",
-   RemoveTextAfterFocusLost = false,
-   Callback = function(Text)
-      InputText = Text
-      Rayfield:Notify({
-         Title = "📝 Save Name",
-         Content = "Name: " .. Text,
-         Duration = 2
-      })
-   end,
-})
-
--- ปุ่ม TELEPORT (กดหลังพิมพ์ชื่อ)
-NTab:CreateButton({
-   Name = "[ 📌 ]  Teleport To Name Selected",
-   Callback = function()
-      local targetPlayer = GetPlayerByPartialName(InputText)
-      if targetPlayer and targetPlayer ~= LocalPlayer then
-         TeleportToPlayer(targetPlayer)
-         Rayfield:Notify({
-            Title = "[ ✅ ] Teleport Finish",
-            Content = "Teleport " .. targetPlayer.Name,
-            Duration = 3,
-            Image = 4483362458
-         })
-      else
-         Rayfield:Notify({
-            Title = "[ ❌ ] Not Found Player",
-            Content = "Name: " .. InputText,
-            Duration = 3,
-            Image = 4483362457
-         })
-      end
-   end,
-})
-
--- ====== ฟังก์ชันหลัก ======
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-local originalCFrame = HumanoidRootPart.CFrame
+local player = Players.LocalPlayer
 
-function GetPlayerByPartialName(partialName)
-    if not partialName or partialName == "" then return nil end
-    
-    local lowerInput = string.lower(partialName)
-    for _, player in ipairs(Players:GetPlayers()) do
-        if string.find(string.lower(player.Name), lowerInput, 1, true) or 
-           string.find(string.lower(player.DisplayName), lowerInput, 1, true) then
-            return player
+-- ตัวแปรเก็บตำแหน่งเดิม
+local savedCFrame = nil
+
+-- ===== ฟังก์ชันช่วย =====
+local function getPlayerList()
+    local list = {}
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= player then
+            table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
         end
     end
-    return nil
+    table.sort(list)
+    return list
 end
 
-function createHighlight(targetCharacter)
-    local highlight = Instance.new("Highlight")
-    highlight.Name = "TP_Highlight"
-    highlight.FillColor = Color3.fromRGB(0, 120, 0)
-    highlight.OutlineColor = Color3.fromRGB(0, 180, 0)
-    highlight.FillTransparency = 0.4
-    highlight.OutlineTransparency = 0
-    highlight.Parent = targetCharacter
-    task.wait(0.5)
-    if highlight.Parent then highlight:Destroy() end
-end
+-- ===== Dropdown เลือกเพื่อน =====
+local friendDropdown = NTab:CreateDropdown({
+    Name = "[ 👥 ] Selected Friend",
+    Options = getPlayerList(),
+    CurrentOption = {""},
+    Flag = "FriendSelect",
+    Callback = function() end
+})
 
-function TeleportToPlayer(targetPlayer)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        createHighlight(targetPlayer.Character)
-        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-        task.wait(0.1)
-        HumanoidRootPart.CFrame = originalCFrame
-    end
-end
-
--- อัพเดทลิสต์ทุก 5 วินาที
-spawn(function()
-   while task.wait(5) do
-      local names = {}
-      for _, plr in ipairs(Players:GetPlayers()) do
-         if plr ~= LocalPlayer then table.insert(names, plr.Name) end
-      end
-      PlayerList:Refresh(names, true)
-   end
+-- อัปเดต Dropdown เมื่อมีคนเข้า-ออก
+Players.PlayerAdded:Connect(function()
+    friendDropdown:Refresh(getPlayerList(), true)
+end)
+Players.PlayerRemoving:Connect(function()
+    friendDropdown:Refresh(getPlayerList(), true)
 end)
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend Selected", Content = "-- Teleport To Player / Friend With 1 Second Selected"})
+-- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
+NTab:CreateButton({
+    Name = "[ 📌 ] Teleport To Selected",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected or selected == "" then
+            Rayfield:Notify({Title = "⚠️ Error", Content = "กรุณาเลือกเพื่อนก่อนครับ!", Duration = 4})
+            return
+        end
+
+        local friendName = selected:match("%((.-)%)") or selected
+        local targetPlayer = Players:FindFirstChild(friendName)
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+
+        if not hrp then
+            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart ของคุณ", Duration = 4})
+            return
+        end
+
+        if targetPlayer and targetPlayer.Character then
+            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP then
+                -- บันทึกตำแหน่งเดิม
+                savedCFrame = hrp.CFrame
+
+                -- วาปไปหาเพื่อน (ยกขึ้นนิดหน่อย)
+                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+
+                -- แจ้งเตือนว่าวาปไปแล้ว
+                Rayfield:Notify({
+                    Title = "[ ✅ ] Teleport " .. targetPlayer.DisplayName .. " Finish [ 🏁 ]",
+                    Content = "Mark CheckPoint Go To House",
+                    Duration = 2
+                })
+
+                -- รอเฟรมนิดนึงเพื่อให้เห็นการวาปชัดเจน (ไม่กระตุก)
+                task.wait()
+
+                -- กลับจุดเดิมทันที
+                if savedCFrame and hrp and hrp.Parent then
+                    hrp.CFrame = savedCFrame
+                    Rayfield:Notify({
+                        Title = "[ ✅ ] Save Checkpoint Finish !",
+                        Content = "Save Mark Finish 🏁",
+                        Duration = 3
+                    })
+                end
+
+                return
+            end
+        end
+
+        Rayfield:Notify({Title = "[ ❌ ] No Target Player", Content = friendName .. " Offline Or No HRP", Duration = 5})
+    end
+})
+
+local Paragraph = NTab:CreateParagraph({Title = "Teleport Player / Friend And CheckPoint", Content = "Teleport Player / Friend And Mark Checkpoint"})
 
 local Section = NTab:CreateSection("")
 
