@@ -704,13 +704,23 @@ end
 local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
-        game.StarterGui:SetCore("SendNotification", {Title="[ ✅ ] Rainbow Tools ON", Text="[ 🌈 ] Rainbow Tools Finish", Duration=3})
+        Rayfield:Notify({
+           Title = "[ ✅ ] Rainbow Tools ON",
+           Content = "[ 🌈 ] Rainbow Tools Finish",
+           Duration = 3,
+           Image = "rainbow",
+         })
         if not RainbowGun.Loop then
             RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
         end
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
-        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ] Rainbow Tools OFF", Text="[ ❌ ] Rainbow Tools Finish", Duration=3})
+        Rayfield:Notify({
+           Title = "[ ❌ ] Rainbow Tools OFF",
+           Content = "[ 🌈 ] Rainbow Tools Finish",
+           Duration = 3,
+           Image = "rainbow",
+         })
         if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
         if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
         RainbowGun.Current = nil
@@ -789,7 +799,6 @@ NTab:CreateButton({
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            Rayfield:Notify({Title = "[ ⚠️ ] Error", Content = "Choose You Player / Friend!", Duration = 4})
             return
         end
 
@@ -799,7 +808,6 @@ NTab:CreateButton({
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
 
         if not hrp then
-            Rayfield:Notify({Title = "Error", Content = "No Found HumanoidRootPart Your", Duration = 4})
             return
         end
 
@@ -813,11 +821,6 @@ NTab:CreateButton({
                 hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
 
                 -- แจ้งเตือนว่าวาปไปแล้ว
-                Rayfield:Notify({
-                    Title = "[ ✅ ] Teleport " .. targetPlayer.DisplayName .. " Finish [ 🏁 ]",
-                    Content = "Mark CheckPoint Go To House",
-                    Duration = 2
-                })
 
                 -- รอเฟรมนิดนึงเพื่อให้เห็นการวาปชัดเจน (ไม่กระตุก)
                 task.wait()
@@ -825,18 +828,12 @@ NTab:CreateButton({
                 -- กลับจุดเดิมทันที
                 if savedCFrame and hrp and hrp.Parent then
                     hrp.CFrame = savedCFrame
-                    Rayfield:Notify({
-                        Title = "[ ✅ ] Save Checkpoint Finish !",
-                        Content = "Save Mark Finish 🏁",
-                        Duration = 3
-                    })
                 end
 
                 return
             end
         end
 
-        Rayfield:Notify({Title = "[ ❌ ] No Target Player", Content = friendName .. " Offline Or No HRP", Duration = 5})
     end
 })
 
