@@ -664,7 +664,7 @@ local espToggle = espTab:CreateToggle({
                     createESP(p)
                 end
             end
-            Rayfield:Notify({Title = "ESP สายรุ้ง เปิด ✅", Content = "ESP แบบสีรุ้ง (เห็นเฉพาะคุณ)", Duration = 3})
+            Rayfield:Notify({Title = "[ ✅ ] ESP Player ON", Content = "ESP Player Finish", Duration = 3})
         else
             for _, esp in pairs(ESPObjects) do
                 esp.box:Remove()
@@ -673,7 +673,7 @@ local espToggle = espTab:CreateToggle({
                 esp.healthFG:Remove()
             end
             ESPObjects = {}
-            Rayfield:Notify({Title = "ESP ปิด 🛑", Content = "ESP สายรุ้งถูกปิดแล้ว", Duration = 3})
+            Rayfield:Notify({Title = "[ 🛑 ] ESP Player OFF", Content = "ESP Player Finish", Duration = 3})
         end
     end
 })
@@ -760,13 +760,13 @@ end
 local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
-        game.StarterGui:SetCore("SendNotification", {Title="[ 🌈 ]  เปิดของสายรุ้ง", Text="[ 🌈 ]  ระบบสีรุ้งทำงานแล้ว", Duration=3})
+        game.StarterGui:SetCore("SendNotification", {Title="[ ✅ ] Rainbow Tools ON", Text="[ 🌈 ] Rainbow Tools Finish", Duration=3})
         if not RainbowGun.Loop then
             RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
         end
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
-        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ]  ปิดของสายรุ้ง", Text="[ ❌ ]  ระบบสีรุ้งปิดแล้ว", Duration=3})
+        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ] Rainbow Tools OFF", Text="[ ❌ ] Rainbow Tools Finish", Duration=3})
         if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
         if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
         RainbowGun.Current = nil
