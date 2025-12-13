@@ -378,7 +378,7 @@ friendTab:CreateButton({
 
 -- ===== ปุ่มกลับจุดเดิม (จะใช้งานได้ก็ต่อเมื่อเคยวาปไปแล้ว) =====
 friendTab:CreateButton({
-    Name = "[ 🔖 ] Return To The Point",
+    Name = "[ 🛫 ] Return To The Point",
     Callback = function()
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -438,8 +438,8 @@ local friendDropdown = friendTab:CreateDropdown({
             selectedFriendName = nil
             if autoTPConnection then autoTPConnection:Disconnect() end
             Rayfield:Notify({
-                Title = "หยุดวาปอัตโนมัติ",
-                Content = "ยกเลิกการวาปไปหาเพื่อน",
+                Title = "Stop Auto Teleporting",
+                Content = "Cancel Teleporting To Player",
                 Duration = 3
             })
             return
@@ -451,16 +451,16 @@ local friendDropdown = friendTab:CreateDropdown({
         local targetPlayer = Players:FindFirstChild(friendName)
         if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
             Rayfield:Notify({
-                Title = "❌ ไม่พบเพื่อน",
-                Content = friendName .. " ยังไม่โหลดตัวละครหรือไม่ออนไลน์",
+                Title = "[ ❌ ] Not Found Player",
+                Content = friendName .. " Cannot Loading Player / Friend",
                 Duration = 4
             })
             return
         end
 
         Rayfield:Notify({
-            Title = "🚀 วาปไปหา " .. targetPlayer.DisplayName,
-            Content = "กำลังวาปอัตโนมัติทุก ๆ 0.5 วินาที",
+            Title = "[ 🚀 ] Teleport To " .. targetPlayer.DisplayName,
+            Content = "Auto Teleport Is Comming 0.5 Second",
             Duration = 4
         })
 
@@ -501,8 +501,8 @@ friendTab:CreateButton({
         friendDropdown:Set({""})
         
         Rayfield:Notify({
-            Title = "🛑 หยุดวาปสำเร็จ",
-            Content = "ยกเลิกการติดตามเพื่อนแล้ว",
+            Title = "[ 🛑 ] Stop Teleporting",
+            Content = "Cancel Teleporting To Player",
             Duration = 4,
             Image = 4483362458
         })
@@ -514,7 +514,7 @@ friendTab:CreateButton({
     Name = "[ 🔄 ]  Refresh Player",
     Callback = function()
         friendDropdown:Refresh(updatePlayerList(), true)
-        Rayfield:Notify({Title = "อัปเดตแล้ว ✅", Content = "รีเฟรชรายชื่อเพื่อนเรียบร้อย", Duration = 3})
+        Rayfield:Notify({Title = "Update Finish ✅", Content = "Refresh Name Player Finish", Duration = 3})
     end
 })
 
