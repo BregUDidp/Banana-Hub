@@ -411,10 +411,14 @@ local Section1 = friendTab:CreateSection("")
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 local autoTPConnection
 
 -- ตัวแปรเก็บเพื่อนที่เลือก
 local selectedFriendName = nil
+
+-- ตัวแปรเก็บตำแหน่งเดิม (ก่อนเริ่มวาป)
+local originalPosition = nil  -- จะเก็บ CFrame เดิม
 
 -- ฟังก์ชันอัปเดตรายชื่อใน Dropdown
 local function updatePlayerList()
@@ -458,17 +462,31 @@ local friendDropdown = friendTab:CreateDropdown({
             return
         end
 
+        -- บันทึกตำแหน่งเดิมก่อนเริ่มวาป (ถ้ายังไม่บันทึก)
+        if not originalPosition then
+            local myChar = player.Character or player.CharacterAdded:Wait()
+            local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+            if myHRP then
+                originalPosition = myHRP.CFrame
+                Rayfield:Notify({
+                    Title = "[ 📍 ] Position Saved",
+                    Content = "Original position has been saved! You can return anytime.",
+                    Duration = 4
+                })
+            end
+        end
+
         Rayfield:Notify({
             Title = "[ 🚀 ] Teleport To " .. targetPlayer.DisplayName,
-            Content = "Auto Teleport Is Comming 0.5 Second",
+            Content = "Auto Teleport Started (Under Target)",
             Duration = 4
         })
 
-        -- ยกเลิกการเชื่อมต่อเก่า (ถ้ามี)
+        -- ยกเลิกการเชื่อมต่อเก่า
         if autoTPConnection then autoTPConnection:Disconnect() end
 
-        -- สร้างการวาปอัตโนมัติ
-        autoTPConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        -- สร้างการวาปอัตโนมัติ (ใต้เท้าเป้าหมาย)
+        autoTPConnection = RunService.Heartbeat:Connect(function()
             if not selectedFriendName then return end
 
             local me = player.Character or player.CharacterAdded:Wait()
@@ -479,14 +497,14 @@ local friendDropdown = friendTab:CreateDropdown({
             if target and target.Character then
                 local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
                 if targetHRP then
-                    myHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0) -- วาปเหนือหัวนิดนึง
+                    myHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0) -- ใต้เท้าเป้าหมาย
                 end
             end
         end)
     end
 })
 
--- ปุ่มหยุดวาป/ออกจากการติดตาม (กดปุ่มแดงเด่น ๆ)
+-- ปุ่มหยุดวาป
 friendTab:CreateButton({
     Name = "[ 🛑 ]  Stop Teleport To Player",
     Callback = function()
@@ -497,7 +515,6 @@ friendTab:CreateButton({
             autoTPConnection = nil
         end
         
-        -- รีเซ็ต Dropdown ให้กลับมาเป็นค่าว่าง
         friendDropdown:Set({""})
         
         Rayfield:Notify({
@@ -509,12 +526,29 @@ friendTab:CreateButton({
     end
 })
 
--- ปุ่มรีเฟรชรายชื่อ
+-- ปุ่มกลับไปจุดเดิม (Return to Original Position)
 friendTab:CreateButton({
-    Name = "[ 🔄 ]  Refresh Player",
+    Name = "[ 🛫 ] Return To The Point",
     Callback = function()
-        friendDropdown:Refresh(updatePlayerList(), true)
-        Rayfield:Notify({Title = "Update Finish ✅", Content = "Refresh Name Player Finish", Duration = 3})
+        if not originalPosition then
+            Rayfield:Notify({
+                Title = "[ ⚠️ ] No Position Saved",
+                Content = "You haven't started Auto Teleport yet. Position not saved!",
+                Duration = 4
+            })
+            return
+        end
+
+        local myChar = player.Character or player.CharacterAdded:Wait()
+        local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+        if myHRP then
+            myHRP.CFrame = originalPosition
+            Rayfield:Notify({
+                Title = "[ ⬅️ ] Returned!",
+                Content = "Successfully teleported back to original position!",
+                Duration = 4
+            })
+        end
     end
 })
 
@@ -524,16 +558,18 @@ Players.PlayerAdded:Connect(function()
 end)
 
 Players.PlayerRemoving:Connect(function()
-    task.wait(1) -- รอให้ออกจริง ๆ
+    task.wait(1)
     friendDropdown:Refresh(updatePlayerList(), true)
 end)
 
--- หยุดวาปอัตโนมัติเมื่อตัวละครตาย/รีสปาวน์
+-- หยุดวาป + รีเซ็ตตำแหน่งเดิมเมื่อตัวละครตายหรือรีสปาวน์ (เพื่อความปลอดภัย)
 player.CharacterRemoving:Connect(function()
     if autoTPConnection then
         autoTPConnection:Disconnect()
         autoTPConnection = nil
     end
+    -- ไม่รีเซ็ต originalPosition ถ้าอยากเก็บไว้ข้ามการตาย แต่ถ้าอยากรีเซ็ตให้ uncomment บรรทัดล่าง
+    -- originalPosition = nil
 end)
 
 local Section1 = friendTab:CreateSection("")
