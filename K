@@ -82,8 +82,8 @@ local function toggleSpeed(on)
     superSpeed = on
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
-        Title = superSpeed and "🏃‍♂️ วิ่งเร็ว ✅" or "🚶‍♂️ วิ่งเร็ว 🛑",
-        Content = superSpeed and "วิ่งเร็วสุดขีด!" or "กลับสู่ความเร็วปกติ",
+        Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
+        Content = superSpeed and "Speed Flash!" or "Become Speed Normal",
         Duration = 3,
         Image = 4483362458
     })
@@ -300,10 +300,15 @@ local friendTab = Window:CreateTab("||   - Teleport", "map-pin")
 local Section1 = friendTab:CreateSection("")
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 -- ตัวแปรเก็บตำแหน่งเดิมก่อนวาป
 local savedCFrame = nil
+
+-- ตัวแปรสำหรับ Auto Teleport
+local autoTPConnection = nil
+local autoTargetName = nil
 
 -- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
@@ -313,35 +318,35 @@ local function getPlayerList()
             table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
         end
     end
-    table.sort(list) -- เรียงชื่อให้สวย
+    table.sort(list)
     return list
 end
 
--- ===== Dropdown เลือกเพื่อน =====
+-- ===== Dropdown เลือกผู้เล่น =====
 local friendDropdown = friendTab:CreateDropdown({
-    Name = "[ 👥 ] Dropdown Player",
+    Name = "[ 👥 ]  Dropdown Player",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
     Callback = function() end
 })
 
--- อัปเดต Dropdown ทุกครั้งที่มีคนเข้า-ออก
+-- อัปเดต Dropdown เมื่อมีคนเข้า-ออก
 Players.PlayerAdded:Connect(function() 
     friendDropdown:Refresh(getPlayerList(), true)
 end)
 Players.PlayerRemoving:Connect(function() 
+    task.wait(1)
     friendDropdown:Refresh(getPlayerList(), true)
 end)
 
--- ===== ปุ่มวาปไปหาเพื่อน + บันทึกตำแหน่งเดิม =====
+-- ===== ปุ่มวาปธรรมดา (ครั้งเดียว) =====
 friendTab:CreateButton({
-    Name = "[ 📌 ] Teleport To Player",
+    Name = "[ 📌 ]  Teleport To Player",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            Rayfield:Notify({Title = "[ ⚠️ ] Error", Content = "Choose You Player / Friend!", Duration = 3})
-            return
+            return  -- ไม่แจ้งเตือนอะไรเลย
         end
 
         local friendName = selected:match("%((.-)%)") or selected
@@ -349,208 +354,111 @@ friendTab:CreateButton({
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
 
-        if not hrp then
-            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart ของคุณ", Duration = 4})
-            return
-        end
+        if not hrp then return end
 
         if targetPlayer and targetPlayer.Character then
             local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             if targetHRP then
-                -- บันทึกตำแหน่งเดิมก่อนวินาทีก่อนวาป
                 savedCFrame = hrp.CFrame
-
-                -- วาปไปหาเพื่อน (ยกขึ้นนิดนึงไม่ให้ติดพื้น/ตัวซ้อน)
-                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
-
-                Rayfield:Notify({
-                    Title = "[ ✅ ] Teleport Finish!",
-                    Content = "Go To " .. targetPlayer.DisplayName .. "",
-                    Duration = 3
-                })
-                return
+                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)  -- วาปใกล้ ๆ (ยกขึ้นนิดหน่อย)
             end
         end
-
-        Rayfield:Notify({Title = "[ ❌ ] Not Get Target", Content = friendName .. " Offline Or No HRP", Duration = 3})
+        -- ไม่มี Notify
     end
 })
 
--- ===== ปุ่มกลับจุดเดิม (จะใช้งานได้ก็ต่อเมื่อเคยวาปไปแล้ว) =====
+local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal", Content = "Teleport To Player / Friend Become Normal"})
+
+local Section1 = friendTab:CreateSection("")
+
+-- ===== ปุ่ม Toggle Auto Teleport (เปิด/ปิด สลับได้เลย) =====
+friendTab:CreateToggle({
+    Name = "[ 🪑 ]  Auto Teleport to Player",
+    CurrentValue = false,
+    Flag = "AutoTPToggle",
+    Callback = function(Value)
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected or selected == "" then
+            Rayfield.Flags["AutoTPToggle"]:Set(false)  -- ปิดเงียบ ๆ
+            return
+        end
+
+        local friendName = selected:match("%((.-)%)") or selected
+        local targetPlayer = Players:FindFirstChild(friendName)
+
+        if Value == true then
+            -- === เปิด Auto Teleport ===
+            if not targetPlayer or not targetPlayer.Character then
+                Rayfield.Flags["AutoTPToggle"]:Set(false)
+                return
+            end
+
+            local char = player.Character or player.CharacterAdded:Wait()
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then 
+                Rayfield.Flags["AutoTPToggle"]:Set(false)
+                return 
+            end
+
+            -- บันทึกตำแหน่งเดิม (เงียบ ๆ)
+            if not savedCFrame then
+                savedCFrame = hrp.CFrame
+            end
+
+            autoTargetName = friendName
+
+            -- เริ่มติดตามอัตโนมัติ
+            autoTPConnection = RunService.Heartbeat:Connect(function()
+                if not autoTargetName then return end
+
+                local target = Players:FindFirstChild(autoTargetName)
+                if target and target.Character then
+                    local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
+                    if targetHRP and hrp then
+                        hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0)  -- ปรับเป็น -4 หรือ -50 ได้ตามต้องการ
+                    end
+                end
+            end)
+
+        else
+            -- === ปิด Auto Teleport ===
+            if autoTPConnection then
+                autoTPConnection:Disconnect()
+                autoTPConnection = nil
+                autoTargetName = nil
+            end
+        end
+        -- ไม่มี Notify ใด ๆ
+    end
+})
+
+-- ===== ปุ่มกลับจุดเดิม =====
 friendTab:CreateButton({
-    Name = "[ 🛫 ] Return To The Point",
+    Name = "[ 📷 ]  Return To The Point",
     Callback = function()
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:FindFirstChild("HumanoidRootPart")
 
-        if not hrp then
-            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart", Duration = 4})
-            return
-        end
+        if not hrp then return end
 
         if savedCFrame then
             hrp.CFrame = savedCFrame
-            Rayfield:Notify({
-                Title = "[ ✅ ] Successfully returned to the starting point.!",
-                Content = "Welcome To Friendly ❤️",
-                Duration = 4
-            })
-            -- ล้างค่าเพื่อป้องกันการกลับซ้ำโดยไม่ตั้งใจ (ถ้าต้องการกลับอีกให้วาปใหม่ก่อน)
-            -- savedCFrame = nil 
-        else
-            Rayfield:Notify({
-                Title = "[ ⚠️ ] Not To Teleport",
-                Content = "[ ⚠️ ] Error You Cannot Teleport",
-                Duration = 5
-            })
         end
+        -- ไม่มี Notify
     end
 })
 
-local Section1 = friendTab:CreateSection("")
+local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Auto", Content = "Teleport To Player / Friend Become Auto"})
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local autoTPConnection
-
--- ตัวแปรเก็บเพื่อนที่เลือก
-local selectedFriendName = nil
-
--- ตัวแปรเก็บตำแหน่งเดิม (ก่อนเริ่มวาป)
-local originalPosition = nil  -- จะเก็บ CFrame เดิม
-
--- ฟังก์ชันอัปเดตรายชื่อใน Dropdown
-local function updatePlayerList()
-    local list = {}
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= player then
-            table.insert(list, p.DisplayName .. " (@" .. p.Name .. ")")
-        end
+-- หยุด Auto เมื่อตัวละครตายหรือรีสปาวน์
+player.CharacterRemoving:Connect(function()
+    if autoTPConnection then
+        autoTPConnection:Disconnect()
+        autoTPConnection = nil
+        autoTargetName = nil
+        Rayfield.Flags["AutoTPToggle"]:Set(false)  -- ปิด Toggle เงียบ ๆ
     end
-    return list
-end
-
--- Dropdown เลือกเพื่อน (เลือกแล้ววาปทันที)
-local friendDropdown = friendTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player [ Auto ]",
-    Options = updatePlayerList(),
-    CurrentOption = {""},
-    MultipleOptions = false,
-    Callback = function(Option)
-        if Option[1] == nil or Option[1] == "" then
-            selectedFriendName = nil
-            if autoTPConnection then autoTPConnection:Disconnect() end
-            Rayfield:Notify({
-                Title = "Stop Auto Teleporting",
-                Content = "Cancel Teleporting To Player",
-                Duration = 3
-            })
-            return
-        end
-
-        local friendName = Option[1]:match("@(.+)%)") or Option[1]
-        selectedFriendName = friendName
-
-        local targetPlayer = Players:FindFirstChild(friendName)
-        if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            Rayfield:Notify({
-                Title = "[ ❌ ] Not Found Player",
-                Content = friendName .. " Cannot Loading Player / Friend",
-                Duration = 4
-            })
-            return
-        end
-
-        -- บันทึกตำแหน่งเดิมก่อนเริ่มวาป (ถ้ายังไม่บันทึก)
-        if not originalPosition then
-            local myChar = player.Character or player.CharacterAdded:Wait()
-            local myHRP = myChar:FindFirstChild("HumanoidRootPart")
-            if myHRP then
-                originalPosition = myHRP.CFrame
-                Rayfield:Notify({
-                    Title = "[ 📍 ] Position Saved",
-                    Content = "Original position has been saved! You can return anytime.",
-                    Duration = 4
-                })
-            end
-        end
-
-        Rayfield:Notify({
-            Title = "[ 🚀 ] Teleport To " .. targetPlayer.DisplayName,
-            Content = "Auto Teleport Started (Under Target)",
-            Duration = 4
-        })
-
-        -- ยกเลิกการเชื่อมต่อเก่า
-        if autoTPConnection then autoTPConnection:Disconnect() end
-
-        -- สร้างการวาปอัตโนมัติ (ใต้เท้าเป้าหมาย)
-        autoTPConnection = RunService.Heartbeat:Connect(function()
-            if not selectedFriendName then return end
-
-            local me = player.Character or player.CharacterAdded:Wait()
-            local myHRP = me:FindFirstChild("HumanoidRootPart")
-            if not myHRP then return end
-
-            local target = Players:FindFirstChild(selectedFriendName)
-            if target and target.Character then
-                local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
-                if targetHRP then
-                    myHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0) -- ใต้เท้าเป้าหมาย
-                end
-            end
-        end)
-    end
-})
-
--- ปุ่มหยุดวาป
-friendTab:CreateButton({
-    Name = "[ 🛑 ]  Stop Teleport To Player",
-    Callback = function()
-        selectedFriendName = nil
-        
-        if autoTPConnection then
-            autoTPConnection:Disconnect()
-            autoTPConnection = nil
-        end
-        
-        friendDropdown:Set({""})
-        
-        Rayfield:Notify({
-            Title = "[ 🛑 ] Stop Teleporting",
-            Content = "Cancel Teleporting To Player",
-            Duration = 4,
-            Image = 4483362458
-        })
-    end
-})
-
--- ปุ่มกลับไปจุดเดิม (Return to Original Position)
-friendTab:CreateButton({
-    Name = "[ 🛫 ] Return To The Point",
-    Callback = function()
-        if not originalPosition then
-            Rayfield:Notify({
-                Title = "[ ⚠️ ] No Position Saved",
-                Content = "You haven't started Auto Teleport yet. Position not saved!",
-                Duration = 4
-            })
-            return
-        end
-
-        local myChar = player.Character or player.CharacterAdded:Wait()
-        local myHRP = myChar:FindFirstChild("HumanoidRootPart")
-        if myHRP then
-            myHRP.CFrame = originalPosition
-            Rayfield:Notify({
-                Title = "[ ⬅️ ] Returned!",
-                Content = "Successfully teleported back to original position!",
-                Duration = 4
-            })
-        end
-    end
-})
+end)
 
 -- อัปเดตอัตโนมัติเมื่อมีคนเข้า/ออก
 Players.PlayerAdded:Connect(function()
@@ -860,7 +768,7 @@ end
 
 -- ===== Dropdown เลือกเพื่อน =====
 local friendDropdown = NTab:CreateDropdown({
-    Name = "[ 👥 ] Selected Friend",
+    Name = "[ 👥 ]  Dropdown Player  [ Point ]",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
@@ -877,11 +785,11 @@ end)
 
 -- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
 NTab:CreateButton({
-    Name = "[ 📌 ] Teleport To Selected",
+    Name = "[ 📌 ]  Teleport To Player  [ Point ]",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            Rayfield:Notify({Title = "⚠️ Error", Content = "กรุณาเลือกเพื่อนก่อนครับ!", Duration = 4})
+            Rayfield:Notify({Title = "[ ⚠️ ] Error", Content = "Choose You Player / Friend!", Duration = 4})
             return
         end
 
@@ -891,7 +799,7 @@ NTab:CreateButton({
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
 
         if not hrp then
-            Rayfield:Notify({Title = "Error", Content = "ไม่พบ HumanoidRootPart ของคุณ", Duration = 4})
+            Rayfield:Notify({Title = "Error", Content = "No Found HumanoidRootPart Your", Duration = 4})
             return
         end
 
@@ -1085,7 +993,21 @@ local Button = GTab:CreateButton({
 local CTab = Window:CreateTab("||   - Rejoin Sever", "git-pull-request-closed")
 local Section = CTab:CreateSection("")
 
-CTab:CreateButton({Name = "Rejoin Sever  [ - One Click - ]", Callback = function() loadstring(game:HttpGet('https://pastebin.com/raw/gwwTEjRd'))() end})
+local Button = CTab:CreateButton({
+   Name = "Rejoin Sever  [ - One Click - ]",
+   Callback = function()
+       local TeleportService = game:GetService("TeleportService")
+          local Players = game:GetService("Players")
+              local LocalPlayer = Players.LocalPlayer
+              TeleportService:Teleport(game.PlaceId, LocalPlayer)
+
+               game.StarterGui:SetCore("SendNotification", {
+                   Title = "⏰ Loading Wait Rejoin Map",
+                   Text = "________________________________________________________",
+               Duration = 5
+            })
+   end,
+})
 
 local Section = CTab:CreateSection("")
 
