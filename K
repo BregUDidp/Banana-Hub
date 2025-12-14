@@ -85,7 +85,7 @@ local function toggleSpeed(on)
         Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
         Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal",
         Duration = 3,
-        Image = "milk",
+        Image = "bike",
     })
 end
 
@@ -210,6 +210,12 @@ PTab:CreateToggle({
     Callback = function(Value)
         InfiniteJumpEnabled = Value
         if Value then
+        Rayfield:Notify({
+           Title = "🏋️‍♀️ Power Jump ✅",
+           Content = "Become Power Rabbit",
+           Duration = 3,
+           Image = "rabbit",
+        })
         end
     end
 })
