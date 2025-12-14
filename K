@@ -83,9 +83,9 @@ local function toggleSpeed(on)
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
         Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
-        Content = superSpeed and "Speed Flash!" or "Become Speed Normal",
+        Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal",
         Duration = 3,
-        Image = "scooter",
+        Image = "milk",
     })
 end
 
