@@ -1,9 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |  Akari Hub   [ V-2.5 ]",
+   Name = "   |  Akari Hub   [ V-3.0 ]",
    Icon = "webhook",
-   LoadingTitle = "[ 🕸️ ]  Akari Hub   [ 🕸️ ]",
+   LoadingTitle = "[ 🕸️ ]  Akari Hub  V. Zero   [ 🕸️ ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🕸️",
    Theme = "ThemeIdentifier",
@@ -85,7 +85,7 @@ local function toggleSpeed(on)
         Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
         Content = superSpeed and "Speed Flash!" or "Become Speed Normal",
         Duration = 3,
-        Image = 4483362458
+        Image = "scooter",
     })
 end
 
@@ -146,7 +146,7 @@ local function updateFly()
 end
 
 local FlyToggle = PTab:CreateToggle({
-    Name = "[ 🛸 ]  Flying",
+    Name = "[ 🛸 ]  Flying Jetpack",
     CurrentValue = false,
     Flag = "FlyEnabled",
     Callback = function(Value)
@@ -183,10 +183,10 @@ local FlyToggle = PTab:CreateToggle({
 })
 
 local SpeedSlider = PTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Flying",
-    Range = {16, 1000},
+    Name = "[ 📏 ]  Slider Flying Speed",
+    Range = {50, 2000},
     Increment = 5,
-    Suffix = " Speed",
+    Suffix = " Flying Speed",
     CurrentValue = 50,
     Flag = "FlySpeed",
     Callback = function(Value)
@@ -194,12 +194,51 @@ local SpeedSlider = PTab:CreateSlider({
     end,
 })
 
-local Section2 = PTab:CreateSection("")
+local Section = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walk Or Run", Range={16,1000}, Increment=1, Suffix=" Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walk Or Run", Range={16,2000}, Increment=1, Suffix=" Run Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
-local Section4 = PTab:CreateSection("")
+local Section = PTab:CreateSection("")
+
+local InfiniteJumpEnabled = false
+
+PTab:CreateToggle({
+    Name = "[ 🏋️‍♀️ ]  Infinite Jump Power",
+    CurrentValue = false,
+    Flag = "InfiniteJumpToggle",
+    Callback = function(Value)
+        InfiniteJumpEnabled = Value
+        if Value then
+        end
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Jump Power",
+    Range = {50, 2000},
+    Increment = 1,
+    Suffix = " Jump Power",
+    CurrentValue = 50,
+    Flag = "JumpPowerSlider",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character.Humanoid.JumpPower = Value
+        end
+    end
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character.Humanoid:ChangeState("Jumping")
+        end
+    end
+end)
+
+local Section = PTab:CreateSection("")
 
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walls", Callback=function(val) noclipEnabled=val end})
 local infJumpToggle = PTab:CreateToggle({Name="[ 🦘 ]  Infinite Jump", CurrentValue=false, Flag="InfJumpToggle", Callback=function(val) infJumpEnabled=val end})
@@ -483,7 +522,7 @@ end)
 local Section1 = friendTab:CreateSection("")
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
-local espTab = Window:CreateTab("||   - ESP - Tools", "hand")
+local espTab = Window:CreateTab("||   - Attacks Smash", "drill")
 local espSection = espTab:CreateSection("")
 
 local ESPEnabled = false
@@ -597,39 +636,14 @@ local function updateESP()
     end
 end
 
-local espToggle = espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Player",
-    CurrentValue = false,
-    Callback = function(val)
-        ESPEnabled = val
-        if val then
-            for _, p in ipairs(Players:GetPlayers()) do
-                if p ~= LocalPlayer then
-                    createESP(p)
-                end
-            end
-            Rayfield:Notify({Title = "[ ✅ ] ESP Player ON", Content = "ESP Player Finish", Duration = 3})
-        else
-            for _, esp in pairs(ESPObjects) do
-                esp.box:Remove()
-                esp.name:Remove()
-                esp.healthBG:Remove()
-                esp.healthFG:Remove()
-            end
-            ESPObjects = {}
-            Rayfield:Notify({Title = "[ 🛑 ] ESP Player OFF", Content = "ESP Player Finish", Duration = 3})
-        end
-    end
-})
-
-local Section2 = espTab:CreateSection("")
-
 espTab:CreateButton({
-    Name = "[ 📱 ]  Teleport Tool",
+    Name = "[ 🍭 ]  Teleport Tool  [ - Sword - ]",
     Callback = function()
         loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
     end
 })
+
+local Paragraph = espTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
 
 local Section2 = espTab:CreateSection("")
 
@@ -731,7 +745,7 @@ LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
 espTab:CreateToggle({
-    Name = "[ 🌈 ]  Rainbow Tools",
+    Name = "[ 🌈 ]  Rainbow Tool  [ - Sword - ]",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
@@ -753,7 +767,229 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
+local Paragraph = espTab:CreateParagraph({Title = "Rainbow Tool For Cool Style", Content = "Rainbow Tool Is Good For Style"})
+
 RunService.RenderStepped:Connect(updateESP)
+
+local espSection = espTab:CreateSection("")
+local espSection = espTab:CreateSection("")
+
+-- Variables
+local ChamsEnabled = false
+local HitboxEnabled = false
+local OutlineColor = Color3.fromRGB(0, 100, 0)
+local OutlineTransparency = 0
+local FillTransparency = 0.7
+local HitboxSize = 10
+local HitboxTransparency = 0.3
+
+local Highlights = {}
+
+-- Chams Functions
+local function AddHighlight(player)
+    if player == game.Players.LocalPlayer then return end
+    if Highlights[player] then Highlights[player]:Destroy() end
+    
+    local character = player.Character
+    if not character then return end
+    
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = character
+    highlight.Adornee = character
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Enabled = true
+    highlight.FillColor = OutlineColor
+    highlight.FillTransparency = FillTransparency
+    highlight.OutlineColor = OutlineColor
+    highlight.OutlineTransparency = OutlineTransparency
+    
+    Highlights[player] = highlight
+end
+
+local function RemoveAllHighlights()
+    for _, highlight in pairs(Highlights) do
+        if highlight then highlight:Destroy() end
+    end
+    Highlights = {}
+end
+
+-- Hitbox Functions
+local function ApplyHitbox(player)
+    if player == game.Players.LocalPlayer then return end
+    local char = player.Character
+    if not char then return end
+    
+    local head = char:FindFirstChild("Head")
+    if head then
+        head.Size = Vector3.new(HitboxSize, HitboxSize, HitboxSize)
+        head.Material = Enum.Material.Neon
+        head.Color = OutlineColor
+        head.Transparency = HitboxTransparency
+        head.CanCollide = false
+    end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        hrp.Size = Vector3.new(HitboxSize/2, HitboxSize/2, 2)
+        hrp.Material = Enum.Material.Neon
+        hrp.Color = OutlineColor
+        hrp.Transparency = HitboxTransparency
+        hrp.CanCollide = false
+    end
+end
+
+local function ResetHitbox(player)
+    if player == game.Players.LocalPlayer then return end
+    local char = player.Character
+    if not char then return end
+    
+    local head = char:FindFirstChild("Head")
+    if head then
+        head.Size = Vector3.new(2, 1, 1)
+        head.Material = Enum.Material.SmoothPlastic
+        head.Color = Color3.fromRGB(163, 162, 165)
+        head.Transparency = 0
+        head.CanCollide = true
+    end
+    
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        hrp.Size = Vector3.new(2, 2, 1)
+        hrp.Material = Enum.Material.SmoothPlastic
+        hrp.Transparency = 1
+        hrp.CanCollide = false
+    end
+end
+
+espTab:CreateToggle({
+    Name = "[ ⚔️ ]  Hitbox Player",
+    CurrentValue = false,
+    Flag = "HitboxToggle",
+    Callback = function(Value)
+        HitboxEnabled = Value
+        if Value then
+            spawn(function()
+                while HitboxEnabled do
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        if player ~= game.Players.LocalPlayer and player.Character then
+                            ApplyHitbox(player)
+                        end
+                    end
+                    task.wait()
+                end
+            end)
+            game.Players.PlayerAdded:Connect(function(plr)
+                plr.CharacterAdded:Connect(function() ApplyHitbox(plr) end)
+            end)
+        else
+            for _, player in pairs(game.Players:GetPlayers()) do
+                ResetHitbox(player)
+            end
+        end
+    end,
+})
+
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Hitbox Size",
+    Range = {10, 2000},
+    Increment = 1,
+    Suffix = "Hitbox Size",
+    CurrentValue = 12,
+    Flag = "HitboxSize",
+    Callback = function(Value)
+        HitboxSize = Value
+        if HitboxEnabled then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                ApplyHitbox(player)
+            end
+        end
+    end,
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Muti Damage"})
+
+local espSection = espTab:CreateSection("")
+
+-- UI Elements
+espTab:CreateColorPicker({
+    Name = "[ 🎨 ]  Choose Color ESP / Hitbox",
+    Color = Color3.fromRGB(0, 100, 0),
+    Flag = "MainColor",
+    Callback = function(Value)
+        OutlineColor = Value
+        if ChamsEnabled then
+            for _, hl in pairs(Highlights) do
+                if hl and hl.Parent then
+                    hl.OutlineColor = Value
+                    hl.FillColor = Value
+                end
+            end
+        end
+        if HitboxEnabled then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                ApplyHitbox(player)
+            end
+        end
+    end
+})
+
+espTab:CreateToggle({
+    Name = "[ 👁️ ]  ESP Player  [ - Green - ]",
+    CurrentValue = false,
+    Flag = "ChamsToggle",
+    Callback = function(Value)
+        ChamsEnabled = Value
+        if Value then
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player.Character then AddHighlight(player) end
+            end
+            game.Players.PlayerAdded:Connect(function(plr)
+                plr.CharacterAdded:Connect(function() AddHighlight(plr) end)
+            end)
+            spawn(function()
+                while ChamsEnabled do
+                    for _, player in pairs(game.Players:GetPlayers()) do
+                        if player.Character and not Highlights[player] then
+                            AddHighlight(player)
+                        end
+                    end
+                    task.wait(1)
+                end
+            end)
+        else
+            RemoveAllHighlights()
+        end
+    end,
+})
+
+local espToggle = espTab:CreateToggle({
+    Name = "[ 👁️ ]  ESP Player  [ - Rainbow - ]",
+    CurrentValue = false,
+    Callback = function(val)
+        ESPEnabled = val
+        if val then
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer then
+                    createESP(p)
+                end
+            end
+            Rayfield:Notify({Title = "[ ✅ ] ESP Player ON", Content = "ESP Player Finish", Duration = 3})
+        else
+            for _, esp in pairs(ESPObjects) do
+                esp.box:Remove()
+                esp.name:Remove()
+                esp.healthBG:Remove()
+                esp.healthFG:Remove()
+            end
+            ESPObjects = {}
+            Rayfield:Notify({Title = "[ 🛑 ] ESP Player OFF", Content = "ESP Player Finish", Duration = 3})
+        end
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend Sword", Content = "ESP Player / Friend Sword Are Color Green"})
+
+local espSection = espTab:CreateSection("")
 
 local NTab = Window:CreateTab("||   - Trolling Player", "smile")
 local Section = NTab:CreateSection("")
@@ -778,7 +1014,7 @@ end
 
 -- ===== Dropdown เลือกเพื่อน =====
 local friendDropdown = NTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player  [ Point ]",
+    Name = "[ 👥 ]  Dropdown Player  [ - Point - ]",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
@@ -795,7 +1031,7 @@ end)
 
 -- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
 NTab:CreateButton({
-    Name = "[ 📌 ]  Teleport To Player  [ Point ]",
+    Name = "[ 📌 ]  Teleport To Player  [ - Point - ]",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
@@ -978,6 +1214,14 @@ local Section = GTab:CreateSection("")
 local Section = GTab:CreateSection("|| -  Script --Visual--  ||")
 
 local Section = GTab:CreateSection("")
+
+local Button = GTab:CreateButton({
+   Name = "|| -  Script Infinite Yield",
+   Callback = function()
+       Rayfield:Notify({Title = "[ - Infinite Yield - ] -loading- --Finish--", Content = "-- Finish --", Duration = 2, Image = "bolt"})
+       loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+   end,
+})
 
 local Button = GTab:CreateButton({
    Name = "|| -  Script Hitboxs",
