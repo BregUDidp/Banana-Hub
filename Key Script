@@ -68,7 +68,7 @@ local Button = CTab:CreateButton({
    Name = "Run-Scripts | Akari [ All-Map ]",
    Callback = function()
        Rayfield:Notify({Title = "[ - All-Map - ] -loading- --Finish--", Content = "-- Finish --", Duration = 2, Image = "bolt"})
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Akari%20Hub"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/A"))()
    end,
 })
 
