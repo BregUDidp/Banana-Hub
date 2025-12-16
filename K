@@ -355,6 +355,15 @@ local savedCFrame = nil
 local autoTPConnection = nil
 local autoTargetName = nil
 
+-- ตัวแปรสำหรับ ESP
+local currentESPHighlight = nil
+local espTargetPlayer = nil
+local espConnection = nil
+
+-- ตัวแปรสี ESP (เริ่มต้นเขียวอ่อน)
+local espFillColor = Color3.fromRGB(43, 179, 123)
+local espOutlineColor = Color3.fromRGB(43, 179, 123)  -- ขอบขาวคงที่ หรือจะปรับได้ด้วย
+
 -- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
     local list = {}
@@ -367,56 +376,112 @@ local function getPlayerList()
     return list
 end
 
+local function getPlayerFromSelection(selected)
+    if not selected or selected == "" then return nil end
+    local friendName = selected:match("%((.-)%)") or selected
+    return Players:FindFirstChild(friendName)
+end
+
+-- ฟังก์ชันเปิด ESP (ใช้สีปัจจุบัน)
+local function enableESP(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then return end
+
+    -- ลบ Highlight เก่าก่อน (กรณี respawn)
+    if currentESPHighlight and currentESPHighlight.Parent then
+        currentESPHighlight:Destroy()
+    end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = targetPlayer.Character
+    highlight.FillColor = espFillColor
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = espOutlineColor
+    highlight.OutlineTransparency = 0
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Enabled = true
+
+    currentESPHighlight = highlight
+    espTargetPlayer = targetPlayer
+end
+
+-- ฟังก์ชันปิด ESP
+local function disableESP()
+    if currentESPHighlight then
+        currentESPHighlight:Destroy()
+        currentESPHighlight = nil
+    end
+    if espConnection then
+        espConnection:Disconnect()
+        espConnection = nil
+    end
+    espTargetPlayer = nil
+end
+
+-- ฟังก์ชันอัปเดตสี ESP (เมื่อเปลี่ยนสีใน Color Picker)
+local function updateESPColor()
+    if currentESPHighlight and currentESPHighlight.Parent then
+        currentESPHighlight.FillColor = espFillColor
+        currentESPHighlight.OutlineColor = espOutlineColor
+    end
+end
+
+local Label = friendTab:CreateLabel("Click Dropdown Player And Choose To Click", "cctv", Color3.fromRGB(43, 179, 123), false)
+
+local Section1 = friendTab:CreateSection("")
+
 -- ===== Dropdown เลือกผู้เล่น =====
 local friendDropdown = friendTab:CreateDropdown({
     Name = "[ 👥 ]  Dropdown Player",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
-    Callback = function() end
+    Callback = function()
+        if currentESPHighlight then
+            local selected = friendDropdown.CurrentOption[1]
+            local newTarget = getPlayerFromSelection(selected)
+            disableESP()
+            if newTarget then
+                enableESP(newTarget)
+            end
+        end
+    end
 })
 
 -- อัปเดต Dropdown เมื่อมีคนเข้า-ออก
 Players.PlayerAdded:Connect(function() 
     friendDropdown:Refresh(getPlayerList(), true)
 end)
-Players.PlayerRemoving:Connect(function() 
+
+Players.PlayerRemoving:Connect(function(p)
     task.wait(1)
     friendDropdown:Refresh(getPlayerList(), true)
+    
+    if espTargetPlayer and p == espTargetPlayer then
+        disableESP()
+    end
 end)
 
--- ===== ปุ่มวาปธรรมดา (ครั้งเดียว) =====
+-- ===== ปุ่มวาปธรรมดา =====
 friendTab:CreateButton({
     Name = "[ 📌 ]  Teleport To Player",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
-        if not selected or selected == "" then
-            return  -- ไม่แจ้งเตือนอะไรเลย
-        end
+        if not selected or selected == "" then return end
 
-        local friendName = selected:match("%((.-)%)") or selected
-        local targetPlayer = Players:FindFirstChild(friendName)
+        local targetPlayer = getPlayerFromSelection(selected)
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
+        if not hrp or not targetPlayer or not targetPlayer.Character then return end
 
-        if not hrp then return end
-
-        if targetPlayer and targetPlayer.Character then
-            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if targetHRP then
-                savedCFrame = hrp.CFrame
-                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)  -- วาปใกล้ ๆ (ยกขึ้นนิดหน่อย)
-            end
+        local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetHRP then
+            savedCFrame = hrp.CFrame
+            hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
         end
-        -- ไม่มี Notify
     end
 })
 
-local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal", Content = "Teleport To Player / Friend Become Normal"})
-
-local Section1 = friendTab:CreateSection("")
-
--- ===== ปุ่ม Toggle Auto Teleport (เปิด/ปิด สลับได้เลย) =====
+-- ===== Auto Teleport Toggle =====
 friendTab:CreateToggle({
     Name = "[ 🪑 ]  Auto Teleport to Player",
     CurrentValue = false,
@@ -424,56 +489,94 @@ friendTab:CreateToggle({
     Callback = function(Value)
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            Rayfield.Flags["AutoTPToggle"]:Set(false)  -- ปิดเงียบ ๆ
+            Rayfield.Flags["AutoTPToggle"]:Set(false)
             return
         end
 
         local friendName = selected:match("%((.-)%)") or selected
         local targetPlayer = Players:FindFirstChild(friendName)
 
-        if Value == true then
-            -- === เปิด Auto Teleport ===
+        if Value then
             if not targetPlayer or not targetPlayer.Character then
                 Rayfield.Flags["AutoTPToggle"]:Set(false)
                 return
             end
 
             local char = player.Character or player.CharacterAdded:Wait()
-            local hrp = char:FindFirstChild("HumanoidRootPart")
-            if not hrp then 
+            local hrp = char:FindForChild("HumanoidRootPart")
+            if not hrp then
                 Rayfield.Flags["AutoTPToggle"]:Set(false)
-                return 
+                return
             end
 
-            -- บันทึกตำแหน่งเดิม (เงียบ ๆ)
             if not savedCFrame then
                 savedCFrame = hrp.CFrame
             end
 
             autoTargetName = friendName
 
-            -- เริ่มติดตามอัตโนมัติ
             autoTPConnection = RunService.Heartbeat:Connect(function()
                 if not autoTargetName then return end
-
                 local target = Players:FindFirstChild(autoTargetName)
                 if target and target.Character then
                     local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
                     if targetHRP and hrp then
-                        hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0)  -- ปรับเป็น -4 หรือ -50 ได้ตามต้องการ
+                        hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0)
                     end
                 end
             end)
-
         else
-            -- === ปิด Auto Teleport ===
             if autoTPConnection then
                 autoTPConnection:Disconnect()
                 autoTPConnection = nil
                 autoTargetName = nil
             end
         end
-        -- ไม่มี Notify ใด ๆ
+    end
+})
+
+local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal", Content = "Teleport To Player / Friend Become Normal"})
+
+local Section1 = friendTab:CreateSection("")
+
+-- ===== Color Picker สำหรับปรับสี ESP =====
+friendTab:CreateColorPicker({
+    Name = "[ 🎨 ]  Choose Color ESP Player",
+    Color = Color3.fromRGB(43, 179, 123),
+    Flag = "ESPColorPicker",
+    Callback = function(Value)
+        espFillColor = Value  -- อัปเดตสี fill
+        -- espOutlineColor = Value  -- ถ้าอยากให้ขอบเปลี่ยนตามด้วย ให้ uncomment
+        updateESPColor()  -- เปลี่ยนสี ESP ทันทีถ้ากำลังเปิดอยู่
+    end
+})
+
+-- ===== ปุ่ม ESP (กดเพื่อสลับเปิด/ปิด) =====
+friendTab:CreateButton({
+    Name = "[ 👁️ ]  ESP Dropdown Player ( 43, 179, 123 )",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        local targetPlayer = getPlayerFromSelection(selected)
+
+        if not targetPlayer then
+            disableESP()
+            return
+        end
+
+        if currentESPHighlight and espTargetPlayer == targetPlayer then
+            disableESP()
+        else
+            disableESP()  -- ล้างเก่า
+            enableESP(targetPlayer)
+
+            -- ติดตาม respawn ของเป้าหมาย
+            if espConnection then espConnection:Disconnect() end
+            espConnection = targetPlayer.CharacterAdded:Connect(function()
+                if espTargetPlayer == targetPlayer then
+                    enableESP(targetPlayer)
+                end
+            end)
+        end
     end
 })
 
@@ -483,46 +586,23 @@ friendTab:CreateButton({
     Callback = function()
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:FindFirstChild("HumanoidRootPart")
-
-        if not hrp then return end
-
-        if savedCFrame then
+        if hrp and savedCFrame then
             hrp.CFrame = savedCFrame
         end
-        -- ไม่มี Notify
     end
 })
 
 local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Auto", Content = "Teleport To Player / Friend Become Auto"})
 
--- หยุด Auto เมื่อตัวละครตายหรือรีสปาวน์
+-- ปิดทุกอย่างเมื่อตัวเราตาย/respawn
 player.CharacterRemoving:Connect(function()
     if autoTPConnection then
         autoTPConnection:Disconnect()
         autoTPConnection = nil
         autoTargetName = nil
-        Rayfield.Flags["AutoTPToggle"]:Set(false)  -- ปิด Toggle เงียบ ๆ
+        Rayfield.Flags["AutoTPToggle"]:Set(false)
     end
-end)
-
--- อัปเดตอัตโนมัติเมื่อมีคนเข้า/ออก
-Players.PlayerAdded:Connect(function()
-    friendDropdown:Refresh(updatePlayerList(), true)
-end)
-
-Players.PlayerRemoving:Connect(function()
-    task.wait(1)
-    friendDropdown:Refresh(updatePlayerList(), true)
-end)
-
--- หยุดวาป + รีเซ็ตตำแหน่งเดิมเมื่อตัวละครตายหรือรีสปาวน์ (เพื่อความปลอดภัย)
-player.CharacterRemoving:Connect(function()
-    if autoTPConnection then
-        autoTPConnection:Disconnect()
-        autoTPConnection = nil
-    end
-    -- ไม่รีเซ็ต originalPosition ถ้าอยากเก็บไว้ข้ามการตาย แต่ถ้าอยากรีเซ็ตให้ uncomment บรรทัดล่าง
-    -- originalPosition = nil
+    disableESP()
 end)
 
 local Section1 = friendTab:CreateSection("")
@@ -530,117 +610,6 @@ local Section1 = friendTab:CreateSection("")
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Attacks Smash", "drill")
 local espSection = espTab:CreateSection("")
-
-local ESPEnabled = false
-local ESPObjects = {}
-local rainbowHue = 0
-
-local function getRainbowColor()
-    rainbowHue = (rainbowHue + 0.001) % 1
-    return Color3.fromHSV(rainbowHue, 1, 1)
-end
-
-local function createESP(player)
-    if player == LocalPlayer then return end
-    local char = player.Character
-    if not char then return end
-
-    local hrp = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso")
-    if not hrp then return end
-
-    -- Rainbow Box ESP
-    local box = Drawing.new("Square")
-    box.Thickness = 2
-    box.Filled = false
-    box.Transparency = 1
-    box.Visible = false
-
-    -- Rainbow Name ESP
-    local name = Drawing.new("Text")
-    name.Text = player.DisplayName
-    name.Size = 16
-    name.Center = true
-    name.Outline = true
-    name.Font = Drawing.Fonts.UI
-    name.Visible = false
-
-    -- Health Bar (Rainbow Border)
-    local healthBG = Drawing.new("Square")
-    healthBG.Thickness = 1
-    healthBG.Filled = true
-    healthBG.Color = Color3.fromRGB(0, 0, 0)
-    healthBG.Transparency = 0.5
-    healthBG.Visible = false
-
-    local healthFG = Drawing.new("Square")
-    healthFG.Thickness = 1
-    healthFG.Filled = true
-    healthFG.Visible = false
-
-    ESPObjects[player] = {box = box, name = name, healthBG = healthBG, healthFG = healthFG, lastChar = char}
-end
-
-local function updateESP()
-    if not ESPEnabled then return end
-
-    local cam = Workspace.CurrentCamera
-    local rainbowColor = getRainbowColor()
-
-    for player, esp in pairs(ESPObjects) do
-        local char = player.Character
-        if char and char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart") then
-            local hrp = char.HumanoidRootPart
-            local hum = char.Humanoid
-            local head = char:FindFirstChild("Head")
-            if not head then continue end
-
-            local rootPos, onScreen = cam:WorldToViewportPoint(hrp.Position)
-            local headPos = cam:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
-            local legPos = cam:WorldToViewportPoint(hrp.Position - Vector3.new(0, 3, 0))
-
-            if onScreen then
-                local height = math.abs(headPos.Y - legPos.Y)
-                local width = height * 0.5
-
-                -- Rainbow Box
-                esp.box.Size = Vector2.new(width, height)
-                esp.box.Position = Vector2.new(rootPos.X - width/2, rootPos.Y - height/2)
-                esp.box.Color = rainbowColor
-                esp.box.Visible = true
-
-                -- Rainbow Name
-                esp.name.Position = Vector2.new(rootPos.X, rootPos.Y - height/2 - 20)
-                esp.name.Color = rainbowColor
-                esp.name.Visible = true
-
-                -- Health Bar
-                local health = hum.Health / hum.MaxHealth
-                local barHeight = height
-                local barWidth = 4
-
-                esp.healthBG.Size = Vector2.new(barWidth, barHeight)
-                esp.healthBG.Position = Vector2.new(rootPos.X - width/2 - barWidth - 2, rootPos.Y - height/2)
-
-                esp.healthFG.Size = Vector2.new(barWidth, barHeight * health)
-                esp.healthFG.Position = Vector2.new(rootPos.X - width/2 - barWidth - 2, rootPos.Y - height/2 + (barHeight * (1 - health)))
-                esp.healthFG.Color = Color3.fromHSV(health * 0.33, 1, 1)
-
-                esp.healthBG.Visible = true
-                esp.healthFG.Visible = true
-            else
-                esp.box.Visible = false
-                esp.name.Visible = false
-                esp.healthBG.Visible = false
-                esp.healthFG.Visible = false
-            end
-        else
-            esp.box.Visible = false
-            esp.name.Visible = false
-            esp.healthBG.Visible = false
-            esp.healthFG.Visible = false
-        end
-    end
-end
 
 espTab:CreateButton({
     Name = "[ 🍭 ]  Teleport Tool  [ - Sword - ]",
@@ -778,12 +747,11 @@ local Paragraph = espTab:CreateParagraph({Title = "Rainbow Tool For Cool Style",
 RunService.RenderStepped:Connect(updateESP)
 
 local espSection = espTab:CreateSection("")
-local espSection = espTab:CreateSection("")
 
 -- Variables
 local ChamsEnabled = false
 local HitboxEnabled = false
-local OutlineColor = Color3.fromRGB(0, 100, 0)
+local OutlineColor = Color3.fromRGB(43, 179, 123)
 local OutlineTransparency = 0
 local FillTransparency = 0.7
 local HitboxSize = 10
@@ -900,7 +868,7 @@ espTab:CreateSlider({
     Range = {10, 2000},
     Increment = 1,
     Suffix = "Hitbox Size",
-    CurrentValue = 12,
+    CurrentValue = 10,
     Flag = "HitboxSize",
     Callback = function(Value)
         HitboxSize = Value
@@ -913,87 +881,6 @@ espTab:CreateSlider({
 })
 
 local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Muti Damage"})
-
-local espSection = espTab:CreateSection("")
-
--- UI Elements
-espTab:CreateColorPicker({
-    Name = "[ 🎨 ]  Choose Color ESP / Hitbox",
-    Color = Color3.fromRGB(0, 100, 0),
-    Flag = "MainColor",
-    Callback = function(Value)
-        OutlineColor = Value
-        if ChamsEnabled then
-            for _, hl in pairs(Highlights) do
-                if hl and hl.Parent then
-                    hl.OutlineColor = Value
-                    hl.FillColor = Value
-                end
-            end
-        end
-        if HitboxEnabled then
-            for _, player in pairs(game.Players:GetPlayers()) do
-                ApplyHitbox(player)
-            end
-        end
-    end
-})
-
-espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Player  [ - Green - ]",
-    CurrentValue = false,
-    Flag = "ChamsToggle",
-    Callback = function(Value)
-        ChamsEnabled = Value
-        if Value then
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player.Character then AddHighlight(player) end
-            end
-            game.Players.PlayerAdded:Connect(function(plr)
-                plr.CharacterAdded:Connect(function() AddHighlight(plr) end)
-            end)
-            spawn(function()
-                while ChamsEnabled do
-                    for _, player in pairs(game.Players:GetPlayers()) do
-                        if player.Character and not Highlights[player] then
-                            AddHighlight(player)
-                        end
-                    end
-                    task.wait(1)
-                end
-            end)
-        else
-            RemoveAllHighlights()
-        end
-    end,
-})
-
-local espToggle = espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Player  [ - Rainbow - ]",
-    CurrentValue = false,
-    Callback = function(val)
-        ESPEnabled = val
-        if val then
-            for _, p in ipairs(Players:GetPlayers()) do
-                if p ~= LocalPlayer then
-                    createESP(p)
-                end
-            end
-            Rayfield:Notify({Title = "[ ✅ ] ESP Player ON", Content = "ESP Player Finish", Duration = 3})
-        else
-            for _, esp in pairs(ESPObjects) do
-                esp.box:Remove()
-                esp.name:Remove()
-                esp.healthBG:Remove()
-                esp.healthFG:Remove()
-            end
-            ESPObjects = {}
-            Rayfield:Notify({Title = "[ 🛑 ] ESP Player OFF", Content = "ESP Player Finish", Duration = 3})
-        end
-    end
-})
-
-local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend Sword", Content = "ESP Player / Friend Sword Are Color Green"})
 
 local espSection = espTab:CreateSection("")
 
@@ -1020,7 +907,7 @@ end
 
 -- ===== Dropdown เลือกเพื่อน =====
 local friendDropdown = NTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player  [ - Point - ]",
+    Name = "[ 👥 ]  Dropdown Player  [ - 1 Sec - ]",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
@@ -1037,7 +924,7 @@ end)
 
 -- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
 NTab:CreateButton({
-    Name = "[ 📌 ]  Teleport To Player  [ - Point - ]",
+    Name = "[ 📌 ]  Teleport To Player  [ - 1 Sec - ]",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
