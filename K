@@ -1432,7 +1432,7 @@ local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", 
 
 local espSection = espTab:CreateSection("")
 
-local NTab = Window:CreateTab("||   - Trolling Player", "smile")
+local NTab = Window:CreateTab("||   - Trolling Player", "swords")
 local Section = NTab:CreateSection("")
 
 local Players = game:GetService("Players")
@@ -1455,7 +1455,7 @@ end
 
 -- ===== Dropdown เลือกเพื่อน =====
 local friendDropdown = NTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player  [ - 1 Sec - ]",
+    Name = "[ 👁️ ]  Dropdown Kill Player",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
@@ -1472,7 +1472,7 @@ end)
 
 -- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
 NTab:CreateButton({
-    Name = "[ 📌 ]  Teleport To Player  [ - 1 Sec - ]",
+    Name = "[ ⚔️ ]  Katana To Killing Player",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
