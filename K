@@ -363,7 +363,7 @@ local espConnection = nil
 
 -- ตัวแปรสี ESP (เริ่มต้นเขียวอ่อน)
 local espFillColor = Color3.fromRGB(43, 179, 123)
-local espOutlineColor = Color3.fromRGB(43, 179, 123)  -- ขอบขาวคงที่ หรือจะปรับได้ด้วย
+local espOutlineColor = Color3.fromRGB(43, 179, 123) -- ขอบขาวคงที่ หรือจะปรับได้ด้วย
 
 -- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
@@ -386,12 +386,11 @@ end
 -- ฟังก์ชันเปิด ESP (ใช้สีปัจจุบัน)
 local function enableESP(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
-
+    
     -- ลบ Highlight เก่าก่อน (กรณี respawn)
     if currentESPHighlight and currentESPHighlight.Parent then
         currentESPHighlight:Destroy()
     end
-
     local highlight = Instance.new("Highlight")
     highlight.Parent = targetPlayer.Character
     highlight.FillColor = espFillColor
@@ -400,7 +399,6 @@ local function enableESP(targetPlayer)
     highlight.OutlineTransparency = 0
     highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     highlight.Enabled = true
-
     currentESPHighlight = highlight
     espTargetPlayer = targetPlayer
 end
@@ -426,13 +424,9 @@ local function updateESPColor()
     end
 end
 
-local Label = friendTab:CreateLabel("Click Dropdown Player And Choose To Click", "cctv", Color3.fromRGB(43, 179, 123), false)
-
-local Section1 = friendTab:CreateSection("")
-
 -- ===== Dropdown เลือกผู้เล่น =====
 local friendDropdown = friendTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Player",
+    Name = "[ 👥 ]  Dropdown Player Choose Player",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
@@ -449,35 +443,74 @@ local friendDropdown = friendTab:CreateDropdown({
 })
 
 -- อัปเดต Dropdown เมื่อมีคนเข้า-ออก
-Players.PlayerAdded:Connect(function() 
+Players.PlayerAdded:Connect(function()
     friendDropdown:Refresh(getPlayerList(), true)
 end)
-
 Players.PlayerRemoving:Connect(function(p)
     task.wait(1)
     friendDropdown:Refresh(getPlayerList(), true)
-    
+   
     if espTargetPlayer and p == espTargetPlayer then
         disableESP()
     end
 end)
 
+local Section1 = friendTab:CreateSection("")
+
 -- ===== ปุ่มวาปธรรมดา =====
 friendTab:CreateButton({
-    Name = "[ 📌 ]  Teleport To Player",
+    Name = "[ 📌 ]  Teleport To Player - Friend",
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then return end
-
         local targetPlayer = getPlayerFromSelection(selected)
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
         if not hrp or not targetPlayer or not targetPlayer.Character then return end
-
         local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
         if targetHRP then
             savedCFrame = hrp.CFrame
             hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+        end
+    end
+})
+
+friendTab:CreateButton({
+    Name = "[ 📞 ]  Teleport To Player   [ - 1 Sec - ]",
+    Callback = function()
+        local selected = friendDropdown.CurrentOption[1]
+        if not selected or selected == "" then
+            return
+        end
+
+        local friendName = selected:match("%((.-)%)") or selected
+        local targetPlayer = Players:FindFirstChild(friendName)
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+
+        if not hrp then
+            return
+        end
+
+        if targetPlayer and targetPlayer.Character then
+            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetHRP then
+                -- บันทึกตำแหน่งเดิม
+                savedCFrame = hrp.CFrame
+
+                -- วาปไปหาเพื่อน (ยกขึ้นนิดหน่อย)
+                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+
+                -- รอเฟรมนิดนึงเพื่อให้เห็นการวาปชัดเจน (ไม่กระตุก)
+                task.wait()
+
+                -- กลับจุดเดิมทันที
+                if savedCFrame and hrp and hrp.Parent then
+                    hrp.CFrame = savedCFrame
+                end
+
+                return
+            end
         end
     end
 })
@@ -490,27 +523,23 @@ friendTab:CreateToggle({
     Callback = function(Value)
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then
-            
+           
             Rayfield.Flags["AutoTPToggle"]:Set(false)
             return
         end
-
         local friendName = selected:match("%((.-)%)") or selected
         local targetPlayer = Players:FindFirstChild(friendName)
-
         if not targetPlayer then
-            
+           
             Rayfield.Flags["AutoTPToggle"]:Set(false)
             return
         end
-
         -- ปิด Auto TP เก่า
         if autoTPConnection then
             autoTPConnection:Disconnect()
             autoTPConnection = nil
         end
         autoTargetName = nil
-
         if Value then
             -- บันทึกตำแหน่งปัจจุบัน (ก่อนเริ่ม Auto TP)
             local char = player.Character or player.CharacterAdded:Wait()
@@ -518,35 +547,26 @@ friendTab:CreateToggle({
             if hrp then
                 savedCFrame = hrp.CFrame
             end
-
             autoTargetName = friendName
-
             -- สร้าง Connection หลักสำหรับ Auto Teleport
             autoTPConnection = RunService.Heartbeat:Connect(function()
                 if not autoTargetName then return end
-
                 local target = Players:FindFirstChild(autoTargetName)
                 if not target or not target.Character then return end
-
                 local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
                 if not targetHRP then return end
-
                 local myChar = player.Character
                 if not myChar then return end
-
                 local myHRP = myChar:FindFirstChild("HumanoidRootPart")
                 if not myHRP then return end
-
                 -- วาปไปหาเป้าหมาย (สูงขึ้นนิดหน่อยเพื่อไม่ติดพื้น)
                 myHRP.CFrame = targetHRP.CFrame + Vector3.new(0, 4, 0)
             end)
-
-            
-
+           
         else
             -- ปิด Auto TP
             autoTargetName = nil
-            
+           
         end
     end
 })
@@ -554,14 +574,12 @@ friendTab:CreateToggle({
 -- เพิ่ม: อัปเดต Auto TP อัตโนมัติเมื่อเปลี่ยนผู้เล่นใน Dropdown (ขณะเปิด Toggle อยู่)
 friendDropdown.Callback = function(selected)
     local currentToggleValue = Rayfield.Flags["AutoTPToggle"].CurrentValue
-
     -- ถ้า Auto TP กำลังเปิดอยู่ ให้อัปเดตเป้าหมายใหม่ทันที
     if currentToggleValue then
-        Rayfield.Flags["AutoTPToggle"]:Set(false)  -- ปิดชั่วคราว
+        Rayfield.Flags["AutoTPToggle"]:Set(false) -- ปิดชั่วคราว
         task.wait(0.1)
-        Rayfield.Flags["AutoTPToggle"]:Set(true)   -- เปิดใหม่ → จะใช้เป้าหมายใหม่
+        Rayfield.Flags["AutoTPToggle"]:Set(true) -- เปิดใหม่ → จะใช้เป้าหมายใหม่
     end
-
     -- ถ้ามี ESP เปิดอยู่กับคนเก่า ก็อาจอัปเดตได้ที่นี่เหมือนกัน (แต่ตอนนี้แยกปุ่ม)
 end
 
@@ -569,21 +587,48 @@ local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Frien
 
 local Section1 = friendTab:CreateSection("")
 
+-- ===== ปุ่มใหม่: กลับไปตำแหน่งเดิม =====
+friendTab:CreateButton({
+    Name = "[ 🔙 ]  Return To Original Position",
+    Callback = function()
+        if not savedCFrame then
+            -- ถ้ายังไม่มีตำแหน่งที่บันทึกไว้ (ยังไม่เคยวาร์ป)
+            warn("No saved position to return to!")
+            return
+        end
+
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        
+        if not hrp then
+            warn("HumanoidRootPart not found!")
+            return
+        end
+
+        -- วาร์ปกลับตำแหน่งเดิมอย่างรวดเร็วและนุ่มนวล
+        hrp.CFrame = savedCFrame
+    end
+})
+
+local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
+
+local Section1 = friendTab:CreateSection("")
+
 -- ===== ตัวแปรสำหรับ ESP ทั้งสองแบบ =====
-local currentESPHighlight = nil        -- สำหรับ Highlight ทั้งคู่
-local currentESPDrawings = {}          -- สำหรับ Drawing (Box + Name) เฉพาะ ESP ปกติ
+local currentESPHighlight = nil -- สำหรับ Highlight ทั้งคู่
+local currentESPDrawings = {} -- สำหรับ Drawing (Box + Name) เฉพาะ ESP ปกติ
 local espTargetPlayer = nil
 local espConnection = nil
 
 -- ฟังก์ชันสร้าง/อัปเดต Highlight
 local function enableHighlight(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
-    
+   
     -- ลบ Highlight เก่า
     if currentESPHighlight and currentESPHighlight.Parent then
         currentESPHighlight:Destroy()
     end
-    
+   
     local highlight = Instance.new("Highlight")
     highlight.Parent = targetPlayer.Character
     highlight.FillColor = espFillColor
@@ -592,7 +637,7 @@ local function enableHighlight(targetPlayer)
     highlight.OutlineTransparency = 0
     highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     highlight.Enabled = true
-    
+   
     currentESPHighlight = highlight
     espTargetPlayer = targetPlayer
 end
@@ -600,28 +645,28 @@ end
 -- ฟังก์ชันสร้าง Drawing ESP (Box + Name + Health)
 local function enableDrawingESP(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
-    
+   
     -- ลบ Drawing เก่า
     for _, drawing in pairs(currentESPDrawings) do
         if drawing then drawing:Remove() end
     end
     currentESPDrawings = {}
-    
+   
     local box = Drawing.new("Square")
     box.Thickness = 2
     box.Filled = false
     box.Color = espFillColor
     box.Visible = false
-    
+   
     local nameText = Drawing.new("Text")
     nameText.Size = 16
     nameText.Center = true
     nameText.Outline = true
     nameText.Color = Color3.fromRGB(43, 179, 123)
     nameText.Visible = false
-    
+   
     currentESPDrawings = {Box = box, Name = nameText}
-    
+   
     -- อัปเดตทุกเฟรม
     if espConnection then espConnection:Disconnect() end
     espConnection = RunService.RenderStepped:Connect(function()
@@ -630,23 +675,23 @@ local function enableDrawingESP(targetPlayer)
             nameText.Visible = false
             return
         end
-        
+       
         local root = targetPlayer.Character.HumanoidRootPart
         local head = targetPlayer.Character.Head
         local humanoid = targetPlayer.Character.Humanoid
-        
+       
         local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(root.Position)
-        
+       
         if onScreen then
             local top = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
             local bottom = workspace.CurrentCamera:WorldToViewportPoint(head.Position - Vector3.new(0, 3, 0))
             local sizeY = (top - bottom).Magnitude
-            
+           
             box.Size = Vector2.new(sizeY * 2, sizeY * 3.5)
             box.Position = Vector2.new(screenPos.X - box.Size.X / 2, screenPos.Y - box.Size.Y / 2)
             box.Visible = true
-            
-            nameText.Text = targetPlayer.DisplayName .. "  [ " .. math.floor(humanoid.Health) .. " ]"
+           
+            nameText.Text = targetPlayer.DisplayName .. " [ " .. math.floor(humanoid.Health) .. " ]"
             nameText.Position = Vector2.new(screenPos.X, screenPos.Y - box.Size.Y / 2 - 20)
             nameText.Visible = true
         else
@@ -701,24 +746,24 @@ friendTab:CreateButton({
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         local targetPlayer = getPlayerFromSelection(selected)
-        
+       
         if not targetPlayer then
             disableAllESP()
-            
+           
             return
         end
-        
+       
         -- ถ้าเปิดอยู่แล้วกับคนเดียวกัน → ปิด
         if espTargetPlayer == targetPlayer and currentESPHighlight and next(currentESPDrawings) then
             disableAllESP()
             return
         end
-        
+       
         -- ปิดเก่า แล้วเปิดใหม่
         disableAllESP()
         enableHighlight(targetPlayer)
         enableDrawingESP(targetPlayer)
-        
+       
         -- ติดตาม respawn
         targetPlayer.CharacterAdded:Connect(function()
             if espTargetPlayer == targetPlayer then
@@ -736,23 +781,23 @@ friendTab:CreateButton({
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         local targetPlayer = getPlayerFromSelection(selected)
-        
+       
         if not targetPlayer then
             disableAllESP()
-            
+           
             return
         end
-        
+       
         -- ถ้าเปิด Highlight อยู่คนเดียวกัน → ปิด
         if espTargetPlayer == targetPlayer and currentESPHighlight and not next(currentESPDrawings) then
             disableAllESP()
             return
         end
-        
+       
         -- ปิดเก่า แล้วเปิด Highlight เฉพาะ
         disableAllESP()
         enableHighlight(targetPlayer)
-        
+       
         -- ติดตาม respawn (เฉพาะ Highlight)
         targetPlayer.CharacterAdded:Connect(function()
             if espTargetPlayer == targetPlayer and not next(currentESPDrawings) then
@@ -765,7 +810,6 @@ friendTab:CreateButton({
 
 local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Auto", Content = "Teleport To Player / Friend Become Auto"})
 
--- อัปเดตทุกเฟรม
 game:GetService("RunService").RenderStepped:Connect(UpdateESP)
 
 local Section = friendTab:CreateSection("")
@@ -916,7 +960,7 @@ local HitboxEnabled = false
 local OutlineColor = Color3.fromRGB(43, 179, 123)
 local OutlineTransparency = 0
 local FillTransparency = 0.7
-local HitboxSize = 10
+local HitboxSize = 20
 local HitboxTransparency = 0.3
 
 -- Hitbox Functions
@@ -968,7 +1012,7 @@ local function ResetHitbox(player)
 end
 
 espTab:CreateToggle({
-    Name = "[ ⚔️ ]  Hitbox Player",
+    Name = "[ ⚔️ ]  Hitbox Boxing Player",
     CurrentValue = false,
     Flag = "HitboxToggle",
     Callback = function(Value)
@@ -997,10 +1041,10 @@ espTab:CreateToggle({
 
 espTab:CreateSlider({
     Name = "[ 📏 ]  Slider Hitbox Size",
-    Range = {10, 2000},
+    Range = {20, 2000},
     Increment = 1,
     Suffix = "Hitbox Size",
-    CurrentValue = 10,
+    CurrentValue = 20,
     Flag = "HitboxSize",
     Callback = function(Value)
         HitboxSize = Value
@@ -1095,7 +1139,7 @@ end
 
 -- Toggle หลัก (รวม ESP + Highlight)
 espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Hitbox Player ( 43, 179, 123 )  All",
+    Name = "[ 👁️ ]  ESP Hitbox Player [ 43, 179, 123 ]  All",
     CurrentValue = false,
     Callback = function(Value)
         ESPEnabled = Value
