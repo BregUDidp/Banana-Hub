@@ -446,6 +446,7 @@ local friendDropdown = friendTab:CreateDropdown({
 Players.PlayerAdded:Connect(function()
     friendDropdown:Refresh(getPlayerList(), true)
 end)
+
 Players.PlayerRemoving:Connect(function(p)
     task.wait(1)
     friendDropdown:Refresh(getPlayerList(), true)
@@ -456,6 +457,8 @@ Players.PlayerRemoving:Connect(function(p)
 end)
 
 local Section1 = friendTab:CreateSection("")
+
+local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal / Auto", Content = "Teleport To Player / Friend Normal / Become Auto"})
 
 -- ===== ปุ่มวาปธรรมดา =====
 friendTab:CreateButton({
@@ -583,36 +586,7 @@ friendDropdown.Callback = function(selected)
     -- ถ้ามี ESP เปิดอยู่กับคนเก่า ก็อาจอัปเดตได้ที่นี่เหมือนกัน (แต่ตอนนี้แยกปุ่ม)
 end
 
-local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal", Content = "Teleport To Player / Friend Become Normal"})
-
-local Section1 = friendTab:CreateSection("")
-
--- ===== ปุ่มใหม่: กลับไปตำแหน่งเดิม =====
-friendTab:CreateButton({
-    Name = "[ 🔙 ]  Return To Original Position",
-    Callback = function()
-        if not savedCFrame then
-            -- ถ้ายังไม่มีตำแหน่งที่บันทึกไว้ (ยังไม่เคยวาร์ป)
-            warn("No saved position to return to!")
-            return
-        end
-
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        
-        if not hrp then
-            warn("HumanoidRootPart not found!")
-            return
-        end
-
-        -- วาร์ปกลับตำแหน่งเดิมอย่างรวดเร็วและนุ่มนวล
-        hrp.CFrame = savedCFrame
-    end
-})
-
-local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
-
-local Section1 = friendTab:CreateSection("")
+local Section1 = friendTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
 -- ===== ตัวแปรสำหรับ ESP ทั้งสองแบบ =====
 local currentESPHighlight = nil -- สำหรับ Highlight ทั้งคู่
@@ -808,11 +782,38 @@ friendTab:CreateButton({
     end
 })
 
-local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Auto", Content = "Teleport To Player / Friend Become Auto"})
+local Paragraph = friendTab:CreateParagraph({Title = "ESP To Player / Friend Normal", Content = "ESP To Player / Friend Become Normal"})
 
 game:GetService("RunService").RenderStepped:Connect(UpdateESP)
 
-local Section = friendTab:CreateSection("")
+local Section1 = friendTab:CreateSection("")
+
+-- ===== ปุ่มใหม่: กลับไปตำแหน่งเดิม =====
+friendTab:CreateButton({
+    Name = "[ 🔙 ]  Return To Original Position",
+    Callback = function()
+        if not savedCFrame then
+            -- ถ้ายังไม่มีตำแหน่งที่บันทึกไว้ (ยังไม่เคยวาร์ป)
+            warn("No saved position to return to!")
+            return
+        end
+
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        
+        if not hrp then
+            warn("HumanoidRootPart not found!")
+            return
+        end
+
+        -- วาร์ปกลับตำแหน่งเดิมอย่างรวดเร็วและนุ่มนวล
+        hrp.CFrame = savedCFrame
+    end
+})
+
+local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
+
+local Section1 = friendTab:CreateSection("")
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Attacks Smash", "drill")
