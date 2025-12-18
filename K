@@ -146,7 +146,7 @@ local function updateFly()
 end
 
 local FlyToggle = PTab:CreateToggle({
-    Name = "[ 🛸 ]  Flying Jetpack",
+    Name = "[ 🪁 ]  Flying Jetpack",
     CurrentValue = false,
     Flag = "FlyEnabled",
     Callback = function(Value)
@@ -204,15 +204,15 @@ local Section1 = PTab:CreateSection("-------------------------------------------
 local InfiniteJumpEnabled = false
 
 PTab:CreateToggle({
-    Name = "[ 🐇 ]  Infinite Jump Power",
+    Name = "[ 🦘 ]  Infinite Jump Power",
     CurrentValue = false,
     Flag = "InfiniteJumpToggle",
     Callback = function(Value)
         InfiniteJumpEnabled = Value
         if Value then
         Rayfield:Notify({
-           Title = "[ 🐇 ]  Power Jump ✅",
-           Content = "[ 🐇 ]  Become Power Rabbit",
+           Title = "[ 🦘 ]  Power Jump ✅",
+           Content = "[ 🦘 ]  Become Power Rabbit",
            Duration = 3,
            Image = "rabbit",
         })
@@ -929,7 +929,7 @@ local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Con
 local Section1 = friendTab:CreateSection("")
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
-local espTab = Window:CreateTab("||   - Attacks Smash", "drill")
+local espTab = Window:CreateTab("||   - Solution", "flask-conical")
 local espSection = espTab:CreateSection("")
 
 espTab:CreateButton({
