@@ -84,7 +84,7 @@ local function toggleSpeed(on)
     Rayfield:Notify({
         Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
         Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal",
-        Duration = 3,
+        Duration = 1,
         Image = "bike",
     })
 end
@@ -151,7 +151,13 @@ local FlyToggle = PTab:CreateToggle({
     Flag = "FlyEnabled",
     Callback = function(Value)
         flying = Value
-        
+        Rayfield:Notify({
+            Title = Value and   "[ 🪁 ]  Flying On" or "[ 🪁 ]  Flying Off",
+            Content = Value and "[ ✅ ]  Click Teleport On" or "[ 🛑 ]  Click Teleport Off",
+            Duration = 1,
+            Image = "luggage"
+        })
+
         local character = player.Character
         if not character then return end
         
@@ -213,7 +219,7 @@ PTab:CreateToggle({
         Rayfield:Notify({
            Title = "[ 🦘 ]  Power Jump ✅",
            Content = "[ 🦘 ]  Become Power Rabbit",
-           Duration = 3,
+           Duration = 1,
            Image = "rabbit",
         })
         end
@@ -261,7 +267,7 @@ local InfiniteZoomToggle = PTab:CreateToggle({
          Rayfield:Notify({
             Title = "[ ✅ ]  Infinite Zoom ON",
             Content = "[ ✅ ]  Infinite Zoom Finish",
-            Duration = 3,
+            Duration = 1,
             Image = "zoom-in",
          })
       else
@@ -270,7 +276,7 @@ local InfiniteZoomToggle = PTab:CreateToggle({
          Rayfield:Notify({
             Title = "[ 🛑 ]  Infinite Zoom OFF",
             Content = "[ 🛑 ]  Infinite Zoom Become Normal",
-            Duration = 3,
+            Duration = 1,
             Image = "zoom-out",
          })
       end
@@ -342,7 +348,7 @@ player.CharacterAdded:Connect(function(c)
 end)
 
 --// === TELEPORT TAB ===
-local friendTab = Window:CreateTab("||   - Teleport", "map-pin")
+local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
 local Section1 = friendTab:CreateSection("")
 
 local Players = game:GetService("Players")
@@ -932,14 +938,56 @@ local Section1 = friendTab:CreateSection("")
 local espTab = Window:CreateTab("||   - Solution", "flask-conical")
 local espSection = espTab:CreateSection("")
 
-espTab:CreateButton({
-    Name = "[ 🍭 ]  Teleport Tool  [ - Sword - ]",
-    Callback = function()
-        loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
-    end
+local MouseTPEnabled = false
+local Mouse = game.Players.LocalPlayer:GetMouse()
+local Player = game.Players.LocalPlayer
+
+-- สร้าง Sound ไว้ใช้ซ้ำได้เรื่อย ๆ
+local teleportSound = Instance.new("Sound")
+teleportSound.SoundId = "rbxassetid://4861638982"
+teleportSound.Volume = 0.7
+
+local Toggle = espTab:CreateToggle({
+    Name = "[ 👆 ]  Clicking Teleport   [ - Backpack - ]",
+    CurrentValue = false,
+    Flag = "MouseTP",
+    Callback = function(Value)
+        MouseTPEnabled = Value
+        Rayfield:Notify({
+            Title = Value and   "[ 👆 ]  Teleport Clicking On" or "[ 👆 ]  Teleport Clicking Off",
+            Content = Value and "[ ✅ ]  Click Teleport On" or "[ 🛑 ]  Click Teleport Off",
+            Duration = 1,
+            Image = "mouse"
+        })
+    end,
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
+-- กดคลิก = วาร์ปทันที + เสียงดังพร้อมกัน
+Mouse.Button1Down:Connect(function()
+    if MouseTPEnabled and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        local targetPos = Mouse.Hit.Position + Vector3.new(0, 5, 0)
+        
+        -- วาร์ปก่อนเลย ไม่ต้องรอ
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+        
+        -- เล่นเสียงทันที (เสียงจะดังจากตำแหน่งใหม่เลย)
+        teleportSound.Parent = Player.Character.HumanoidRootPart
+        teleportSound:Play()
+        
+        -- หลังจากเล่นเสร็จ ลบออกเพื่อไม่ให้กิน memory
+        task.delay(3, function()
+            teleportSound.Parent = nil
+        end)
+    end
+end)
+
+-- รีโหลดสถานะตอนเกิดใหม่
+Player.CharacterAdded:Connect(function()
+    task.wait(1)
+    MouseTPEnabled = Rayfield.Flags.MouseTP.CurrentValue
+end)
+
+local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport For Player / Friend", Content = "Clicking Teleport Is Good For Building"})
 
 local Section2 = espTab:CreateSection("")
 
@@ -1017,7 +1065,7 @@ local function ToggleRainbowGun(state)
         Rayfield:Notify({
            Title = "[ ✅ ] Rainbow Tools ON",
            Content = "[ 🌈 ] Rainbow Tools Finish",
-           Duration = 3,
+           Duration = 1,
            Image = "rainbow",
          })
         if not RainbowGun.Loop then
@@ -1028,7 +1076,7 @@ local function ToggleRainbowGun(state)
         Rayfield:Notify({
            Title = "[ ❌ ] Rainbow Tools OFF",
            Content = "[ 🌈 ] Rainbow Tools Finish",
-           Duration = 3,
+           Duration = 1,
            Image = "rainbow",
          })
         if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
@@ -1041,7 +1089,7 @@ LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
 espTab:CreateToggle({
-    Name = "[ 🌈 ]  Rainbow Tool  [ - Sword - ]",
+    Name = "[ 🌈 ]  Rainbow Tool  [ - Tool - ]",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
@@ -1432,211 +1480,204 @@ local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", 
 
 local espSection = espTab:CreateSection("")
 
-local NTab = Window:CreateTab("||   - Trolling Player", "swords")
-local Section = NTab:CreateSection("")
+local BTab = Window:CreateTab("||   - Backpack", "backpack")
+local Section = BTab:CreateSection("")
 
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- ตัวแปรเก็บตำแหน่งเดิม
-local savedCFrame = nil
-
--- ===== ฟังก์ชันช่วย =====
-local function getPlayerList()
-    local list = {}
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= player then
-            table.insert(list, string.format("%s (%s)", p.DisplayName, p.Name))
-        end
-    end
-    table.sort(list)
-    return list
-end
-
--- ===== Dropdown เลือกเพื่อน =====
-local friendDropdown = NTab:CreateDropdown({
-    Name = "[ 👁️ ]  Dropdown Kill Player",
-    Options = getPlayerList(),
-    CurrentOption = {""},
-    Flag = "FriendSelect",
-    Callback = function() end
-})
-
--- อัปเดต Dropdown เมื่อมีคนเข้า-ออก
-Players.PlayerAdded:Connect(function()
-    friendDropdown:Refresh(getPlayerList(), true)
-end)
-Players.PlayerRemoving:Connect(function()
-    friendDropdown:Refresh(getPlayerList(), true)
-end)
-
--- ===== ปุ่มวาปไปหาเพื่อน + กลับทันที =====
-NTab:CreateButton({
-    Name = "[ ⚔️ ]  Katana To Killing Player",
+BTab:CreateButton({
+    Name = "[ 🍭 ]  Teleport Tool   [ - Sword - ]",
     Callback = function()
-        local selected = friendDropdown.CurrentOption[1]
-        if not selected or selected == "" then
-            return
-        end
+        -- ลูกอมสีเขียว Sparkles เทเลพอร์ต (แสงเขียวทั้งลูก + Effect)
+local tool = Instance.new("Tool")
+tool.Name = "🍭"
+tool.ToolTip = "[ 🍭 ]  Teleport Tool"
+tool.RequiresHandle = true
 
-        local friendName = selected:match("%((.-)%)") or selected
-        local targetPlayer = Players:FindFirstChild(friendName)
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+local player = game.Players.LocalPlayer
 
-        if not hrp then
-            return
-        end
+-- สร้าง Handle ลูกอมสีเขียว
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Size = Vector3.new(2.2, 2.2, 2.2)
+handle.Shape = Enum.PartType.Ball
+handle.Material = Enum.Material.ForceField
+handle.BrickColor = BrickColor.new("Bright green")  -- สีเขียวสด
+handle.Transparency = 0.15
+handle.CanCollide = false
+handle.Parent = tool
 
-        if targetPlayer and targetPlayer.Character then
-            local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if targetHRP then
-                -- บันทึกตำแหน่งเดิม
-                savedCFrame = hrp.CFrame
+-- ParticleEmitter สีเขียว
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxassetid://241650934"
+particles.Color = ColorSequence.new(
+    Color3.fromRGB(43, 179, 123),      -- เขียวสด
+    Color3.fromRGB(43, 179, 123)     -- เขียวอ่อน
+)
 
-                -- วาปไปหาเพื่อน (ยกขึ้นนิดหน่อย)
-                hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+particles.Size = NumberSequence.new(0.4)
+particles.Lifetime = NumberRange.new(1.5, 2.5)
+particles.Rate = 30
+particles.SpreadAngle = Vector2.new(45, 45)
+particles.Speed = NumberRange.new(2)
+particles.Parent = handle
 
-                -- แจ้งเตือนว่าวาปไปแล้ว
+-- PointLight สีเขียว
+local light = Instance.new("PointLight")
+light.Color = Color3.fromRGB(43, 179, 123)
+light.Brightness = 0
+light.Range = 8
+light.Parent = handle
 
-                -- รอเฟรมนิดนึงเพื่อให้เห็นการวาปชัดเจน (ไม่กระตุก)
-                task.wait()
+-- เสียงเทเลพอร์ต
+local teleportSound = Instance.new("Sound")
+teleportSound.SoundId = "rbxassetid://4861638982"
+teleportSound.Volume = 0.7
+teleportSound.Parent = handle
 
-                -- กลับจุดเดิมทันที
-                if savedCFrame and hrp and hrp.Parent then
-                    hrp.CFrame = savedCFrame
-                end
+-- เอฟเฟกต์ตอนถือ
+tool.Equipped:Connect(function()
+    sparkles.Enabled = true
+    particles.Rate = 50
+end)
 
-                return
-            end
-        end
+tool.Unequipped:Connect(function()
+    sparkles.Enabled = false
+    particles.Rate = 20
+end)
 
+-- ฟังก์ชันเทเลพอร์ต
+tool.Activated:Connect(function()
+    teleportSound:Play()
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local mouse = player:GetMouse()
+        local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+        character.HumanoidRootPart.CFrame = CFrame.new(pos)
+    end
+end)
+
+-- ใส่ลง Backpack
+player:WaitForChild("Backpack")
+tool.Parent = player.Backpack
+
+-- (Optional) ถ้าต้องการให้มีเสียงตอนถือ/ปล่อย
+tool.Equipped:Connect(function()
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://2865227271"  -- เสียงเทเลพอร์ตเท่ ๆ (หรือเปลี่ยนได้)
+    sound.Volume = 0.5
+    sound.Parent = Player.Character:FindFirstChild("HumanoidRootPart")
+    sound:Play()
+    sound.Ended:Wait()
+    sound:Destroy()
+end)
+
+        Rayfield:Notify({
+           Title = "[ 🍭 ]  Teleport Tool",
+           Content = "[ 🍭 ]  Finish 🏁",
+           Duration = 1,
+           Image = "lollipop",
+         })
     end
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "Teleport Player / Friend And CheckPoint", Content = "Teleport Player / Friend And Mark Checkpoint"})
+local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
 
-local Section = NTab:CreateSection("")
+local Section = BTab:CreateSection("")
 
-local Button = NTab:CreateButton({
-   Name = "[ 📺 ]  Teleport Player All",
-   Callback = function()
-       local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
-local originalCFrame = HumanoidRootPart.CFrame -- บันทึกตำแหน่งเดิม
+BTab:CreateButton({
+    Name = "[ 🚲 ]  Recoil Tool  [ - 25 - ]   [ - Recoil - ]",
+    Callback = function()
+        local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
 
--- สร้าง Highlight (วงสีเขียวเข้ม)
-local function createHighlight(targetCharacter)
-    local highlight = Instance.new("Highlight")
-    highlight.FillColor = Color3.fromRGB(0, 120, 0) -- เขียวเข้ม (Fill)
-    highlight.OutlineColor = Color3.fromRGB(0, 180, 0) -- เขียวเข้มกว่าอีก (Outline)
-    highlight.FillTransparency = 0.4
-    highlight.OutlineTransparency = 0
-    highlight.Parent = targetCharacter
-    return highlight
-end
+-- สร้าง Tool
+local tool = Instance.new("Tool")
+tool.RequiresHandle = false
+tool.Name = "🚲"
+tool.ToolTip = "[ 🚲 ]  Recoil Speed"
 
-local function removeHighlight(targetCharacter)
-    if targetCharacter:FindFirstChild("Highlight") then
-        targetCharacter.Highlight:Destroy()
+-- ตัวแปรเก็บความเร็วปกติของเกม (ส่วนใหญ่คือ 16)
+local NormalWalkSpeed = 16
+
+local player = game.Players.LocalPlayer
+ 
+-- สร้าง Handle ลูกอมสีเขียว
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Size = Vector3.new(2.2, 2.2, 2.2)
+handle.Shape = Enum.PartType.Ball
+handle.Material = Enum.Material.ForceField
+handle.BrickColor = BrickColor.new("Bright green")  -- สีเขียวสด
+handle.Transparency = 0.15
+handle.CanCollide = false
+handle.Parent = tool
+ 
+-- ParticleEmitter สีเขียว
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxassetid://241650934"
+particles.Color = ColorSequence.new(
+    Color3.fromRGB(43, 179, 123),      -- เขียวสด
+    Color3.fromRGB(43, 179, 123)     -- เขียวอ่อน
+)
+
+particles.Size = NumberSequence.new(0.4)
+particles.Lifetime = NumberRange.new(1.5, 2.5)
+particles.Rate = 30
+particles.SpreadAngle = Vector2.new(45, 45)
+particles.Speed = NumberRange.new(2)
+particles.Parent = handle
+ 
+-- PointLight สีเขียว
+local light = Instance.new("PointLight")
+light.Color = Color3.fromRGB(0, 255, 0)
+light.Brightness = 0
+light.Range = 8
+light.Parent = handle
+
+tool.Equipped:Connect(function()
+    sparkles.Enabled = true
+    particles.Rate = 50
+end)
+
+-- เมื่อถือ Tool → วิ่งเร็ว
+tool.Equipped:Connect(function()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        Player.Character.Humanoid.WalkSpeed = 25  -- วิ่งเร็วสุด
     end
-end
+end)
 
--- สร้างแจ้งเตือนชื่อผู้เล่น (ScreenGui)
-local function createNotification(playerName)
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "TeleportNotification"
-    screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-    
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 80)
-    frame.Position = UDim2.new(0.5, -150, 0, 50)
-    frame.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-    frame.BorderSizePixel = 0
-    frame.Parent = screenGui
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
-    corner.Parent = frame
-    
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0.5, 0)
-    title.Position = UDim2.new(0, 0, 0, 0)
-    title.BackgroundTransparency = 1
-    title.Text = "🌋 Teleport To"
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.TextScaled = true
-    title.Font = Enum.Font.GothamBold
-    title.Parent = frame
-    
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    nameLabel.Position = UDim2.new(0, 0, 0.5, 0)
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = playerName
-    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.Gotham
-    nameLabel.Parent = frame
-    
-    -- แอนิเมชันเข้า
-    frame:TweenPosition(UDim2.new(0.5, -150, 0.1, 0), "Out", "Quad", 0.3, true)
-    
-    wait(0)
-    
-    -- แอนิเมชันออก
-    frame:TweenPosition(UDim2.new(0.5, -150, -0.2, 0), "In", "Quad", 0.3, true)
-    wait(1)
-    screenGui:Destroy()
-end
-
-local function TeleportToPlayer(targetPlayer)
-    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        -- แจ้งเตือนชื่อผู้เล่น
-        spawn(function() createNotification(targetPlayer.Name) end)
-        
-        -- สร้างวงสีเขียวเข้มรอบเป้าหมาย
-        local highlight = createHighlight(targetPlayer.Character)
-        
-        -- วาปไปหาเป้าหมาย
-        HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-        wait(0) -- รอสักครู่เพื่อเห็นเอฟเฟค
-        
-        -- กลับตำแหน่งเดิม
-        HumanoidRootPart.CFrame = originalCFrame
-        
-        -- ลบวงสีเขียวเข้ม
-        removeHighlight(targetPlayer.Character)
+-- เมื่อปล่อย Tool (ไม่ถือแล้ว) → กลับความเร็วปกติ
+tool.Unequipped:Connect(function()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed  -- กลับเป็นปกติ
     end
-end
+end)
 
--- วนลูปวาปหาทุกคน
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= LocalPlayer then
-        TeleportToPlayer(player)
-        wait(0) -- รอก่อนไปคนถัดไป (เพิ่มเวลาเพราะมี notification)
+-- เพิ่ม Tool เข้า Backpack
+tool.Parent = Player.Backpack
+
+-- (Optional) ถ้าต้องการให้มีเสียงตอนถือ/ปล่อย
+tool.Equipped:Connect(function()
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://2865227271"  -- เสียงเทเลพอร์ตเท่ ๆ (หรือเปลี่ยนได้)
+    sound.Volume = 0.5
+    sound.Parent = Player.Character:FindFirstChild("HumanoidRootPart")
+    sound:Play()
+    sound.Ended:Wait()
+    sound:Destroy()
+end)
+
+        Rayfield:Notify({
+           Title = "[ 🚲 ]  Recoil Tool",
+           Content = "[ 🚲 ]  Finish 🏁",
+           Duration = 1,
+           Image = "bike",
+         })
     end
-end   
-   end,
 })
 
-local Paragraph = NTab:CreateParagraph({Title = "-- Teleport To Player / Friend All", Content = "-- Teleport To Player / Friend With 1 Second All"})
+local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
 
-local Section = NTab:CreateSection("")
-
-local Button = NTab:CreateButton({
-   Name = "[ 💫 ]  Fling Player All",
-   Callback = function()
-       loadstring(game:HttpGet("https://pastebin.com/raw/zqyDSUWX"))()
-	   Rayfield:Notify({Title = "💫  [ Fling Player All ]  💫", Content = "                     Finish 🏁", Duration = 2, lmage = "toggle-right"})
-   end,
-})
-
-local Paragraph = NTab:CreateParagraph({Title = "-- Fling To Player / Friend All", Content = "-- Fling To Player / Friend With 5 Second All"})
-
-local Section = NTab:CreateSection("")
+local Section = BTab:CreateSection("")
 
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
@@ -1683,11 +1724,12 @@ local Button = CTab:CreateButton({
               local LocalPlayer = Players.LocalPlayer
               TeleportService:Teleport(game.PlaceId, LocalPlayer)
 
-               game.StarterGui:SetCore("SendNotification", {
-                   Title = "⏰ Loading Wait Rejoin Map",
-                   Text = "________________________________________________________",
-               Duration = 5
-            })
+               Rayfield:Notify({
+                  Title = "⏰ Loading Wait Rejoin Map",
+                  Content = "________________________________________________________",
+                  Duration = 1,
+                  Image = "rewind",
+               })
    end,
 })
 
