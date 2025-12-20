@@ -353,96 +353,107 @@ local Section = BTab:CreateSection("")
 BTab:CreateButton({
     Name = "[ 🍭 ]  Teleport Tool   [ - Sword - ]",
     Callback = function()
-        -- ลูกอมสีเขียว Sparkles เทเลพอร์ต (แสงเขียวทั้งลูก + Effect)
-local tool = Instance.new("Tool")
-tool.Name = "🍭"
-tool.ToolTip = "[ 🍭 ]  Teleport Tool"
-tool.RequiresHandle = true
+        -- ลูกอมสีม่วง Sparkles เทเลพอร์ต (แสงม่วงทั้งลูก + Effect)
+        local tool = Instance.new("Tool")
+        tool.Name = "🍭"
+        tool.ToolTip = "[ 🍭 ]  Teleport Tool"
+        tool.RequiresHandle = true
 
-local player = game.Players.LocalPlayer
+        local player = game.Players.LocalPlayer
 
--- สร้าง Handle ลูกอมสีเขียว
-local handle = Instance.new("Part")
-handle.Name = "Handle"
-handle.Size = Vector3.new(2.2, 2.2, 2.2)
-handle.Shape = Enum.PartType.Ball
-handle.Material = Enum.Material.ForceField
-handle.BrickColor = BrickColor.new("Bright green")  -- สีเขียวสด
-handle.Transparency = 0.15
-handle.CanCollide = false
-handle.Parent = tool
+        -- สร้าง Handle ลูกอมสีม่วง
+        local handle = Instance.new("Part")
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(2.2, 2.2, 2.2)
+        handle.Shape = Enum.PartType.Ball
+        handle.Material = Enum.Material.ForceField
+        handle.BrickColor = BrickColor.new("Royal purple")  -- สีใกล้เคียงที่สุดใน BrickColor
+        handle.Color = Color3.fromRGB(138, 43, 179)        -- ตั้งค่าสีจริงให้ตรงตาม RGB
+        handle.Transparency = 0.15
+        handle.CanCollide = false
+        handle.Parent = tool
 
--- ParticleEmitter สีเขียว
-local particles = Instance.new("ParticleEmitter")
-particles.Texture = "rbxassetid://241650934"
-particles.Color = ColorSequence.new(
-    Color3.fromRGB(43, 179, 123),      -- เขียวสด
-    Color3.fromRGB(43, 179, 123)     -- เขียวอ่อน
-)
+        -- Sparkles สีม่วง
+        local sparkles = Instance.new("Sparkles")
+        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+        sparkles.Enabled = false
+        sparkles.Parent = handle
 
-particles.Size = NumberSequence.new(0.4)
-particles.Lifetime = NumberRange.new(1.5, 2.5)
-particles.Rate = 30
-particles.SpreadAngle = Vector2.new(45, 45)
-particles.Speed = NumberRange.new(2)
-particles.Parent = handle
+        -- ParticleEmitter สีม่วง
+        local particles = Instance.new("ParticleEmitter")
+        particles.Texture = "rbxassetid://241650934"
+        particles.Color = ColorSequence.new(
+            Color3.fromRGB(138, 43, 179),
+            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนลงนิดเพื่อความสวย
+        )
+        particles.Size = NumberSequence.new(0.4)
+        particles.Lifetime = NumberRange.new(1.5, 2.5)
+        particles.Rate = 20
+        particles.SpreadAngle = Vector2.new(45, 45)
+        particles.Speed = NumberRange.new(2)
+        particles.Parent = handle
 
--- PointLight สีเขียว
-local light = Instance.new("PointLight")
-light.Color = Color3.fromRGB(43, 179, 123)
-light.Brightness = 0
-light.Range = 8
-light.Parent = handle
+        -- PointLight สีม่วง
+        local light = Instance.new("PointLight")
+        light.Color = Color3.fromRGB(138, 43, 179)
+        light.Brightness = 2
+        light.Range = 10
+        light.Parent = handle
 
--- เสียงเทเลพอร์ต
-local teleportSound = Instance.new("Sound")
-teleportSound.SoundId = "rbxassetid://4861638982"
-teleportSound.Volume = 0.7
-teleportSound.Parent = handle
+        -- เสียงเทเลพอร์ต
+        local teleportSound = Instance.new("Sound")
+        teleportSound.SoundId = "rbxassetid://4861638982"
+        teleportSound.Volume = 0.7
+        teleportSound.Parent = handle
 
--- เอฟเฟกต์ตอนถือ
-tool.Equipped:Connect(function()
-    sparkles.Enabled = true
-    particles.Rate = 50
-end)
+        -- เอฟเฟกต์ตอนถือ/ปล่อย
+        tool.Equipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 50
+            light.Brightness = 0
+        end)
 
-tool.Unequipped:Connect(function()
-    sparkles.Enabled = false
-    particles.Rate = 20
-end)
+        tool.Unequipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 20
+            light.Brightness = 2
+        end)
 
--- ฟังก์ชันเทเลพอร์ต
-tool.Activated:Connect(function()
-    teleportSound:Play()
-    local character = player.Character
-    if character and character:FindFirstChild("HumanoidRootPart") then
-        local mouse = player:GetMouse()
-        local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
-        character.HumanoidRootPart.CFrame = CFrame.new(pos)
-    end
-end)
+        -- ฟังก์ชันเทเลพอร์ต
+        tool.Activated:Connect(function()
+            teleportSound:Play()
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local mouse = player:GetMouse()
+                local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+                character.HumanoidRootPart.CFrame = CFrame.new(pos)
+            end
+        end)
 
--- ใส่ลง Backpack
-player:WaitForChild("Backpack")
-tool.Parent = player.Backpack
+        -- เสียงตอนถือเครื่องมือ (เพิ่มความเท่)
+        tool.Equipped:Connect(function()
+            local equipSound = Instance.new("Sound")
+            equipSound.SoundId = "rbxassetid://2865227271"
+            equipSound.Volume = 0.5
+            equipSound.Parent = player.Character:FindFirstChild("HumanoidRootPart")
+            if equipSound.Parent then
+                equipSound:Play()
+                equipSound.Ended:Connect(function()
+                    equipSound:Destroy()
+                end)
+            end
+        end)
 
--- (Optional) ถ้าต้องการให้มีเสียงตอนถือ/ปล่อย
-tool.Equipped:Connect(function()
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://2865227271"  -- เสียงเทเลพอร์ตเท่ ๆ (หรือเปลี่ยนได้)
-    sound.Volume = 0.5
-    sound.Parent = Player.Character:FindFirstChild("HumanoidRootPart")
-    sound:Play()
-    sound.Ended:Wait()
-    sound:Destroy()
-end)
+        -- ใส่ลง Backpack
+        player:WaitForChild("Backpack")
+        tool.Parent = player.Backpack
 
         Rayfield:Notify({
-           Title = "[ 🍭 ]  Teleport Tool",
-           Content = "[ 🍭 ]  Finish 🏁",
-           Duration = 1,
-           Image = "lollipop",
-         })
+            Title = "[ 🍭 ]  Teleport Tool",
+            Content = "[ 🍭 ]  Finish 🏁",
+            Duration = 1,
+            Image = "lollipop",
+        })
     end
 })
 
@@ -453,92 +464,101 @@ local Section = BTab:CreateSection("")
 BTab:CreateButton({
     Name = "[ 🚲 ]  Recoil Tool  [ - 25 - ]   [ - Recoil - ]",
     Callback = function()
-        local Player = game.Players.LocalPlayer
-local Mouse = Player:GetMouse()
+        local player = game.Players.LocalPlayer
 
--- สร้าง Tool
-local tool = Instance.new("Tool")
-tool.RequiresHandle = false
-tool.Name = "🚲"
-tool.ToolTip = "[ 🚲 ]  Recoil Speed"
+        -- สร้าง Tool
+        local tool = Instance.new("Tool")
+        tool.Name = "🚲"
+        tool.ToolTip = "[ 🚲 ]  Recoil Speed"
+        tool.RequiresHandle = true  -- ต้องมี Handle เพื่อให้เห็นลูกอม
 
--- ตัวแปรเก็บความเร็วปกติของเกม (ส่วนใหญ่คือ 16)
-local NormalWalkSpeed = 16
+        -- ความเร็วเดินปกติ (ส่วนใหญ่คือ 16)
+        local NormalWalkSpeed = 16
 
-local player = game.Players.LocalPlayer
- 
--- สร้าง Handle ลูกอมสีเขียว
-local handle = Instance.new("Part")
-handle.Name = "Handle"
-handle.Size = Vector3.new(2.2, 2.2, 2.2)
-handle.Shape = Enum.PartType.Ball
-handle.Material = Enum.Material.ForceField
-handle.BrickColor = BrickColor.new("Bright green")  -- สีเขียวสด
-handle.Transparency = 0.15
-handle.CanCollide = false
-handle.Parent = tool
- 
--- ParticleEmitter สีเขียว
-local particles = Instance.new("ParticleEmitter")
-particles.Texture = "rbxassetid://241650934"
-particles.Color = ColorSequence.new(
-    Color3.fromRGB(43, 179, 123),      -- เขียวสด
-    Color3.fromRGB(43, 179, 123)     -- เขียวอ่อน
-)
+        -- สร้าง Handle ลูกอมสีม่วง
+        local handle = Instance.new("Part")
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(2.2, 2.2, 2.2)
+        handle.Shape = Enum.PartType.Ball
+        handle.Material = Enum.Material.ForceField
+        handle.Color = Color3.fromRGB(138, 43, 179)        -- สีม่วงตรงตาม RGB
+        handle.Transparency = 0.15
+        handle.CanCollide = false
+        handle.Parent = tool
 
-particles.Size = NumberSequence.new(0.4)
-particles.Lifetime = NumberRange.new(1.5, 2.5)
-particles.Rate = 30
-particles.SpreadAngle = Vector2.new(45, 45)
-particles.Speed = NumberRange.new(2)
-particles.Parent = handle
- 
--- PointLight สีเขียว
-local light = Instance.new("PointLight")
-light.Color = Color3.fromRGB(0, 255, 0)
-light.Brightness = 0
-light.Range = 8
-light.Parent = handle
+        -- Sparkles สีม่วง
+        local sparkles = Instance.new("Sparkles")
+        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+        sparkles.Enabled = false
+        sparkles.Parent = handle
 
-tool.Equipped:Connect(function()
-    sparkles.Enabled = true
-    particles.Rate = 50
-end)
+        -- ParticleEmitter สีม่วง
+        local particles = Instance.new("ParticleEmitter")
+        particles.Texture = "rbxassetid://241650934"
+        particles.Color = ColorSequence.new(
+            Color3.fromRGB(138, 43, 179),
+            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนเพื่อความสวย
+        )
+        particles.Size = NumberSequence.new(0.4)
+        particles.Lifetime = NumberRange.new(1.5, 2.5)
+        particles.Rate = 20
+        particles.SpreadAngle = Vector2.new(45, 45)
+        particles.Speed = NumberRange.new(2)
+        particles.Parent = handle
 
--- เมื่อถือ Tool → วิ่งเร็ว
-tool.Equipped:Connect(function()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        Player.Character.Humanoid.WalkSpeed = 28  -- วิ่งเร็วสุด
-    end
-end)
+        -- PointLight สีม่วง
+        local light = Instance.new("PointLight")
+        light.Color = Color3.fromRGB(138, 43, 179)
+        light.Brightness = 2
+        light.Range = 10
+        light.Parent = handle
 
--- เมื่อปล่อย Tool (ไม่ถือแล้ว) → กลับความเร็วปกติ
-tool.Unequipped:Connect(function()
-    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-        Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed  -- กลับเป็นปกติ
-    end
-end)
+        -- เอฟเฟกต์ตอนถือเครื่องมือ
+        tool.Equipped:Connect(function()
+            if sparkles then sparkles.Enabled = false end
+            particles.Rate = 50
+            light.Brightness = 0
 
--- เพิ่ม Tool เข้า Backpack
-tool.Parent = Player.Backpack
+            -- เพิ่มความเร็วเดิน
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = 28
+            end
 
--- (Optional) ถ้าต้องการให้มีเสียงตอนถือ/ปล่อย
-tool.Equipped:Connect(function()
-    local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://2865227271"  -- เสียงเทเลพอร์ตเท่ ๆ (หรือเปลี่ยนได้)
-    sound.Volume = 0.5
-    sound.Parent = Player.Character:FindFirstChild("HumanoidRootPart")
-    sound:Play()
-    sound.Ended:Wait()
-    sound:Destroy()
-end)
+            -- เสียงตอนถือ
+            local equipSound = Instance.new("Sound")
+            equipSound.SoundId = "rbxassetid://2865227271"
+            equipSound.Volume = 0.5
+            equipSound.Parent = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if equipSound.Parent then
+                equipSound:Play()
+                equipSound.Ended:Connect(function()
+                    equipSound:Destroy()
+                end)
+            end
+        end)
 
+        tool.Unequipped:Connect(function()
+            if sparkles then sparkles.Enabled = false end
+            particles.Rate = 20
+            light.Brightness = 2
+
+            -- กลับความเร็วปกติ
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
+            end
+        end)
+
+        -- ใส่ Tool เข้า Backpack
+        player:WaitForChild("Backpack")
+        tool.Parent = player.Backpack
+
+        -- แจ้งเตือน
         Rayfield:Notify({
-           Title = "[ 🚲 ]  Recoil Tool",
-           Content = "[ 🚲 ]  Finish 🏁",
-           Duration = 1,
-           Image = "bike",
-         })
+            Title = "[ 🚲 ]  Recoil Tool",
+            Content = "[ 🚲 ]  Finish 🏁",
+            Duration = 1,
+            Image = "bike",
+        })
     end
 })
 
@@ -567,8 +587,8 @@ local espTargetPlayer = nil
 local espConnection = nil
 
 -- ตัวแปรสี ESP (เริ่มต้นเขียวอ่อน)
-local espFillColor = Color3.fromRGB(43, 179, 123)
-local espOutlineColor = Color3.fromRGB(43, 179, 123) -- ขอบขาวคงที่ หรือจะปรับได้ด้วย
+local espFillColor = Color3.fromRGB(138, 43, 179)
+local espOutlineColor = Color3.fromRGB(138, 43, 179) -- ขอบขาวคงที่ หรือจะปรับได้ด้วย
 
 -- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
@@ -802,7 +822,7 @@ local TargetHitboxConnection = nil
 local CurrentTargetPlayer = nil  -- ผู้เล่นที่ถูกเลือกปัจจุบัน
 
 -- สีเขียวเดียวกับ ESP ของคุณ
-local TargetHitboxColor = Color3.fromRGB(43, 179, 123)
+local TargetHitboxColor = Color3.fromRGB(138, 43, 179)
 
 friendTab:CreateToggle({
     Name = "[ ⚔️ ]  Hitbox Boxing Enable Target",
@@ -980,7 +1000,7 @@ local function enableDrawingESP(targetPlayer)
     nameText.Size = 16
     nameText.Center = true
     nameText.Outline = true
-    nameText.Color = Color3.fromRGB(43, 179, 123)
+    nameText.Color = Color3.fromRGB(138, 43, 179)
     nameText.Visible = false
    
     currentESPDrawings = {Box = box, Name = nameText}
@@ -1050,7 +1070,7 @@ end
 -- แก้ Color Picker ให้อัปเดตทั้งสองแบบ
 friendTab:CreateColorPicker({
     Name = "[ 🎨 ]  Choose Color ESP Player",
-    Color = Color3.fromRGB(43, 179, 123),
+    Color = Color3.fromRGB(138, 43, 179),
     Flag = "ESPColorPicker",
     Callback = function(Value)
         espFillColor = Value
@@ -1364,8 +1384,9 @@ espTab:CreateToggle({
                             if hrp then
                                 hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
                                 hrp.Transparency = 0.7
-                                -- เปลี่ยนเป็นสีเขียว RGB(43, 179, 123)
-                                hrp.Color = Color3.fromRGB(43, 179, 123)
+
+                                -- เปลี่ยนเป็นสีเขียว RGB(138, 43, 179)
+                                hrp.Color = Color3.fromRGB(138, 43, 179)
                                 hrp.Material = "Neon"
                                 hrp.CanCollide = false
                             end
@@ -1425,14 +1446,14 @@ local function CreateDrawingESP(player)
     local Box = Drawing.new("Square")
     Box.Thickness = 2
     Box.Filled = false
-    Box.Color = Color3.fromRGB(43, 179, 123)
+    Box.Color = Color3.fromRGB(138, 43, 179)
     Box.Visible = false
 
     local Name = Drawing.new("Text")
     Name.Size = 16
     Name.Center = true
     Name.Outline = true
-    Name.Color = Color3.fromRGB(43, 179, 123)
+    Name.Color = Color3.fromRGB(138, 43, 179)
     Name.Visible = false
 
     Drawings[player] = {Box = Box, Name = Name}
@@ -1444,8 +1465,8 @@ local function CreateHighlight(player)
     if player.Character then
         local highlight = Instance.new("Highlight")
         highlight.Parent = player.Character
-        highlight.FillColor = Color3.fromRGB(43, 179, 123)
-        highlight.OutlineColor = Color3.fromRGB(43, 179, 123)
+        highlight.FillColor = Color3.fromRGB(138, 43, 179)
+        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
         highlight.FillTransparency = 0.4
         highlight.OutlineTransparency = 0
         highlight.Enabled = false
@@ -1493,7 +1514,7 @@ end
 
 -- Toggle หลัก (รวม ESP + Highlight)
 espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Hitbox Player [ 43, 179, 123 ]  All",
+    Name = "[ 👁️ ]  ESP Hitbox Player [ 138, 43, 179 ]  All",
     CurrentValue = false,
     Callback = function(Value)
         ESPEnabled = Value
@@ -1562,8 +1583,8 @@ local function CreateHighlight(player)
     if player.Character then
         local highlight = Instance.new("Highlight")
         highlight.Parent = player.Character
-        highlight.FillColor = Color3.fromRGB(43, 179, 123)
-        highlight.OutlineColor = Color3.fromRGB(43, 179, 123)
+        highlight.FillColor = Color3.fromRGB(138, 43, 179)
+        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
         highlight.FillTransparency = 0.5
         highlight.OutlineTransparency = 0
         highlight.Enabled = false
