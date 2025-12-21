@@ -1,8 +1,10 @@
+-- 111948200153431
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "   |  Akari Hub   [ V-3.5 ]",
-   Icon = "webhook",
+   Icon = 111948200153431,
    LoadingTitle = "[ 🌑 ]  Akari Hub  V. Zero   [ 🌑 ]",
    LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
    ShowText = "🌑",
@@ -42,6 +44,8 @@ local LocalPlayer = Players.LocalPlayer
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Player", "bot")
 local Section = PTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+
+local Section = PTab:CreateSection("{ [ - Flying Jetpack - ] }")
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -202,10 +206,14 @@ local SpeedSlider = PTab:CreateSlider({
 
 local Section1 = PTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
+local Section = PTab:CreateSection("{ [ - Walk Speed - ] }")
+
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walk Or Run", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
 local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walk Or Run", Range={16,2000}, Increment=1, Suffix=" Run Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
 local Section1 = PTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+
+local Section = PTab:CreateSection("{ [ - Infinite Jump Power - ] }")
 
 local InfiniteJumpEnabled = false
 
@@ -252,6 +260,8 @@ end)
 
 local Section = PTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
+local Section = PTab:CreateSection("{ [ - Noclips / Infinite Zoom - ] }")
+
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walls", Callback=function(val) noclipEnabled=val end})
 
 local InfiniteZoomToggle = PTab:CreateToggle({
@@ -262,7 +272,7 @@ local InfiniteZoomToggle = PTab:CreateToggle({
       local player = game.Players.LocalPlayer
       
       if Value then
-         player.CameraMaxZoomDistance = 1000
+         player.CameraMaxZoomDistance = 2000
          player.CameraMinZoomDistance = 0.5
          Rayfield:Notify({
             Title = "[ ✅ ]  Infinite Zoom ON",
@@ -348,7 +358,9 @@ player.CharacterAdded:Connect(function(c)
 end)
 
 local BTab = Window:CreateTab("||   - Backpack", "backpack")
-local Section = BTab:CreateSection("")
+local Section = BTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+
+local Section = BTab:CreateSection("{ [ - Teleport Tool - ] }")
 
 BTab:CreateButton({
     Name = "[ 🍭 ]  Teleport Tool   [ - Sword - ]",
@@ -459,10 +471,12 @@ BTab:CreateButton({
 
 local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
 
-local Section = BTab:CreateSection("")
+local Section = BTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+
+local Section = BTab:CreateSection("{ [ - Recoil Speed Tool - ] }")
 
 BTab:CreateButton({
-    Name = "[ 🚲 ]  Recoil Tool  [ - 25 - ]   [ - Recoil - ]",
+    Name = "[ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]",
     Callback = function()
         local player = game.Players.LocalPlayer
 
@@ -472,8 +486,8 @@ BTab:CreateButton({
         tool.ToolTip = "[ 🚲 ]  Recoil Speed"
         tool.RequiresHandle = true  -- ต้องมี Handle เพื่อให้เห็นลูกอม
 
-        -- ความเร็วเดินปกติ (ส่วนใหญ่คือ 16)
-        local NormalWalkSpeed = 16
+        -- ความเร็วเดินปกติ (ส่วนใหญ่คือ 18)
+        local NormalWalkSpeed = 18
 
         -- สร้าง Handle ลูกอมสีม่วง
         local handle = Instance.new("Part")
@@ -521,7 +535,7 @@ BTab:CreateButton({
 
             -- เพิ่มความเร็วเดิน
             if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = 28
+                player.Character.Humanoid.WalkSpeed = 30
             end
 
             -- เสียงตอนถือ
@@ -691,6 +705,7 @@ friendTab:CreateButton({
     Callback = function()
         local selected = friendDropdown.CurrentOption[1]
         if not selected or selected == "" then return end
+
         local targetPlayer = getPlayerFromSelection(selected)
         local char = player.Character or player.CharacterAdded:Wait()
         local hrp = char:WaitForChild("HumanoidRootPart", 5)
@@ -698,7 +713,7 @@ friendTab:CreateButton({
         local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
         if targetHRP then
             savedCFrame = hrp.CFrame
-            hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 5, 0)
+            hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 3, 0)
         end
     end
 })
@@ -812,8 +827,6 @@ friendDropdown.Callback = function(selected)
 end
 
 local Section1 = friendTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
-
--- ==== ส่วน Hitbox Expander เฉพาะผู้เล่นที่เลือกจาก Dropdown (เพิ่มใน friendTab) ====
 
 -- ตัวแปรสำหรับ Hitbox เฉพาะเป้าหมาย
 local TargetHitboxEnabled = false
@@ -1146,9 +1159,9 @@ friendTab:CreateButton({
     end
 })
 
-local Paragraph = friendTab:CreateParagraph({Title = "ESP To Player / Friend Normal", Content = "ESP To Player / Friend Become Normal"})
-
 game:GetService("RunService").RenderStepped:Connect(UpdateESP)
+
+local Paragraph = friendTab:CreateParagraph({Title = "ESP To Player / Friend Normal", Content = "ESP To Player / Friend Become Normal"})
 
 local Section1 = friendTab:CreateSection("")
 
@@ -1439,9 +1452,18 @@ local ESPEnabled = false
 local Drawings = {}
 local Highlights = {}
 
--- สร้าง Drawing ESP (Box + Name)
-local function CreateDrawingESP(player)
-    if player == game.Players.LocalPlayer then return end
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- สร้างหรืออัปเดต Drawing ESP สำหรับ player
+local function SetupDrawingESP(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Drawings[player] then
+        if Drawings[player].Box then Drawings[player].Box:Remove() end
+        if Drawings[player].Name then Drawings[player].Name:Remove() end
+    end
     
     local Box = Drawing.new("Square")
     Box.Thickness = 2
@@ -1459,17 +1481,26 @@ local function CreateDrawingESP(player)
     Drawings[player] = {Box = Box, Name = Name}
 end
 
--- สร้าง Highlight บนตัวละคร
-local function CreateHighlight(player)
-    if player == game.Players.LocalPlayer then return end
-    if player.Character then
+-- สร้างหรืออัปเดต Highlight สำหรับ player
+local function SetupHighlight(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Highlights[player] then
+        if Highlights[player] and Highlights[player].Parent then
+            Highlights[player]:Destroy()
+        end
+    end
+    
+    local character = player.Character
+    if character then
         local highlight = Instance.new("Highlight")
-        highlight.Parent = player.Character
+        highlight.Parent = character
         highlight.FillColor = Color3.fromRGB(138, 43, 179)
         highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
         highlight.FillTransparency = 0.4
         highlight.OutlineTransparency = 0
-        highlight.Enabled = false
+        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
         
         Highlights[player] = highlight
     end
@@ -1480,26 +1511,35 @@ local function UpdateESP()
     if not ESPEnabled then return end
     
     for player, draws in pairs(Drawings) do
-        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Head") and player.Character:FindFirstChild("Humanoid") then
-            local root = player.Character.HumanoidRootPart
-            local head = player.Character.Head
-            local humanoid = player.Character.Humanoid
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") and character:FindFirstChild("Humanoid") then
+            local root = character.HumanoidRootPart
+            local head = character.Head
+            local humanoid = character.Humanoid
+            
+            if humanoid.Health <= 0 then
+                draws.Box.Visible = false
+                draws.Name.Visible = false
+                continue
+            end
 
             local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(root.Position)
             
             if onScreen then
-                -- คำนวณขนาด Box
-                local topPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
-                local bottomPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position - Vector3.new(0, 3, 0))
-                local size = (topPos - bottomPos).Magnitude
 
-                draws.Box.Size = Vector2.new(size * 2, size * 3.5)
-                draws.Box.Position = Vector2.new(screenPos.X - draws.Box.Size.X / 2, screenPos.Y - draws.Box.Size.Y / 2)
+                -- คำนวณขนาด Box (ปรับให้แม่นยำขึ้น)
+                local topPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
+                local bottomPos = workspace.CurrentCamera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0))
+                local sizeY = math.abs(topPos.Y - bottomPos.Y)
+                local sizeX = sizeY * 0.8
+
+                draws.Box.Size = Vector2.new(sizeX, sizeY)
+                draws.Box.Position = Vector2.new(screenPos.X - sizeX / 2, screenPos.Y - sizeY / 2)
                 draws.Box.Visible = true
 
                 -- ชื่อ + เลือด
-                draws.Name.Text = player.Name .. "  [ " .. math.floor(humanoid.Health) .. " ]"
-                draws.Name.Position = Vector2.new(screenPos.X, screenPos.Y - draws.Box.Size.Y / 2 - 20)
+                draws.Name.Text = player.Name .. " [ " .. math.floor(humanoid.Health) .. " ]"
+                draws.Name.Position = Vector2.new(screenPos.X, screenPos.Y - sizeY / 2 - 20)
                 draws.Name.Visible = true
             else
                 draws.Box.Visible = false
@@ -1512,149 +1552,172 @@ local function UpdateESP()
     end
 end
 
--- Toggle หลัก (รวม ESP + Highlight)
+-- ฟังก์ชันจัดการเมื่อ character โหลด
+local function OnCharacterAdded(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- รอให้ character โหลดส่วนสำคัญ
+    local character = player.Character or player.CharacterAdded:Wait()
+    character:WaitForChild("HumanoidRootPart")
+    character:WaitForChild("Head")
+    character:WaitForChild("Humanoid")
+    
+    SetupDrawingESP(player)
+    SetupHighlight(player)
+end
+
+-- ฟังก์ชันเปิด ESP
+local function EnableESP()
+    -- สำหรับผู้เล่นที่มีอยู่แล้ว
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            OnCharacterAdded(player)
+        end
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end
+    
+    -- ผู้เล่นใหม่เข้ามา
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end)
+end
+
+-- ฟังก์ชันปิด ESP
+local function DisableESP()
+    -- ลบ Drawing ทั้งหมด
+    for player, draws in pairs(Drawings) do
+        if draws.Box then draws.Box:Remove() end
+        if draws.Name then draws.Name:Remove() end
+    end
+    Drawings = {}
+    
+    -- ปิดและลบ Highlight ทั้งหมด
+    for player, highlight in pairs(Highlights) do
+        if highlight and highlight.Parent then
+            highlight.Enabled = false
+            highlight:Destroy()
+        end
+    end
+    Highlights = {}
+end
+
+-- Toggle หลัก
 espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Hitbox Player [ 138, 43, 179 ]  All",
+    Name = "[ 👁️ ]  ESP Hitbox Player  [ 138, 43, 179 ]  All",
     CurrentValue = false,
     Callback = function(Value)
         ESPEnabled = Value
 
         if Value then
-            -- สร้าง ESP และ Highlight ให้ผู้เล่นทั้งหมด
-            for _, player in pairs(game.Players:GetPlayers()) do
-                CreateDrawingESP(player)
-                CreateHighlight(player)
-                
-                -- รองรับการ respawn
-                player.CharacterAdded:Connect(function()
-                    task.wait(0.5)
-                    CreateDrawingESP(player)
-                    CreateHighlight(player)
-                end)
-            end
-
-            -- ผู้เล่นใหม่เข้ามา
-            game.Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function()
-                    task.wait(0.5)
-                    CreateDrawingESP(player)
-                    CreateHighlight(player)
-                end)
-            end)
-
-            -- เปิด Highlight ทั้งหมด
-            for _, highlight in pairs(Highlights) do
-                if highlight and highlight.Parent then
-                    highlight.Enabled = true
-                end
-            end
-
+            EnableESP()
         else
-            -- ปิดและลบ Drawing
-            for _, draws in pairs(Drawings) do
-                draws.Box:Remove()
-                draws.Name:Remove()
-            end
-            Drawings = {}
-
-            -- ปิดและลบ Highlight
-            for _, highlight in pairs(Highlights) do
-                if highlight and highlight.Parent then
-                    highlight.Enabled = false
-                    highlight:Destroy()
-                end
-            end
-            Highlights = {}
+            DisableESP()
         end
     end,
 })
 
--- อัปเดตทุกเฟรม
-game:GetService("RunService").RenderStepped:Connect(UpdateESP)
-
 local ESPEnabled = false
-local HighlightEnabled = false
-local Drawings = {}
-local Highlights = {}  -- เก็บ Highlight object
+local Highlights = {}  -- [player] = highlight instance
 
--- สร้าง Highlight
-local function CreateHighlight(player)
-    if player == game.Players.LocalPlayer then return end
-    if player.Character then
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- สร้างหรืออัปเดต Highlight สำหรับ player (เฉพาะ Highlight เท่านั้น)
+local function SetupHighlight(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบ Highlight เก่าถ้ามี (ป้องกัน duplicate)
+    if Highlights[player] then
+        if Highlights[player] and Highlights[player].Parent then
+            Highlights[player]:Destroy()
+        end
+    end
+    
+    local character = player.Character
+    if character then
         local highlight = Instance.new("Highlight")
-        highlight.Parent = player.Character
+        highlight.Parent = character
+        highlight.Adornee = character  -- ทำให้ highlight ติดกับตัวละครเต็มๆ
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- มองเห็นทะลุกำแพง
         highlight.FillColor = Color3.fromRGB(138, 43, 179)
         highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
-        highlight.FillTransparency = 0.5
+        highlight.FillTransparency = 0.4
         highlight.OutlineTransparency = 0
-        highlight.Enabled = false
+        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
         
         Highlights[player] = highlight
     end
 end
 
--- Toggle Highlight
+-- ฟังก์ชันจัดการเมื่อ character โหลดใหม่ (respawn หรือเข้ามาใหม่)
+local function OnCharacterAdded(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- รอให้ character โหลดส่วนสำคัญครบ
+    local character = player.Character or player.CharacterAdded:Wait()
+    character:WaitForChild("HumanoidRootPart", 5)
+    character:WaitForChild("Head", 5)
+    
+    SetupHighlight(player)
+end
+
+-- เปิด Highlight ESP
+local function EnableHighlightESP()
+    -- สำหรับผู้เล่นที่มีอยู่แล้วในเกม
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            OnCharacterAdded(player)
+        end
+        -- เชื่อม event สำหรับ respawn ในอนาคต
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end
+    
+    -- ผู้เล่นใหม่เข้ามาในเกม
+    Players.PlayerAdded:Connect(function(newPlayer)
+        newPlayer.CharacterAdded:Connect(function()
+            OnCharacterAdded(newPlayer)
+        end)
+    end)
+end  -- เพิ่ม end ตรงนี้เพื่อปิดฟังก์ชัน
+
+-- ปิดและลบ Highlight ทั้งหมด
+local function DisableHighlightESP()
+    for player, highlight in pairs(Highlights) do
+        if highlight and highlight.Parent then
+            highlight.Enabled = false
+            highlight:Destroy()
+        end
+    end
+    Highlights = {}
+end
+
+-- Toggle สำหรับ Highlight เท่านั้น
 espTab:CreateToggle({
     Name = "[ 💡 ]  ESP Highligh Player [ Highligh ]  All",
     CurrentValue = false,
     Callback = function(Value)
-        HighlightEnabled = Value
-        
+        ESPEnabled = Value
+
         if Value then
-            -- สร้าง Highlight ให้ทุกคนที่อยู่ในเกม
-            for _, player in pairs(game.Players:GetPlayers()) do
-                CreateHighlight(player)
-                player.CharacterAdded:Connect(function()
-                    task.wait(0.5)  -- รอตัวละครโหลด
-                    CreateHighlight(player)
-                end)
-            end
-            
-            game.Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function()
-                    task.wait(0.5)
-                    CreateHighlight(player)
-                end)
-            end)
+            EnableHighlightESP()
         else
-            -- ปิดและลบ Highlight ทั้งหมด
-            for _, highlight in pairs(Highlights) do
-                if highlight and highlight.Parent then
-                    highlight.Enabled = false
-                    highlight:Destroy()
-                end
-            end
-            Highlights = {}
-        end
-        
-        -- อัปเดตสถานะ Enabled
-        for _, highlight in pairs(Highlights) do
-            if highlight and highlight.Parent then
-                highlight.Enabled = Value
-            end
+            DisableHighlightESP()
         end
     end,
 })
 
--- สร้าง ESP Drawing เมื่อมีผู้เล่นใหม่
-for _, player in pairs(game.Players:GetPlayers()) do
-    CreateDrawingESP(player)
-    player.CharacterAdded:Connect(function()
-        task.wait(0.5)
-        CreateDrawingESP(player)
-    end)
-end
-
-game.Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        task.wait(0.5)
-        CreateDrawingESP(player)
-    end)
-end)
+-- อัปเดตทุกเฟรม
+RunService.RenderStepped:Connect(UpdateESP)
 
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", Content = "ESP Player Highligh / Name For Hitbox"})
 
-local espSection = espTab:CreateSection("")
+local Section = espTab:CreateSection("")
 
 local GTab = Window:CreateTab("||   - Script General", "globe")
 local Section = GTab:CreateSection("")
