@@ -216,7 +216,7 @@ local function updateFly()
 end
 
 local FlyToggle = PTab:CreateToggle({
-    Name = "[ 🪁 ]  Flying Jetpack",
+    Name = "[ 🪁 ]  Flying Gravity",
     CurrentValue = false,
     Flag = "FlyEnabled",
     Callback = function(Value)
@@ -326,10 +326,10 @@ end)
 
 local Section = PTab:CreateSection("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
-local Section = PTab:CreateSection("{ [ - Infinite Zoom Slider - ] }")
+local Section = PTab:CreateSection("{ [ - Infinite Zoom Slider Altra - ] }")
 
 local ResetZoomButton = PTab:CreateButton({
-    Name = "[ 🗞️ ]  Reseting Zoom",
+    Name = "[ 🗞️ ]  Reseting Zoom Altra",
     Callback = function()
         local player = game.Players.LocalPlayer
         
@@ -377,7 +377,7 @@ local InfiniteZoomSlider = PTab:CreateSlider({
             })
         else
             Rayfield:Notify({
-                Title = "[ 🔎 ]  Zoom Adjusted",
+                Title = "[ 📏 ]  Zoom Adjusted",
                 Content = "Distance Zoom: " .. Value .. " Studs",
                 Duration = 1,
                 Image = "zoom-in",
@@ -610,11 +610,12 @@ BTab:CreateButton({
 
         -- ParticleEmitter สีม่วง
         local particles = Instance.new("ParticleEmitter")
-        particles.Texture = "rbxassetid://241650934"
+        particles.Texture = "rbxassetid://241650934" -- 241650934 --
         particles.Color = ColorSequence.new(
             Color3.fromRGB(138, 43, 179),
             Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนเพื่อความสวย
         )
+        
         particles.Size = NumberSequence.new(0.4)
         particles.Lifetime = NumberRange.new(1.5, 2.5)
         particles.Rate = 20
@@ -642,7 +643,7 @@ BTab:CreateButton({
 
             -- เสียงตอนถือ
             local equipSound = Instance.new("Sound")
-            equipSound.SoundId = "rbxassetid://2865227271"
+            equipSound.SoundId = "rbxassetid://2865227271" -- 2865227271 --
             equipSound.Volume = 0.5
             equipSound.Parent = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
             if equipSound.Parent then
@@ -1970,7 +1971,7 @@ local function UpdatePlayerList()
     for player, data in pairs(leavingPlayers) do
         if currentTime - data.timestamp <= 4 then
             local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
-            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- ❌ ---</font>"
+            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- 💥 ---</font>"
             table.insert(nameList, entry)
         else
             -- ครบ 5 วิแล้ว → ลบออกจากตาราง
