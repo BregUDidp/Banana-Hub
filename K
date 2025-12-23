@@ -1970,7 +1970,7 @@ local function UpdatePlayerList()
     for player, data in pairs(leavingPlayers) do
         if currentTime - data.timestamp <= 5 then
             local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
-            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\">←  -- 💥 --</font>"
+            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> ---- 💥 ----</font>"
             table.insert(nameList, entry)
         else
             -- ครบ 5 วิแล้ว → ลบออกจากตาราง
@@ -2001,12 +2001,12 @@ game.Players.PlayerAdded:Connect(function(player)
     
     if game.Players.LocalPlayer:IsFriendsWith(player.UserId) then
     
-    Rayfield:Notify({
-        Title = "[ 🟢 ]  Player Comming",
-        Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
-        Duration = 3,
-        Image = "door-open",
-    })
+--    Rayfield:Notify({
+--        Title = "[ 🟢 ]  Player Comming",
+--      Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
+--      Duration = 3,
+--        Image = "door-open",
+--    })
 
     end
 end)
@@ -2030,7 +2030,7 @@ game.Players.PlayerRemoving:Connect(function(player)
     }
     
      Rayfield:Notify({
-        Title = "[ 🔴 ]  Player Leave",
+        Title = "[ 🔴 ]  Player Leave Game",
         Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
         Duration = 3,
         Image = "door-closed",
