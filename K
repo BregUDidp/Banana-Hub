@@ -1970,7 +1970,7 @@ local function UpdatePlayerList()
     for player, data in pairs(leavingPlayers) do
         if currentTime - data.timestamp <= 5 then
             local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
-            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> ---- 💥 ----</font>"
+            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- ❌ ---</font>"
             table.insert(nameList, entry)
         else
             -- ครบ 5 วิแล้ว → ลบออกจากตาราง
