@@ -1968,7 +1968,7 @@ local function UpdatePlayerList()
     
     -- เพิ่มผู้เล่นที่เพิ่งออกไป (แต่ยังไม่ครบ 5 วิ) → แสดงสีแดง
     for player, data in pairs(leavingPlayers) do
-        if currentTime - data.timestamp <= 5 then
+        if currentTime - data.timestamp <= 4 then
             local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
             local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- ❌ ---</font>"
             table.insert(nameList, entry)
@@ -2032,7 +2032,7 @@ game.Players.PlayerRemoving:Connect(function(player)
      Rayfield:Notify({
         Title = "[ 🔴 ]  Player Leave Game",
         Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
-        Duration = 3,
+        Duration = 4,
         Image = "door-closed",
     })
     
