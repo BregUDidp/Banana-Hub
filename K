@@ -124,7 +124,7 @@ PTab:CreateSlider({
             Title = "[ 🧱 ]  Wall Speed Adjusted",
             Content = "Climb Speed: " .. Value,
             Duration = 1,
-            Image = "mountain-snow"
+            Image = "brick-wall"
         })
     end
 })
@@ -142,14 +142,12 @@ PTab:CreateSlider({
             Title = "[ 🧲 ]  Wall Stick Force Adjusted",
             Content = "Stick Force: " .. Value,
             Duration = 1,
-            Image = "brick-wall"
+            Image = "magnet"
         })
     end
 })
 
-
-
-local Paragraph = PTab:CreateParagraph({Title = "Sticking Walling For Spider", Content = "Sticking Walling For Spider And Wall"})
+local Paragraph = PTab:CreateParagraph({Title = "Sticking Walling For Spider Magnet", Content = "Sticking Walling For Spider And Walling Magnet"})
 
 local Section = PTab:CreateSection("")
 
