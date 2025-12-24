@@ -2,22 +2,24 @@
 
 -- https://sirius.menu/rayfield
 
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Rayfield%20Ui"))()
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   [  V-4.0  ]   |  ZelX  |",
+   Name = "   |   Akari Hub   :(",
    Icon = "webhook",
-   LoadingTitle = "[ 🌑 ]  Akari Hub  V. Zero   [ 🌑 ]",
-   LoadingSubtitle = "____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+   LoadingTitle = "   Akari Hub  :(   ",
+
+   LoadingSubtitle = "",
+   
    ShowText = " 🌑 ",
    Theme = "Default",
    ToggleUIKeybind = "G",
-   DisableRayfieldPrompts = false,
-   DisableBuildWarnings = false,
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
-      FileName = "akari"
+      FileName = "Big Hub"
    },
    Discord = {
       Enabled = false,
@@ -36,20 +38,14 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
---// Services
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-local LocalPlayer = Players.LocalPlayer
+
 
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
 local Section = PTab:CreateSection("")
 
--- ตัวแปรสำหรับปรับความเร็วและแรงเกาะกำแพง (เริ่มต้นตามค่าเดิมในสคริปต์คุณ)
-local wallMoveSpeed = 15   -- ความสูงที่ยกขึ้นตอนเดิน (Vector3.new(0, 15, 0))
-local wallPushForce = 5    -- แรงดันเข้าหากำแพง (wallNormal * -5)
+local wallMoveSpeed = 15
+local wallPushForce = 5
 
 local wallConnection
 
@@ -169,7 +165,6 @@ UserInputService.InputEnded:Connect(function(input)
 	end
 end)
 
--- ตัวแปรระบบ
 local Players = game:GetService("Players")
 local RS = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
@@ -177,15 +172,10 @@ local player = Players.LocalPlayer
 local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local humanoid = char:WaitForChild("Humanoid")
- 
--- ตัวแปรฟังก์ชัน
-local flying = false
-local vv, gyro
-local flySpeed = 50
+
 local superSpeed = false
 local runSpeed = 16
 local noclipEnabled = false
-local infJumpEnabled = false
  
 -- ฟังก์ชันวิ่งเร็ว
 local function toggleSpeed(on)
@@ -193,7 +183,7 @@ local function toggleSpeed(on)
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
         Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
-        Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal",
+        Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal!",
         Duration = 1,
         Image = "bike",
     })
@@ -432,6 +422,14 @@ local Section = PTab:CreateSection("")
 
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walling Hole", Callback=function(val) noclipEnabled=val end})
 
+RS.Stepped:Connect(function()
+    if noclipEnabled and char then
+        for _,part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide=false end
+        end
+    end
+end)
+
 local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
 
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
@@ -652,6 +650,96 @@ BTab:CreateButton({
 })
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
+
+local Section = BTab:CreateSection("")
+
+local GravityEnabled = false
+local BodyGravity = nil
+local OriginalGravity = workspace.Gravity
+
+local GravitySlider = BTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Gravity Coil Slowing",
+    Range = {250, 5000}, -- 196.2 Normal
+    Increment = 5,
+    Suffix = " Gravity Slow",
+    CurrentValue = 250,
+    Flag = "GravityReduction",
+    Callback = function(Value)
+        if GravityEnabled then
+            ApplyGravityCoil(Value / 250)
+        end
+    end,
+})
+
+BTab:CreateToggle({
+    Name = "[ 🪂 ]  Gravity Coil Slowing",
+    CurrentValue = false,
+    Flag = "EnableGravityCoil",
+    Callback = function(Value)
+        GravityEnabled = Value
+        
+        local Character = game.Players.LocalPlayer.Character
+        if not Character or not Character:FindFirstChild("HumanoidRootPart") then
+            
+            return
+        end
+        
+        local Root = Character.HumanoidRootPart
+        
+        if Value then
+            -- เปิดเอฟเฟกต์
+            local reduction = GravitySlider.CurrentValue / 100
+            ApplyGravityCoil(reduction)
+            Rayfield:Notify({
+                Title =   "[ 🪂 ]  Gravity Coil On",
+                Content = "[ ✅ ]  Gravity Coil On  ( 250 )",
+                Duration = 1,
+                Image = "leaf", 
+            })
+        else
+            -- ปิดเอฟเฟกต์
+            if BodyGravity then
+                BodyGravity:Destroy()
+                BodyGravity = nil
+            end
+            Rayfield:Notify({
+                Title =   "[ 🪂 ]  Gravity Coil Off",
+                Content = "[ 🛑 ]  Gravity Coil Off  ( 250 )",
+                Duration = 1,
+                Image = "leaf",
+            })
+        end
+    end,
+})
+
+function ApplyGravityCoil(reduction)
+    local Character = game.Players.LocalPlayer.Character
+    if not Character then return end
+    
+    local Root = Character:FindFirstChild("HumanoidRootPart")
+    if not Root then return end
+    
+    -- ลบ BodyForce เก่าถ้ามี
+    if BodyGravity then
+        BodyGravity:Destroy()
+    end
+    
+    -- สร้าง BodyForce ใหม่เพื่อ counter gravity
+    BodyGravity = Instance.new("BodyForce")
+    BodyGravity.Force = Vector3.new(0, OriginalGravity * Root:GetMass() * reduction, 0)
+    BodyGravity.Parent = Root
+end
+
+-- ถ้าตัวละครตายหรือ respawn ให้รีเซ็ต
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if GravityEnabled then
+        wait(1) -- รอตัวละครโหลด
+        local reduction = GravitySlider.CurrentValue / 100
+        ApplyGravityCoil(reduction)
+    end
+end)
+
+local Paragraph = BTab:CreateParagraph({Title = "Gravity Coil For Building And Troll", Content = "Gravity Coil For Building And Troll"})
 
 local Section = BTab:CreateSection("")
 
@@ -2255,64 +2343,3 @@ coTab:CreateParagraph({
 local Section = coTab:CreateSection("")
 
 local Section = PTab:CreateSection("")
-
-RS.RenderStepped:Connect(function()
-    if flying and vv and gyro and hrp and humanoid then
-        local cam = workspace.CurrentCamera
-        if not cam then return end
- 
-        local flatForward = Vector3.new(cam.CFrame.LookVector.X,0,cam.CFrame.LookVector.Z)
-        local forward = flatForward.Magnitude > 0 and flatForward.Unit or Vector3.zero
-        local right = Vector3.new(cam.CFrame.RightVector.X,0,cam.CFrame.RightVector.Z)
-        if right.Magnitude > 0 then right = right.Unit end
- 
-        local moveVec = Vector3.zero
-        if UIS:IsKeyDown(Enum.KeyCode.W) then moveVec = moveVec + Vector3.new(0,0,1) end
-        if UIS:IsKeyDown(Enum.KeyCode.S) then moveVec = moveVec + Vector3.new(0,0,-1) end
-        if UIS:IsKeyDown(Enum.KeyCode.A) then moveVec = moveVec + Vector3.new(-1,0,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.D) then moveVec = moveVec + Vector3.new(1,0,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.Space) then moveVec = moveVec + Vector3.new(0,1,0) end
-        if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then moveVec = moveVec + Vector3.new(0,-1,0) end
- 
-        local desired = forward*moveVec.Z + right*moveVec.X + Vector3.new(0,moveVec.Y,0)
-        if desired.Magnitude>0 then desired = desired.Unit*flySpeed end
-        vv.Velocity = desired
- 
-        if desired.Magnitude>1 then
-            local flatDir = Vector3.new(desired.X,0,desired.Z)
-            if flatDir.Magnitude>0 then gyro.CFrame = CFrame.new(hrp.Position,hrp.Position+flatDir) end
-        end
-    end
-end)
- 
-RS.Stepped:Connect(function()
-    if noclipEnabled and char then
-        for _,part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") then part.CanCollide=false end
-        end
-    end
-end)
- 
-UIS.JumpRequest:Connect(function()
-    if infJumpEnabled and humanoid then
-        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
-
-UIS.JumpRequest:Connect(function()
-    if infJumpEnabled and humanoid then
-        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-    end
-end)
- 
--- รีเซ็ตตัวละครเมื่อ respawn
-player.CharacterAdded:Connect(function(c)
-    char=c
-    hrp=c:WaitForChild("HumanoidRootPart")
-    humanoid=c:WaitForChild("Humanoid")
-    stopFlying()
-    toggleSpeed(false)
-    noclipEnabled=false
-    infJumpEnabled=false
-    Rayfield:LoadConfiguration()
-end)
