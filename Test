@@ -1,1 +1,195 @@
-m
+-- Load Rayfield UI Library
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- สร้าง Window
+local Window = Rayfield:CreateWindow({
+    Name = "Laser Eyes Hub",
+    LoadingTitle = "กำลังโหลด Laser Eyes...",
+    LoadingSubtitle = "by Grok",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "LaserHub",
+        FileName = "Config"
+    },
+    Discord = {
+        Enabled = false
+    },
+    KeySystem = false
+})
+
+-- สร้าง Tab
+local Tab = Window:CreateTab("Main", 4483362458)
+
+-- ตัวแปรสำหรับควบคุม
+local LaserEnabled = false
+local LeftEyeAttachment = nil
+local RightEyeAttachment = nil
+local TargetAttachment = nil
+local LeftBeam = nil
+local RightBeam = nil
+local RunService = game:GetService("RunService")
+
+-- ฟังก์ชันสร้าง Attachment สำหรับตา
+local function SetupEyes()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local head = character:WaitForChild("Head")
+    
+    -- ลบของเก่าถ้ามี
+    if head:FindFirstChild("LeftEyeAtt") then head.LeftEyeAtt:Destroy() end
+    if head:FindFirstChild("RightEyeAtt") then head.RightEyeAtt:Destroy() end
+    if workspace:FindFirstChild("LaserTargetAtt") then workspace.LaserTargetAtt:Destroy() end
+    
+    -- สร้าง Attachment ตาซ้าย-ขวา
+    LeftEyeAttachment = Instance.new("Attachment")
+    LeftEyeAttachment.Name = "LeftEyeAtt"
+    LeftEyeAttachment.Position = Vector3.new(-0.3, 0.2, -0.5)
+    LeftEyeAttachment.Parent = head
+    
+    RightEyeAttachment = Instance.new("Attachment")
+    RightEyeAttachment.Name = "RightEyeAtt"
+    RightEyeAttachment.Position = Vector3.new(0.3, 0.2, -0.5)
+    RightEyeAttachment.Parent = head
+    
+    -- Attachment ปลายทาง
+    TargetAttachment = Instance.new("Attachment")
+    TargetAttachment.Name = "LaserTargetAtt"
+    TargetAttachment.Parent = workspace
+end
+
+-- ฟังก์ชันสร้าง Beam
+local function CreateBeams()
+    LeftBeam = Instance.new("Beam")
+    LeftBeam.Attachment0 = LeftEyeAttachment
+    LeftBeam.Attachment1 = TargetAttachment
+    LeftBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+    LeftBeam.LightEmission = 1
+    LeftBeam.Width0 = 0.5
+    LeftBeam.Width1 = 1
+    LeftBeam.Enabled = true
+    LeftBeam.Parent = workspace
+    
+    RightBeam = Instance.new("Beam")
+    RightBeam.Attachment0 = RightEyeAttachment
+    RightBeam.Attachment1 = TargetAttachment
+    RightBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+    RightBeam.LightEmission = 1
+    RightBeam.Width0 = 0.5
+    RightBeam.Width1 = 1
+    RightBeam.Enabled = true
+    RightBeam.Parent = workspace
+end
+
+-- ฟังก์ชันอัปเดตตำแหน่งเลเซอร์และหมุนหัว
+local function UpdateLaserAndHead()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    if not character then return end
+    local head = character:FindFirstChild("Head")
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    local mouse = player:GetMouse()
+    local camera = workspace.CurrentCamera
+    
+    if not (head and humanoidRootPart) then return end
+    
+    -- อัปเดตตำแหน่งเลเซอร์
+    local ray = camera:ScreenPointToRay(mouse.X, mouse.Y)
+    local params = RaycastParams.new()
+    params.FilterDescendantsInstances = {character}
+    params.FilterType = Enum.RaycastFilterType.Blacklist
+    
+    local result = workspace:Raycast(ray.Origin, ray.Direction * 500, params)
+    
+    if result then
+        TargetAttachment.Position = result.Position
+    else
+        TargetAttachment.Position = ray.Origin + ray.Direction * 500
+    end
+    
+    -- หมุนหัวตามเมาส์
+    local neck = character:FindFirstChild("UpperTorso") and character.UpperTorso:FindFirstChild("Neck")
+    if neck then
+        local targetPos = TargetAttachment.Position
+        local headPos = head.Position
+        local direction = (targetPos - headPos).Unit
+        local lookCFrame = CFrame.new(Vector3.new(0, 0, 0), Vector3.new(direction.X, direction.Y, direction.Z))
+        
+        -- จำกัดมุมหมุน (เพื่อความสมจริง)
+        local maxYaw = math.rad(80) -- หมุนซ้าย-ขวาได้ 80 องศา
+        local maxPitch = math.rad(60) -- เงย-ก้มได้ 60 องศา
+        local angles = lookCFrame:ToEulerAnglesXYZ()
+        angles = Vector3.new(
+            math.clamp(angles.X, -maxPitch, maxPitch),
+            math.clamp(angles.Y, -maxYaw, maxYaw),
+            0
+        )
+        
+        -- อัปเดต CFrame ของคอ
+        neck.C0 = CFrame.new(neck.C0.Position) * CFrame.Angles(angles.X, angles.Y, angles.Z)
+    end
+end
+
+-- Toggle Laser
+local ToggleButton = Tab:CreateButton({
+    Name = "เปิด/ปิด ยิงเลเซอร์จากตา",
+    Callback = function()
+        LaserEnabled = not LaserEnabled
+        
+        if LaserEnabled then
+            SetupEyes()
+            CreateBeams()
+            Rayfield:Notify({
+                Title = "Laser Eyes",
+                Content = "เปิดเลเซอร์แล้ว! หัวจะหันตามเมาส์",
+                Duration = 3
+            })
+            
+            -- อัปเดตทุกเฟรม
+            local connection
+            connection = RunService.RenderStepped:Connect(function()
+                if not LaserEnabled then
+                    connection:Disconnect()
+                    return
+                end
+                UpdateLaserAndHead()
+            end)
+        else
+            if LeftBeam then LeftBeam:Destroy() end
+            if RightBeam then RightBeam:Destroy() end
+            if TargetAttachment then TargetAttachment:Destroy() end
+            if LeftEyeAttachment then LeftEyeAttachment:Destroy() end
+            if RightEyeAttachment then RightEyeAttachment:Destroy() end
+            
+            -- รีเซ็ตคอให้กลับสู่ท่าปกติ
+            local character = game.Players.LocalPlayer.Character
+            if character then
+                local neck = character:FindFirstChild("UpperTorso") and character.UpperTorso:FindFirstChild("Neck")
+                if neck then
+                    neck.C0 = CFrame.new(neck.C0.Position) -- รีเซ็ตเป็นมุมปกติ
+                end
+            end
+            
+            Rayfield:Notify({
+                Title = "Laser Eyes",
+                Content = "ปิดเลเซอร์และรีเซ็ตหัวแล้ว",
+                Duration = 3
+            })
+        end
+    end
+})
+
+-- คำอธิบาย
+Tab:CreateLabel("กดปุ่มเพื่อเปิด/ปิดเลเซอร์ หัวจะหันตามเมาส์เมื่อยิง")
+
+-- รีเซ็ตเมื่อตัวละครเกิดใหม่
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    if LaserEnabled then
+        SetupEyes()
+        CreateBeams()
+    end
+    -- รีเซ็ตคอเมื่อเกิดใหม่
+    local neck = character:WaitForChild("UpperTorso", 5) and character.UpperTorso:WaitForChild("Neck", 5)
+    if neck then
+        neck.C0 = CFrame.new(neck.C0.Position)
+    end
+end)
