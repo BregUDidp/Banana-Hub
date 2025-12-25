@@ -1,11 +1,13 @@
 -- ( [ Icon Cat 111948200153431 ] ) --
 
--- https://sirius.menu/rayfield
+-- ( [ https://sirius.menu/rayfield ] ) --
+
+-- ( [ (138, 43, 179) ] )
 
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(",
+   Name = "   |   Akari Hub   :(   |",
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  :(   ",
 
@@ -75,7 +77,7 @@ local function toggleSpeed(on)
     superSpeed = on
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
-        Title = superSpeed and "🏃‍♂️ Speed Run ✅" or "🚶‍♂️ Speed Run 🛑",
+        Title = superSpeed and "🏃‍♂️ Speed Run [ ✅ ]" or "🚶‍♂️ Speed Run [ 🛑 ]",
         Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal!",
         Duration = 1,
         Image = "bike",
@@ -198,7 +200,7 @@ local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For
 local Section = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Run Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
@@ -227,7 +229,7 @@ PTab:CreateSlider({
     Name = "[ 📏 ]  Slider Jump Power",
     Range = {50, 5000},
     Increment = 1,
-    Suffix = " Jump Power",
+    Suffix = " Jumping Power",
     CurrentValue = 50,
     Flag = "JumpPowerSlider",
     Callback = function(Value)
@@ -293,7 +295,7 @@ local InfiniteZoomSlider = PTab:CreateSlider({
 
         elseif Value >= 8000 then
             Rayfield:Notify({
-                Title = "[ 🚀 ]  Infinite Zoom",
+                Title = "[ 📏 ]  Infinite Zoom",
                 Content = "Zoom Distance: " .. Value .. " Studs",
                 Duration = 1,
                 Image = "zoom-in",
@@ -325,8 +327,9 @@ end)
 
 local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
 
+local Section = PTab:CreateSection("")
+
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
-local Section = BTab:CreateSection("")
 local Section = BTab:CreateSection("")
 
 BTab:CreateButton({
@@ -365,6 +368,7 @@ BTab:CreateButton({
             Color3.fromRGB(138, 43, 179),
             Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนลงนิดเพื่อความสวย
         )
+
         particles.Size = NumberSequence.new(0.4)
         particles.Lifetime = NumberRange.new(1.5, 2.5)
         particles.Rate = 20
@@ -543,96 +547,6 @@ BTab:CreateButton({
 })
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
-
-local Section = BTab:CreateSection("")
-
-local GravityEnabled = false
-local BodyGravity = nil
-local OriginalGravity = workspace.Gravity
-
-local GravitySlider = BTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Gravity Coil Slowing",
-    Range = {250, 5000}, -- 196.2 Normal
-    Increment = 5,
-    Suffix = " Gravity Slow",
-    CurrentValue = 250,
-    Flag = "GravityReduction",
-    Callback = function(Value)
-        if GravityEnabled then
-            ApplyGravityCoil(Value / 250)
-        end
-    end,
-})
-
-BTab:CreateToggle({
-    Name = "[ 🪂 ]  Gravity Coil Slowing",
-    CurrentValue = false,
-    Flag = "EnableGravityCoil",
-    Callback = function(Value)
-        GravityEnabled = Value
-        
-        local Character = game.Players.LocalPlayer.Character
-        if not Character or not Character:FindFirstChild("HumanoidRootPart") then
-            
-            return
-        end
-        
-        local Root = Character.HumanoidRootPart
-        
-        if Value then
-            -- เปิดเอฟเฟกต์
-            local reduction = GravitySlider.CurrentValue / 100
-            ApplyGravityCoil(reduction)
-            Rayfield:Notify({
-                Title =   "[ 🪂 ]  Gravity Coil On",
-                Content = "[ ✅ ]  Gravity Coil On  ( 250 )",
-                Duration = 1,
-                Image = "leaf", 
-            })
-        else
-            -- ปิดเอฟเฟกต์
-            if BodyGravity then
-                BodyGravity:Destroy()
-                BodyGravity = nil
-            end
-            Rayfield:Notify({
-                Title =   "[ 🪂 ]  Gravity Coil Off",
-                Content = "[ 🛑 ]  Gravity Coil Off  ( 250 )",
-                Duration = 1,
-                Image = "leaf",
-            })
-        end
-    end,
-})
-
-function ApplyGravityCoil(reduction)
-    local Character = game.Players.LocalPlayer.Character
-    if not Character then return end
-    
-    local Root = Character:FindFirstChild("HumanoidRootPart")
-    if not Root then return end
-    
-    -- ลบ BodyForce เก่าถ้ามี
-    if BodyGravity then
-        BodyGravity:Destroy()
-    end
-    
-    -- สร้าง BodyForce ใหม่เพื่อ counter gravity
-    BodyGravity = Instance.new("BodyForce")
-    BodyGravity.Force = Vector3.new(0, OriginalGravity * Root:GetMass() * reduction, 0)
-    BodyGravity.Parent = Root
-end
-
--- ถ้าตัวละครตายหรือ respawn ให้รีเซ็ต
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-    if GravityEnabled then
-        wait(1) -- รอตัวละครโหลด
-        local reduction = GravitySlider.CurrentValue / 100
-        ApplyGravityCoil(reduction)
-    end
-end)
-
-local Paragraph = BTab:CreateParagraph({Title = "Gravity Coil For Building And Troll", Content = "Gravity Coil For Building And Troll"})
 
 local Section = BTab:CreateSection("")
 
@@ -1127,28 +1041,6 @@ local function disableAllESP()
     espTargetPlayer = nil
 end
 
--- อัปเดตสีเมื่อเปลี่ยน Color Picker
-local function updateESPColor()
-    if currentESPHighlight then
-        currentESPHighlight.FillColor = espFillColor
-        currentESPHighlight.OutlineColor = espOutlineColor
-    end
-    if currentESPDrawings.Box then
-        currentESPDrawings.Box.Color = espFillColor
-    end
-end
-
--- แก้ Color Picker ให้อัปเดตทั้งสองแบบ
-friendTab:CreateColorPicker({
-    Name = "[ 🎨 ]  Choose Color ESP Player",
-    Color = Color3.fromRGB(138, 43, 179),
-    Flag = "ESPColorPicker",
-    Callback = function(Value)
-        espFillColor = Value
-        updateESPColor()
-    end
-})
-
 -- ===== ปุ่ม ESP ปกติ (Highlight + Box + Name) =====
 friendTab:CreateButton({
     Name = "[ 👁️ ]  ESP Box Dropdown Player",
@@ -1556,6 +1448,7 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")  -- สำหรับลบ object อัตโนมัติ
 
 -- ตัวแปรเริ่มต้น
 local swingSpeed = 80
@@ -1581,7 +1474,7 @@ local Toggle = espTab:CreateToggle({
     Callback = function(Value)
         Rayfield:Notify({
             Title = Value and   "[ ⛏️ ]  Swinging Mode On" or "[ ⛏️ ]  Swinging Mode Off",
-            Content = Value and "[ ✅ ]  Swing Enable!" or "[ 🛑 ]  Swing Disabled!",
+            Content = Value and "[ ✅ ]  Swing Webing Enable!" or "[ 🛑 ]  Swing Webing Disabled!",
             Duration = 1,
             Image = "pickaxe"
         })
@@ -1654,20 +1547,67 @@ local Toggle = espTab:CreateToggle({
                             anchorAttachment.WorldPosition = webPoint
                             anchorAttachment.Parent = Workspace.Terrain
 
-                            -- สร้าง Beam - เส้นใยสีม่วงเข้ม (138, 43, 179)
+                            -- สร้าง Beam - เส้นใยใหญ่ หนา แบบ Spider-Man
                             webBeam = Instance.new("Beam")
                             webBeam.Name = "SpiderWeb"
                             webBeam.Attachment0 = playerAttachment
                             webBeam.Attachment1 = anchorAttachment
                             
+                            webBeam.FaceCamera = true
                             webBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
-                            
                             webBeam.LightEmission = 1.5
                             webBeam.LightInfluence = 0
                             webBeam.Transparency = NumberSequence.new(0.3)
-                            webBeam.Width0 = 0.4
-                            webBeam.Width1 = 0.4
+                            webBeam.Width0 = 2.0
+                            webBeam.Width1 = 1.5
+                            
+                            webBeam.Texture = "rbxassetid://6060542021"
+                            webBeam.TextureMode = Enum.TextureMode.Stretch
+                            webBeam.TextureSpeed = 3
+                            webBeam.TextureLength = 8
+                            
                             webBeam.Parent = Char
+
+                            -- === เพิ่มเอฟเฟกต์ควันสีม่วง ===
+                            local purpleColor = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+
+                            -- ควันที่มือ (จุดยิง)
+                            local smokeHand = Instance.new("ParticleEmitter")
+                            smokeHand.Parent = rightHandPart
+                            smokeHand.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- texture ควันมาตรฐาน Roblox
+                            smokeHand.Color = purpleColor
+                            smokeHand.Transparency = NumberSequence.new(0.5, 1)
+                            smokeHand.Size = NumberSequence.new(1, 3)
+                            smokeHand.Lifetime = NumberRange.new(0.8, 1.5)
+                            smokeHand.Rate = 100  -- พุ่งแรงตอนยิง
+                            smokeHand.Speed = NumberRange.new(5, 15)
+                            smokeHand.SpreadAngle = Vector2.new(45, 45)
+                            smokeHand.LightEmission = 0.3
+                            smokeHand.Enabled = true
+
+                            -- ควันที่จุดติดผนัง
+                            local smokeAnchor = Instance.new("ParticleEmitter")
+                            smokeAnchor.Parent = anchorAttachment
+                            smokeAnchor.Texture = "rbxasset://textures/particles/smoke_main.dds"
+                            smokeAnchor.Color = purpleColor
+                            smokeAnchor.Transparency = NumberSequence.new(0.4, 1)
+                            smokeAnchor.Size = NumberSequence.new(2, 5)
+                            smokeAnchor.Lifetime = NumberRange.new(1, 2)
+                            smokeAnchor.Rate = 150
+                            smokeAnchor.Speed = NumberRange.new(2, 8)
+                            smokeAnchor.SpreadAngle = Vector2.new(360, 360)
+                            smokeAnchor.LightEmission = 0.2
+                            smokeAnchor.Enabled = true
+
+                            -- หยุด emit ควันหลังจาก delay (เพื่อไม่ให้ฟุ้งตลอดเวลา)
+                            task.delay(0.5, function()
+                                smokeHand.Enabled = false
+                                smokeAnchor.Enabled = false
+                            end)
+
+                            -- ลบ ParticleEmitter อัตโนมัติหลังจบ
+                            Debris:AddItem(smokeHand, 3)
+                            Debris:AddItem(smokeAnchor, 3)
 
                             Rayfield:Notify({
                                 Title = "[ ✅ ]  Webing Block Attached!",
@@ -1721,7 +1661,7 @@ local Toggle = espTab:CreateToggle({
     end,
 })
 
--- Slider ต่าง ๆ (เหมือนเดิม)
+-- Slider ต่าง ๆ (เหมือนเดิม แต่ปรับ Notify ให้สวยขึ้น)
 espTab:CreateSlider({
     Name = "[ 📏 ]  Swinging Webbing Speed",
     Range = {50, 5000},
@@ -1731,6 +1671,12 @@ espTab:CreateSlider({
     Flag = "SwingSpeed",
     Callback = function(Value)
         swingSpeed = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Speed!",
+           Content = "Swinging Speed: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
     end
 })
 
@@ -1743,6 +1689,12 @@ espTab:CreateSlider({
     Flag = "WebDistance",
     Callback = function(Value)
         maxWebDistance = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Distance!",
+           Content = "Swinging Distance: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
     end
 })
 
@@ -1750,11 +1702,17 @@ espTab:CreateSlider({
     Name = "[ ⛏️ ]  Swinging Gravity Force",
     Range = {20, 5000},
     Increment = 5,
-    Suffix = " Swing Jump",
+    Suffix = " Swing Gravity",
     CurrentValue = 50,
     Flag = "SwingLift",
     Callback = function(Value)
         swingGravity = Value
+        Rayfield:Notify({
+           Title = "[ ⛏️ ]  Swinging Gravity Force!",
+           Content = "Swinging Gravity: " .. Value,
+           Duration = 1,
+           Image = "pickaxe",
+         })
     end
 })
 
@@ -2109,54 +2067,6 @@ local Section = espTab:CreateSection("")
 local coTab = Window:CreateTab("||   - Mapping Time", "map-pinned")
 local Section = coTab:CreateSection("")
 
-local Section = coTab:CreateSection("{ [ - FPS Check Loading - ] }")
-
-local FPSLabel = coTab:CreateLabel("FPS:  Loading...")
-
-local PingLabel = coTab:CreateLabel("Ping:  Loading...")
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
-local frameTimes = {}
-local lastUpdate = tick()
-local updateInterval = 1
-
-RunService.RenderStepped:Connect(function(deltaTime)
-    table.insert(frameTimes, deltaTime)
-    
-    if tick() - lastUpdate >= updateInterval then
-        local totalTime = 0
-        for _, time in ipairs(frameTimes) do
-            totalTime += time
-        end
-        local avgDelta = totalTime / #frameTimes
-        local fps = math.floor(1 / avgDelta + 0.5)
-        
-        local color = "🟢"
-        if fps < 30 then
-            color = "🔴"
-        elseif fps < 60 then
-            color = "🟡"
-        end
-        
-        FPSLabel:Set("FPS:  (  " .. color .. "  =  " ..  fps .. "  )")
-        
-        -- อัปเดต Ping
-        local ping = math.floor(LocalPlayer:GetNetworkPing() * 1000)
-        local pingColor = ping < 50 and "🟢" or (ping < 100 and "🟡" or "🔴")
-        PingLabel:Set("Ping:  (  " .. pingColor .. "  =  " .. ping .. " MS  )")
-        
-        -- รีเซ็ตสำหรับรอบถัดไป
-        frameTimes = {}
-        lastUpdate = tick()
-    end
-end)
-
-local Section = coTab:CreateSection("")
-local Section = coTab:CreateSection("{ [ - User Name:  All In One  Target - ] }")
-
 local PlayerListParagraph = coTab:CreateParagraph({
     Title = "All Name Player In List",
     Content = "Loading..."
@@ -2263,32 +2173,3 @@ end)
 
 -- อัปเดตครั้งแรก
 UpdatePlayerList()
-
-local Section = coTab:CreateSection("")
-local Section = coTab:CreateSection("{ [ - Rejoin Sever Random / Sever Again - ] }")
-
-local Button = coTab:CreateButton({
-   Name = "[ ⏰ ]   Rejoin Sever  [ - One Click - ]",
-   Callback = function()
-       local TeleportService = game:GetService("TeleportService")
-          local Players = game:GetService("Players")
-              local LocalPlayer = Players.LocalPlayer
-              TeleportService:Teleport(game.PlaceId, LocalPlayer)
-
-               Rayfield:Notify({
-                  Title = "⏰ Loading Wait Rejoin Map",
-                  Content = "________________________________________________________",
-                  Duration = 1,
-                  Image = "clock",
-               })
-   end,
-})
-
-coTab:CreateParagraph({
-    Title = "Rejoin Sever One Click",
-    Content = "Rejoin Sever One Click And Play Map Again"
-})
-
-local Section = coTab:CreateSection("")
-
-local Section = PTab:CreateSection("")
