@@ -38,115 +38,8 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-
-
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
-local Section = PTab:CreateSection("")
-
-local wallMoveSpeed = 15
-local wallPushForce = 5
-
-local wallConnection
-
-local Toggle = PTab:CreateToggle({
-    Name = "[ 🐿️ ]  Spider Stick Walling Hop",
-    CurrentValue = false,
-    Flag = "SpiderStick1",
-    Callback = function(Value)
-        Rayfield:Notify({
-            Title = Value and "[ 🐿️ ]  Wallรืเ Hop On" or "[ 🐿️ ]  Wallรืเ Hop Off",
-            Content = Value and "[ ✅ ]  Spider Hop Activated" or "[ 🛑 ]  Spider Hop Deactivated",
-            Duration = 1,
-            Image = "squirrel"
-        })
-
-        local LP = game:GetService("Players").LocalPlayer
-
-        if Value then
-            wallConnection = RunService.Heartbeat:Connect(function()
-                local Char = LP.Character
-                if Char and Char:FindFirstChild("HumanoidRootPart") then
-                    local Root = Char.HumanoidRootPart
-                    local Hum = Char.Humanoid
-
-                    local params = RaycastParams.new()
-                    params.FilterDescendantsInstances = {Char}
-                    params.FilterType = Enum.RaycastFilterType.Exclude
-
-                    -- เช็คกำแพงด้านหน้า
-                    local result = workspace:Raycast(Root.Position, Root.CFrame.LookVector * 3.5, params)
-
-                    if result and result.Instance then
-                        Hum:ChangeState(Enum.HumanoidStateType.Climbing)
-
-                        -- ปรับทิศทางตัวละครให้ขนานกับกำแพง
-                        local look = Root.CFrame.LookVector
-                        local wallNormal = result.Normal
-                        local newUp = wallNormal
-                        local newRight = look:Cross(newUp)
-                        local newLook = newUp:Cross(newRight)
-
-                        Root.CFrame = Root.CFrame:Lerp(CFrame.fromMatrix(Root.Position, newRight, newUp, -newLook), 0.15)
-
-                        -- ระบบเคลื่อนที่และเกาะกำแพง
-                        if Hum.MoveDirection.Magnitude > 0 then
-                            -- เดินบนกำแพง → ดันเข้าหากำแพง + ยกขึ้นตามความเร็วที่ตั้ง
-                            Root.Velocity = Root.Velocity + (wallNormal * -wallPushForce) + Vector3.new(0, wallMoveSpeed, 0)
-                        else
-                            -- นิ่ง → ต้านแรงโน้มถ่วงเบา ๆ
-                            Root.Velocity = Vector3.new(0, 0.1, 0)
-                        end
-                    end
-                end
-            end)
-        else
-            if wallConnection then
-                wallConnection:Disconnect()
-                wallConnection = nil
-            end
-        end
-    end,
-})
-
-PTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Wall Climb Speed",
-    Range = {15, 5000},
-    Increment = 1,
-    Suffix = " Walling Speed",
-    CurrentValue = 15,
-    Flag = "WallClimbSpeed",
-    Callback = function(Value)
-        wallMoveSpeed = Value
-        Rayfield:Notify({
-            Title = "[ 🧱 ]  Wall Speed Adjusted",
-            Content = "Climb Speed: " .. Value,
-            Duration = 1,
-            Image = "brick-wall"
-        })
-    end
-})
-
-PTab:CreateSlider({
-    Name = "[ 🧲 ]  Slider Wall Stick Force",
-    Range = {5, 5000},
-    Increment = 1,
-    Suffix = " Magnet Force",
-    CurrentValue = 5,
-    Flag = "WallStickForce",
-    Callback = function(Value)
-        wallPushForce = Value
-        Rayfield:Notify({
-            Title = "[ 🧲 ]  Wall Stick Force Adjusted",
-            Content = "Stick Force: " .. Value,
-            Duration = 1,
-            Image = "magnet"
-        })
-    end
-})
-
-local Paragraph = PTab:CreateParagraph({Title = "Sticking Walling For Spider Magnet", Content = "Sticking Walling For Spider And Walling Magnet"})
-
 local Section = PTab:CreateSection("")
 
 local Players = game:GetService("Players")
@@ -1630,7 +1523,7 @@ LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
 espTab:CreateToggle({
-    Name = "[ 🌈 ]  Rainbow Mountain Tool  [ - Tool - ]",
+    Name = "[ 🌈 ]  Rainbow Mountain Tool  [ - Permanent Rainbow - ]",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
@@ -1652,52 +1545,220 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
-local Paragraph = espTab:CreateParagraph({Title = "Purple / Rainbow Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style"})
+local Paragraph = espTab:CreateParagraph({Title = "Purple Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style"})
 
 RunService.RenderStepped:Connect(updateESP)
 
 local Section = espTab:CreateSection("")
 
-local HeightSlider = espTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Teleporting Gravity",
-    Range = {100, 10000},
-    Increment = 50,
-    Suffix = " Sky - Moon Studs",
-    CurrentValue = 100,   
-    Flag = "SkyHeight",
+-- โหลดบริการที่จำเป็น
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+-- ตัวแปรเริ่มต้น
+local swingSpeed = 80
+local swingGravity = 50
+local maxWebDistance = 1500
+
+local swingConnection
+local inputConnection1
+local inputConnection2
+
+local isSwinging = false
+local webPoint = nil
+
+local webBeam = nil          -- Beam สำหรับเส้นใย
+local playerAttachment = nil -- Attachment ที่มือ/แขนผู้เล่น
+local anchorAttachment = nil -- Attachment ที่จุดติดใย
+
+-- Toggle สำหรับ Spider-Man Swing
+local Toggle = espTab:CreateToggle({
+    Name = "[ ⛏️ ]  Swinging Webbing Block  [ - R6 / R15 - ]",
+    CurrentValue = false,
+    Flag = "SpiderSwing",
     Callback = function(Value)
-        
-    end
-})
-
-espTab:CreateButton({
-    Name = "[ 🔭 ]  Teleporting  [ - Sky / Moon - ]",
-    Callback = function()
-        local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
-        local hrp = character:FindFirstChild("HumanoidRootPart")
-        if not hrp then
-            Rayfield:Notify({
-                Title = "[ ❌ ]  Cancel",
-                Content = "No Found HumanoidRootPart"
-            })
-            return
-        end
-
-        local height = HeightSlider.CurrentValue
-
-        -- วาร์ปขึ้นตามความสูงที่ตั้ง
-        hrp.CFrame = hrp.CFrame + Vector3.new(0, height, 0)
-
         Rayfield:Notify({
-            Title = "Teleporting Sky! 🔭",
-            Content = "Height: " .. height .. " Studs",
+            Title = Value and   "[ ⛏️ ]  Swinging Mode On" or "[ ⛏️ ]  Swinging Mode Off",
+            Content = Value and "[ ✅ ]  Swing Enable!" or "[ 🛑 ]  Swing Disabled!",
             Duration = 1,
-            Image = "telescope",
+            Image = "pickaxe"
         })
+
+        local LP = Players.LocalPlayer
+
+        if Value then
+            -- รอ Character
+            if not LP.Character then
+                LP.CharacterAdded:Wait()
+            end
+
+            local Char = LP.Character
+            local Hum = Char:FindFirstChild("Humanoid")
+            if not Hum then return end
+
+            -- ตรวจสอบ RigType เพื่อเลือกส่วนมือขวา
+            local rightHandPart
+            if Hum.RigType == Enum.HumanoidRigType.R15 then
+                rightHandPart = Char:FindFirstChild("RightHand") or Char:WaitForChild("RightHand")
+            else -- R6
+                rightHandPart = Char:FindFirstChild("Right Arm") or Char:WaitForChild("Right Arm")
+            end
+
+            -- สร้าง Attachment ที่มือขวา (หรือแขนขวาใน R6)
+            playerAttachment = Instance.new("Attachment")
+            playerAttachment.Name = "WebAttachment_Player"
+            playerAttachment.Parent = rightHandPart
+
+            -- Heartbeat สำหรับการเหวี่ยง
+            swingConnection = RunService.Heartbeat:Connect(function()
+                if Char and Char:FindFirstChild("HumanoidRootPart") and Char:FindFirstChild("Humanoid") then
+                    local Root = Char.HumanoidRootPart
+                    local Hum = Char.Humanoid
+
+                    if isSwinging and webPoint then
+                        local direction = (webPoint - Root.Position).Unit
+
+                        local velocity = direction * swingSpeed
+                        Root.Velocity = Vector3.new(velocity.X, swingGravity, velocity.Z)
+
+                        local lookCFrame = CFrame.new(Root.Position, webPoint)
+                        Root.CFrame = Root.CFrame:Lerp(lookCFrame, 0.2)
+
+                        Hum:ChangeState(Enum.HumanoidStateType.Freefall)
+                    end
+                end
+            end)
+
+            -- กดคลิกซ้ายเพื่อยิงใย
+            inputConnection1 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    if Char and Char:FindFirstChild("HumanoidRootPart") then
+                        local camera = Workspace.CurrentCamera
+
+                        local params = RaycastParams.new()
+                        params.FilterDescendantsInstances = {Char}
+                        params.FilterType = Enum.RaycastFilterType.Exclude
+
+                        local rayResult = Workspace:Raycast(camera.CFrame.Position, camera.CFrame.LookVector * maxWebDistance, params)
+
+                        if rayResult and rayResult.Position then
+                            webPoint = rayResult.Position
+                            isSwinging = true
+
+                            -- สร้าง Attachment ที่จุดติดใย
+                            anchorAttachment = Instance.new("Attachment")
+                            anchorAttachment.Name = "WebAttachment_Anchor"
+                            anchorAttachment.WorldPosition = webPoint
+                            anchorAttachment.Parent = Workspace.Terrain
+
+                            -- สร้าง Beam - เส้นใยสีม่วงเข้ม (138, 43, 179)
+                            webBeam = Instance.new("Beam")
+                            webBeam.Name = "SpiderWeb"
+                            webBeam.Attachment0 = playerAttachment
+                            webBeam.Attachment1 = anchorAttachment
+                            
+                            webBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+                            
+                            webBeam.LightEmission = 1.5
+                            webBeam.LightInfluence = 0
+                            webBeam.Transparency = NumberSequence.new(0.3)
+                            webBeam.Width0 = 0.4
+                            webBeam.Width1 = 0.4
+                            webBeam.Parent = Char
+
+                            Rayfield:Notify({
+                                Title = "[ ✅ ]  Webing Block Attached!",
+                                Content = "[ ⛏️ ]  Found Block / Wall",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        else      
+                            Rayfield:Notify({
+                                Title = "[ ❌ ]  No Webing Block Point!",
+                                Content = "[ ⛏️ ]  No Found Block / Wall",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        end
+                    end
+                end
+            end)
+
+            -- ปล่อยคลิกเพื่อตัดใย
+            inputConnection2 = UserInputService.InputEnded:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isSwinging = false
+                    webPoint = nil
+
+                    if webBeam then webBeam:Destroy() end
+                    if anchorAttachment then anchorAttachment:Destroy() end
+                    webBeam = nil
+                    anchorAttachment = nil
+                end
+            end)
+
+        else
+            -- ปิดทุกอย่าง
+            if swingConnection then swingConnection:Disconnect() end
+            if inputConnection1 then inputConnection1:Disconnect() end
+            if inputConnection2 then inputConnection2:Disconnect() end
+
+            isSwinging = false
+            webPoint = nil
+
+            if webBeam then webBeam:Destroy() end
+            if anchorAttachment then anchorAttachment:Destroy() end
+            if playerAttachment then playerAttachment:Destroy() end
+
+            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+                LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end
+    end,
+})
+
+-- Slider ต่าง ๆ (เหมือนเดิม)
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Swinging Webbing Speed",
+    Range = {50, 5000},
+    Increment = 5,
+    Suffix = " Swing Speed",
+    CurrentValue = 80,
+    Flag = "SwingSpeed",
+    Callback = function(Value)
+        swingSpeed = Value
     end
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "Teleport Sky / Moon", Content = "Teleporting Sky / Moon For Building And Task Bar"})
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Webbing Distance",
+    Range = {50, 5000},
+    Increment = 10,
+    Suffix = " Swing Distance",
+    CurrentValue = 1500,
+    Flag = "WebDistance",
+    Callback = function(Value)
+        maxWebDistance = Value
+    end
+})
+
+espTab:CreateSlider({
+    Name = "[ ⛏️ ]  Swinging Gravity Force",
+    Range = {20, 5000},
+    Increment = 5,
+    Suffix = " Swing Jump",
+    CurrentValue = 50,
+    Flag = "SwingLift",
+    Callback = function(Value)
+        swingGravity = Value
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "Forging Block Player / Friend Sword", Content = "Forging Block Player / Friend Sword Are Multi Block"})
 
 local Section = espTab:CreateSection("")
 
@@ -1770,7 +1831,7 @@ espTab:CreateSlider({
     end,
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Muti Damage"})
+local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Multi Damage"})
 
 local Section = espTab:CreateSection("")
 
@@ -2044,118 +2105,6 @@ RunService.RenderStepped:Connect(UpdateESP)
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", Content = "ESP Player Highligh / Name For Hitbox"})
 
 local Section = espTab:CreateSection("")
-
-local avatarTab = Window:CreateTab("||   - Avatar Clothes", "shirt")
-local Section = avatarTab:CreateSection("")
-
-local Player = game.Players.LocalPlayer
-local CustomFire = nil
-local FireEnabled = false
-
--- ตัวแปรเก็บค่าสี
-local OuterColor = Color3.fromRGB(138, 43, 179)
-local InnerColor = Color3.fromRGB(138, 43, 179)
-
--- ฟังก์ชันสร้างไฟ Roblox แบบคลาสสิก
-local function CreateCustomFire()
-    if not Player.Character then return end
-    local Head = Player.Character:FindFirstChild("Head")
-    if not Head then return end
-
-    -- ลบของเก่าถ้ามี
-    if Head:FindFirstChild("CustomRobloxFire") then
-        Head.CustomRobloxFire:Destroy()
-    end
-
-    -- สร้าง Fire object
-    CustomFire = Instance.new("Fire")
-    CustomFire.Name = "CustomRobloxFire"
-    CustomFire.Parent = Head
-
-    -- ปรับขนาดไฟ
-    CustomFire.Size = 8
-
-    -- ความร้อน (positive = พุ่งขึ้น, negative = พุ่งลง)
-    CustomFire.Heat = 12
-
-    -- ใช้ค่าสีจากตัวแปร
-    CustomFire.Color = OuterColor
-    CustomFire.SecondaryColor = InnerColor
-
-    CustomFire.Enabled = FireEnabled
-end
-
--- ฟังก์ชันเปิด/ปิดไฟ
-local function ToggleFire(state)
-    FireEnabled = state
-    if CustomFire then
-        CustomFire.Enabled = state
-    end
-end
-
--- Auto recreate เมื่อเกิดใหม่
-Player.CharacterAdded:Connect(function()
-    task.wait(1)
-    if FireEnabled then
-        CreateCustomFire()
-        if CustomFire then CustomFire.Enabled = true end
-    end
-end)
-
-avatarTab:CreateToggle({
-    Name = "[ 🟪 ]  Flamming Purple Glow Head   [ - Purple Head - ]",
-    CurrentValue = false,
-    Callback = function(Value)
-        ToggleFire(Value)
-        if Value then
-            CreateCustomFire()
-        else
-            if CustomFire then CustomFire:Destroy() end
-            CustomFire = nil
-        end
-    end
-})
-
-local Section = avatarTab:CreateSection("")
-
-avatarTab:CreateColorPicker({
-    Name = "[ 🎨 ]  Choose Color Flame Head",
-    Color = OuterColor,
-    Callback = function(Value)
-        OuterColor = Value
-        if CustomFire then
-            CustomFire.Color = Value
-        end
-    end
-})
-
-avatarTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Flame Purlple Head",
-    Range = {9, 5000},
-    Increment = 1,
-    Suffix = " Flame Size",
-    CurrentValue = 9,
-    Callback = function(Value)
-        if CustomFire then
-            CustomFire.Size = Value
-        end
-    end
-})
-
-avatarTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Flame Purple Heat",
-    Range = {12, 25},
-    Increment = 1,
-    Suffix = " Flame Heating",
-    CurrentValue = 12,
-    Callback = function(Value)
-        if CustomFire then
-            CustomFire.Heat = Value
-        end
-    end
-})
-
-local Paragraph = avatarTab:CreateParagraph({Title = "Flame Purple Heading For Cool And Styler", Content = "Flame Purple Heading Heater For Cool And Styler"})
 
 local coTab = Window:CreateTab("||   - Mapping Time", "map-pinned")
 local Section = coTab:CreateSection("")
