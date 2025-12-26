@@ -4,13 +4,6 @@
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Notification
-game.StarterGui:SetCore("SendNotification", {
-    Title = "[ Aimbot Function ]",
-    Text = "________________________________________________________",
-    Duration = 10
-})
-
 --// Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -18,24 +11,43 @@ local Camera = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
---// Rayfield Window
 local Window = Rayfield:CreateWindow({
-    Name = "   |  Aimbot  |  Akari  [ V-0.1 ]",
-    Icon = "scan-eye",
-    LoadingTitle = "|  🎯  |  Aimbot   Function ",
-    LoadingSubtitle = string.rep("_", 150),
-    ShowText = "Aimbot",
-    Theme = "DarkBlue",
-    ToggleUIKeybind = "F",
-    DisableRayfieldPrompts = true,
-    DisableBuildWarnings = true,
-    ConfigurationSaving = { Enabled = true, FolderName = nil, FileName = "Big Hub" },
-    KeySystem = false
+   Name = "   |   Akari Hub   :(   |",
+   Icon = "webhook",
+   LoadingTitle = "   Akari Hub  :(   ",
+
+   LoadingSubtitle = "",
+   
+   ShowText = " 🌑 ",
+   Theme = "Default",
+   ToggleUIKeybind = "G",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Big Hub"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🌑"}
+   }
 })
 
 --// Tabs
-local AimbotTab = Window:CreateTab("||   - Aimbot", "dices")
-local RainbowTab = Window:CreateTab("||   - Gun", "axe")
+local AimbotTab = Window:CreateTab("||   - Aimbot Player - ESP", "locate-fixed")
+local RainbowTab = Window:CreateTab("||   - Color Guning", "swords")
 
 --// ============================================== --
 --//               AIMBOT SETTINGS                 --
@@ -214,7 +226,7 @@ AimbotTab:CreateSection("")
 
 -- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
 AimbotTab:CreateToggle({
-    Name = "[ 🎯 ]  Akari Aimbots",
+    Name = "[ 🎯 ]  Aimbots Player",
     CurrentState = false,
     Callback = function(v) 
         showFov = v
@@ -223,15 +235,17 @@ AimbotTab:CreateToggle({
 
 AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Slider FOV Circle",
-    Range = {50, 300}, Increment = 5, CurrentValue = 120,
+    Range = {50, 5000}, Increment = 5, Suffix = " FOV Circle Size", CurrentValue = 120,
     Callback = function(v) fovRadius = v end
 })
 
 AimbotTab:CreateSlider({
-    Name = "[ ⚡ ]  Slider Smooth Aimbot",
-    Range = {1, 30}, Increment = 1, CurrentValue = 30,
+    Name = "[ 📏 ]  Slider Smooth Aimbot",
+    Range = {1, 5000}, Increment = 1, Suffix = " Smooth Aimbot", CurrentValue = 30,
     Callback = function(v) smoothness = v / 100 end
 })
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "Aimbot Player / Friend Is Rainbow Color", Content = "Aimbot Player / Friend Is Rainbow Color And Style"})
 
 --// ============================================== --
 --//                   ESP SYSTEM                  --
@@ -407,13 +421,23 @@ end
 local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
-        game.StarterGui:SetCore("SendNotification", {Title="[ 🌈 ]  เปิดปืนสายรุ้ง", Text="[ 🌈 ]  ระบบสีรุ้งทำงานแล้ว", Duration=6})
+        Rayfield:Notify({
+           Title = "[ ✅ ]  Rainbow Tools On",
+           Content = "[ 🌈 ]  Rainbow Tools Finish",
+           Duration = 1,
+           Image = "rainbow",
+         })
         if not RainbowGun.Loop then
             RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
         end
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
-        game.StarterGui:SetCore("SendNotification", {Title="[ ❌ ]  ปิดปืนสายรุ้ง", Text="[ ❌ ]  ระบบสีรุ้งปิดแล้ว", Duration=4})
+        Rayfield:Notify({
+           Title = "[ ❌ ]  Rainbow Tools Off",
+           Content = "[ 🌈 ]  Rainbow Tools Finish",
+           Duration = 1,
+           Image = "rainbow",
+         })
         if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
         if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
         RainbowGun.Current = nil
@@ -423,6 +447,23 @@ end
 LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
+Players.PlayerAdded:Connect(function(p)
+    if ESPEnabled and p ~= LocalPlayer then
+        p.CharacterAdded:Connect(function() createESP(p) end)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+    if ESPObjects[p] then
+        for _, obj in pairs(ESPObjects[p]) do
+            if typeof(obj) == "Instance" and obj.Remove then
+                obj:Remove()
+            end
+        end
+        ESPObjects[p] = nil
+    end
+end)
+
 --// ============================================== --
 --//                  GUI CONTROLS                 --
 --// ============================================== --
@@ -431,22 +472,316 @@ if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 AimbotTab:CreateSection("")
 
 AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  ESP Player",
+    Name = "[ 🔍 ]  ESP Player Rainbow  [ - Tracer - ]",
     CurrentValue = false,
     Callback = function(v) ESP.Enabled = v end
 })
 
 AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  Tracer ESP Automatic",
+    Name = "[ 🔍 ]  Tracer ESP Player Rainbow Automatic",
     CurrentValue = true,
     Callback = function(v) ESP.Tracer = v end
 })
 
+local ESPEnabled = false
+local Drawings = {}
+local Highlights = {}
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- สร้างหรืออัปเดต Drawing ESP สำหรับ player
+local function SetupDrawingESP(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Drawings[player] then
+        if Drawings[player].Box then Drawings[player].Box:Remove() end
+        if Drawings[player].Name then Drawings[player].Name:Remove() end
+    end
+    
+    local Box = Drawing.new("Square")
+    Box.Thickness = 2
+    Box.Filled = false
+    Box.Color = Color3.fromRGB(138, 43, 179)
+    Box.Visible = false
+
+    local Name = Drawing.new("Text")
+    Name.Size = 16
+    Name.Center = true
+    Name.Outline = true
+    Name.Color = Color3.fromRGB(138, 43, 179)
+    Name.Visible = false
+
+    Drawings[player] = {Box = Box, Name = Name}
+end
+
+-- สร้างหรืออัปเดต Highlight สำหรับ player
+local function SetupHighlight(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Highlights[player] then
+        if Highlights[player] and Highlights[player].Parent then
+            Highlights[player]:Destroy()
+        end
+    end
+    
+    local character = player.Character
+    if character then
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = character
+        highlight.FillColor = Color3.fromRGB(138, 43, 179)
+        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
+        highlight.FillTransparency = 0.4
+        highlight.OutlineTransparency = 0
+        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
+        
+        Highlights[player] = highlight
+    end
+end
+
+-- อัปเดต Drawing ESP ทุกเฟรม
+local function UpdateESP()
+    if not ESPEnabled then return end
+    
+    for player, draws in pairs(Drawings) do
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") and character:FindFirstChild("Humanoid") then
+            local root = character.HumanoidRootPart
+            local head = character.Head
+            local humanoid = character.Humanoid
+            
+            if humanoid.Health <= 0 then
+                draws.Box.Visible = false
+                draws.Name.Visible = false
+                continue
+            end
+
+            local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(root.Position)
+            
+            if onScreen then
+
+                -- คำนวณขนาด Box (ปรับให้แม่นยำขึ้น)
+                local topPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
+                local bottomPos = workspace.CurrentCamera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0))
+                local sizeY = math.abs(topPos.Y - bottomPos.Y)
+                local sizeX = sizeY * 0.8
+
+                draws.Box.Size = Vector2.new(sizeX, sizeY)
+                draws.Box.Position = Vector2.new(screenPos.X - sizeX / 2, screenPos.Y - sizeY / 2)
+                draws.Box.Visible = true
+
+                -- ชื่อ + เลือด
+                draws.Name.Text = player.Name .. " [ " .. math.floor(humanoid.Health) .. " ]"
+                draws.Name.Position = Vector2.new(screenPos.X, screenPos.Y - sizeY / 2 - 20)
+                draws.Name.Visible = true
+            else
+                draws.Box.Visible = false
+                draws.Name.Visible = false
+            end
+        else
+            draws.Box.Visible = false
+            draws.Name.Visible = false
+        end
+    end
+end
+
+-- ฟังก์ชันจัดการเมื่อ character โหลด
+local function OnCharacterAdded(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- รอให้ character โหลดส่วนสำคัญ
+    local character = player.Character or player.CharacterAdded:Wait()
+    character:WaitForChild("HumanoidRootPart")
+    character:WaitForChild("Head")
+    character:WaitForChild("Humanoid")
+    
+    SetupDrawingESP(player)
+    SetupHighlight(player)
+end
+
+-- ฟังก์ชันเปิด ESP
+local function EnableESP()
+    -- สำหรับผู้เล่นที่มีอยู่แล้ว
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            OnCharacterAdded(player)
+        end
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end
+    
+    -- ผู้เล่นใหม่เข้ามา
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end)
+end
+
+-- ฟังก์ชันปิด ESP
+local function DisableESP()
+    -- ลบ Drawing ทั้งหมด
+    for player, draws in pairs(Drawings) do
+        if draws.Box then draws.Box:Remove() end
+        if draws.Name then draws.Name:Remove() end
+    end
+    Drawings = {}
+    
+    -- ปิดและลบ Highlight ทั้งหมด
+    for player, highlight in pairs(Highlights) do
+        if highlight and highlight.Parent then
+            highlight.Enabled = false
+            highlight:Destroy()
+        end
+    end
+    Highlights = {}
+end
+
+-- Toggle หลัก
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  ESP Player Purple  [ 138, 43, 179 ]",
+    CurrentValue = false,
+    Callback = function(Value)
+        ESPEnabled = Value
+
+        if Value then
+            EnableESP()
+        else
+            DisableESP()
+        end
+    end,
+})
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "ESP Player / Friend Tracer Is Automatic", Content = "ESP Player / Friend Tracer Is Automatic Style"})
+
 --// Rainbow Gun Tab
 RainbowTab:CreateSection("")
 
+local PurpleTool = {
+    Enabled = false,
+    Current = nil,
+    Highlight = nil,
+    Connections = {},
+}
+
+-- สีม่วงที่ต้องการ (138, 43, 179)
+local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
+
+local function CreateHighlight(tool)
+    if PurpleTool.Highlight then PurpleTool.Highlight:Destroy() end
+    PurpleTool.Highlight = Instance.new("Highlight")
+    PurpleTool.Highlight.FillColor = PURPLE_COLOR
+    PurpleTool.Highlight.OutlineColor = PURPLE_COLOR
+    PurpleTool.Highlight.FillTransparency = 0.3
+    PurpleTool.Highlight.OutlineTransparency = 0
+    PurpleTool.Highlight.Parent = tool
+    PurpleTool.Highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function ApplyPurpleColor()
+    if not PurpleTool.Enabled or not PurpleTool.Current or not PurpleTool.Highlight then return end
+    
+    -- ตั้งค่าสี Highlight
+    PurpleTool.Highlight.FillColor = PURPLE_COLOR
+    PurpleTool.Highlight.OutlineColor = PURPLE_COLOR
+    
+    -- เปลี่ยนสีทุก Part ใน Tool (ยกเว้น HumanoidRootPart)
+    for _, part in pairs(PurpleTool.Current:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Color = PURPLE_COLOR
+        end
+    end
+end
+
+local function OnEquipped(tool)
+    if not PurpleTool.Enabled then return end
+    PurpleTool.Current = tool
+    task.wait(0.1)
+    CreateHighlight(tool)
+    ApplyPurpleColor()  -- ใช้สีม่วงทันที
+end
+
+local function OnUnequipped()
+    if PurpleTool.Highlight then 
+        PurpleTool.Highlight:Destroy() 
+        PurpleTool.Highlight = nil 
+    end
+    PurpleTool.Current = nil
+end
+
+local function SetupTool(char)
+    -- ล้าง connection เก่า
+    for _, c in pairs(PurpleTool.Connections) do c:Disconnect() end
+    PurpleTool.Connections = {}
+
+    local function ConnectTool(tool)
+        table.insert(PurpleTool.Connections, tool.Equipped:Connect(function() OnEquipped(tool) end))
+        table.insert(PurpleTool.Connections, tool.Unequipped:Connect(OnUnequipped))
+    end
+
+    -- เชื่อม Tool ที่อยู่ในตัวละครตอนนี้
+    for _, child in pairs(char:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(PurpleTool.Connections, char.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+
+    -- เชื่อม Tool ใน Backpack
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+    for _, child in pairs(backpack:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(PurpleTool.Connections, backpack.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+end
+
+local function TogglePurpleTool(state)
+    PurpleTool.Enabled = state
+    if state then
+        Rayfield:Notify({
+           Title = "[ ✅ ]  Purple Tools On",
+           Content = "[ 🟪 ]  Purple Tools Finish",
+           Duration = 1,
+           Image = "grape",
+         })
+        if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
+    else
+        Rayfield:Notify({
+           Title = "[ ❌ ] Purple Tools Off",
+           Content = "[ 🟪 ] Purple Tools Finish",
+           Duration = 1,
+           Image = "grape",
+         })
+        if PurpleTool.Highlight then 
+            PurpleTool.Highlight:Destroy() 
+            PurpleTool.Highlight = nil 
+        end
+        PurpleTool.Current = nil
+    end
+end
+
+-- รองรับการเกิดใหม่
+LocalPlayer.CharacterAdded:Connect(SetupTool)
+if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
+
+-- Toggle ใน UI (เปลี่ยนชื่อให้เข้ากับธีมม่วง)
 RainbowTab:CreateToggle({
-    Name = "[ 🌈 ]  Rainbow Gun",
+    Name = "[ 🟪 ]  Purple Glowing Tool  [ - Permanent Purple - ]",
+    CurrentValue = false,
+    Callback = function(v) 
+        TogglePurpleTool(v) 
+    end
+})
+
+RainbowTab:CreateToggle({
+    Name = "[ 🌈 ]  Rainbow Mountain Tool  [ - Permanent Rainbow - ]",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
+
+local Paragraph = RainbowTab:CreateParagraph({Title = "Rainbow Tool For Cool Style", Content = "Rainbow Tool Is Good For Style Gun / Sword"})
