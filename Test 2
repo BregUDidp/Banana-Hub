@@ -1,6 +1,3 @@
-local killTab = Window:CreateTab("||   - Bendy and Ink Machine", "monitor-x")
-local Section = killTab:CreateSection("")
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
@@ -76,7 +73,7 @@ local function disableKillAura()
     })
 end
 
-killTab:CreateButton({
+espTab:CreateButton({
     Name = "[ 🪓 ]  Kill Aura Monster - Bendy - Boss Bendy - Only",
     Callback = function()
         if killAuraEnabled then
@@ -87,11 +84,11 @@ killTab:CreateButton({
     end
 })
 
-killTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Kill Aura Range",
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Kill Aura Distance",
     Range = {5, 5000},
     Increment = 1,
-    Suffix = "Range Aura",
+    Suffix = " Distance Aura",
     CurrentValue = 20,
     Callback = function(value)
         killRange = value
@@ -106,7 +103,7 @@ killTab:CreateSlider({
     end
 })
 
-local Paragraph = PTab:CreateParagraph({Title = "Kill Aura Monster Bendy Boss Bendy Weapon", Content = "Kill Aura Monster Bendy Boss Bendy Weapon And Style"})
+local Paragraph = espTab:CreateParagraph({Title = "Kill Aura Monster Bendy Boss Bendy Weapon", Content = "Kill Aura Monster Bendy Boss Bendy Weapon And Style"})
 
 player.CharacterAdded:Connect(function()
     task.wait(1)
