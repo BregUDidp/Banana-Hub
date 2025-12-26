@@ -1,33 +1,113 @@
-local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(   |",
-   Icon = "webhook",
-   LoadingTitle = "   Akari Hub  :(   ",
+local killTab = Window:CreateTab("||   - Bendy and Ink Machine", "monitor-x")
+local Section = killTab:CreateSection("")
 
-   LoadingSubtitle = "",
-   
-   ShowText = " 🌑 ",
-   Theme = "Default",
-   ToggleUIKeybind = "G",
-   DisableRayfieldPrompts = true,
-   DisableBuildWarnings = true,
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "Big Hub"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "noinvitelink",
-      RememberJoins = true
-   },
-   KeySystem = false,
-   KeySettings = {
-      Title = "",
-      Subtitle = "",
-      Note = "",
-      FileName = "",
-      SaveKey = true,
-      GrabKeyFromSite = false,
-      Key = {"🌑"}
-   }
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+local killAuraEnabled = false
+local killRange = 20  -- ระยะฆ่าเริ่มต้น (studs)
+
+local function isPlayerModel(model)
+    -- ตรวจว่าเป็นผู้เล่นจริงหรือไม่ (มี Player instance)
+    return Players:GetPlayerFromCharacter(model) ~= nil
+end
+
+local function killMonster(humanoid)
+    if not humanoid or humanoid.Parent == player.Character then return end
+    
+    pcall(function()
+        humanoid.Health = 0
+        humanoid:BreakJoints()
+        if humanoid.Health > 0 then
+            if humanoid.Parent:FindFirstChild("HumanoidRootPart") then
+                humanoid.Parent.HumanoidRootPart:Destroy()
+            end
+            humanoid:Destroy()
+        end
+    end)
+end
+
+local function monsterKillAuraLoop()
+    if not killAuraEnabled or not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local myRoot = player.Character.HumanoidRootPart
+    local myPosition = myRoot.Position
+    
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") then
+            -- ข้ามถ้าเป็นผู้เล่นจริง
+            if isPlayerModel(obj) then continue end
+            
+            local humanoid = obj:FindFirstChildOfClass("Humanoid")
+            local rootPart = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Torso") or obj:FindFirstChild("UpperTorso")
+            
+            if humanoid and rootPart then
+                local distance = (rootPart.Position - myPosition).Magnitude
+                if distance <= killRange then
+                    killMonster(humanoid)
+                end
+            end
+        end
+    end
+end
+
+RunService.Heartbeat:Connect(monsterKillAuraLoop)
+
+local function enableKillAura()
+    killAuraEnabled = true
+    
+    Rayfield:Notify({
+        Title = "[ 🪓 ] Monster Bendy Kill Aura On!",
+        Content = "[ ✅ ] Monster Kill Aura On!",
+        Duration = 1,
+        Image = "swords",
+    })
+end
+
+local function disableKillAura()
+    killAuraEnabled = false
+    
+    Rayfield:Notify({
+        Title = "[ 🪓 ] Monster Bendy Kill Aura Off!",
+        Content = "[ 🛑 ] Monster Kill Aura Off!",
+        Duration = 1,
+        Image = "swords",
+    })
+end
+
+killTab:CreateButton({
+    Name = "[ 🪓 ]  Kill Aura Monster - Bendy - Boss Bendy - Only",
+    Callback = function()
+        if killAuraEnabled then
+            disableKillAura()
+        else
+            enableKillAura()
+        end
+    end
 })
+
+killTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Kill Aura Range",
+    Range = {5, 5000},
+    Increment = 1,
+    Suffix = "Range Aura",
+    CurrentValue = 20,
+    Callback = function(value)
+        killRange = value
+        if killAuraEnabled then
+            Rayfield:Notify({
+                Title = "Range Kill Aura Updated",
+                Content = "Range Monster: " .. value .. " Range",
+                Duration = 1,
+                Image = "ruler",
+            })
+        end
+    end
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Kill Aura Monster Bendy Boss Bendy Weapon", Content = "Kill Aura Monster Bendy Boss Bendy Weapon And Style"})
+
+player.CharacterAdded:Connect(function()
+    task.wait(1)
+end)
