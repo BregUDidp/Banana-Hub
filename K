@@ -332,6 +332,235 @@ local Section = PTab:CreateSection("")
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Section = BTab:CreateSection("")
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local laserEnabled = false
+local leftEyeAtt, rightEyeAtt
+local leftBeam, rightBeam
+local targetAttLeft, targetAttRight
+local leftParticle, rightParticle        -- ไฟที่ตา
+local leftSmoke, rightSmoke              -- ควันที่ตา (ใหม่)
+
+local laserColor = Color3.fromRGB(138, 43, 179)
+
+local function createAttachments()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local head = character:WaitForChild("Head")
+    
+    leftEyeAtt = Instance.new("Attachment")
+    leftEyeAtt.Name = "LeftEyeAttachment"
+    leftEyeAtt.Position = Vector3.new(-0.3, 0.2, -0.5)
+    leftEyeAtt.Parent = head
+    
+    rightEyeAtt = Instance.new("Attachment")
+    rightEyeAtt.Name = "RightEyeAttachment"
+    rightEyeAtt.Position = Vector3.new(0.3, 0.2, -0.5)
+    rightEyeAtt.Parent = head
+    
+    targetAttLeft = Instance.new("Attachment")
+    targetAttLeft.Parent = workspace.Terrain
+    
+    targetAttRight = Instance.new("Attachment")
+    targetAttRight.Parent = workspace.Terrain
+end
+
+local function createBeams()
+    leftBeam = Instance.new("Beam")
+    leftBeam.Attachment0 = leftEyeAtt
+    leftBeam.Attachment1 = targetAttLeft
+    leftBeam.Color = ColorSequence.new(laserColor)
+    leftBeam.Width0 = 2.0
+    leftBeam.Width1 = 2.0
+    leftBeam.Texture = "rbxassetid://6060542021"
+    leftBeam.TextureMode = Enum.TextureMode.Stretch
+    leftBeam.TextureSpeed = 3
+    leftBeam.LightEmission = 1
+    leftBeam.Brightness = 10
+    leftBeam.FaceCamera = true
+    leftBeam.Segments = 20
+    leftBeam.Enabled = false
+    leftBeam.Parent = workspace
+    
+    rightBeam = leftBeam:Clone()
+    rightBeam.Attachment0 = rightEyeAtt
+    rightBeam.Attachment1 = targetAttRight
+    rightBeam.Parent = workspace
+end
+
+local function createParticles()
+    -- ไฟม่วงเล็ก ๆ ที่ตา
+    leftParticle = Instance.new("ParticleEmitter")
+    leftParticle.Parent = leftEyeAtt
+    leftParticle.Texture = "rbxasset://textures/particles/fire_main.dds"
+    leftParticle.Color = ColorSequence.new(laserColor)
+    leftParticle.LightEmission = 1
+    leftParticle.Brightness = 6
+    leftParticle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.6), NumberSequenceKeypoint.new(0.5, 0.8), NumberSequenceKeypoint.new(1, 0)})
+    leftParticle.Transparency = NumberSequence.new(0.3, 1)
+    leftParticle.Lifetime = NumberRange.new(0.3, 0.6)
+    leftParticle.Rate = 40
+    leftParticle.Speed = NumberRange.new(10, 18)
+    leftParticle.SpreadAngle = Vector2.new(15, 15)
+    leftParticle.VelocitySpread = 15
+    leftParticle.Acceleration = Vector3.new(0, -5, 0)
+    leftParticle.Enabled = false
+    
+    rightParticle = leftParticle:Clone()
+    rightParticle.Parent = rightEyeAtt
+
+    -- ควันม่วงเล็ก ๆ ที่ตา (ใหม่)
+    leftSmoke = Instance.new("ParticleEmitter")
+    leftSmoke.Parent = leftEyeAtt
+    leftSmoke.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- ควันตามที่ขอ
+    leftSmoke.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 30, 140))
+    })
+    leftSmoke.LightEmission = 0.3
+    leftSmoke.Brightness = 3
+    leftSmoke.Size = NumberSequence.new(0.4, 1.2)            -- เล็กมาก
+    leftSmoke.Transparency = NumberSequence.new(0.6, 1)      -- โปร่งใสสูง
+    leftSmoke.Lifetime = NumberRange.new(1.0, 2.0)           -- ลอยนานหน่อย
+    leftSmoke.Rate = 20                                     -- น้อยมาก ไม่หนาแน่น
+    leftSmoke.Speed = NumberRange.new(3, 8)                 -- ช้า ๆ ลอยเบา ๆ
+    leftSmoke.SpreadAngle = Vector2.new(25, 25)
+    leftSmoke.Acceleration = Vector3.new(0, 5, 0)            -- ลอยขึ้นช้า ๆ
+    leftSmoke.Enabled = false
+    
+    rightSmoke = leftSmoke:Clone()
+    rightSmoke.Parent = rightEyeAtt
+end
+
+-- ไฟกระทบจุดยิง (เหมือนเดิม)
+local function createImpactFire(position)
+    local fireAtt = Instance.new("Attachment")
+    fireAtt.WorldPosition = position
+    fireAtt.Parent = workspace.Terrain
+    
+    local fire = Instance.new("ParticleEmitter")
+    fire.Parent = fireAtt
+    fire.Texture = "rbxasset://textures/particles/fire_main.dds"
+    fire.Color = ColorSequence.new(laserColor)
+    fire.LightEmission = 1
+    fire.Brightness = 7
+    fire.Size = NumberSequence.new(1.2, 0)
+    fire.Transparency = NumberSequence.new(0.2, 1)
+    fire.Lifetime = NumberRange.new(0.8, 1.5)
+    fire.Rate = 60
+    fire.Speed = NumberRange.new(5, 12)
+    fire.SpreadAngle = Vector2.new(45, 45)
+    fire.Acceleration = Vector3.new(0, 10, 0)
+    fire.Enabled = true
+    
+    Debris:AddItem(fireAtt, 2)
+end
+
+local function updateLaser()
+    if not laserEnabled or not player.Character then return end
+    
+    local character = player.Character
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    
+    local originLeft = leftEyeAtt.WorldPosition
+    local originRight = rightEyeAtt.WorldPosition
+    
+    local direction = (mouse.Hit.Position - head.Position).Unit * 500
+    
+    local rayParams = RaycastParams.new()
+    rayParams.FilterDescendantsInstances = {character}
+    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
+    
+    local resultLeft = workspace:Raycast(originLeft, direction, rayParams)
+    if resultLeft then
+        targetAttLeft.WorldPosition = resultLeft.Position
+        createImpactFire(resultLeft.Position)
+    else
+        targetAttLeft.WorldPosition = originLeft + direction
+    end
+    
+    local resultRight = workspace:Raycast(originRight, direction, rayParams)
+    if resultRight then
+        targetAttRight.WorldPosition = resultRight.Position
+        createImpactFire(resultRight.Position)
+    else
+        targetAttRight.WorldPosition = originRight + direction
+    end
+end
+
+local function enableLaser()
+    if player.Character then
+        createAttachments()
+        createBeams()
+        createParticles()
+    end
+    
+    laserEnabled = true
+    leftBeam.Enabled = true
+    rightBeam.Enabled = true
+    leftParticle.Enabled = true
+    rightParticle.Enabled = true
+    leftSmoke.Enabled = true      -- เปิดควัน
+    rightSmoke.Enabled = true
+    
+    RunService.RenderStepped:Connect(updateLaser)
+end
+
+local function disableLaser()
+    laserEnabled = false
+    
+    if leftBeam then leftBeam:Destroy() end
+    if rightBeam then rightBeam:Destroy() end
+    if leftEyeAtt then leftEyeAtt:Destroy() end
+    if rightEyeAtt then rightEyeAtt:Destroy() end
+    if targetAttLeft then targetAttLeft:Destroy() end
+    if targetAttRight then targetAttRight:Destroy() end
+    if leftParticle then leftParticle:Destroy() end
+    if rightParticle then rightParticle:Destroy() end
+    if leftSmoke then leftSmoke:Destroy() end
+    if rightSmoke then rightSmoke:Destroy() end
+end
+
+BTab:CreateToggle({
+    Name = "[ 🎥 ]  Beamming Eyes   [ - Lag Player - ]",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            enableLaser()
+            Rayfield:Notify({
+               Title = "[ ✅ ]  Beamming Laser On",
+               Content = "[ 🎥 ]  Beamming Laser Player!",
+               Duration = 1,
+               Image = "telescope",
+             })
+        else
+            disableLaser()
+            Rayfield:Notify({
+               Title = "[ 🛑 ]  Beamming Laser Off",
+               Content = "[ 🎥 ]  Beamming Laser Player!",
+               Duration = 1,
+               Image = "telescope",
+             })
+        end
+    end
+})
+
+player.CharacterAdded:Connect(function()
+    if laserEnabled then
+        disableLaser()
+        task.wait(1)
+        enableLaser()
+    end
+end)
+
+local Paragraph = BTab:CreateParagraph({Title = "Laser Beamming Eyes For Laging Player", Content = "Laser Beamming Eyes For Laging Player And Style"})
+
+local Section = BTab:CreateSection("")
+
 BTab:CreateButton({
     Name = "[ 🍭 ]  Teleport Tool   [ - Sword - ]",
     Callback = function()
@@ -2063,113 +2292,3 @@ RunService.RenderStepped:Connect(UpdateESP)
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", Content = "ESP Player Highligh / Name For Hitbox"})
 
 local Section = espTab:CreateSection("")
-
-local coTab = Window:CreateTab("||   - Mapping Time", "map-pinned")
-local Section = coTab:CreateSection("")
-
-local PlayerListParagraph = coTab:CreateParagraph({
-    Title = "All Name Player In List",
-    Content = "Loading..."
-})
-
--- ตารางเก็บข้อมูลผู้เล่นที่ออกไปชั่วคราว (เพื่อแสดงสีแดง 5 วิ)
-local leavingPlayers = {}  -- {player = {timestamp = tick()}}
-
--- ฟังก์ชันอัปเดตรายชื่อผู้เล่น
-local function UpdatePlayerList()
-    local players = game.Players:GetPlayers()
-    local nameList = {}
-    
-    local numberWidth = 5
-    local currentTime = tick()
-    
-    -- เพิ่มผู้เล่นที่ยังอยู่ในเซิร์ฟ (สีเขียว)
-    for i, player in ipairs(players) do
-        local numbered = string.format("%" .. numberWidth .. "d.   🟢   ", i)
-        local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )"
-        table.insert(nameList, entry)
-        
-        -- ลบออกจาก leavingPlayers ถ้าเขากลับเข้ามา (กรณี reconnect เร็ว)
-        leavingPlayers[player] = nil
-    end
-    
-    -- เพิ่มผู้เล่นที่เพิ่งออกไป (แต่ยังไม่ครบ 5 วิ) → แสดงสีแดง
-    for player, data in pairs(leavingPlayers) do
-        if currentTime - data.timestamp <= 4 then
-            local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
-            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- 💥 ---</font>"
-            table.insert(nameList, entry)
-        else
-            -- ครบ 5 วิแล้ว → ลบออกจากตาราง
-            leavingPlayers[player] = nil
-        end
-    end
-    
-    -- เรียงลำดับ (ผู้เล่นจริงก่อน, ผู้เล่นที่ออกตามหลัง)
-    table.sort(nameList)
-    
-    local fullText
-    if #nameList == 0 and next(leavingPlayers) == nil then
-        fullText = "No Found Player In List"
-    else
-        fullText = table.concat(nameList, "\n\n\n")
-    end
-    
-    -- อัปเดต Paragraph
-    PlayerListParagraph:Set({
-        Title = "                                                                                                                      (   " .. #players .. "   Player  )",
-        Content = fullText
-    })
-end
-
--- เมื่อมีคนเข้ามา
-game.Players.PlayerAdded:Connect(function(player)
-    UpdatePlayerList()
-    
-    if game.Players.LocalPlayer:IsFriendsWith(player.UserId) then
-    end
-end)
-
--- เมื่อมีคนออก
-game.Players.PlayerRemoving:Connect(function(player)
-
-    local players = game.Players:GetPlayers()
-    local oldIndex = 1
-    for i, p in ipairs(players) do
-        if p == player then
-            oldIndex = i
-            break
-        end
-    end
-    
-    leavingPlayers[player] = {
-        timestamp = tick(),
-        oldIndex = oldIndex,
-        DisplayName = player.DisplayName
-    }
-    
-     Rayfield:Notify({
-        Title = "[ 🔴 ]  Player Leave Game",
-        Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
-        Duration = 4,
-        Image = "door-closed",
-    })
-    
-    -- อัปเดตทันทีเพื่อแสดงสีแดง
-    UpdatePlayerList()
-    
-    -- รอ 5 วิ แล้วอัปเดตอีกทีเพื่อลบออกจริง ๆ
-    task.delay(5, UpdatePlayerList)
-end)
-
--- อัปเดตทุก 1 วินาที เพื่อเคลียร์คนที่ครบ 5 วิแล้ว (กรณีไม่มี event อื่น)
-task.spawn(function()
-    while task.wait(1) do
-        if next(leavingPlayers) then
-            UpdatePlayerList()
-        end
-    end
-end)
-
--- อัปเดตครั้งแรก
-UpdatePlayerList()
