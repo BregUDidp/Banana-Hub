@@ -1841,14 +1841,14 @@ local Toggle = espTab:CreateToggle({
 
                             Rayfield:Notify({
                                 Title = "[ ✅ ]  Webing Block Attached!",
-                                Content = "[ ⛏️ ]  Found Block / Wall",
+                                Content = "[ ⛏️ ]  Found Block / Walling",
                                 Duration = 1,
                                 Image = "brick-wall"
                             })
                         else      
                             Rayfield:Notify({
                                 Title = "[ ❌ ]  No Webing Block Point!",
-                                Content = "[ ⛏️ ]  No Found Block / Wall",
+                                Content = "[ ⛏️ ]  No Found Block / Walling",
                                 Duration = 1,
                                 Image = "brick-wall"
                             })
