@@ -4,10 +4,10 @@
 
 -- ( [ (138, 43, 179) ] )
 
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(   |",
+   Name = "   |   Akari Hub   :(    |",
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  :(   ",
 
@@ -21,7 +21,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
-      FileName = "Big Hub"
+      FileName = "akari"
    },
    Discord = {
       Enabled = false,
@@ -148,7 +148,7 @@ local FlyToggle = PTab:CreateToggle({
         flying = Value
         Rayfield:Notify({
             Title = Value and   "[ 🪁 ]  Flying On" or "[ 🪁 ]  Flying Off",
-            Content = Value and "[ ✅ ]  Click Flying On!" or "[ 🛑 ]  Click Flying Off!",
+            Content = Value and "[ ✅ ]  Click Flying On" or "[ 🛑 ]  Click Flying Off",
             Duration = 1,
             Image = "luggage"
         })
@@ -273,7 +273,7 @@ local ResetZoomButton = PTab:CreateButton({
 })
 
 local InfiniteZoomSlider = PTab:CreateSlider({
-    Name = "[ 🔎 ]  Infinite Zoom Distance",
+    Name = "[ 📏 ]  Infinite Zoom Distance",
     Range = {400, 10000},
     Increment = 100,       
     Suffix = " Infinite Zoom",
@@ -326,8 +326,6 @@ RS.Stepped:Connect(function()
 end)
 
 local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
-
-local Section = PTab:CreateSection("")
 
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Section = BTab:CreateSection("")
@@ -874,8 +872,6 @@ BTab:CreateButton({
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
 
-local Section = BTab:CreateSection("")
-
 --// === TELEPORT TAB ===
 local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
 local Section = friendTab:CreateSection("")
@@ -1259,7 +1255,7 @@ friendDropdown.Callback = function(selected)
     end
 end
 
-local Paragraph = friendTab:CreateParagraph({Title = "Hitbox Boxing For Kill Player And Reset", Content = "Hitbox Boxing For Kill Player And Reseting"})
+local Paragraph = friendTab:CreateParagraph({Title = "ESP / Hitbox Boxing For Kill Player And Reset", Content = "ESP / Hitbox Boxing For Kill Player And Reseting"})
 
 local Section = friendTab:CreateSection("")
 
@@ -1464,8 +1460,6 @@ friendTab:CreateButton({
 })
 
 local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
-
-local Section = friendTab:CreateSection("")
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Solution", "flask-conical")
@@ -2272,7 +2266,7 @@ local function DisableESP()
 end
 
 espTab:CreateToggle({
-    Name = "[ 👁️ ]  ESP Hitbox Player  [ 138, 43, 179 ]  All",
+    Name = "[ 💡 ]  ESP Hitbox Player  [ 138, 43, 179 ]   [ All ]",
     CurrentValue = false,
     Callback = function(Value)
         ESPEnabled = Value
@@ -2289,3 +2283,4 @@ espTab:CreateToggle({
 RunService.RenderStepped:Connect(UpdateESP)
 
 local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Multi Damage"})
+
