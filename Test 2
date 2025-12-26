@@ -1,0 +1,33 @@
+local Window = ArrayField:CreateWindow({
+   Name = "   |   Akari Hub   :(   |",
+   Icon = "webhook",
+   LoadingTitle = "   Akari Hub  :(   ",
+
+   LoadingSubtitle = "",
+   
+   ShowText = " 🌑 ",
+   Theme = "Default",
+   ToggleUIKeybind = "G",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Big Hub"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🌑"}
+   }
+})
