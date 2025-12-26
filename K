@@ -148,7 +148,7 @@ local FlyToggle = PTab:CreateToggle({
         flying = Value
         Rayfield:Notify({
             Title = Value and   "[ 🪁 ]  Flying On" or "[ 🪁 ]  Flying Off",
-            Content = Value and "[ ✅ ]  Click Teleport On" or "[ 🛑 ]  Click Teleport Off",
+            Content = Value and "[ ✅ ]  Click Flying On!" or "[ 🛑 ]  Click Flying Off!",
             Duration = 1,
             Image = "luggage"
         })
