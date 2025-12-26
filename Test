@@ -1,6 +1,5 @@
 local coTab = Window:CreateTab("||   - Mapping Time", "map-pinned")
 local Section = coTab:CreateSection("")
-local Section = coTab:CreateSection("{ [ - User Name:  All In One  :Target - ] }")
 
 local PlayerListParagraph = coTab:CreateParagraph({
     Title = "All Name Player In List",
@@ -108,5 +107,3 @@ end)
 
 -- อัปเดตครั้งแรก
 UpdatePlayerList()
-
-local Section = coTab:CreateSection("")
