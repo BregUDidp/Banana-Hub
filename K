@@ -342,8 +342,8 @@ local laserEnabled = false
 local leftEyeAtt, rightEyeAtt
 local leftBeam, rightBeam
 local targetAttLeft, targetAttRight
-local leftParticle, rightParticle        -- ไฟที่ตา
-local leftSmoke, rightSmoke              -- ควันที่ตา (ใหม่)
+local leftParticle, rightParticle
+local leftSmoke, rightSmoke
 
 local laserColor = Color3.fromRGB(138, 43, 179)
 
@@ -392,50 +392,51 @@ local function createBeams()
 end
 
 local function createParticles()
-    -- ไฟม่วงเล็ก ๆ ที่ตา
+    -- ไฟม่วงที่ตา (แรงขึ้นมาก!)
     leftParticle = Instance.new("ParticleEmitter")
     leftParticle.Parent = leftEyeAtt
     leftParticle.Texture = "rbxasset://textures/particles/fire_main.dds"
     leftParticle.Color = ColorSequence.new(laserColor)
     leftParticle.LightEmission = 1
-    leftParticle.Brightness = 6
-    leftParticle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.6), NumberSequenceKeypoint.new(0.5, 0.8), NumberSequenceKeypoint.new(1, 0)})
-    leftParticle.Transparency = NumberSequence.new(0.3, 1)
-    leftParticle.Lifetime = NumberRange.new(0.3, 0.6)
-    leftParticle.Rate = 40
-    leftParticle.Speed = NumberRange.new(10, 18)
-    leftParticle.SpreadAngle = Vector2.new(15, 15)
-    leftParticle.VelocitySpread = 15
-    leftParticle.Acceleration = Vector3.new(0, -5, 0)
+    leftParticle.Brightness = 10          -- สว่างแรงขึ้น (จาก 6)
+    leftParticle.Size = NumberSequence.new({   -- ใหญ่และพุ่งแรง
+        NumberSequenceKeypoint.new(0, 1.0),
+        NumberSequenceKeypoint.new(0.4, 1.8),
+        NumberSequenceKeypoint.new(1, 0)
+    })
+    leftParticle.Transparency = NumberSequence.new(0.1, 1)  -- ชัดเจนขึ้น
+    leftParticle.Lifetime = NumberRange.new(0.4, 0.8)
+    leftParticle.Rate = 120               -- <<< แรงมาก (จาก 40 → 120)
+    leftParticle.Speed = NumberRange.new(18, 30)           -- พุ่งเร็วแรง
+    leftParticle.SpreadAngle = Vector2.new(25, 25)
+    leftParticle.VelocitySpread = 30
+    leftParticle.Acceleration = Vector3.new(0, -8, 0)
     leftParticle.Enabled = false
     
     rightParticle = leftParticle:Clone()
     rightParticle.Parent = rightEyeAtt
 
-    -- ควันม่วงเล็ก ๆ ที่ตา (ใหม่)
+    -- ควันม่วงเบา ๆ (คงเดิม ไม่เปลี่ยน)
     leftSmoke = Instance.new("ParticleEmitter")
     leftSmoke.Parent = leftEyeAtt
-    leftSmoke.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- ควันตามที่ขอ
-    leftSmoke.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 30, 140))
-    })
+    leftSmoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
+    leftSmoke.Color = ColorSequence.new(laserColor)
     leftSmoke.LightEmission = 0.3
     leftSmoke.Brightness = 3
-    leftSmoke.Size = NumberSequence.new(0.4, 1.2)            -- เล็กมาก
-    leftSmoke.Transparency = NumberSequence.new(0.6, 1)      -- โปร่งใสสูง
-    leftSmoke.Lifetime = NumberRange.new(1.0, 2.0)           -- ลอยนานหน่อย
-    leftSmoke.Rate = 20                                     -- น้อยมาก ไม่หนาแน่น
-    leftSmoke.Speed = NumberRange.new(3, 8)                 -- ช้า ๆ ลอยเบา ๆ
+    leftSmoke.Size = NumberSequence.new(0.4, 1.2)
+    leftSmoke.Transparency = NumberSequence.new(0.6, 1)
+    leftSmoke.Lifetime = NumberRange.new(1.0, 2.0)
+    leftSmoke.Rate = 20
+    leftSmoke.Speed = NumberRange.new(3, 8)
     leftSmoke.SpreadAngle = Vector2.new(25, 25)
-    leftSmoke.Acceleration = Vector3.new(0, 5, 0)            -- ลอยขึ้นช้า ๆ
+    leftSmoke.Acceleration = Vector3.new(0, 5, 0)
     leftSmoke.Enabled = false
     
     rightSmoke = leftSmoke:Clone()
     rightSmoke.Parent = rightEyeAtt
 end
 
--- ไฟกระทบจุดยิง (เหมือนเดิม)
+-- ไฟกระทบจุดยิง (แรงขึ้น!)
 local function createImpactFire(position)
     local fireAtt = Instance.new("Attachment")
     fireAtt.WorldPosition = position
@@ -446,17 +447,17 @@ local function createImpactFire(position)
     fire.Texture = "rbxasset://textures/particles/fire_main.dds"
     fire.Color = ColorSequence.new(laserColor)
     fire.LightEmission = 1
-    fire.Brightness = 7
-    fire.Size = NumberSequence.new(1.2, 0)
-    fire.Transparency = NumberSequence.new(0.2, 1)
-    fire.Lifetime = NumberRange.new(0.8, 1.5)
-    fire.Rate = 60
-    fire.Speed = NumberRange.new(5, 12)
-    fire.SpreadAngle = Vector2.new(45, 45)
-    fire.Acceleration = Vector3.new(0, 10, 0)
+    fire.Brightness = 12                   -- สว่างแรงขึ้น
+    fire.Size = NumberSequence.new(2.0, 0)  -- ใหญ่ขึ้น (จาก 1.2)
+    fire.Transparency = NumberSequence.new(0.1, 1)
+    fire.Lifetime = NumberRange.new(1.0, 2.0)  -- นานขึ้น
+    fire.Rate = 150                        -- <<< แรงมาก (จาก 60 → 150)
+    fire.Speed = NumberRange.new(8, 20)    -- พุ่งสูงแรง
+    fire.SpreadAngle = Vector2.new(60, 60)
+    fire.Acceleration = Vector3.new(0, 15, 0)  -- ลอยสูงขึ้น
     fire.Enabled = true
     
-    Debris:AddItem(fireAtt, 2)
+    Debris:AddItem(fireAtt, 2.5)  -- ลบช้าลงนิด ให้เห็นเต็ม ๆ
 end
 
 local function updateLaser()
@@ -504,7 +505,7 @@ local function enableLaser()
     rightBeam.Enabled = true
     leftParticle.Enabled = true
     rightParticle.Enabled = true
-    leftSmoke.Enabled = true      -- เปิดควัน
+    leftSmoke.Enabled = true
     rightSmoke.Enabled = true
     
     RunService.RenderStepped:Connect(updateLaser)
@@ -525,23 +526,23 @@ local function disableLaser()
     if rightSmoke then rightSmoke:Destroy() end
 end
 
-BTab:CreateToggle({
+-- Button เปิด/ปิด
+BTab:CreateButton({
     Name = "[ 🎥 ]  Beamming Eyes   [ - Lag Player - ]",
-    CurrentValue = false,
-    Callback = function(value)
-        if value then
-            enableLaser()
+    Callback = function()
+        if laserEnabled then
+            disableLaser()
             Rayfield:Notify({
-               Title = "[ ✅ ]  Beamming Laser On",
-               Content = "[ 🎥 ]  Beamming Laser Player!",
+               Title = "[ 🎥 ]  Beamming Laser Player Off",
+               Content = "[ 🛑 ]  Beamming Laser Lagging Off!",
                Duration = 1,
                Image = "telescope",
              })
         else
-            disableLaser()
+            enableLaser()
             Rayfield:Notify({
-               Title = "[ 🛑 ]  Beamming Laser Off",
-               Content = "[ 🎥 ]  Beamming Laser Player!",
+               Title = "[ 🎥 ]  Beamming Laser Player Off",
+               Content = "[ ✅ ]  Beamming Laser Lagging On!",
                Duration = 1,
                Image = "telescope",
              })
