@@ -642,7 +642,7 @@ end
 
 -- Toggle หลัก
 AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  ESP Player Purple  [ 138, 43, 179 ]",
+    Name = "[ 🔍 ]  Highlight Player Purple  [ 138, 43, 179 ]",
     CurrentValue = false,
     Callback = function(Value)
         ESPEnabled = Value
