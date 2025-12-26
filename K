@@ -44,6 +44,283 @@ local Window = Rayfield:CreateWindow({
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
 local Section = PTab:CreateSection("")
 
+-- โหลดบริการที่จำเป็น
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")  -- สำหรับลบ object อัตโนมัติ
+
+-- ตัวแปรเริ่มต้น
+local swingSpeed = 80
+local swingGravity = 50
+local maxWebDistance = 1500
+
+local swingConnection
+local inputConnection1
+local inputConnection2
+
+local isSwinging = false
+local webPoint = nil
+
+local webBeam = nil          -- Beam สำหรับเส้นใย
+local playerAttachment = nil -- Attachment ที่มือ/แขนผู้เล่น
+local anchorAttachment = nil -- Attachment ที่จุดติดใย
+
+-- Toggle สำหรับ Spider-Man Swing
+local Toggle = PTab:CreateToggle({
+    Name = "[ ⛏️ ]  Swinging Webbing Block  [ - R6 / R15 - ]",
+    CurrentValue = false,
+    Flag = "SpiderSwing",
+    Callback = function(Value)
+        Rayfield:Notify({
+            Title = Value and   "[ ⛏️ ]  Swinging Mode On" or "[ ⛏️ ]  Swinging Mode Off",
+            Content = Value and "[ ✅ ]  Swing Webing Enable!" or "[ 🛑 ]  Swing Webing Disabled!",
+            Duration = 1,
+            Image = "pickaxe"
+        })
+
+        local LP = Players.LocalPlayer
+
+        if Value then
+            -- รอ Character
+            if not LP.Character then
+                LP.CharacterAdded:Wait()
+            end
+
+            local Char = LP.Character
+            local Hum = Char:FindFirstChild("Humanoid")
+            if not Hum then return end
+
+            -- ตรวจสอบ RigType เพื่อเลือกส่วนมือขวา
+            local rightHandPart
+            if Hum.RigType == Enum.HumanoidRigType.R15 then
+                rightHandPart = Char:FindFirstChild("RightHand") or Char:WaitForChild("RightHand")
+            else -- R6
+                rightHandPart = Char:FindFirstChild("Right Arm") or Char:WaitForChild("Right Arm")
+            end
+
+            -- สร้าง Attachment ที่มือขวา (หรือแขนขวาใน R6)
+            playerAttachment = Instance.new("Attachment")
+            playerAttachment.Name = "WebAttachment_Player"
+            playerAttachment.Parent = rightHandPart
+
+            -- Heartbeat สำหรับการเหวี่ยง
+            swingConnection = RunService.Heartbeat:Connect(function()
+                if Char and Char:FindFirstChild("HumanoidRootPart") and Char:FindFirstChild("Humanoid") then
+                    local Root = Char.HumanoidRootPart
+                    local Hum = Char.Humanoid
+
+                    if isSwinging and webPoint then
+                        local direction = (webPoint - Root.Position).Unit
+
+                        local velocity = direction * swingSpeed
+                        Root.Velocity = Vector3.new(velocity.X, swingGravity, velocity.Z)
+
+                        local lookCFrame = CFrame.new(Root.Position, webPoint)
+                        Root.CFrame = Root.CFrame:Lerp(lookCFrame, 0.2)
+
+                        Hum:ChangeState(Enum.HumanoidStateType.Freefall)
+                    end
+                end
+            end)
+
+            -- กดคลิกซ้ายเพื่อยิงใย
+            inputConnection1 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    if Char and Char:FindFirstChild("HumanoidRootPart") then
+                        local camera = Workspace.CurrentCamera
+
+                        local params = RaycastParams.new()
+                        params.FilterDescendantsInstances = {Char}
+                        params.FilterType = Enum.RaycastFilterType.Exclude
+
+                        local rayResult = Workspace:Raycast(camera.CFrame.Position, camera.CFrame.LookVector * maxWebDistance, params)
+
+                        if rayResult and rayResult.Position then
+                            webPoint = rayResult.Position
+                            isSwinging = true
+
+                            -- สร้าง Attachment ที่จุดติดใย
+                            anchorAttachment = Instance.new("Attachment")
+                            anchorAttachment.Name = "WebAttachment_Anchor"
+                            anchorAttachment.WorldPosition = webPoint
+                            anchorAttachment.Parent = Workspace.Terrain
+
+                            -- สร้าง Beam - เส้นใยใหญ่ หนา แบบ Spider-Man
+                            webBeam = Instance.new("Beam")
+                            webBeam.Name = "SpiderWeb"
+                            webBeam.Attachment0 = playerAttachment
+                            webBeam.Attachment1 = anchorAttachment
+                            
+                            webBeam.FaceCamera = true
+                            webBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+                            webBeam.LightEmission = 1.5
+                            webBeam.LightInfluence = 0
+                            webBeam.Transparency = NumberSequence.new(0.3)
+                            webBeam.Width0 = 2.0
+                            webBeam.Width1 = 1.5
+                            
+                            webBeam.Texture = "rbxassetid://6060542021"
+                            webBeam.TextureMode = Enum.TextureMode.Stretch
+                            webBeam.TextureSpeed = 3
+                            webBeam.TextureLength = 8
+                            
+                            webBeam.Parent = Char
+
+                            -- === เพิ่มเอฟเฟกต์ควันสีม่วง ===
+                            local purpleColor = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+
+                            -- ควันที่มือ (จุดยิง)
+                            local smokeHand = Instance.new("ParticleEmitter")
+                            smokeHand.Parent = rightHandPart
+                            smokeHand.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- texture ควันมาตรฐาน Roblox
+                            smokeHand.Color = purpleColor
+                            smokeHand.Transparency = NumberSequence.new(0.5, 1)
+                            smokeHand.Size = NumberSequence.new(1, 3)
+                            smokeHand.Lifetime = NumberRange.new(0.8, 1.5)
+                            smokeHand.Rate = 100  -- พุ่งแรงตอนยิง
+                            smokeHand.Speed = NumberRange.new(5, 15)
+                            smokeHand.SpreadAngle = Vector2.new(45, 45)
+                            smokeHand.LightEmission = 0.3
+                            smokeHand.Enabled = true
+
+                            -- ควันที่จุดติดผนัง
+                            local smokeAnchor = Instance.new("ParticleEmitter")
+                            smokeAnchor.Parent = anchorAttachment
+                            smokeAnchor.Texture = "rbxasset://textures/particles/smoke_main.dds"
+                            smokeAnchor.Color = purpleColor
+                            smokeAnchor.Transparency = NumberSequence.new(0.4, 1)
+                            smokeAnchor.Size = NumberSequence.new(2, 5)
+                            smokeAnchor.Lifetime = NumberRange.new(1, 2)
+                            smokeAnchor.Rate = 150
+                            smokeAnchor.Speed = NumberRange.new(2, 8)
+                            smokeAnchor.SpreadAngle = Vector2.new(360, 360)
+                            smokeAnchor.LightEmission = 0.2
+                            smokeAnchor.Enabled = true
+
+                            -- หยุด emit ควันหลังจาก delay (เพื่อไม่ให้ฟุ้งตลอดเวลา)
+                            task.delay(0.5, function()
+                                smokeHand.Enabled = false
+                                smokeAnchor.Enabled = false
+                            end)
+
+                            -- ลบ ParticleEmitter อัตโนมัติหลังจบ
+                            Debris:AddItem(smokeHand, 3)
+                            Debris:AddItem(smokeAnchor, 3)
+
+                            Rayfield:Notify({
+                                Title = "[ ✅ ]  Webing Block Attached!",
+                                Content = "[ ⛏️ ]  Found Block / Walling",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        else      
+                            Rayfield:Notify({
+                                Title = "[ ❌ ]  No Webing Block Point!",
+                                Content = "[ ⛏️ ]  No Found Block / Walling",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        end
+                    end
+                end
+            end)
+
+            -- ปล่อยคลิกเพื่อตัดใย
+            inputConnection2 = UserInputService.InputEnded:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isSwinging = false
+                    webPoint = nil
+
+                    if webBeam then webBeam:Destroy() end
+                    if anchorAttachment then anchorAttachment:Destroy() end
+                    webBeam = nil
+                    anchorAttachment = nil
+                end
+            end)
+
+        else
+            -- ปิดทุกอย่าง
+            if swingConnection then swingConnection:Disconnect() end
+            if inputConnection1 then inputConnection1:Disconnect() end
+            if inputConnection2 then inputConnection2:Disconnect() end
+
+            isSwinging = false
+            webPoint = nil
+
+            if webBeam then webBeam:Destroy() end
+            if anchorAttachment then anchorAttachment:Destroy() end
+            if playerAttachment then playerAttachment:Destroy() end
+
+            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+                LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end
+    end,
+})
+
+-- Slider ต่าง ๆ (เหมือนเดิม แต่ปรับ Notify ให้สวยขึ้น)
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Swinging Webbing Speed",
+    Range = {50, 5000},
+    Increment = 5,
+    Suffix = " Swing Speed",
+    CurrentValue = 80,
+    Flag = "SwingSpeed",
+    Callback = function(Value)
+        swingSpeed = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Speed!",
+           Content = "Swinging Speed: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Webbing Distance",
+    Range = {50, 5000},
+    Increment = 10,
+    Suffix = " Swing Distance",
+    CurrentValue = 1500,
+    Flag = "WebDistance",
+    Callback = function(Value)
+        maxWebDistance = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Distance!",
+           Content = "Swinging Distance: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ ⛏️ ]  Swinging Gravity Force",
+    Range = {20, 5000},
+    Increment = 5,
+    Suffix = " Swing Gravity",
+    CurrentValue = 50,
+    Flag = "SwingLift",
+    Callback = function(Value)
+        swingGravity = Value
+        Rayfield:Notify({
+           Title = "[ ⛏️ ]  Swinging Gravity Force!",
+           Content = "Swinging Gravity: " .. Value,
+           Duration = 1,
+           Image = "pickaxe",
+         })
+    end
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Forging Block Player / Friend Sword", Content = "Forging Block Player / Friend Sword Are Multi Block"})
+
+local Section = PTab:CreateSection("")
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -1760,282 +2037,7 @@ local Paragraph = espTab:CreateParagraph({Title = "Purple / RainbowTool For Cool
 
 RunService.RenderStepped:Connect(updateESP)
 
-local Section = espTab:CreateSection("")
-
--- โหลดบริการที่จำเป็น
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local Workspace = game:GetService("Workspace")
-local Debris = game:GetService("Debris")  -- สำหรับลบ object อัตโนมัติ
-
--- ตัวแปรเริ่มต้น
-local swingSpeed = 80
-local swingGravity = 50
-local maxWebDistance = 1500
-
-local swingConnection
-local inputConnection1
-local inputConnection2
-
-local isSwinging = false
-local webPoint = nil
-
-local webBeam = nil          -- Beam สำหรับเส้นใย
-local playerAttachment = nil -- Attachment ที่มือ/แขนผู้เล่น
-local anchorAttachment = nil -- Attachment ที่จุดติดใย
-
--- Toggle สำหรับ Spider-Man Swing
-local Toggle = espTab:CreateToggle({
-    Name = "[ ⛏️ ]  Swinging Webbing Block  [ - R6 / R15 - ]",
-    CurrentValue = false,
-    Flag = "SpiderSwing",
-    Callback = function(Value)
-        Rayfield:Notify({
-            Title = Value and   "[ ⛏️ ]  Swinging Mode On" or "[ ⛏️ ]  Swinging Mode Off",
-            Content = Value and "[ ✅ ]  Swing Webing Enable!" or "[ 🛑 ]  Swing Webing Disabled!",
-            Duration = 1,
-            Image = "pickaxe"
-        })
-
-        local LP = Players.LocalPlayer
-
-        if Value then
-            -- รอ Character
-            if not LP.Character then
-                LP.CharacterAdded:Wait()
-            end
-
-            local Char = LP.Character
-            local Hum = Char:FindFirstChild("Humanoid")
-            if not Hum then return end
-
-            -- ตรวจสอบ RigType เพื่อเลือกส่วนมือขวา
-            local rightHandPart
-            if Hum.RigType == Enum.HumanoidRigType.R15 then
-                rightHandPart = Char:FindFirstChild("RightHand") or Char:WaitForChild("RightHand")
-            else -- R6
-                rightHandPart = Char:FindFirstChild("Right Arm") or Char:WaitForChild("Right Arm")
-            end
-
-            -- สร้าง Attachment ที่มือขวา (หรือแขนขวาใน R6)
-            playerAttachment = Instance.new("Attachment")
-            playerAttachment.Name = "WebAttachment_Player"
-            playerAttachment.Parent = rightHandPart
-
-            -- Heartbeat สำหรับการเหวี่ยง
-            swingConnection = RunService.Heartbeat:Connect(function()
-                if Char and Char:FindFirstChild("HumanoidRootPart") and Char:FindFirstChild("Humanoid") then
-                    local Root = Char.HumanoidRootPart
-                    local Hum = Char.Humanoid
-
-                    if isSwinging and webPoint then
-                        local direction = (webPoint - Root.Position).Unit
-
-                        local velocity = direction * swingSpeed
-                        Root.Velocity = Vector3.new(velocity.X, swingGravity, velocity.Z)
-
-                        local lookCFrame = CFrame.new(Root.Position, webPoint)
-                        Root.CFrame = Root.CFrame:Lerp(lookCFrame, 0.2)
-
-                        Hum:ChangeState(Enum.HumanoidStateType.Freefall)
-                    end
-                end
-            end)
-
-            -- กดคลิกซ้ายเพื่อยิงใย
-            inputConnection1 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-                if gameProcessed then return end
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    if Char and Char:FindFirstChild("HumanoidRootPart") then
-                        local camera = Workspace.CurrentCamera
-
-                        local params = RaycastParams.new()
-                        params.FilterDescendantsInstances = {Char}
-                        params.FilterType = Enum.RaycastFilterType.Exclude
-
-                        local rayResult = Workspace:Raycast(camera.CFrame.Position, camera.CFrame.LookVector * maxWebDistance, params)
-
-                        if rayResult and rayResult.Position then
-                            webPoint = rayResult.Position
-                            isSwinging = true
-
-                            -- สร้าง Attachment ที่จุดติดใย
-                            anchorAttachment = Instance.new("Attachment")
-                            anchorAttachment.Name = "WebAttachment_Anchor"
-                            anchorAttachment.WorldPosition = webPoint
-                            anchorAttachment.Parent = Workspace.Terrain
-
-                            -- สร้าง Beam - เส้นใยใหญ่ หนา แบบ Spider-Man
-                            webBeam = Instance.new("Beam")
-                            webBeam.Name = "SpiderWeb"
-                            webBeam.Attachment0 = playerAttachment
-                            webBeam.Attachment1 = anchorAttachment
-                            
-                            webBeam.FaceCamera = true
-                            webBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
-                            webBeam.LightEmission = 1.5
-                            webBeam.LightInfluence = 0
-                            webBeam.Transparency = NumberSequence.new(0.3)
-                            webBeam.Width0 = 2.0
-                            webBeam.Width1 = 1.5
-                            
-                            webBeam.Texture = "rbxassetid://6060542021"
-                            webBeam.TextureMode = Enum.TextureMode.Stretch
-                            webBeam.TextureSpeed = 3
-                            webBeam.TextureLength = 8
-                            
-                            webBeam.Parent = Char
-
-                            -- === เพิ่มเอฟเฟกต์ควันสีม่วง ===
-                            local purpleColor = ColorSequence.new(Color3.fromRGB(138, 43, 179))
-
-                            -- ควันที่มือ (จุดยิง)
-                            local smokeHand = Instance.new("ParticleEmitter")
-                            smokeHand.Parent = rightHandPart
-                            smokeHand.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- texture ควันมาตรฐาน Roblox
-                            smokeHand.Color = purpleColor
-                            smokeHand.Transparency = NumberSequence.new(0.5, 1)
-                            smokeHand.Size = NumberSequence.new(1, 3)
-                            smokeHand.Lifetime = NumberRange.new(0.8, 1.5)
-                            smokeHand.Rate = 100  -- พุ่งแรงตอนยิง
-                            smokeHand.Speed = NumberRange.new(5, 15)
-                            smokeHand.SpreadAngle = Vector2.new(45, 45)
-                            smokeHand.LightEmission = 0.3
-                            smokeHand.Enabled = true
-
-                            -- ควันที่จุดติดผนัง
-                            local smokeAnchor = Instance.new("ParticleEmitter")
-                            smokeAnchor.Parent = anchorAttachment
-                            smokeAnchor.Texture = "rbxasset://textures/particles/smoke_main.dds"
-                            smokeAnchor.Color = purpleColor
-                            smokeAnchor.Transparency = NumberSequence.new(0.4, 1)
-                            smokeAnchor.Size = NumberSequence.new(2, 5)
-                            smokeAnchor.Lifetime = NumberRange.new(1, 2)
-                            smokeAnchor.Rate = 150
-                            smokeAnchor.Speed = NumberRange.new(2, 8)
-                            smokeAnchor.SpreadAngle = Vector2.new(360, 360)
-                            smokeAnchor.LightEmission = 0.2
-                            smokeAnchor.Enabled = true
-
-                            -- หยุด emit ควันหลังจาก delay (เพื่อไม่ให้ฟุ้งตลอดเวลา)
-                            task.delay(0.5, function()
-                                smokeHand.Enabled = false
-                                smokeAnchor.Enabled = false
-                            end)
-
-                            -- ลบ ParticleEmitter อัตโนมัติหลังจบ
-                            Debris:AddItem(smokeHand, 3)
-                            Debris:AddItem(smokeAnchor, 3)
-
-                            Rayfield:Notify({
-                                Title = "[ ✅ ]  Webing Block Attached!",
-                                Content = "[ ⛏️ ]  Found Block / Walling",
-                                Duration = 1,
-                                Image = "brick-wall"
-                            })
-                        else      
-                            Rayfield:Notify({
-                                Title = "[ ❌ ]  No Webing Block Point!",
-                                Content = "[ ⛏️ ]  No Found Block / Walling",
-                                Duration = 1,
-                                Image = "brick-wall"
-                            })
-                        end
-                    end
-                end
-            end)
-
-            -- ปล่อยคลิกเพื่อตัดใย
-            inputConnection2 = UserInputService.InputEnded:Connect(function(input, gameProcessed)
-                if gameProcessed then return end
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    isSwinging = false
-                    webPoint = nil
-
-                    if webBeam then webBeam:Destroy() end
-                    if anchorAttachment then anchorAttachment:Destroy() end
-                    webBeam = nil
-                    anchorAttachment = nil
-                end
-            end)
-
-        else
-            -- ปิดทุกอย่าง
-            if swingConnection then swingConnection:Disconnect() end
-            if inputConnection1 then inputConnection1:Disconnect() end
-            if inputConnection2 then inputConnection2:Disconnect() end
-
-            isSwinging = false
-            webPoint = nil
-
-            if webBeam then webBeam:Destroy() end
-            if anchorAttachment then anchorAttachment:Destroy() end
-            if playerAttachment then playerAttachment:Destroy() end
-
-            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
-                LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
-            end
-        end
-    end,
-})
-
--- Slider ต่าง ๆ (เหมือนเดิม แต่ปรับ Notify ให้สวยขึ้น)
-espTab:CreateSlider({
-    Name = "[ 📏 ]  Swinging Webbing Speed",
-    Range = {50, 5000},
-    Increment = 5,
-    Suffix = " Swing Speed",
-    CurrentValue = 80,
-    Flag = "SwingSpeed",
-    Callback = function(Value)
-        swingSpeed = Value
-        Rayfield:Notify({
-           Title = "[ 📏 ]  Swinging Speed!",
-           Content = "Swinging Speed: " .. Value,
-           Duration = 1,
-           Image = "ruler",
-         })
-    end
-})
-
-espTab:CreateSlider({
-    Name = "[ 📏 ]  Webbing Distance",
-    Range = {50, 5000},
-    Increment = 10,
-    Suffix = " Swing Distance",
-    CurrentValue = 1500,
-    Flag = "WebDistance",
-    Callback = function(Value)
-        maxWebDistance = Value
-        Rayfield:Notify({
-           Title = "[ 📏 ]  Swinging Distance!",
-           Content = "Swinging Distance: " .. Value,
-           Duration = 1,
-           Image = "ruler",
-         })
-    end
-})
-
-espTab:CreateSlider({
-    Name = "[ ⛏️ ]  Swinging Gravity Force",
-    Range = {20, 5000},
-    Increment = 5,
-    Suffix = " Swing Gravity",
-    CurrentValue = 50,
-    Flag = "SwingLift",
-    Callback = function(Value)
-        swingGravity = Value
-        Rayfield:Notify({
-           Title = "[ ⛏️ ]  Swinging Gravity Force!",
-           Content = "Swinging Gravity: " .. Value,
-           Duration = 1,
-           Image = "pickaxe",
-         })
-    end
-})
-
-local Paragraph = espTab:CreateParagraph({Title = "Forging Block Player / Friend Sword", Content = "Forging Block Player / Friend Sword Are Multi Block"})
+-- Here --
 
 local Section = espTab:CreateSection("")
 
@@ -2282,5 +2284,5 @@ espTab:CreateToggle({
 -- อัปเดตทุกเฟรม
 RunService.RenderStepped:Connect(UpdateESP)
 
-local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Multi Damage"})
+local Paragraph = espTab:CreateParagraph({Title = "ESP / Hitbox Player / Friend Sword And See", Content = "ESP / Hitbox Player / Friend Sword Are Multi Damage And See"})
 
