@@ -200,7 +200,7 @@ local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For
 local Section = PTab:CreateSection("")
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=16, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
@@ -335,17 +335,30 @@ local Section = BTab:CreateSection("")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
+local UserInputService = game:GetService("UserInputService")
+
 local player = Players.LocalPlayer
 local mouse = player:GetMouse()
 
 local laserEnabled = false
+local shooting = false
 local leftEyeAtt, rightEyeAtt
 local leftBeam, rightBeam
 local targetAttLeft, targetAttRight
 local leftParticle, rightParticle
 local leftSmoke, rightSmoke
+local leftEyeGlow, rightEyeGlow
+local laserSound
 
 local laserColor = Color3.fromRGB(138, 43, 179)
+local darkPurple = Color3.fromRGB(100, 20, 160)
+local brightPurple = Color3.fromRGB(180, 80, 255)
+
+-- ตั้งค่า Recoil & Damage
+local headShake = 0.08          -- การสั่นของหัว (recoil)
+local damagePerTick = 0         -- ความเสียหายต่อครั้ง
+local damageInterval = 0.1      -- ทุก 0.1 วินาที
+local lastDamageTick = 0
 
 local function createAttachments()
     local character = player.Character or player.CharacterAdded:Wait()
@@ -366,6 +379,15 @@ local function createAttachments()
     
     targetAttRight = Instance.new("Attachment")
     targetAttRight.Parent = workspace.Terrain
+
+    -- เสียงเลเซอร์
+    laserSound = Instance.new("Sound")
+    laserSound.Name = "PurpleLaserSound"
+    laserSound.SoundId = "rbxassetid://138087185"
+    laserSound.Volume = 0.8
+    laserSound.Looped = true
+    laserSound.Parent = head
+    laserSound:Stop()
 end
 
 local function createBeams()
@@ -379,7 +401,7 @@ local function createBeams()
     leftBeam.TextureMode = Enum.TextureMode.Stretch
     leftBeam.TextureSpeed = 3
     leftBeam.LightEmission = 1
-    leftBeam.Brightness = 10
+    leftBeam.Brightness = 8
     leftBeam.FaceCamera = true
     leftBeam.Segments = 20
     leftBeam.Enabled = false
@@ -392,106 +414,183 @@ local function createBeams()
 end
 
 local function createParticles()
-    -- ไฟม่วงที่ตา (แรงขึ้นมาก!)
     leftParticle = Instance.new("ParticleEmitter")
     leftParticle.Parent = leftEyeAtt
     leftParticle.Texture = "rbxasset://textures/particles/fire_main.dds"
-    leftParticle.Color = ColorSequence.new(laserColor)
-    leftParticle.LightEmission = 1
-    leftParticle.Brightness = 10          -- สว่างแรงขึ้น (จาก 6)
-    leftParticle.Size = NumberSequence.new({   -- ใหญ่และพุ่งแรง
-        NumberSequenceKeypoint.new(0, 1.0),
-        NumberSequenceKeypoint.new(0.4, 1.8),
-        NumberSequenceKeypoint.new(1, 0)
-    })
-    leftParticle.Transparency = NumberSequence.new(0.1, 1)  -- ชัดเจนขึ้น
-    leftParticle.Lifetime = NumberRange.new(0.4, 0.8)
-    leftParticle.Rate = 120               -- <<< แรงมาก (จาก 40 → 120)
-    leftParticle.Speed = NumberRange.new(18, 30)           -- พุ่งเร็วแรง
-    leftParticle.SpreadAngle = Vector2.new(25, 25)
-    leftParticle.VelocitySpread = 30
-    leftParticle.Acceleration = Vector3.new(0, -8, 0)
+    leftParticle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(0.5, laserColor), ColorSequenceKeypoint.new(1, brightPurple)})
+    leftParticle.LightEmission = 0.8
+    leftParticle.Brightness = 8
+    leftParticle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.9), NumberSequenceKeypoint.new(0.5, 1.5), NumberSequenceKeypoint.new(1, 0)})
+    leftParticle.Transparency = NumberSequence.new(0.3, 1)
+    leftParticle.Lifetime = NumberRange.new(0.5, 0.9)
+    leftParticle.Rate = 90
+    leftParticle.Speed = NumberRange.new(15, 25)
     leftParticle.Enabled = false
     
     rightParticle = leftParticle:Clone()
     rightParticle.Parent = rightEyeAtt
 
-    -- ควันม่วงเบา ๆ (คงเดิม ไม่เปลี่ยน)
     leftSmoke = Instance.new("ParticleEmitter")
     leftSmoke.Parent = leftEyeAtt
     leftSmoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
-    leftSmoke.Color = ColorSequence.new(laserColor)
+    leftSmoke.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(1, Color3.fromRGB(140, 60, 200))})
     leftSmoke.LightEmission = 0.3
     leftSmoke.Brightness = 3
-    leftSmoke.Size = NumberSequence.new(0.4, 1.2)
+    leftSmoke.Size = NumberSequence.new(0.5, 1.3)
     leftSmoke.Transparency = NumberSequence.new(0.6, 1)
-    leftSmoke.Lifetime = NumberRange.new(1.0, 2.0)
-    leftSmoke.Rate = 20
-    leftSmoke.Speed = NumberRange.new(3, 8)
-    leftSmoke.SpreadAngle = Vector2.new(25, 25)
-    leftSmoke.Acceleration = Vector3.new(0, 5, 0)
+    leftSmoke.Lifetime = NumberRange.new(1.5, 2.8)
+    leftSmoke.Rate = 18
     leftSmoke.Enabled = false
     
     rightSmoke = leftSmoke:Clone()
     rightSmoke.Parent = rightEyeAtt
+
+    leftEyeGlow = Instance.new("ParticleEmitter")
+    leftEyeGlow.Parent = leftEyeAtt
+    leftEyeGlow.Texture = "rbxasset://textures/particles/fire_main.dds"
+    leftEyeGlow.Color = ColorSequence.new(laserColor)
+    leftEyeGlow.LightEmission = 0.9
+    leftEyeGlow.Brightness = 7
+    leftEyeGlow.Size = NumberSequence.new(0.4, 0.7)
+    leftEyeGlow.Transparency = NumberSequence.new(0.4, 0.8)
+    leftEyeGlow.Lifetime = NumberRange.new(0.3, 0.6)
+    leftEyeGlow.Rate = 35
+    leftEyeGlow.Speed = NumberRange.new(0, 3)
+    leftEyeGlow.Enabled = false
+    
+    rightEyeGlow = leftEyeGlow:Clone()
+    rightEyeGlow.Parent = rightEyeAtt
 end
 
--- ไฟกระทบจุดยิง (แรงขึ้น!)
-local function createImpactFire(position)
-    local fireAtt = Instance.new("Attachment")
-    fireAtt.WorldPosition = position
-    fireAtt.Parent = workspace.Terrain
+local function applyRecoil()
+    -- สั่นหัวเล็กน้อย (ไม่มีกล้อง)
+    if player.Character and player.Character:FindFirstChild("Head") then
+        local head = player.Character.Head
+        local shake = CFrame.new(
+            math.random(-headShake, headShake),
+            math.random(-headShake, headShake),
+            math.random(-headShake, headShake)
+        )
+        head.CFrame = head.CFrame * shake
+    end
+end
+
+local function createImpactEffects(position)
+    local att = Instance.new("Attachment")
+    att.WorldPosition = position
+    att.Parent = workspace.Terrain
     
     local fire = Instance.new("ParticleEmitter")
-    fire.Parent = fireAtt
+    fire.Parent = att
     fire.Texture = "rbxasset://textures/particles/fire_main.dds"
-    fire.Color = ColorSequence.new(laserColor)
-    fire.LightEmission = 1
-    fire.Brightness = 12                   -- สว่างแรงขึ้น
-    fire.Size = NumberSequence.new(2.0, 0)  -- ใหญ่ขึ้น (จาก 1.2)
-    fire.Transparency = NumberSequence.new(0.1, 1)
-    fire.Lifetime = NumberRange.new(1.0, 2.0)  -- นานขึ้น
-    fire.Rate = 150                        -- <<< แรงมาก (จาก 60 → 150)
-    fire.Speed = NumberRange.new(8, 20)    -- พุ่งสูงแรง
-    fire.SpreadAngle = Vector2.new(60, 60)
-    fire.Acceleration = Vector3.new(0, 15, 0)  -- ลอยสูงขึ้น
+    fire.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(0.4, laserColor), ColorSequenceKeypoint.new(1, brightPurple)})
+    fire.LightEmission = 0.9
+    fire.Brightness = 10
+    fire.Size = NumberSequence.new(1.8, 0)
+    fire.Transparency = NumberSequence.new(0.2, 1)
+    fire.Lifetime = NumberRange.new(1.0, 1.8)
+    fire.Rate = 120
+    fire.Speed = NumberRange.new(8, 18)
+    fire.Acceleration = Vector3.new(0, 12, 0)
     fire.Enabled = true
     
-    Debris:AddItem(fireAtt, 2.5)  -- ลบช้าลงนิด ให้เห็นเต็ม ๆ
+    local smoke = Instance.new("ParticleEmitter")
+    smoke.Parent = att
+    smoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
+    smoke.Color = ColorSequence.new(darkPurple, Color3.fromRGB(140, 60, 200))
+    smoke.Size = NumberSequence.new(1.5, 3.0)
+    smoke.Transparency = NumberSequence.new(0.7, 1)
+    smoke.Lifetime = NumberRange.new(2.0, 4.0)
+    smoke.Rate = 50
+    smoke.Enabled = true
+    
+    Debris:AddItem(att, 3)
 end
 
 local function updateLaser()
-    if not laserEnabled or not player.Character then return end
-    
-    local character = player.Character
-    local head = character:FindFirstChild("Head")
+    if not laserEnabled or not shooting or not player.Character then return end
+    local head = player.Character:FindFirstChild("Head")
     if not head then return end
     
     local originLeft = leftEyeAtt.WorldPosition
     local originRight = rightEyeAtt.WorldPosition
-    
     local direction = (mouse.Hit.Position - head.Position).Unit * 500
     
     local rayParams = RaycastParams.new()
-    rayParams.FilterDescendantsInstances = {character}
+    rayParams.FilterDescendantsInstances = {player.Character}
     rayParams.FilterType = Enum.RaycastFilterType.Blacklist
     
+    -- ตาซ้าย
     local resultLeft = workspace:Raycast(originLeft, direction, rayParams)
     if resultLeft then
         targetAttLeft.WorldPosition = resultLeft.Position
-        createImpactFire(resultLeft.Position)
+        createImpactEffects(resultLeft.Position)
+        
+        local humanoid = resultLeft.Instance:FindFirstAncestorOfClass("Model") and resultLeft.Instance:FindFirstAncestorOfClass("Model"):FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Parent ~= player.Character then
+            local now = tick()
+            if now - lastDamageTick >= damageInterval then
+                humanoid:TakeDamage(damagePerTick)
+                lastDamageTick = now
+            end
+        end
     else
         targetAttLeft.WorldPosition = originLeft + direction
     end
     
+    -- ตาขวา
     local resultRight = workspace:Raycast(originRight, direction, rayParams)
     if resultRight then
         targetAttRight.WorldPosition = resultRight.Position
-        createImpactFire(resultRight.Position)
+        createImpactEffects(resultRight.Position)
+        
+        local humanoid = resultRight.Instance:FindFirstAncestorOfClass("Model") and resultLeft.Instance:FindFirstAncestorOfClass("Model"):FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.Parent ~= player.Character then
+            local now = tick()
+            if now - lastDamageTick >= damageInterval then
+                humanoid:TakeDamage(damagePerTick)
+                lastDamageTick = now
+            end
+        end
     else
         targetAttRight.WorldPosition = originRight + direction
     end
+    
+    applyRecoil()
 end
+
+-- คลิกซ้าย = ยิง
+UserInputService.InputBegan:Connect(function(input)
+    if laserEnabled and input.UserInputType == Enum.UserInputType.MouseButton1 then
+        shooting = true
+        leftBeam.Enabled = true
+        rightBeam.Enabled = true
+        leftParticle.Enabled = true
+        rightParticle.Enabled = true
+        leftSmoke.Enabled = true
+        rightSmoke.Enabled = true
+        leftEyeGlow.Enabled = true
+        rightEyeGlow.Enabled = true
+        if laserSound then laserSound:Play() end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        shooting = false
+        leftBeam.Enabled = false
+        rightBeam.Enabled = false
+        leftParticle.Enabled = false
+        rightParticle.Enabled = false
+        leftSmoke.Enabled = false
+        rightSmoke.Enabled = false
+        leftEyeGlow.Enabled = false
+        rightEyeGlow.Enabled = false
+        if laserSound then laserSound:Stop() end
+    end
+end)
+
+RunService.RenderStepped:Connect(updateLaser)
 
 local function enableLaser()
     if player.Character then
@@ -501,18 +600,18 @@ local function enableLaser()
     end
     
     laserEnabled = true
-    leftBeam.Enabled = true
-    rightBeam.Enabled = true
-    leftParticle.Enabled = true
-    rightParticle.Enabled = true
-    leftSmoke.Enabled = true
-    rightSmoke.Enabled = true
     
-    RunService.RenderStepped:Connect(updateLaser)
+    Rayfield:Notify({
+               Title = "[ 🎥 ]  Beamming Laser Player!",
+               Content = "[ ✅ ]  Beamming Laser On!",
+               Duration = 1,
+               Image = "telescope",
+             })
 end
 
 local function disableLaser()
     laserEnabled = false
+    shooting = false
     
     if leftBeam then leftBeam:Destroy() end
     if rightBeam then rightBeam:Destroy() end
@@ -524,28 +623,25 @@ local function disableLaser()
     if rightParticle then rightParticle:Destroy() end
     if leftSmoke then leftSmoke:Destroy() end
     if rightSmoke then rightSmoke:Destroy() end
+    if leftEyeGlow then leftEyeGlow:Destroy() end
+    if rightEyeGlow then rightEyeGlow:Destroy() end
+    if laserSound then laserSound:Stop(); laserSound:Destroy() end
+    
+    Rayfield:Notify({
+               Title = "[ 🎥 ]  Beamming Laser Player!",
+               Content = "[ 🛑 ]  Beamming Laser Off!",
+               Duration = 1,
+               Image = "telescope",
+             })
 end
 
--- Button เปิด/ปิด
 BTab:CreateButton({
-    Name = "[ 🎥 ]  Beamming Eyes   [ - Lag Player - ]",
+    Name = "[ 🎥 ]  Beamming Laser Eyes   [ - Beamming Eyes - ]",
     Callback = function()
         if laserEnabled then
             disableLaser()
-            Rayfield:Notify({
-               Title = "[ 🎥 ]  Beamming Laser Player Off",
-               Content = "[ 🛑 ]  Beamming Laser Lagging Off!",
-               Duration = 1,
-               Image = "telescope",
-             })
         else
             enableLaser()
-            Rayfield:Notify({
-               Title = "[ 🎥 ]  Beamming Laser Player Off",
-               Content = "[ ✅ ]  Beamming Laser Lagging On!",
-               Duration = 1,
-               Image = "telescope",
-             })
         end
     end
 })
@@ -1306,7 +1402,6 @@ friendTab:CreateButton({
     end
 })
 
--- ===== ปุ่ม ESP Highlight เฉพาะ =====
 friendTab:CreateButton({
     Name = "[ 💡 ]  ESP Highlight Dropdown Player",
     Callback = function()
@@ -1667,7 +1762,7 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
-local Paragraph = espTab:CreateParagraph({Title = "Purple Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style"})
+local Paragraph = espTab:CreateParagraph({Title = "Purple / RainbowTool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style Gun / Sword"})
 
 RunService.RenderStepped:Connect(updateESP)
 
@@ -2019,10 +2114,6 @@ espTab:CreateSlider({
     end,
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Multi Damage"})
-
-local Section = espTab:CreateSection("")
-
 local ESPEnabled = false
 local Drawings = {}
 local Highlights = {}
@@ -2180,7 +2271,6 @@ local function DisableESP()
     Highlights = {}
 end
 
--- Toggle หลัก
 espTab:CreateToggle({
     Name = "[ 👁️ ]  ESP Hitbox Player  [ 138, 43, 179 ]  All",
     CurrentValue = false,
@@ -2195,101 +2285,7 @@ espTab:CreateToggle({
     end,
 })
 
-local ESPEnabled = false
-local Highlights = {}  -- [player] = highlight instance
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-
--- สร้างหรืออัปเดต Highlight สำหรับ player (เฉพาะ Highlight เท่านั้น)
-local function SetupHighlight(player)
-    if player == Players.LocalPlayer then return end
-    
-    -- ลบ Highlight เก่าถ้ามี (ป้องกัน duplicate)
-    if Highlights[player] then
-        if Highlights[player] and Highlights[player].Parent then
-            Highlights[player]:Destroy()
-        end
-    end
-    
-    local character = player.Character
-    if character then
-        local highlight = Instance.new("Highlight")
-        highlight.Parent = character
-        highlight.Adornee = character  -- ทำให้ highlight ติดกับตัวละครเต็มๆ
-        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop  -- มองเห็นทะลุกำแพง
-        highlight.FillColor = Color3.fromRGB(138, 43, 179)
-        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
-        highlight.FillTransparency = 0.4
-        highlight.OutlineTransparency = 0
-        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
-        
-        Highlights[player] = highlight
-    end
-end
-
--- ฟังก์ชันจัดการเมื่อ character โหลดใหม่ (respawn หรือเข้ามาใหม่)
-local function OnCharacterAdded(player)
-    if player == Players.LocalPlayer then return end
-    
-    -- รอให้ character โหลดส่วนสำคัญครบ
-    local character = player.Character or player.CharacterAdded:Wait()
-    character:WaitForChild("HumanoidRootPart", 5)
-    character:WaitForChild("Head", 5)
-    
-    SetupHighlight(player)
-end
-
--- เปิด Highlight ESP
-local function EnableHighlightESP()
-    -- สำหรับผู้เล่นที่มีอยู่แล้วในเกม
-    for _, player in pairs(Players:GetPlayers()) do
-        if player.Character then
-            OnCharacterAdded(player)
-        end
-        -- เชื่อม event สำหรับ respawn ในอนาคต
-        player.CharacterAdded:Connect(function()
-            OnCharacterAdded(player)
-        end)
-    end
-    
-    -- ผู้เล่นใหม่เข้ามาในเกม
-    Players.PlayerAdded:Connect(function(newPlayer)
-        newPlayer.CharacterAdded:Connect(function()
-            OnCharacterAdded(newPlayer)
-        end)
-    end)
-end  -- เพิ่ม end ตรงนี้เพื่อปิดฟังก์ชัน
-
--- ปิดและลบ Highlight ทั้งหมด
-local function DisableHighlightESP()
-    for player, highlight in pairs(Highlights) do
-        if highlight and highlight.Parent then
-            highlight.Enabled = false
-            highlight:Destroy()
-        end
-    end
-    Highlights = {}
-end
-
--- Toggle สำหรับ Highlight เท่านั้น
-espTab:CreateToggle({
-    Name = "[ 💡 ]  ESP Highligh Player  [ Highligh ]  All",
-    CurrentValue = false,
-    Callback = function(Value)
-        ESPEnabled = Value
-
-        if Value then
-            EnableHighlightESP()
-        else
-            DisableHighlightESP()
-        end
-    end,
-})
-
 -- อัปเดตทุกเฟรม
 RunService.RenderStepped:Connect(UpdateESP)
 
-local Paragraph = espTab:CreateParagraph({Title = "ESP Player Highligh / Name", Content = "ESP Player Highligh / Name For Hitbox"})
-
-local Section = espTab:CreateSection("")
+local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend Sword", Content = "Hitbox Player / Friend Sword Are Multi Damage"})
