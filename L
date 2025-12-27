@@ -24,20 +24,34 @@ local Window = WindUI:CreateWindow({
     ScrollBarEnabled = false,
 })
 
+Window:EditOpenButton({
+    Title = "||  Enable Akari Hub  ||",
+    Icon = "webhook",
+    CornerRadius = UDim.new(0,16),
+    StrokeThickness = 2,
+    Color = ColorSequence.new( -- gradient
+        Color3.fromHex("FF0F7B"), 
+        Color3.fromHex("F89B29")
+    ),
+    OnlyMobile = false,
+    Enabled = true,
+    Draggable = true,
+})
+
 local PTab = Window:Tab({
     Title = "||   - Physical  X",
     Icon = "snail",
     Locked = false,
 })
 
-local Keybind = PTab:Keybind({
-    Title = "Keybind Open GUI",
-    Desc = "Keybind To Open Gui",
-    Value = "G",
-    Callback = function(v)
-        Window:SetToggleKey(Enum.KeyCode[v])
-    end
-})
+--local Keybind = PTab:Keybind({
+--    Title = "Keybind Open GUI",
+--    Desc = "Keybind To Open Gui",
+--    Value = "G",
+--    Callback = function(v)
+--        Window:SetToggleKey(Enum.KeyCode[v])
+--    end
+--})
 
 local Section = PTab:Section({ 
     Title = "",
