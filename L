@@ -625,18 +625,168 @@ local Section = PTab:Section({
     Title = "",
 })
 
+local SittingEnabled = false
+local SitConnection = nil
+local player = game.Players.LocalPlayer
+
+-- ฟังก์ชันบังคับนั่ง
+local function ForceSit()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        -- บังคับให้ Humanoid นั่ง (แม้ไม่มี Seat)
+        humanoid.Sit = true
+        
+        -- ป้องกันไม่ให้ลุกอัตโนมัติ
+        if humanoid.SeatPart then
+            humanoid.SeatPart = nil
+        end
+    end
+end
+
+-- ฟังก์ชันเปิด/ปิด การนั่งค้าง
+local function ToggleSit(enabled)
+    SittingEnabled = enabled
+    
+    if enabled then
+        ForceSit()
+        
+        -- อัปเดตทุกครั้งที่ตัวละครเกิดใหม่ หรือเปลี่ยนสถานะ
+        SitConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if SittingEnabled then
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid and humanoid.Sit == false then
+                        humanoid.Sit = true
+                    end
+                end
+            end
+        end)
+        
+        -- ถ้าตายแล้วเกิดใหม่ ให้นั่งต่ออัตโนมัติ
+        player.CharacterAdded:Connect(function()
+            if SittingEnabled then
+                task.wait(0.5) -- รอให้ตัวละครโหลดเสร็จ
+                ForceSit()
+            end
+        end)
+        
+        
+        
+    else
+        -- ปิดการนั่ง
+        if SitConnection then
+            SitConnection:Disconnect()
+            SitConnection = nil
+        end
+        
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = false
+            end
+        end
+        
+        
+    end
+end
+
+local Toggle = PTab:Toggle({
+    Title = "[ 🪑 ]  Forced To Sitting",
+    Desc = "[ - Auto Sit To Click Toggle - ]",
+    Icon = "rocking-chair",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(value) 
+        ToggleSit(value)
+    end
+})
+
 local Button = PTab:Button({
-    Title = "[ 🔎 ]  Infinite Zoom",
-    Desc = "[ - Infinite Zoom - ]",
+    Title = "[ 🧍 ]  Stand Immediately",
+    Desc = "[ - Auto Stand Up To Click Button - ]",
     Locked = false,
     Callback = function()
-         local player = game.Players.LocalPlayer
-        
-        InfiniteZoomEnabled = false
-        
-        player.CameraMaxZoomDistance = 10000
-        player.CameraMinZoomDistance = 0.5
+        ToggleSit(false)
     end
+})
+
+local Section = PTab:Section({ 
+    Title = "",
+})
+
+-- ตัวแปรควบคุม
+local InfiniteZoomEnabled = false
+local MaxZoomDistance = 10000  -- ค่าเริ่มต้น
+local player = game.Players.LocalPlayer
+
+-- ฟังก์ชันอัปเดตระยะซูม
+local function UpdateZoom()
+    if player then
+        player.CameraMaxZoomDistance = MaxZoomDistance
+        player.CameraMinZoomDistance = 0.5  -- ซูมเข้าใกล้สุด
+    end
+end
+
+-- ฟังก์ชันเปิด/ปิด Infinite Zoom
+local function ToggleInfiniteZoom(enabled)
+    InfiniteZoomEnabled = enabled
+    
+    if enabled then
+        UpdateZoom()
+        
+        -- รองรับตอนตัวละครเกิดใหม่ (ตายแล้วเกิด)
+        player.CharacterAdded:Connect(function()
+            task.wait(0.1)
+            if InfiniteZoomEnabled then
+                UpdateZoom()
+            end
+        end)
+        
+        
+    else
+        -- คืนค่าเดิมของ Roblox (ปกติคือ 128)
+        player.CameraMaxZoomDistance = 128
+        player.CameraMinZoomDistance = 0.5
+        
+        
+    end
+end
+
+local Toggle = PTab:Toggle({
+    Title = "[ 🔎 ]  Infinite Zoom",
+    Desc = "[ - Infinite Zoom Altra - ]",
+    Icon = "zoom-in",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        ToggleInfiniteZoom(value)
+    end
+})
+
+local Slider = PTab:Slider({
+    Title = "[ 📏 ]  Slider Zoom",
+    Desc = "[ - Infinite Zoom Slider - ]",
+    Step = 100,
+    Value = {
+        Min = 400,
+        Max = 1000,
+        Default = 400,
+    },
+    Callback = function(value)
+        MaxZoomDistance = Value
+        
+        if InfiniteZoomEnabled then
+            UpdateZoom()
+       end
+    end
+})
+
+local Section = PTab:Section({ 
+    Title = "",
 })
 
 local Toggle = PTab:Toggle({
@@ -1444,99 +1594,6 @@ local Section = espTab:Section({
     Title = "",
 })
 
-local SittingEnabled = false
-local SitConnection = nil
-local player = game.Players.LocalPlayer
-
--- ฟังก์ชันบังคับนั่ง
-local function ForceSit()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    
-    if humanoid then
-        -- บังคับให้ Humanoid นั่ง (แม้ไม่มี Seat)
-        humanoid.Sit = true
-        
-        -- ป้องกันไม่ให้ลุกอัตโนมัติ
-        if humanoid.SeatPart then
-            humanoid.SeatPart = nil
-        end
-    end
-end
-
--- ฟังก์ชันเปิด/ปิด การนั่งค้าง
-local function ToggleSit(enabled)
-    SittingEnabled = enabled
-    
-    if enabled then
-        ForceSit()
-        
-        -- อัปเดตทุกครั้งที่ตัวละครเกิดใหม่ หรือเปลี่ยนสถานะ
-        SitConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if SittingEnabled then
-                local character = player.Character
-                if character then
-                    local humanoid = character:FindFirstChildOfClass("Humanoid")
-                    if humanoid and humanoid.Sit == false then
-                        humanoid.Sit = true
-                    end
-                end
-            end
-        end)
-        
-        -- ถ้าตายแล้วเกิดใหม่ ให้นั่งต่ออัตโนมัติ
-        player.CharacterAdded:Connect(function()
-            if SittingEnabled then
-                task.wait(0.5) -- รอให้ตัวละครโหลดเสร็จ
-                ForceSit()
-            end
-        end)
-        
-        
-        
-    else
-        -- ปิดการนั่ง
-        if SitConnection then
-            SitConnection:Disconnect()
-            SitConnection = nil
-        end
-        
-        local character = player.Character
-        if character then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                humanoid.Sit = false
-            end
-        end
-        
-        
-    end
-end
-
-local Toggle = espTab:Toggle({
-    Title = "[ 🪑 ]  Forced To Sitting",
-    Desc = "[ - Auto Sit To Click Toggle - ]",
-    Icon = "rocking-chair",
-    Type = "Checkbox",
-    Value = false,
-    Callback = function(value) 
-        ToggleSit(value)
-    end
-})
-
-local Button = espTab:Button({
-    Title = "[ 🧍 ]  Stand Immediately",
-    Desc = "[ - Auto Stand Up To Click Button - ]",
-    Locked = false,
-    Callback = function()
-        ToggleSit(false)
-    end
-})
-
-local Section = espTab:Section({ 
-    Title = "",
-})
-
 local HitboxEnabled = false
 local HeadSize = 20
 local connections = {}
@@ -1785,3 +1842,18 @@ local Toggle = espTab:Toggle({
 })
 
 RunService.RenderStepped:Connect(UpdateESP)
+
+local SettingTab = Window:Tab({
+    Title = "||   - Settings",
+    Icon = "settings",
+    Locked = false,
+})
+
+local Keybind = SettingTab:Keybind({
+    Title = "[ ⚙️ ]  Keybinds Open GUI",
+    Desc = "[ - Keybind to open ui - ]",
+    Value = "G",
+    Callback = function(v)
+        Window:SetToggleKey(Enum.KeyCode[v])
+    end
+})
