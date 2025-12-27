@@ -8,8 +8,8 @@ local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/rel
 
 local Window = WindUI:CreateWindow({
     Title = "   |   Akari Hub   :(    |",
-    Icon = "webhook", -- lucide icon
-    Author = "       Dev:  Akari Z",
+    Icon = "webhook",
+    Author = "        Dev:  Akari     :(",
     Folder = "MySuperHub",
     
     Size = UDim2.fromOffset(580, 460),
@@ -53,10 +53,6 @@ local PTab = Window:Tab({
 --    end
 --})
 
-local Section = PTab:Section({ 
-    Title = "",
-})
-
 -- โหลดบริการที่จำเป็น
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -86,11 +82,11 @@ local Toggle = PTab:Toggle({
     Icon = "pickaxe",
     Type = "Checkbox",
     Value = false, -- default value
-    Callback = function(Value) 
+    Callback = function(value) 
         
          local LP = Players.LocalPlayer
 
-        if Value then
+        if value then
             -- รอ Character
             if not LP.Character then
                 LP.CharacterAdded:Wait()
@@ -270,7 +266,7 @@ local Slider = PTab:Slider({
         Default = 80,
     },
     Callback = function(value)
-        swingSpeed = Value
+        swingSpeed = value
     end
 })
 
@@ -284,7 +280,7 @@ local Slider = PTab:Slider({
         Default = 1500,
     },
     Callback = function(value)
-         maxWebDistance = Value
+         maxWebDistance = value
     end
 })
 
@@ -298,7 +294,7 @@ local Slider = PTab:Slider({
         Default = 50,
     },
     Callback = function(value)
-        swingGravity = Value
+        swingGravity = value
     end
 })
 
@@ -408,8 +404,8 @@ local Toggle = PTab:Toggle({
     Icon = "luggage",
     Type = "Checkbox",
     Value = false,
-    Callback = function(Value) 
-        flying = Value
+    Callback = function(value) 
+        flying = value
         
 
         local character = player.Character
@@ -419,7 +415,7 @@ local Toggle = PTab:Toggle({
         local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
         if not humanoid or not humanoidRootPart then return end
         
-        if Value then
+        if value then
             humanoid.PlatformStand = true
             
             bodyVelocity = Instance.new("BodyVelocity")
@@ -452,12 +448,63 @@ local Slider = PTab:Slider({
         Default = 50,
     },
     Callback = function(value)
-        flySpeed = Value
+        flySpeed = value
     end
 })
 
 local Section = PTab:Section({ 
     Title = "",
+})
+
+local Toggle = PTab:Toggle({
+    Title = "[ 🏃‍♀️ ]  Automatic Walking",
+    Desc = "[ - Automatic Walking Loop - ]",
+    Icon = "bird",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        looping = value
+        
+        if looping then
+            
+            
+            -- เชื่อมต่อ RenderStepped เพื่ออัปเดตทุกเฟรม
+            connection = game:GetService("RunService").RenderStepped:Connect(function()
+                if not looping then return end
+                
+                local character = game.Players.LocalPlayer.Character
+                if not character or not character:FindFirstChild("Humanoid") then return end
+                
+                local humanoid = character.Humanoid
+                
+                -- คำนวณเวลาวนลูป (10 วินาทีต่อรอบ: หน้า 5 + หลัง 5)
+                local cycleTime = 1
+                local timeInCycle = tick() % cycleTime
+                
+                if timeInCycle < 1 then
+                    -- เดินหน้า (W)
+                    humanoid:Move(Vector3.new(0, 0, -1), true)
+                else
+                    -- ถอยหลัง (S)
+                    humanoid:Move(Vector3.new(0, 0, 1), true)
+                end
+            end)
+            
+        else
+            
+            
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+            
+            -- หยุดเคลื่อนที่ทันที
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("Humanoid") then
+                character.Humanoid:Move(Vector3.new(0, 0, 0), true)
+            end
+        end
+    end
 })
 
 local Toggle = PTab:Toggle({
