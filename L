@@ -9,7 +9,7 @@ local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/rel
 local Window = WindUI:CreateWindow({
     Title = "   |   Akari Hub   :(    |",
     Icon = "webhook",
-    Author = "        Dev:  Akari     :(",
+    Author = "   |   Dev:  Akari     :(     |",
     Folder = "MySuperHub",
     
     Size = UDim2.fromOffset(580, 460),
