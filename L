@@ -1,3 +1,9 @@
+-- ( [ Icon Cat 111948200153431 ] ) --
+
+-- ( [ https://sirius.menu/rayfield ] ) --
+
+-- ( [ (138, 43, 179) ] )
+
 local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
 
 local Window = WindUI:CreateWindow({
