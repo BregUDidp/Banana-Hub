@@ -535,6 +535,53 @@ local Section = PTab:Section({
     Title = "",
 })
 
+local AirWalkEnabled = false
+local Platform = nil
+
+-- ฟังก์ชันเปิด/ปิด Air Walk
+local function ToggleAirWalk(enabled)
+    AirWalkEnabled = enabled
+    
+    if enabled then
+        if not Platform then
+            Platform = Instance.new("Part")
+            Platform.Size = Vector3.new(5, 1, 5)
+            Platform.Transparency = 1 -- ใสหมด มองไม่เห็น
+            Platform.Anchored = true
+            Platform.CanCollide = true
+            Platform.Parent = workspace
+        end
+        
+        -- อัปเดตตำแหน่งแผ่นพื้นทุกเฟรม
+        game:GetService("RunService").Heartbeat:Connect(function()
+            if AirWalkEnabled and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
+                Platform.CFrame = hrp.CFrame * CFrame.new(0, -3.5, 0) -- วางใต้เท้าตัวละคร
+            end
+        end)
+        
+        
+    else
+        if Platform then
+            Platform:Destroy()
+            Platform = nil
+        end
+        
+        
+    end
+end
+
+local Toggle = PTab:Toggle({
+    Title = "[ 💨 ]  Platform Airstyle Walking",
+    Desc = "[ - Platform Invisible Airstyle - ]",
+    Icon = "cloudy",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        ToggleAirWalk(value)
+    end
+})
+
 local Toggle = PTab:Toggle({
     Title = "[ 🦘 ]  Infinite Jump Power",
     Desc = "[ - Infinite Jumper - ]",
@@ -1390,6 +1437,99 @@ local Toggle = espTab:Toggle({
     Value = false,
     Callback = function(value) 
         ToggleRainbowGun(value)
+    end
+})
+
+local Section = espTab:Section({ 
+    Title = "",
+})
+
+local SittingEnabled = false
+local SitConnection = nil
+local player = game.Players.LocalPlayer
+
+-- ฟังก์ชันบังคับนั่ง
+local function ForceSit()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        -- บังคับให้ Humanoid นั่ง (แม้ไม่มี Seat)
+        humanoid.Sit = true
+        
+        -- ป้องกันไม่ให้ลุกอัตโนมัติ
+        if humanoid.SeatPart then
+            humanoid.SeatPart = nil
+        end
+    end
+end
+
+-- ฟังก์ชันเปิด/ปิด การนั่งค้าง
+local function ToggleSit(enabled)
+    SittingEnabled = enabled
+    
+    if enabled then
+        ForceSit()
+        
+        -- อัปเดตทุกครั้งที่ตัวละครเกิดใหม่ หรือเปลี่ยนสถานะ
+        SitConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if SittingEnabled then
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid and humanoid.Sit == false then
+                        humanoid.Sit = true
+                    end
+                end
+            end
+        end)
+        
+        -- ถ้าตายแล้วเกิดใหม่ ให้นั่งต่ออัตโนมัติ
+        player.CharacterAdded:Connect(function()
+            if SittingEnabled then
+                task.wait(0.5) -- รอให้ตัวละครโหลดเสร็จ
+                ForceSit()
+            end
+        end)
+        
+        
+        
+    else
+        -- ปิดการนั่ง
+        if SitConnection then
+            SitConnection:Disconnect()
+            SitConnection = nil
+        end
+        
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = false
+            end
+        end
+        
+        
+    end
+end
+
+local Toggle = espTab:Toggle({
+    Title = "[ 🪑 ]  Forced To Sitting",
+    Desc = "[ - Auto Sit To Click Toggle - ]",
+    Icon = "rocking-chair",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(value) 
+        ToggleSit(value)
+    end
+})
+
+local Button = espTab:Button({
+    Title = "[ 🧍 ]  Stand Immediately",
+    Desc = "[ - Auto Stand Up To Click Button - ]",
+    Locked = false,
+    Callback = function()
+        ToggleSit(false)
     end
 })
 
