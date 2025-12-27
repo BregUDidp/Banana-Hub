@@ -550,10 +550,6 @@ local BTab = Window:Tab({
     Locked = false,
 })
 
-local Section = BTab:Section({ 
-    Title = "",
-})
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
@@ -1067,6 +1063,265 @@ local Button = BTab:Button({
     end
 })
 
-local Section = BTab:Section({ 
+local espTab = Window:Tab({
+    Title = "||   - Solution",
+    Icon = "flask-conical",
+    Locked = false,
+})
+
+local MouseTPEnabled = false
+local Mouse = game.Players.LocalPlayer:GetMouse()
+local Player = game.Players.LocalPlayer
+
+-- สร้าง Sound ไว้ใช้ซ้ำได้เรื่อย ๆ
+local teleportSound = Instance.new("Sound")
+teleportSound.SoundId = "rbxassetid://4861638982"
+teleportSound.Volume = 0.7
+
+local Toggle = espTab:Toggle({
+    Title = "[ 👆 ]  Clicking Teleport",
+    Desc = "[ - Backpack Teleport - ]",
+    Icon = "bird",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        MouseTPEnabled = value
+    end
+})
+
+-- กดคลิก = วาร์ปทันที + เสียงดังพร้อมกัน
+Mouse.Button1Down:Connect(function()
+    if MouseTPEnabled and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
+        local targetPos = Mouse.Hit.Position + Vector3.new(0, 5, 0)
+        
+        -- วาร์ปก่อนเลย ไม่ต้องรอ
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+        
+        -- เล่นเสียงทันที (เสียงจะดังจากตำแหน่งใหม่เลย)
+        teleportSound.Parent = Player.Character.HumanoidRootPart
+        teleportSound:Play()
+        
+        -- หลังจากเล่นเสร็จ ลบออกเพื่อไม่ให้กิน memory
+        task.delay(3, function()
+            teleportSound.Parent = nil
+        end)
+    end
+end)
+
+-- รีโหลดสถานะตอนเกิดใหม่
+Player.CharacterAdded:Connect(function()
+    task.wait(1)
+    MouseTPEnabled = Rayfield.Flags.MouseTP.CurrentValue
+end)
+
+local Section = espTab:Section({ 
     Title = "",
+})
+
+local PurpleTool = {
+    Enabled = false,
+    Current = nil,
+    Highlight = nil,
+    Connections = {},
+}
+
+-- สีม่วงที่ต้องการ (138, 43, 179)
+local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
+
+local function CreateHighlight(tool)
+    if PurpleTool.Highlight then PurpleTool.Highlight:Destroy() end
+    PurpleTool.Highlight = Instance.new("Highlight")
+    PurpleTool.Highlight.FillColor = PURPLE_COLOR
+    PurpleTool.Highlight.OutlineColor = PURPLE_COLOR
+    PurpleTool.Highlight.FillTransparency = 0.3
+    PurpleTool.Highlight.OutlineTransparency = 0
+    PurpleTool.Highlight.Parent = tool
+    PurpleTool.Highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function ApplyPurpleColor()
+    if not PurpleTool.Enabled or not PurpleTool.Current or not PurpleTool.Highlight then return end
+    
+    -- ตั้งค่าสี Highlight
+    PurpleTool.Highlight.FillColor = PURPLE_COLOR
+    PurpleTool.Highlight.OutlineColor = PURPLE_COLOR
+    
+    -- เปลี่ยนสีทุก Part ใน Tool (ยกเว้น HumanoidRootPart)
+    for _, part in pairs(PurpleTool.Current:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Color = PURPLE_COLOR
+        end
+    end
+end
+
+local function OnEquipped(tool)
+    if not PurpleTool.Enabled then return end
+    PurpleTool.Current = tool
+    task.wait(0.1)
+    CreateHighlight(tool)
+    ApplyPurpleColor()  -- ใช้สีม่วงทันที
+end
+
+local function OnUnequipped()
+    if PurpleTool.Highlight then 
+        PurpleTool.Highlight:Destroy() 
+        PurpleTool.Highlight = nil 
+    end
+    PurpleTool.Current = nil
+end
+
+local function SetupTool(char)
+    -- ล้าง connection เก่า
+    for _, c in pairs(PurpleTool.Connections) do c:Disconnect() end
+    PurpleTool.Connections = {}
+
+    local function ConnectTool(tool)
+        table.insert(PurpleTool.Connections, tool.Equipped:Connect(function() OnEquipped(tool) end))
+        table.insert(PurpleTool.Connections, tool.Unequipped:Connect(OnUnequipped))
+    end
+
+    -- เชื่อม Tool ที่อยู่ในตัวละครตอนนี้
+    for _, child in pairs(char:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(PurpleTool.Connections, char.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+
+    -- เชื่อม Tool ใน Backpack
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+    for _, child in pairs(backpack:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(PurpleTool.Connections, backpack.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+end
+
+local function TogglePurpleTool(state)
+    PurpleTool.Enabled = state
+    if state then
+        
+        if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
+    else
+        
+        if PurpleTool.Highlight then 
+            PurpleTool.Highlight:Destroy() 
+            PurpleTool.Highlight = nil 
+        end
+        PurpleTool.Current = nil
+    end
+end
+
+-- รองรับการเกิดใหม่
+LocalPlayer.CharacterAdded:Connect(SetupTool)
+if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
+
+local Toggle = espTab:Toggle({
+    Title = "[ 🟪 ]  Purple Glowing Tool",
+    Desc = "[ - Permanent Purple - ]",
+    Icon = "grape",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        TogglePurpleTool(value)
+    end
+})
+
+local RainbowGun = {
+    Enabled = false,
+    Current = nil,
+    Highlight = nil,
+    Hue = 0,
+    Connections = {},
+    Loop = nil
+}
+
+local function CreateHighlight(tool)
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() end
+    RainbowGun.Highlight = Instance.new("Highlight")
+    RainbowGun.Highlight.FillTransparency = 0.3
+    RainbowGun.Highlight.OutlineTransparency = 0
+    RainbowGun.Highlight.Parent = tool
+    RainbowGun.Highlight.Adornee = tool:FindFirstChild("Handle") or tool
+end
+
+local function UpdateRainbowGun()
+    if not RainbowGun.Enabled or not RainbowGun.Current or not RainbowGun.Highlight then return end
+    RainbowGun.Hue = (RainbowGun.Hue + 0.01) % 1
+    local color = Color3.fromHSV(RainbowGun.Hue, 1, 1)
+    RainbowGun.Highlight.FillColor = color
+    RainbowGun.Highlight.OutlineColor = color
+    for _, part in pairs(RainbowGun.Current:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Color = color
+        end
+    end
+end
+
+local function OnEquipped(tool)
+    if not RainbowGun.Enabled then return end
+    RainbowGun.Current = tool
+    task.wait(0.1)
+    CreateHighlight(tool)
+end
+
+local function OnUnequipped()
+    if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+    RainbowGun.Current = nil
+end
+
+local function SetupGun(char)
+    for _, c in pairs(RainbowGun.Connections) do c:Disconnect() end
+    RainbowGun.Connections = {}
+
+    local function ConnectTool(tool)
+        table.insert(RainbowGun.Connections, tool.Equipped:Connect(function() OnEquipped(tool) end))
+        table.insert(RainbowGun.Connections, tool.Unequipped:Connect(OnUnequipped))
+    end
+
+    for _, child in pairs(char:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(RainbowGun.Connections, char.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+
+    local backpack = LocalPlayer:WaitForChild("Backpack")
+    for _, child in pairs(backpack:GetChildren()) do
+        if child:IsA("Tool") then ConnectTool(child) end
+    end
+    table.insert(RainbowGun.Connections, backpack.ChildAdded:Connect(function(c)
+        if c:IsA("Tool") then ConnectTool(c) end
+    end))
+end
+
+local function ToggleRainbowGun(state)
+    RainbowGun.Enabled = state
+    if state then
+        
+        if not RainbowGun.Loop then
+            RainbowGun.Loop = RunService.Heartbeat:Connect(UpdateRainbowGun)
+        end
+        if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
+    else
+        
+        if RainbowGun.Loop then RainbowGun.Loop:Disconnect() RainbowGun.Loop = nil end
+        if RainbowGun.Highlight then RainbowGun.Highlight:Destroy() RainbowGun.Highlight = nil end
+        RainbowGun.Current = nil
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(SetupGun)
+if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
+
+local Toggle = espTab:Toggle({
+    Title = "[ 🌈 ]  Rainbow Mountain Tool",
+    Desc = "[ - Permanent Rainbow - ]",
+    Icon = "rainbow",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(value) 
+        ToggleRainbowGun(value)
+    end
 })
