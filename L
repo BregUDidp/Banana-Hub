@@ -1325,3 +1325,256 @@ local Toggle = espTab:Toggle({
         ToggleRainbowGun(value)
     end
 })
+
+local Section = espTab:Section({ 
+    Title = "",
+})
+
+local HitboxEnabled = false
+local HeadSize = 20
+local connections = {}
+
+local Toggle = espTab:Toggle({
+    Title = "[ ⚔️ ]  Hitbox Boxing Player",
+    Desc = "[ - Hitbox Boxing Sword - ]",
+    Icon = "swords",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(value) 
+        HitboxEnabled = value
+        
+        if value then
+            connections["Hitbox"] = game:GetService('RunService').RenderStepped:Connect(function()
+                if not HitboxEnabled then return end
+                
+                for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+                    if v.Name ~= game.Players.LocalPlayer.Name and v.Character then
+                        pcall(function()
+                            local hrp = v.Character:FindFirstChild("HumanoidRootPart")
+                            if hrp then
+                                hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
+                                hrp.Transparency = 0.7
+
+                                -- เปลี่ยนเป็นสีเขียว RGB(138, 43, 179)
+                                hrp.Color = Color3.fromRGB(138, 43, 179)
+                                hrp.Material = "Neon"
+                                hrp.CanCollide = false
+                            end
+                        end)
+                    end
+                end
+            end)
+            
+            
+        else
+            if connections["Hitbox"] then
+                connections["Hitbox"]:Disconnect()
+            end
+            
+            -- Reset hitbox ของทุกคนกลับค่าเดิม
+            for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+                if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    pcall(function()
+                        local hrp = v.Character.HumanoidRootPart
+                        hrp.Size = Vector3.new(2, 2, 1)
+                        hrp.Transparency = 1
+                        hrp.Material = "Plastic"
+                        hrp.CanCollide = false
+                    end)
+                end
+            end
+            
+           
+        end
+    end
+})
+
+local Slider = espTab:Slider({
+    Title = "[ 📏 ]  Slider Hitbox",
+    Desc = "[ - Hitboz Size Player - ]",
+    Step = 1,
+    Value = {
+        Min = 20,
+        Max = 5000,
+        Default = 20,
+    },
+    Callback = function(value)
+        HeadSize = value
+    end
+})
+
+local ESPEnabled = false
+local Drawings = {}
+local Highlights = {}
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- สร้างหรืออัปเดต Drawing ESP สำหรับ player
+local function SetupDrawingESP(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Drawings[player] then
+        if Drawings[player].Box then Drawings[player].Box:Remove() end
+        if Drawings[player].Name then Drawings[player].Name:Remove() end
+    end
+    
+    local Box = Drawing.new("Square")
+    Box.Thickness = 2
+    Box.Filled = false
+    Box.Color = Color3.fromRGB(138, 43, 179)
+    Box.Visible = false
+
+    local Name = Drawing.new("Text")
+    Name.Size = 16
+    Name.Center = true
+    Name.Outline = true
+    Name.Color = Color3.fromRGB(138, 43, 179)
+    Name.Visible = false
+
+    Drawings[player] = {Box = Box, Name = Name}
+end
+
+-- สร้างหรืออัปเดต Highlight สำหรับ player
+local function SetupHighlight(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- ลบของเก่าถ้ามี
+    if Highlights[player] then
+        if Highlights[player] and Highlights[player].Parent then
+            Highlights[player]:Destroy()
+        end
+    end
+    
+    local character = player.Character
+    if character then
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = character
+        highlight.FillColor = Color3.fromRGB(138, 43, 179)
+        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
+        highlight.FillTransparency = 0.4
+        highlight.OutlineTransparency = 0
+        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
+        
+        Highlights[player] = highlight
+    end
+end
+
+-- อัปเดต Drawing ESP ทุกเฟรม
+local function UpdateESP()
+    if not ESPEnabled then return end
+    
+    for player, draws in pairs(Drawings) do
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") and character:FindFirstChild("Humanoid") then
+            local root = character.HumanoidRootPart
+            local head = character.Head
+            local humanoid = character.Humanoid
+            
+            if humanoid.Health <= 0 then
+                draws.Box.Visible = false
+                draws.Name.Visible = false
+                continue
+            end
+
+            local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(root.Position)
+            
+            if onScreen then
+
+                -- คำนวณขนาด Box (ปรับให้แม่นยำขึ้น)
+                local topPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
+                local bottomPos = workspace.CurrentCamera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0))
+                local sizeY = math.abs(topPos.Y - bottomPos.Y)
+                local sizeX = sizeY * 0.8
+
+                draws.Box.Size = Vector2.new(sizeX, sizeY)
+                draws.Box.Position = Vector2.new(screenPos.X - sizeX / 2, screenPos.Y - sizeY / 2)
+                draws.Box.Visible = true
+
+                -- ชื่อ + เลือด
+                draws.Name.Text = player.Name .. " [ " .. math.floor(humanoid.Health) .. " ]"
+                draws.Name.Position = Vector2.new(screenPos.X, screenPos.Y - sizeY / 2 - 20)
+                draws.Name.Visible = true
+            else
+                draws.Box.Visible = false
+                draws.Name.Visible = false
+            end
+        else
+            draws.Box.Visible = false
+            draws.Name.Visible = false
+        end
+    end
+end
+
+-- ฟังก์ชันจัดการเมื่อ character โหลด
+local function OnCharacterAdded(player)
+    if player == Players.LocalPlayer then return end
+    
+    -- รอให้ character โหลดส่วนสำคัญ
+    local character = player.Character or player.CharacterAdded:Wait()
+    character:WaitForChild("HumanoidRootPart")
+    character:WaitForChild("Head")
+    character:WaitForChild("Humanoid")
+    
+    SetupDrawingESP(player)
+    SetupHighlight(player)
+end
+
+-- ฟังก์ชันเปิด ESP
+local function EnableESP()
+    -- สำหรับผู้เล่นที่มีอยู่แล้ว
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character then
+            OnCharacterAdded(player)
+        end
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end
+    
+    -- ผู้เล่นใหม่เข้ามา
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function()
+            OnCharacterAdded(player)
+        end)
+    end)
+end
+
+-- ฟังก์ชันปิด ESP
+local function DisableESP()
+    -- ลบ Drawing ทั้งหมด
+    for player, draws in pairs(Drawings) do
+        if draws.Box then draws.Box:Remove() end
+        if draws.Name then draws.Name:Remove() end
+    end
+    Drawings = {}
+    
+    -- ปิดและลบ Highlight ทั้งหมด
+    for player, highlight in pairs(Highlights) do
+        if highlight and highlight.Parent then
+            highlight.Enabled = false
+            highlight:Destroy()
+        end
+    end
+    Highlights = {}
+end
+
+local Toggle = espTab:Toggle({
+    Title = "[ 💡 ]  ESP Hitbox Player",
+    Desc = "[ - ESP Player Walling - ]",
+    Icon = "lightbulb",
+    Type = "Checkbox",
+    Value = false,
+    Callback = function(value) 
+        ESPEnabled = value
+
+        if value then
+            EnableESP()
+        else
+            DisableESP()
+        end
+    end
+})
+
+RunService.RenderStepped:Connect(UpdateESP)
