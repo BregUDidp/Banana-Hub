@@ -20,8 +20,16 @@ local Window = WindUI:CreateWindow({
     Resizable = true,
     SideBarWidth = 200,
     BackgroundImageTransparency = 0.42,
-    HideSearchBar = true,
+    HideSearchBar = false,
     ScrollBarEnabled = false,
+
+    User = {
+        Enabled = true,
+        Anonymous = false,
+        Callback = function()
+            print("clicked")
+        end,
+    },
 })
 
 Window:EditOpenButton({
@@ -43,15 +51,6 @@ local PTab = Window:Tab({
     Icon = "snail",
     Locked = false,
 })
-
---local Keybind = PTab:Keybind({
---    Title = "Keybind Open GUI",
---    Desc = "Keybind To Open Gui",
---    Value = "G",
---    Callback = function(v)
---        Window:SetToggleKey(Enum.KeyCode[v])
---    end
---})
 
 -- โหลดบริการที่จำเป็น
 local RunService = game:GetService("RunService")
