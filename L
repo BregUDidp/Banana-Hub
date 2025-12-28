@@ -707,6 +707,7 @@ local Toggle = PTab:Toggle({
 local Button = PTab:Button({
     Title = "[ 🧍 ]  Stand Immediately",
     Desc = "[ - Auto Stand Up To Click Button - ]",
+    Icon = "person-standing",
     Locked = false,
     Callback = function()
         ToggleSit(false)
@@ -1109,6 +1110,7 @@ end
 local Button = BTab:Button({
     Title = "[ 🎥 ]  Beamming Laser Eyes",
     Desc = "[ - Beamming Eyes - ]",
+    Icon = "telescope",
     Locked = false,
     Callback = function()
         if laserEnabled then
@@ -1126,6 +1128,7 @@ local Section = BTab:Section({
 local Button = BTab:Button({
     Title = "[ 🍭 ]  Teleport Tool",
     Desc = "[ - Sword Tools - ]",
+    Icon = "swords",
     Locked = false,
     Callback = function()
         -- ลูกอมสีม่วง Sparkles เทเลพอร์ต (แสงม่วงทั้งลูก + Effect)
@@ -1233,6 +1236,7 @@ local Section = BTab:Section({
 local Button = BTab:Button({
     Title = "[ 🚲 ]  Recoil Speed Tool",
     Desc = "[ - Recoil Speed - ]",
+    Icon = "swords",
     Locked = false,
     Callback = function()
         local player = game.Players.LocalPlayer
@@ -1325,6 +1329,112 @@ local Button = BTab:Button({
         tool.Parent = player.Backpack
     end
 })
+
+local friendTab = Window:Tab({
+    Title = "||   - Teleport Player",
+    Icon = "circle-user-round",
+    Locked = false,
+})
+
+-- ตัวแปรเก็บชื่อที่เลือกสุดท้าย
+local SelectedPlayer = nil
+
+-- Input + Suggestions (ค้นหาชื่อไม่ต้องครบ)
+local PlayerInput = friendTab:Input({
+    Title = "[ 👥 ]  Input Player",
+    Desc = "[ - Dropdown Player - ]",
+    Placeholder = "Selected Input",
+    Callback = function(text)
+        if text == "" then
+            PlayerInput:Suggestions({})
+            return
+        end
+
+        local lowerText = string.lower(text)
+        local suggestions = {}
+
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= game.Players.LocalPlayer then
+                local name = plr.Name
+                local display = plr.DisplayName or name
+
+                if string.find(string.lower(name), lowerText, 1, true) or 
+                   string.find(string.lower(display), lowerText, 1, true) then
+                    table.insert(suggestions, name)
+                end
+            end
+        end
+
+        -- เรียงชื่อตามตัวอักษร
+        table.sort(suggestions, function(a, b) return string.lower(a) < string.lower(b) end)
+
+        -- จำกัดแสดงแค่ 10 ชื่อ เพื่อไม่ให้ยาวเกินไป
+        if #suggestions > 10 then
+            for i = 11, #suggestions do suggestions[i] = nil end
+        end
+
+        PlayerInput:Suggestions(suggestions)
+    end
+})
+
+-- เมื่อผู้ใช้คลิกเลือกจาก Suggestion
+PlayerInput.OnSuggestionSelected = function(name)
+    SelectedPlayer = name
+    PlayerInput.Value = name  -- แสดงชื่อเต็มในช่อง
+end
+
+-- ปุ่มวาป
+friendTab:Button({
+    Title = "[ 📌 ]  Selected Player",
+    Desc = "[ - Teleport To Player Select - ]",
+    Icon = "bolt",
+    Callback = function()
+        local inputName = PlayerInput.Value
+
+        if not inputName or inputName == "" then
+            
+            return
+        end
+
+        local targetPlayer = game.Players:FindFirstChild(inputName)
+        local lp = game.Players.LocalPlayer
+
+        if not targetPlayer then
+            
+            return
+        end
+
+        if targetPlayer == lp then
+            
+            return
+        end
+
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                lp.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+                
+                -- รีเซ็ตช่องหลังวาป
+                PlayerInput.Value = ""
+                PlayerInput:Suggestions({})
+            else
+                
+            end
+        else
+            
+        end
+    end
+})
+
+spawn(function()
+    while task.wait(10) do
+        local others = #game.Players:GetPlayers() - 1
+        if others <= 0 then
+            InfoLabel:Update({Text = "ไม่มีผู้เล่นอื่นในเซิร์ฟเวอร์"})
+        else
+            InfoLabel:Update({Text = "มีผู้เล่นอื่นอีก " .. others .. " คน"})
+        end
+    end
+end)
 
 local espTab = Window:Tab({
     Title = "||   - Solution",
