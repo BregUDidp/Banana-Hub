@@ -52,6 +52,10 @@ local PTab = Window:Tab({
     Locked = false,
 })
 
+local Section = PTab:Section({ 
+    Title = "                  { [ - Forging Block - ] }",
+})
+
 -- โหลดบริการที่จำเป็น
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -814,6 +818,10 @@ local BTab = Window:Tab({
     Locked = false,
 })
 
+local Section = BTab:Section({ 
+    Title = "                { [ - Beamming Laser - ] }",
+})
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
@@ -1336,6 +1344,10 @@ local espTab = Window:Tab({
     Locked = false,
 })
 
+local Section = espTab:Section({ 
+    Title = "                  { [ - Click Teleport - ] }",
+})
+
 local MouseTPEnabled = false
 local Mouse = game.Players.LocalPlayer:GetMouse()
 local Player = game.Players.LocalPlayer
@@ -1347,7 +1359,7 @@ teleportSound.Volume = 0.7
 
 local Toggle = espTab:Toggle({
     Title = "[ 👆 ]  Clicking Teleport",
-    Desc = "[ - Backpack Teleport - ]",
+    Desc = "[ - Backpack Teleport Bypass - ]",
     Icon = "bird",
     Type = "Checkbox",
     Value = false, -- default value
@@ -1850,6 +1862,10 @@ local musicTab = Window:Tab({
     Title = "||   - Boombox ID",
     Icon = "drum", -- optional
     Locked = false,
+})
+
+local Section = musicTab:Section({ 
+    Title = "                  { [ - Playing Music - ] }",
 })
 
 -- สร้าง Sound Object (สำหรับเล่นเพลง)
