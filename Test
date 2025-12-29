@@ -1,109 +1,121 @@
-local coTab = Window:CreateTab("||   - Mapping Time", "map-pinned")
-local Section = coTab:CreateSection("")
-
-local PlayerListParagraph = coTab:CreateParagraph({
-    Title = "All Name Player In List",
-    Content = "Loading..."
+local Section = avatarTab:Section({ 
+    Title = "               { [ - Flame Head Rainbow - ] }",
 })
 
--- ตารางเก็บข้อมูลผู้เล่นที่ออกไปชั่วคราว (เพื่อแสดงสีแดง 5 วิ)
-local leavingPlayers = {}  -- {player = {timestamp = tick()}}
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
--- ฟังก์ชันอัปเดตรายชื่อผู้เล่น
-local function UpdatePlayerList()
-    local players = game.Players:GetPlayers()
-    local nameList = {}
+--// Variables
+local CustomFire = nil
+local rainbowConnection = nil
+local FireEnabled = false
+
+local currentHue = 0
+local rainbowSpeed = 0.2  -- ความเร็วเปลี่ยนสีรุ้ง (ค่าเริ่มต้น)
+local useRainbow = true   -- ใช้สีรุ้งหรือสีจาก ColorPicker
+local fixedColor = Color3.fromRGB(138, 43, 179)  -- สีสำรอง
+
+--// ฟังก์ชันสร้าง/รีเซ็ตไฟ
+local function CreateRainbowFire()
+    local character = LocalPlayer.Character
+    if not character then return end
     
-    local numberWidth = 5
-    local currentTime = tick()
-    
-    -- เพิ่มผู้เล่นที่ยังอยู่ในเซิร์ฟ (สีเขียว)
-    for i, player in ipairs(players) do
-        local numbered = string.format("%" .. numberWidth .. "d.   🟢   ", i)
-        local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )"
-        table.insert(nameList, entry)
-        
-        -- ลบออกจาก leavingPlayers ถ้าเขากลับเข้ามา (กรณี reconnect เร็ว)
-        leavingPlayers[player] = nil
+    local Head = character:FindFirstChild("Head") or character:WaitForChild("Head", 5)
+    if not Head then return end
+
+    -- ลบไฟเก่า
+    if Head:FindFirstChild("RainbowHeadFire") then
+        Head.RainbowHeadFire:Destroy()
     end
-    
-    -- เพิ่มผู้เล่นที่เพิ่งออกไป (แต่ยังไม่ครบ 5 วิ) → แสดงสีแดง
-    for player, data in pairs(leavingPlayers) do
-        if currentTime - data.timestamp <= 4 then
-            local numbered = string.format("%" .. numberWidth .. "d.   🔴   ", data.oldIndex or 999)
-            local entry = numbered .. player.Name .. "    (  [    " .. player.DisplayName .. "    ]  )  <font color=\"rgb(255,100,100)\"> --- 💥 ---</font>"
-            table.insert(nameList, entry)
-        else
-            -- ครบ 5 วิแล้ว → ลบออกจากตาราง
-            leavingPlayers[player] = nil
+    if rainbowConnection then
+        rainbowConnection:Disconnect()
+        rainbowConnection = nil
+    end
+
+    -- สร้างไฟใหม่
+    CustomFire = Instance.new("Fire")
+    CustomFire.Name = "RainbowHeadFire"
+    CustomFire.Size = 5
+    CustomFire.Heat = 12
+    CustomFire.Enabled = true
+    CustomFire.Parent = Head
+
+    -- ลูปเปลี่ยนสี
+    rainbowConnection = RunService.Heartbeat:Connect(function(dt)
+        if not CustomFire or not CustomFire.Parent or not FireEnabled then
+            if rainbowConnection then rainbowConnection:Disconnect() end
+            return
         end
-    end
-    
-    -- เรียงลำดับ (ผู้เล่นจริงก่อน, ผู้เล่นที่ออกตามหลัง)
-    table.sort(nameList)
-    
-    local fullText
-    if #nameList == 0 and next(leavingPlayers) == nil then
-        fullText = "No Found Player In List"
-    else
-        fullText = table.concat(nameList, "\n\n\n")
-    end
-    
-    -- อัปเดต Paragraph
-    PlayerListParagraph:Set({
-        Title = "                                                                                                                      (   " .. #players .. "   Player  )",
-        Content = fullText
-    })
+
+        if useRainbow then
+            currentHue = (currentHue + dt * rainbowSpeed) % 1
+            local color = Color3.fromHSV(currentHue, 1, 1)
+            CustomFire.Color = color
+            CustomFire.SecondaryColor = color
+        else
+            CustomFire.Color = fixedColor
+            CustomFire.SecondaryColor = fixedColor
+        end
+    end)
 end
 
--- เมื่อมีคนเข้ามา
-game.Players.PlayerAdded:Connect(function(player)
-    UpdatePlayerList()
-    
-    if game.Players.LocalPlayer:IsFriendsWith(player.UserId) then
+--// ฟังก์ชันเปิด/ปิด
+local function SetFireState(state)
+    FireEnabled = state
+    if state then
+        CreateRainbowFire()
+    else
+        if CustomFire then CustomFire:Destroy() end
+        if rainbowConnection then rainbowConnection:Disconnect() end
+        CustomFire = nil
+        rainbowConnection = nil
+    end
+end
+
+--// รองรับการเกิดใหม่
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(2)
+    if FireEnabled then
+        CreateRainbowFire()
     end
 end)
 
--- เมื่อมีคนออก
-game.Players.PlayerRemoving:Connect(function(player)
-
-    local players = game.Players:GetPlayers()
-    local oldIndex = 1
-    for i, p in ipairs(players) do
-        if p == player then
-            oldIndex = i
-            break
-        end
+local Toggle = avatarTab:Toggle({
+    Title = "[ 🌈 ]  Rainbow Flame Head",
+    Desc = "[ - Flame Head Rainbow - ]",
+    Icon = "flame",
+    Type = "Checkbox",
+    Value = false, -- default value
+    Callback = function(value) 
+        SetFireState(value)
     end
-    
-    leavingPlayers[player] = {
-        timestamp = tick(),
-        oldIndex = oldIndex,
-        DisplayName = player.DisplayName
-    }
-    
-     Rayfield:Notify({
-        Title = "[ 🔴 ]  Player Leave Game",
-        Content = player.Name .. "  (  " .. player.DisplayName .. "  )",
-        Duration = 4,
-        Image = "door-closed",
-    })
-    
-    -- อัปเดตทันทีเพื่อแสดงสีแดง
-    UpdatePlayerList()
-    
-    -- รอ 5 วิ แล้วอัปเดตอีกทีเพื่อลบออกจริง ๆ
-    task.delay(5, UpdatePlayerList)
-end)
+})
 
--- อัปเดตทุก 1 วินาที เพื่อเคลียร์คนที่ครบ 5 วิแล้ว (กรณีไม่มี event อื่น)
-task.spawn(function()
-    while task.wait(1) do
-        if next(leavingPlayers) then
-            UpdatePlayerList()
-        end
+local Slider = avatarTab:Slider({
+    Title = "[ 📏 ]  Slider Flame",
+    Desc = "[ - Slider Flame Size - ]",
+    Step = 1,
+    Value = {
+        Min = 1,
+        Max = 5000,
+        Default = 5,
+    },
+    Callback = function(value)
+        CustomFire.Size = value
     end
-end)
+})
 
--- อัปเดตครั้งแรก
-UpdatePlayerList()
+local Slider = avatarTab:Slider({
+    Title = "[ 📏 ]  Slider Heats",
+    Desc = "[ - Slider Size Heats - ]",
+    Step = 1,
+    Value = {
+        Min = 1,
+        Max = 5000,
+        Default = 12,
+    },
+    Callback = function(value)
+        CustomFire.Heat = value
+    end
+})
