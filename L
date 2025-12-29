@@ -298,7 +298,7 @@ local Slider = PTab:Slider({
 })
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "                  { [ - Flying Gravity - ] }",
 })
 
 local Players = game:GetService("Players")
@@ -452,7 +452,7 @@ local Slider = PTab:Slider({
 })
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "                  { [ - Running Walk - ] }",
 })
 
 local Toggle = PTab:Toggle({
@@ -531,7 +531,7 @@ local Slider = PTab:Slider({
 })
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "          { [ - Airwalk - Infinite Jump - ] }",
 })
 
 local AirWalkEnabled = false
@@ -621,7 +621,7 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
 end)
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "              { [ - Sitting Automatic - ] }",
 })
 
 local SittingEnabled = false
@@ -715,7 +715,7 @@ local Button = PTab:Button({
 })
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "                 { [ - Infinite Zoom - ] }",
 })
 
 -- ตัวแปรควบคุม
@@ -786,7 +786,7 @@ local Slider = PTab:Slider({
 })
 
 local Section = PTab:Section({ 
-    Title = "",
+    Title = "                { [ - Noclips Walling - ] }",
 })
 
 local Toggle = PTab:Toggle({
@@ -1122,7 +1122,7 @@ local Button = BTab:Button({
 })
 
 local Section = BTab:Section({ 
-    Title = "",
+    Title = "                 { [ - Teleport Tools - ] }",
 })
 
 local Button = BTab:Button({
@@ -1230,7 +1230,7 @@ local Button = BTab:Button({
 })
 
 local Section = BTab:Section({ 
-    Title = "",
+    Title = "                  { [ - Recoil Tools - ] }",
 })
 
 local Button = BTab:Button({
@@ -1330,112 +1330,6 @@ local Button = BTab:Button({
     end
 })
 
-local friendTab = Window:Tab({
-    Title = "||   - Teleport Player",
-    Icon = "circle-user-round",
-    Locked = false,
-})
-
--- ตัวแปรเก็บชื่อที่เลือกสุดท้าย
-local SelectedPlayer = nil
-
--- Input + Suggestions (ค้นหาชื่อไม่ต้องครบ)
-local PlayerInput = friendTab:Input({
-    Title = "[ 👥 ]  Input Player",
-    Desc = "[ - Dropdown Player - ]",
-    Placeholder = "Selected Input",
-    Callback = function(text)
-        if text == "" then
-            PlayerInput:Suggestions({})
-            return
-        end
-
-        local lowerText = string.lower(text)
-        local suggestions = {}
-
-        for _, plr in pairs(game.Players:GetPlayers()) do
-            if plr ~= game.Players.LocalPlayer then
-                local name = plr.Name
-                local display = plr.DisplayName or name
-
-                if string.find(string.lower(name), lowerText, 1, true) or 
-                   string.find(string.lower(display), lowerText, 1, true) then
-                    table.insert(suggestions, name)
-                end
-            end
-        end
-
-        -- เรียงชื่อตามตัวอักษร
-        table.sort(suggestions, function(a, b) return string.lower(a) < string.lower(b) end)
-
-        -- จำกัดแสดงแค่ 10 ชื่อ เพื่อไม่ให้ยาวเกินไป
-        if #suggestions > 10 then
-            for i = 11, #suggestions do suggestions[i] = nil end
-        end
-
-        PlayerInput:Suggestions(suggestions)
-    end
-})
-
--- เมื่อผู้ใช้คลิกเลือกจาก Suggestion
-PlayerInput.OnSuggestionSelected = function(name)
-    SelectedPlayer = name
-    PlayerInput.Value = name  -- แสดงชื่อเต็มในช่อง
-end
-
--- ปุ่มวาป
-friendTab:Button({
-    Title = "[ 📌 ]  Selected Player",
-    Desc = "[ - Teleport To Player Select - ]",
-    Icon = "bolt",
-    Callback = function()
-        local inputName = PlayerInput.Value
-
-        if not inputName or inputName == "" then
-            
-            return
-        end
-
-        local targetPlayer = game.Players:FindFirstChild(inputName)
-        local lp = game.Players.LocalPlayer
-
-        if not targetPlayer then
-            
-            return
-        end
-
-        if targetPlayer == lp then
-            
-            return
-        end
-
-        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
-                lp.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-                
-                -- รีเซ็ตช่องหลังวาป
-                PlayerInput.Value = ""
-                PlayerInput:Suggestions({})
-            else
-                
-            end
-        else
-            
-        end
-    end
-})
-
-spawn(function()
-    while task.wait(10) do
-        local others = #game.Players:GetPlayers() - 1
-        if others <= 0 then
-            InfoLabel:Update({Text = "ไม่มีผู้เล่นอื่นในเซิร์ฟเวอร์"})
-        else
-            InfoLabel:Update({Text = "มีผู้เล่นอื่นอีก " .. others .. " คน"})
-        end
-    end
-end)
-
 local espTab = Window:Tab({
     Title = "||   - Solution",
     Icon = "flask-conical",
@@ -1488,7 +1382,7 @@ Player.CharacterAdded:Connect(function()
 end)
 
 local Section = espTab:Section({ 
-    Title = "",
+    Title = "                     { [ - Color Tools - ] }",
 })
 
 local PurpleTool = {
@@ -1700,7 +1594,7 @@ local Toggle = espTab:Toggle({
 })
 
 local Section = espTab:Section({ 
-    Title = "",
+    Title = "                    { [ - Hitbox - ESP - ] }",
 })
 
 local HitboxEnabled = false
@@ -1951,6 +1845,101 @@ local Toggle = espTab:Toggle({
 })
 
 RunService.RenderStepped:Connect(UpdateESP)
+
+local musicTab = Window:Tab({
+    Title = "||   - Boombox ID",
+    Icon = "drum", -- optional
+    Locked = false,
+})
+
+-- สร้าง Sound Object (สำหรับเล่นเพลง)
+local MusicSound = Instance.new("Sound")
+MusicSound.Name = "BackgroundMusic"
+MusicSound.Looped = true  
+MusicSound.Volume = 0.5  
+MusicSound.Parent = game:GetService("SoundService")
+
+local Input = musicTab:Input({
+    Title = "[ 🥁 ]  ID Music Play",
+    Desc = "[ - Input Music ID - ]",
+    Value = "",
+    InputIcon = "play",
+    Type = "Input",
+    Placeholder = "Enter text...",
+    Callback = function(input) 
+        local soundId = tonumber(input)
+        if soundId then
+            MusicSound.SoundId = "rbxassetid://" .. soundId
+            MusicSound:Play()
+            
+        else
+            
+        end
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🛑 ]  Stop Music ID",
+    Desc = "[ - Stop ID Music Input - ]",
+    Locked = false,
+    Callback = function()
+        MusicSound:Stop()
+    end
+})
+
+local Slider = musicTab:Slider({
+    Title = "[ 🔊 ]  Volume Music",
+    Desc = "[ - Volume Music ID - ]",
+    Step = 1,
+    Value = {
+        Min = 0,
+        Max = 5000,
+        Default = 120,
+    },
+    Callback = function(value)
+        MusicSound.Volume = value / 100
+    end
+})
+
+local Section = musicTab:Section({ 
+    Title = "                       { [ - ID Music - ] }",
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🌮 ]  Music: Rainning Taco",
+    Desc = "[ - ID: 142376088 - Original - ]",
+    Locked = false,
+    Callback = function()
+        setclipboard(142376088)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🌆 ]  Music: Meep City",
+    Desc = "[ - ID: 1840684208 - ]",
+    Locked = false,
+    Callback = function()
+        setclipboard(1840684208)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🏛️ ]  Music: Roblox Classic",
+    Desc = "[ - ID: 1848354536 - ]",
+    Locked = false,
+    Callback = function()
+        setclipboard(1848354536)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 💪 ]  Music: BodyParts",
+    Desc = "[ - ID: 127653283576622 - ]",
+    Locked = false,
+    Callback = function()
+        setclipboard(127653283576622)
+    end
+})
 
 local SettingTab = Window:Tab({
     Title = "||   - Settings",
