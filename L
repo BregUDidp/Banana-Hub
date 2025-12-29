@@ -1865,7 +1865,7 @@ local avatarTab = Window:Tab({
 })
 
 local Section = avatarTab:Section({ 
-    Title = "                  { [ - Flame Head - ] }",
+    Title = "             { [ - Flame Head Purple - ] }",
 })
 
 local Players = game:GetService("Players")
@@ -1874,68 +1874,58 @@ local LocalPlayer = Players.LocalPlayer
 
 --// Variables
 local CustomFire = nil
-local rainbowConnection = nil
+local SparkEmitter = nil
 local FireEnabled = false
 
-local currentHue = 0
-local rainbowSpeed = 0.2  -- ความเร็วเปลี่ยนสีรุ้ง (ค่าเริ่มต้น)
-local useRainbow = true   -- ใช้สีรุ้งหรือสีจาก ColorPicker
-local fixedColor = Color3.fromRGB(138, 43, 179)  -- สีสำรอง
+local fixedColor = Color3.fromRGB(138, 43, 179)  -- สีม่วงเข้มหลัก
+local darkerPurple = fixedColor:Lerp(Color3.new(0,0,0), 0.4)  -- สำหรับ secondary + sparks
 
---// ฟังก์ชันสร้าง/รีเซ็ตไฟ
-local function CreateRainbowFire()
+--// ฟังก์ชันสร้างไฟม่วง + sparks (ไม่มี Trail)
+local function CreatePurpleFire()
     local character = LocalPlayer.Character
     if not character then return end
     
     local Head = character:FindFirstChild("Head") or character:WaitForChild("Head", 5)
     if not Head then return end
 
-    -- ลบไฟเก่า
-    if Head:FindFirstChild("RainbowHeadFire") then
-        Head.RainbowHeadFire:Destroy()
-    end
-    if rainbowConnection then
-        rainbowConnection:Disconnect()
-        rainbowConnection = nil
-    end
+    -- ลบของเก่า
+    if Head:FindFirstChild("PurpleHeadFire") then Head.PurpleHeadFire:Destroy() end
+    if Head:FindFirstChild("SparkEmitter") then Head.SparkEmitter:Destroy() end
 
-    -- สร้างไฟใหม่
+    -- สร้าง Fire หลัก (สีม่วง)
     CustomFire = Instance.new("Fire")
-    CustomFire.Name = "RainbowHeadFire"
-    CustomFire.Size = 5
-    CustomFire.Heat = 12
+    CustomFire.Name = "PurpleHeadFire"
+    CustomFire.Size = 5      -- ค่าเริ่มต้น
+    CustomFire.Heat = 12     -- ค่าเริ่มต้น
+    CustomFire.Color = fixedColor
+    CustomFire.SecondaryColor = darkerPurple
     CustomFire.Enabled = true
     CustomFire.Parent = Head
 
-    -- ลูปเปลี่ยนสี
-    rainbowConnection = RunService.Heartbeat:Connect(function(dt)
-        if not CustomFire or not CustomFire.Parent or not FireEnabled then
-            if rainbowConnection then rainbowConnection:Disconnect() end
-            return
-        end
-
-        if useRainbow then
-            currentHue = (currentHue + dt * rainbowSpeed) % 1
-            local color = Color3.fromHSV(currentHue, 1, 1)
-            CustomFire.Color = color
-            CustomFire.SecondaryColor = color
-        else
-            CustomFire.Color = fixedColor
-            CustomFire.SecondaryColor = fixedColor
-        end
-    end)
+    -- Sparks Particles (ขี้ไฟม่วงร่วงลงมา)
+    SparkEmitter = Instance.new("ParticleEmitter")
+    SparkEmitter.Name = "SparkEmitter"
+    SparkEmitter.Texture = "rbxassetid://241353019"  -- texture sparks ม่วงสวย (คลาสสิก)
+    SparkEmitter.Color = ColorSequence.new(fixedColor, darkerPurple)
+    SparkEmitter.Size = NumberSequence.new(0.8, 0)
+    SparkEmitter.Transparency = NumberSequence.new(0.3, 1)
+    SparkEmitter.Lifetime = NumberRange.new(1.5, 3)
+    SparkEmitter.Rate = 45  -- เยอะหน่อยให้ดูมีขี้ไฟชัด
+    SparkEmitter.Speed = NumberRange.new(4, 8)
+    SparkEmitter.Acceleration = Vector3.new(0, -12, 0)  -- ตกตามแรงโน้มถ่วง
+    SparkEmitter.VelocitySpread = 360
+    SparkEmitter.LightEmission = 1
+    SparkEmitter.Parent = Head
 end
 
 --// ฟังก์ชันเปิด/ปิด
 local function SetFireState(state)
     FireEnabled = state
     if state then
-        CreateRainbowFire()
+        CreatePurpleFire()
     else
         if CustomFire then CustomFire:Destroy() end
-        if rainbowConnection then rainbowConnection:Disconnect() end
-        CustomFire = nil
-        rainbowConnection = nil
+        if SparkEmitter then SparkEmitter:Destroy() end
     end
 end
 
@@ -1943,22 +1933,24 @@ end
 LocalPlayer.CharacterAdded:Connect(function()
     task.wait(2)
     if FireEnabled then
-        CreateRainbowFire()
+        CreatePurpleFire()
     end
 end)
 
+-- Toggle เปิด/ปิดไฟม่วง
 local Toggle = avatarTab:Toggle({
-    Title = "[ 🌈 ]  Rainbow Flame Head",
-    Desc = "[ - Flame Head Rainbow - ]",
+    Title = "[ 💜 ]  Purple Flame Head",
+    Desc = "[ - Purple Flame Head",
     Icon = "flame",
     Type = "Checkbox",
-    Value = false, -- default value
+    Value = false,
     Callback = function(value) 
         SetFireState(value)
     end
 })
 
-local Slider = avatarTab:Slider({
+-- Slider ปรับขนาดไฟ
+avatarTab:Slider({
     Title = "[ 📏 ]  Slider Flame",
     Desc = "[ - Slider Flame Size - ]",
     Step = 1,
@@ -1968,13 +1960,16 @@ local Slider = avatarTab:Slider({
         Default = 5,
     },
     Callback = function(value)
-        CustomFire.Size = value
+        if CustomFire then
+            CustomFire.Size = value
+        end
     end
 })
 
-local Slider = avatarTab:Slider({
-    Title = "[ 📏 ]  Slider Heats",
-    Desc = "[ - Slider Size Heats - ]",
+-- Slider ปรับความร้อน (ทำให้ไฟสูง/แรงขึ้น)
+avatarTab:Slider({
+    Title = "[ 🔥 ]  Slider Heater",
+    Desc = "[ - Slider Flame Heater - ]",
     Step = 1,
     Value = {
         Min = 1,
@@ -1982,7 +1977,9 @@ local Slider = avatarTab:Slider({
         Default = 12,
     },
     Callback = function(value)
-        CustomFire.Heat = value
+        if CustomFire then
+            CustomFire.Heat = value
+        end
     end
 })
 
