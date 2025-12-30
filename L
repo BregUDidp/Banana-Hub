@@ -1986,6 +1986,188 @@ avatarTab:Slider({
     end
 })
 
+local Section = avatarTab:Section({ 
+    Title = "             { [ - Animations Player - ] }",
+})
+
+local Button = avatarTab:Button({
+    Title = "[ 🕰️ ]  Animations Player",
+    Desc = "[ - Animations Player Style - ]",
+    Icon = "drama",
+    Locked = false,
+    Callback = function()
+       -- Services
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- สร้าง ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CustomAnimationGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = PlayerGui
+
+-- สร้าง Frame หลัก
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 350, 0, 500)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+-- มุมโค้ง + Shadow
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 12)
+Corner.Parent = MainFrame
+
+local Shadow = Instance.new("ImageLabel")
+Shadow.Name = "Shadow"
+Shadow.Size = UDim2.new(1, 10, 1, 10)
+Shadow.Position = UDim2.new(0, -5, 0, -5)
+Shadow.BackgroundTransparency = 1
+Shadow.Image = "rbxassetid://1316045217"
+Shadow.ImageTransparency = 0.7
+Shadow.ZIndex = -1
+Shadow.Parent = MainFrame
+
+-- Title Bar
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundColor3 = Color3.fromRGB(138, 43, 179)  -- สีม่วงตามธีมก่อนหน้า
+Title.Text = "[ 🕰️ ]  Akari Animations"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 20
+Title.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 12)
+TitleCorner.Parent = Title
+
+-- ปุ่มปิด (X)
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "❌   "
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 24
+CloseButton.Parent = Title
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- ScrollingFrame สำหรับปุ่ม animation
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, -20, 1, -60)
+ScrollingFrame.Position = UDim2.new(0, 10, 0, 50)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 8
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)  -- จะอัปเดตอัตโนมัติ
+ScrollingFrame.Parent = MainFrame
+
+local GridLayout = Instance.new("UIGridLayout")
+GridLayout.CellSize = UDim2.new(1, -10, 0, 45)
+GridLayout.CellPadding = UDim2.new(0, 0, 0, 8)
+GridLayout.Parent = ScrollingFrame
+
+-- ฟังก์ชันเปลี่ยน Animation
+local function ApplyAnimation(animTable)
+    local character = Player.Character
+    if not character or not character:FindFirstChild("Animate") or not character:FindFirstChild("Humanoid") then
+        warn("ตัวละครยังไม่โหลดหรือไม่มี Animate script")
+        return
+    end
+    
+    local Animate = character.Animate
+    local Humanoid = character.Humanoid
+    
+    Animate.Disabled = true
+    
+    -- หยุด animation ปัจจุบัน (ถ้ามีฟังก์ชัน StopAnim)
+    if character:FindFirstChild("Humanoid") then
+        pcall(function()
+            Humanoid:ChangeState(Enum.HumanoidStateType.None)
+        end)
+    end
+    
+    Animate.idle.Animation1.AnimationId = animTable.idle1
+    Animate.idle.Animation2.AnimationId = animTable.idle2
+    Animate.walk.WalkAnim.AnimationId = animTable.walk
+    Animate.run.RunAnim.AnimationId = animTable.run
+    Animate.jump.JumpAnim.AnimationId = animTable.jump
+    Animate.climb.ClimbAnim.AnimationId = animTable.climb
+    Animate.fall.FallAnim.AnimationId = animTable.fall
+    
+    Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)  -- Force reload animation
+    task.wait(0.1)
+    Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    
+    Animate.Disabled = false
+end
+
+-- ลิสต์ animation ทั้งหมด
+local Animations = {
+    {Name = "  🧛   Vampire",          idle1 = "http://www.roblox.com/asset/?id=1083445855", idle2 = "http://www.roblox.com/asset/?id=1083450166", walk = "http://www.roblox.com/asset/?id=1083473930", run = "http://www.roblox.com/asset/?id=1083462077", jump = "http://www.roblox.com/asset/?id=1083455352", climb = "http://www.roblox.com/asset/?id=1083439238", fall = "http://www.roblox.com/asset/?id=1083443587"},
+    {Name = "  🦸   Super Hero",       idle1 = "http://www.roblox.com/asset/?id=616111295", idle2 = "http://www.roblox.com/asset/?id=616113536", walk = "http://www.roblox.com/asset/?id=616122287", run = "http://www.roblox.com/asset/?id=616117076", jump = "http://www.roblox.com/asset/?id=616115533", climb = "http://www.roblox.com/asset/?id=616104706", fall = "http://www.roblox.com/asset/?id=616108001"},
+    {Name = "  🧟   Zombie Classic  ( 1 ) ",   idle1 = "http://www.roblox.com/asset/?id=616158929", idle2 = "http://www.roblox.com/asset/?id=616160636", walk = "http://www.roblox.com/asset/?id=616168032", run = "http://www.roblox.com/asset/?id=616163682", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
+    {Name = "  🧟‍♂️   Zombie Classic  ( 2 )",    idle1 = "http://www.roblox.com/asset/?id=3489171152", idle2 = "http://www.roblox.com/asset/?id=3489171152", walk = "http://www.roblox.com/asset/?id=3489174223", run = "http://www.roblox.com/asset/?id=3489173414", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
+    {Name = "  🧙   Mage",             idle1 = "http://www.roblox.com/asset/?id=707742142", idle2 = "http://www.roblox.com/asset/?id=707855907", walk = "http://www.roblox.com/asset/?id=707897309", run = "http://www.roblox.com/asset/?id=707861613", jump = "http://www.roblox.com/asset/?id=707853694", climb = "http://www.roblox.com/asset/?id=707826056", fall = "http://www.roblox.com/asset/?id=707829716"},
+    {Name = "  👻   Ghost",            idle1 = "http://www.roblox.com/asset/?id=616006778", idle2 = "http://www.roblox.com/asset/?id=616008087", walk = "http://www.roblox.com/asset/?id=616010382", run = "http://www.roblox.com/asset/?id=616013216", jump = "http://www.roblox.com/asset/?id=616008936", climb = "http://www.roblox.com/asset/?id=616003713", fall = "http://www.roblox.com/asset/?id=616005863"},
+    {Name = "  👴   Elder",            idle1 = "http://www.roblox.com/asset/?id=845397899", idle2 = "http://www.roblox.com/asset/?id=845400520", walk = "http://www.roblox.com/asset/?id=845403856", run = "http://www.roblox.com/asset/?id=845386501", jump = "http://www.roblox.com/asset/?id=845398858", climb = "http://www.roblox.com/asset/?id=845392038", fall = "http://www.roblox.com/asset/?id=845396048"},
+    {Name = "  🦈   Levitation",       idle1 = "http://www.roblox.com/asset/?id=616006778", idle2 = "http://www.roblox.com/asset/?id=616008087", walk = "http://www.roblox.com/asset/?id=616013216", run = "http://www.roblox.com/asset/?id=616010382", jump = "http://www.roblox.com/asset/?id=616008936", climb = "http://www.roblox.com/asset/?id=616003713", fall = "http://www.roblox.com/asset/?id=616005863"},
+    {Name = "  🚀   Astronaut",        idle1 = "http://www.roblox.com/asset/?id=891621366", idle2 = "http://www.roblox.com/asset/?id=891633237", walk = "http://www.roblox.com/asset/?id=891667138", run = "http://www.roblox.com/asset/?id=891636393", jump = "http://www.roblox.com/asset/?id=891627522", climb = "http://www.roblox.com/asset/?id=891609353", fall = "http://www.roblox.com/asset/?id=891617961"},
+    {Name = "  ⚔️   Ninja",            idle1 = "http://www.roblox.com/asset/?id=656117400", idle2 = "http://www.roblox.com/asset/?id=656118341", walk = "http://www.roblox.com/asset/?id=656121766", run = "http://www.roblox.com/asset/?id=656118852", jump = "http://www.roblox.com/asset/?id=656117878", climb = "http://www.roblox.com/asset/?id=656114359", fall = "http://www.roblox.com/asset/?id=656115606"},
+    {Name = "  🐺   Werewolf",         idle1 = "http://www.roblox.com/asset/?id=1083195517", idle2 = "http://www.roblox.com/asset/?id=1083214717", walk = "http://www.roblox.com/asset/?id=1083178339", run = "http://www.roblox.com/asset/?id=1083216690", jump = "http://www.roblox.com/asset/?id=1083218792", climb = "http://www.roblox.com/asset/?id=1083182000", fall = "http://www.roblox.com/asset/?id=1083189019"},
+    {Name = "  🎨   Cartoon",          idle1 = "http://www.roblox.com/asset/?id=742637544", idle2 = "http://www.roblox.com/asset/?id=742638445", walk = "http://www.roblox.com/asset/?id=742640026", run = "http://www.roblox.com/asset/?id=742638842", jump = "http://www.roblox.com/asset/?id=742637942", climb = "http://www.roblox.com/asset/?id=742636889", fall = "http://www.roblox.com/asset/?id=742637151"},
+    {Name = "  🏴‍☠️   Pirate",           idle1 = "http://www.roblox.com/asset/?id=750781874", idle2 = "http://www.roblox.com/asset/?id=750782770", walk = "http://www.roblox.com/asset/?id=750785693", run = "http://www.roblox.com/asset/?id=750783738", jump = "http://www.roblox.com/asset/?id=750782230", climb = "http://www.roblox.com/asset/?id=750779899", fall = "http://www.roblox.com/asset/?id=750780242"},
+    {Name = "  🕵️   Sneaky",           idle1 = "http://www.roblox.com/asset/?id=1132473842", idle2 = "http://www.roblox.com/asset/?id=1132477671", walk = "http://www.roblox.com/asset/?id=1132510133", run = "http://www.roblox.com/asset/?id=1132494274", jump = "http://www.roblox.com/asset/?id=1132489853", climb = "http://www.roblox.com/asset/?id=1132461372", fall = "http://www.roblox.com/asset/?id=1132469004"},
+    {Name = "  🧸   Toy",              idle1 = "http://www.roblox.com/asset/?id=782841498", idle2 = "http://www.roblox.com/asset/?id=782845736", walk = "http://www.roblox.com/asset/?id=782843345", run = "http://www.roblox.com/asset/?id=782842708", jump = "http://www.roblox.com/asset/?id=782847020", climb = "http://www.roblox.com/asset/?id=782843869", fall = "http://www.roblox.com/asset/?id=782846423"},
+    {Name = "  🤺   Knight",           idle1 = "http://www.roblox.com/asset/?id=657595757", idle2 = "http://www.roblox.com/asset/?id=657568135", walk = "http://www.roblox.com/asset/?id=657552124", run = "http://www.roblox.com/asset/?id=657564596", jump = "http://www.roblox.com/asset/?id=658409194", climb = "http://www.roblox.com/asset/?id=658360781", fall = "http://www.roblox.com/asset/?id=657600338"},
+    {Name = "  😎   Confident",        idle1 = "http://www.roblox.com/asset/?id=1069977950", idle2 = "http://www.roblox.com/asset/?id=1069987858", walk = "http://www.roblox.com/asset/?id=1070017263", run = "http://www.roblox.com/asset/?id=1070001516", jump = "http://www.roblox.com/asset/?id=1069984524", climb = "http://www.roblox.com/asset/?id=1069946257", fall = "http://www.roblox.com/asset/?id=1069973677"},
+    {Name = "  🌟   Popstar",          idle1 = "http://www.roblox.com/asset/?id=1212900985", idle2 = "http://www.roblox.com/asset/?id=1212900985", walk = "http://www.roblox.com/asset/?id=1212980338", run = "http://www.roblox.com/asset/?id=1212980348", jump = "http://www.roblox.com/asset/?id=1212954642", climb = "http://www.roblox.com/asset/?id=1213044953", fall = "http://www.roblox.com/asset/?id=1212900995"},
+    {Name = "  👸   Princess",         idle1 = "http://www.roblox.com/asset/?id=941003647", idle2 = "http://www.roblox.com/asset/?id=941013098", walk = "http://www.roblox.com/asset/?id=941028902", run = "http://www.roblox.com/asset/?id=941015281", jump = "http://www.roblox.com/asset/?id=941008832", climb = "http://www.roblox.com/asset/?id=940996062", fall = "http://www.roblox.com/asset/?id=941000007"},
+    {Name = "  🤠   Cowboy",           idle1 = "http://www.roblox.com/asset/?id=1014390418", idle2 = "http://www.roblox.com/asset/?id=1014398616", walk = "http://www.roblox.com/asset/?id=1014421541", run = "http://www.roblox.com/asset/?id=1014401683", jump = "http://www.roblox.com/asset/?id=1014394726", climb = "http://www.roblox.com/asset/?id=1014380606", fall = "http://www.roblox.com/asset/?id=1014384571"},
+    {Name = "  🛡️   Patrol",           idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=1150944216", climb = "http://www.roblox.com/asset/?id=1148811837", fall = "http://www.roblox.com/asset/?id=1148863382"},
+}
+
+-- สร้างปุ่มสำหรับแต่ละ animation
+for _, anim in ipairs(Animations) do
+    local Button = Instance.new("TextButton")
+    Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    Button.Text = " " .. anim.Name
+    Button.TextColor3 = Color3.new(1, 1, 1)
+    Button.Font = Enum.Font.Gotham
+    Button.TextSize = 18
+    Button.TextXAlignment = Enum.TextXAlignment.Left
+    Button.Parent = ScrollingFrame
+    
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 8)
+    BtnCorner.Parent = Button
+    
+    Button.MouseButton1Click:Connect(function()
+        ApplyAnimation({
+            idle1 = anim.idle1,
+            idle2 = anim.idle2,
+            walk = anim.walk,
+            run = anim.run,
+            jump = anim.jump,
+            climb = anim.climb,
+            fall = anim.fall
+        })
+    end)
+end
+
+-- อัปเดต CanvasSize อัตโนมัติ
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, GridLayout.AbsoluteContentSize.Y + 20)
+    end
+})
+
 local musicTab = Window:Tab({
     Title = "||   - Boombox ID",
     Icon = "drum", -- optional
@@ -2025,6 +2207,7 @@ local Input = musicTab:Input({
 local Button = musicTab:Button({
     Title = "[ 🛑 ]  Stop Music ID",
     Desc = "[ - Stop ID Music Input - ]",
+    Icon = "octagon-x",
     Locked = false,
     Callback = function()
         MusicSound:Stop()
@@ -2052,6 +2235,7 @@ local Section = musicTab:Section({
 local Button = musicTab:Button({
     Title = "[ 🌮 ]  Music: Rainning Taco",
     Desc = "[ - ID: 142376088 - Original - ]",
+    Icon = "ham",
     Locked = false,
     Callback = function()
         setclipboard(142376088)
@@ -2061,6 +2245,7 @@ local Button = musicTab:Button({
 local Button = musicTab:Button({
     Title = "[ 🌆 ]  Music: Meep City",
     Desc = "[ - ID: 1840684208 - ]",
+    Icon = "building-2",
     Locked = false,
     Callback = function()
         setclipboard(1840684208)
@@ -2070,6 +2255,7 @@ local Button = musicTab:Button({
 local Button = musicTab:Button({
     Title = "[ 🏛️ ]  Music: Roblox Classic",
     Desc = "[ - ID: 1848354536 - ]",
+    Icon = "church",
     Locked = false,
     Callback = function()
         setclipboard(1848354536)
@@ -2079,6 +2265,7 @@ local Button = musicTab:Button({
 local Button = musicTab:Button({
     Title = "[ 💪 ]  Music: BodyParts",
     Desc = "[ - ID: 127653283576622 - ]",
+    Icon = "bot-message-square",
     Locked = false,
     Callback = function()
         setclipboard(127653283576622)
