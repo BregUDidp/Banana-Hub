@@ -2060,11 +2060,6 @@ CloseButton.Parent = Title
 
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
-    game.StarterGui:SetCore("SendNotification", {
-      Title = "Screen GUI Akari Destroy",
-      Text = "❌ Destroy GUI",
-      Duration = 1
-   })
 end)
 
 --  ScreenGui:Destroy() --
