@@ -2118,3 +2118,48 @@ local Keybind = SettingTab:Keybind({
         Window:SetToggleKey(Enum.KeyCode[v])
     end
 })
+
+local Players = game:GetService("Players")
+        local UserService = game:GetService("UserService")
+
+        local username = "Chetosjj2"
+
+local success1, userId = pcall(function()
+    return Players:GetUserIdFromNameAsync(username)
+end)
+
+if not success1 or not userId then
+    warn("Find UserId No Found username: " .. username)
+    return
+end
+
+-- ดึง thumbnail (หัวผู้ใช้)
+local thumbType = Enum.ThumbnailType.HeadShot
+local thumbSize = Enum.ThumbnailSize.Size420x420
+local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+
+-- ดึง Display Name (ชื่อที่แสดงในเกม)
+local displayName = username  -- ค่าเริ่มต้น เผื่อ error
+local success2, userInfos = pcall(function()
+    return UserService:GetUserInfosByUserIdsAsync({userId})
+end)
+
+if success2 and userInfos and #userInfos > 0 then
+    displayName = userInfos[1].DisplayName
+else
+    -- ถ้า error ให้ใช้ Username แทน (จาก GetNameFromUserIdAsync)
+    local success3, name = pcall(function()
+        return Players:GetNameFromUserIdAsync(userId)
+    end)
+    if success3 then
+        displayName = name
+    end
+end
+
+-- ส่ง notification
+game.StarterGui:SetCore("SendNotification", {
+    Title = "     |   Akari Hub   |",
+    Text = "Team Akari | " .. displayName .. " | Enjoy",
+    Icon = content,
+    Duration = 3
+})
