@@ -2118,3 +2118,21 @@ local Keybind = SettingTab:Keybind({
         Window:SetToggleKey(Enum.KeyCode[v])
     end
 })
+
+local Button = SettingTab:Button({
+    Title = "Button",
+    Desc = "Test Button",
+    Locked = false,
+    Callback = function()
+        -- ...
+    end
+})
+
+local Button = SettingTab:Button({
+    Title = "Button",
+    Desc = "Test Button",
+    Locked = false,
+    Callback = function()
+        -- ...
+    end
+})
