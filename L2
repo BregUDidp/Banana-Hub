@@ -462,6 +462,10 @@ local Slider = PTab:Slider({
     end
 })
 
+local Section = PTab:Section({ 
+    Title = "                  { [ - Jetpack Gravity - ] }",
+})
+
 -- ตัวแปรหลัก
 local speeds = 1
 local nowe = false
@@ -570,7 +574,7 @@ local Toggle = PTab:Toggle({
 
 local Slider = PTab:Slider({
     Title = "[ 📏 ]  Slider Jetpack",
-    Desc = "[ - Slider Jetpack Speeds - ]",
+    Desc = "[ - Slider Jetpack Speed - ]",
     Step = 1,
     Value = {
         Min = 1,
@@ -2123,110 +2127,6 @@ local Button = avatarTab:Button({
     Locked = false,
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
-    end
-})
-
-local musicTab = Window:Tab({
-    Title = "||   - Boombox ID",
-    Icon = "drum", -- optional
-    Locked = false,
-})
-
-local Section = musicTab:Section({ 
-    Title = "                  { [ - Playing Music - ] }",
-})
-
--- สร้าง Sound Object (สำหรับเล่นเพลง)
-local MusicSound = Instance.new("Sound")
-MusicSound.Name = "BackgroundMusic"
-MusicSound.Looped = true  
-MusicSound.Volume = 0.5  
-MusicSound.Parent = game:GetService("SoundService")
-
-local Input = musicTab:Input({
-    Title = "[ 🥁 ]  ID Music Play",
-    Desc = "[ - Input Music ID - ]",
-    Value = "",
-    InputIcon = "play",
-    Type = "Input",
-    Placeholder = "Enter text...",
-    Callback = function(input) 
-        local soundId = tonumber(input)
-        if soundId then
-            MusicSound.SoundId = "rbxassetid://" .. soundId
-            MusicSound:Play()
-            
-        else
-            
-        end
-    end
-})
-
-local Button = musicTab:Button({
-    Title = "[ 🛑 ]  Stop Music ID",
-    Desc = "[ - Stop ID Music Input - ]",
-    Icon = "octagon-x",
-    Locked = false,
-    Callback = function()
-        MusicSound:Stop()
-    end
-})
-
-local Slider = musicTab:Slider({
-    Title = "[ 🔊 ]  Volume Music",
-    Desc = "[ - Volume Music ID - ]",
-    Step = 1,
-    Value = {
-        Min = 0,
-        Max = 5000,
-        Default = 120,
-    },
-    Callback = function(value)
-        MusicSound.Volume = value / 100
-    end
-})
-
-local Section = musicTab:Section({ 
-    Title = "                       { [ - ID Music - ] }",
-})
-
-local Button = musicTab:Button({
-    Title = "[ 🌮 ]  Music: Rainning Taco",
-    Desc = "[ - ID: 142376088 - Original - ]",
-    Icon = "ham",
-    Locked = false,
-    Callback = function()
-        setclipboard(142376088)
-    end
-})
-
-local Button = musicTab:Button({
-    Title = "[ 🌆 ]  Music: Meep City",
-    Desc = "[ - ID: 1840684208 - ]",
-    Icon = "building-2",
-    Locked = false,
-    Callback = function()
-        setclipboard(1840684208)
-    end
-})
-
-local Button = musicTab:Button({
-    Title = "[ 🏛️ ]  Music: Roblox Classic",
-    Desc = "[ - ID: 1848354536 - ]",
-    Icon = "church",
-    Locked = false,
-    Callback = function()
-        setclipboard(1848354536)
-    end
-})
-
-local Button = musicTab:Button({
-    Title = "[ 💪 ]  Music: BodyParts",
-    Desc = "[ - ID: 127653283576622 - ]",
-    Icon = "bot-message-square",
-    Locked = false,
-    Callback = function()
-        setclipboard(127653283576622)
     end
 })
 
