@@ -3,23 +3,26 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
+-- ตัวแปรเก็บ animation ที่เลือกไว้ล่าสุด
+local LastSelectedAnim = nil
+local CurrentAnimName = "Default  ( Not Selected )"  -- ชื่อเริ่มต้น
+
 -- สร้าง ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CustomAnimationGUI"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
 
--- สร้าง Frame หลัก
+-- Main Frame (เพิ่มความสูงเพื่อรองรับ section ใหม่)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 350, 0, 500)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -250)
+MainFrame.Size = UDim2.new(0, 350, 0, 580)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -290)
 MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
--- มุมโค้ง + Shadow
 local Corner = Instance.new("UICorner")
 Corner.CornerRadius = UDim.new(0, 12)
 Corner.Parent = MainFrame
@@ -37,7 +40,7 @@ Shadow.Parent = MainFrame
 -- Title Bar
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundColor3 = Color3.fromRGB(138, 43, 179)  -- สีม่วงตามธีมก่อนหน้า
+Title.BackgroundColor3 = Color3.fromRGB(138, 43, 179)
 Title.Text = "🕰️   Akari Animations"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.GothamBold
@@ -48,7 +51,7 @@ local TitleCorner = Instance.new("UICorner")
 TitleCorner.CornerRadius = UDim.new(0, 12)
 TitleCorner.Parent = Title
 
--- ปุ่มปิด (X)
+-- ปุ่มปิด
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.new(0, 30, 0, 30)
 CloseButton.Position = UDim2.new(1, -35, 0, 5)
@@ -58,20 +61,69 @@ CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.TextSize = 24
 CloseButton.Parent = Title
-
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
---  ScreenGui:Destroy() --
+-- === SECTION: 🎭 ท่าปัจจุบัน ===
+local CurrentSection = Instance.new("Frame")
+CurrentSection.Size = UDim2.new(1, -20, 0, 70)
+CurrentSection.Position = UDim2.new(0, 10, 0, 50)
+CurrentSection.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+CurrentSection.Parent = MainFrame
 
--- ScrollingFrame สำหรับปุ่ม animation
+local CurrentSectionCorner = Instance.new("UICorner")
+CurrentSectionCorner.CornerRadius = UDim.new(0, 10)
+CurrentSectionCorner.Parent = CurrentSection
+
+-- หัวข้อ Section
+local SectionTitle = Instance.new("TextLabel")
+SectionTitle.Size = UDim2.new(1, 0, 0, 25)
+SectionTitle.BackgroundTransparency = 1
+SectionTitle.Text = "(-🎭-) Animations"
+SectionTitle.TextColor3 = Color3.fromRGB(200, 200, 255)
+SectionTitle.Font = Enum.Font.GothamBold
+SectionTitle.TextSize = 18
+SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+SectionTitle.Position = UDim2.new(0, 12, 0, 5)
+SectionTitle.Parent = CurrentSection
+
+-- ชื่อท่าที่ใช้อยู่
+local CurrentAnimLabel = Instance.new("TextLabel")
+CurrentAnimLabel.Name = "CurrentAnimLabel"
+CurrentAnimLabel.Size = UDim2.new(1, -20, 0, 35)
+CurrentAnimLabel.Position = UDim2.new(0, 10, 0, 30)
+CurrentAnimLabel.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+CurrentAnimLabel.Text = CurrentAnimName
+CurrentAnimLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+CurrentAnimLabel.Font = Enum.Font.GothamSemibold
+CurrentAnimLabel.TextSize = 17
+CurrentAnimLabel.TextXAlignment = Enum.TextXAlignment.Center
+CurrentAnimLabel.Parent = CurrentSection
+
+local LabelCorner = Instance.new("UICorner")
+LabelCorner.CornerRadius = UDim.new(0, 8)
+LabelCorner.Parent = CurrentAnimLabel
+
+-- === SECTION: รายการ Animation ===
+local ListSectionTitle = Instance.new("TextLabel")
+ListSectionTitle.Size = UDim2.new(1, -20, 0, 25)
+ListSectionTitle.Position = UDim2.new(0, 10, 0, 130)
+ListSectionTitle.BackgroundTransparency = 1
+ListSectionTitle.Text = "" --(   (-📜-)  Selected Animation   )--
+ListSectionTitle.TextColor3 = Color3.fromRGB(200, 200, 255)
+ListSectionTitle.Font = Enum.Font.GothamBold
+ListSectionTitle.TextSize = 18
+ListSectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+ListSectionTitle.Parent = MainFrame
+
+-- ScrollingFrame สำหรับรายการ animation
 local ScrollingFrame = Instance.new("ScrollingFrame")
-ScrollingFrame.Size = UDim2.new(1, -20, 1, -60)
-ScrollingFrame.Position = UDim2.new(0, 10, 0, 50)
+ScrollingFrame.Size = UDim2.new(1, -20, 1, -170)  -- ปรับให้เริ่มหลัง section
+ScrollingFrame.Position = UDim2.new(0, 10, 0, 165)
 ScrollingFrame.BackgroundTransparency = 1
 ScrollingFrame.ScrollBarThickness = 8
-ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)  -- จะอัปเดตอัตโนมัติ
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 ScrollingFrame.Parent = MainFrame
 
 local GridLayout = Instance.new("UIGridLayout")
@@ -79,47 +131,71 @@ GridLayout.CellSize = UDim2.new(1, -10, 0, 45)
 GridLayout.CellPadding = UDim2.new(0, 0, 0, 8)
 GridLayout.Parent = ScrollingFrame
 
--- ฟังก์ชันเปลี่ยน Animation
-local function ApplyAnimation(animTable)
-    local character = Player.Character
-    if not character or not character:FindFirstChild("Animate") or not character:FindFirstChild("Humanoid") then
-        warn("ตัวละครยังไม่โหลดหรือไม่มี Animate script")
-        return
-    end
-    
-    local Animate = character.Animate
-    local Humanoid = character.Humanoid
-    
-    Animate.Disabled = true
-    
-    -- หยุด animation ปัจจุบัน (ถ้ามีฟังก์ชัน StopAnim)
-    if character:FindFirstChild("Humanoid") then
-        pcall(function()
-            Humanoid:ChangeState(Enum.HumanoidStateType.None)
-        end)
-    end
-    
-    Animate.idle.Animation1.AnimationId = animTable.idle1
-    Animate.idle.Animation2.AnimationId = animTable.idle2
-    Animate.walk.WalkAnim.AnimationId = animTable.walk
-    Animate.run.RunAnim.AnimationId = animTable.run
-    Animate.jump.JumpAnim.AnimationId = animTable.jump
-    Animate.climb.ClimbAnim.AnimationId = animTable.climb
-    Animate.fall.FallAnim.AnimationId = animTable.fall
-    
-    Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)  -- Force reload animation
-    task.wait(0.1)
-    Humanoid:ChangeState(Enum.HumanoidStateType.Running)
-    
-    Animate.Disabled = false
+-- ฟังก์ชันอัปเดตชื่อท่าปัจจุบัน
+local function UpdateCurrentLabel(name)
+    CurrentAnimName = name or "Default  ( Not Selected )"
+    CurrentAnimLabel.Text = CurrentAnimName
 end
 
--- ลิสต์ animation ทั้งหมด
+-- ฟังก์ชัน Apply Animation
+local function ApplyAnimation(animTable, animName)
+    local character = Player.Character
+    if not character then return end
+
+    local humanoid = character:FindFirstChild("Humanoid")
+    local animate = character:FindFirstChild("Animate")
+    if not humanoid or not animate then return end
+
+    animate.Disabled = true
+
+    animate.idle.Animation1.AnimationId = animTable.idle1
+    animate.idle.Animation2.AnimationId = animTable.idle2
+    animate.walk.WalkAnim.AnimationId = animTable.walk
+    animate.run.RunAnim.AnimationId = animTable.run
+    animate.jump.JumpAnim.AnimationId = animTable.jump
+    animate.climb.ClimbAnim.AnimationId = animTable.climb
+    animate.fall.FallAnim.AnimationId = animTable.fall
+
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    task.wait()
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+
+    animate.Disabled = false
+
+    LastSelectedAnim = animTable
+    UpdateCurrentLabel(animName)
+end
+
+-- เมื่อตัวละคร respawn
+local function OnCharacterAdded(character)
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    local animate = character:WaitForChild("Animate", 10)
+    if not humanoid or not animate then return end
+
+    task.wait(0.5)
+
+    if LastSelectedAnim then
+        for _, anim in ipairs(Animations) do
+            if anim.idle1 == LastSelectedAnim.idle1 and anim.walk == LastSelectedAnim.walk then
+                ApplyAnimation(LastSelectedAnim, anim.Name)
+                return
+            end
+        end
+        ApplyAnimation(LastSelectedAnim, "Custom (เซฟไว้)")
+    end
+end
+
+Player.CharacterAdded:Connect(OnCharacterAdded)
+if Player.Character then
+    OnCharacterAdded(Player.Character)
+end
+
+-- รายการ Animation ทั้งหมด (เหมือนเดิม)
 local Animations = {
-    {Name = "  (--🕰️--)    Akaris Style",      idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=742637942", climb = "http://www.roblox.com/asset/?id=742636889", fall = "http://www.roblox.com/asset/?id=742637151"},
-    {Name = "  🧛   Vampire",          idle1 = "http://www.roblox.com/asset/?id=1083445855", idle2 = "http://www.roblox.com/asset/?id=1083450166", walk = "http://www.roblox.com/asset/?id=1083473930", run = "http://www.roblox.com/asset/?id=1083462077", jump = "http://www.roblox.com/asset/?id=1083455352", climb = "http://www.roblox.com/asset/?id=1083439238", fall = "http://www.roblox.com/asset/?id=1083443587"},
-    {Name = "  🦸   Super Hero",       idle1 = "http://www.roblox.com/asset/?id=616111295", idle2 = "http://www.roblox.com/asset/?id=616113536", walk = "http://www.roblox.com/asset/?id=616122287", run = "http://www.roblox.com/asset/?id=616117076", jump = "http://www.roblox.com/asset/?id=616115533", climb = "http://www.roblox.com/asset/?id=616104706", fall = "http://www.roblox.com/asset/?id=616108001"},
-    {Name = "  🧟   Zombie Classic  ( 1 ) ",   idle1 = "http://www.roblox.com/asset/?id=616158929", idle2 = "http://www.roblox.com/asset/?id=616160636", walk = "http://www.roblox.com/asset/?id=616168032", run = "http://www.roblox.com/asset/?id=616163682", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
+    {Name = "  (--🕰️--)    Akaris Style",  idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=742637942", climb = "http://www.roblox.com/asset/?id=742636889", fall = "http://www.roblox.com/asset/?id=742637151"},
+    {Name = "  🧛   Vampire",         idle1 = "http://www.roblox.com/asset/?id=1083445855", idle2 = "http://www.roblox.com/asset/?id=1083450166", walk = "http://www.roblox.com/asset/?id=1083473930", run = "http://www.roblox.com/asset/?id=1083462077", jump = "http://www.roblox.com/asset/?id=1083455352", climb = "http://www.roblox.com/asset/?id=1083439238", fall = "http://www.roblox.com/asset/?id=1083443587"},
+    {Name = "  🦸   Super Hero",      idle1 = "http://www.roblox.com/asset/?id=616111295", idle2 = "http://www.roblox.com/asset/?id=616113536", walk = "http://www.roblox.com/asset/?id=616122287", run = "http://www.roblox.com/asset/?id=616117076", jump = "http://www.roblox.com/asset/?id=616115533", climb = "http://www.roblox.com/asset/?id=616104706", fall = "http://www.roblox.com/asset/?id=616108001"},
+    {Name = "  🧟   Zombie Classic    ( 1 )",  idle1 = "http://www.roblox.com/asset/?id=616158929", idle2 = "http://www.roblox.com/asset/?id=616160636", walk = "http://www.roblox.com/asset/?id=616168032", run = "http://www.roblox.com/asset/?id=616163682", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
     {Name = "  🧟‍♂️   Zombie Classic  ( 2 )",    idle1 = "http://www.roblox.com/asset/?id=3489171152", idle2 = "http://www.roblox.com/asset/?id=3489171152", walk = "http://www.roblox.com/asset/?id=3489174223", run = "http://www.roblox.com/asset/?id=3489173414", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
     {Name = "  🧙   Mage",             idle1 = "http://www.roblox.com/asset/?id=707742142", idle2 = "http://www.roblox.com/asset/?id=707855907", walk = "http://www.roblox.com/asset/?id=707897309", run = "http://www.roblox.com/asset/?id=707861613", jump = "http://www.roblox.com/asset/?id=707853694", climb = "http://www.roblox.com/asset/?id=707826056", fall = "http://www.roblox.com/asset/?id=707829716"},
     {Name = "  👻   Ghost",            idle1 = "http://www.roblox.com/asset/?id=616006778", idle2 = "http://www.roblox.com/asset/?id=616008087", walk = "http://www.roblox.com/asset/?id=616010382", run = "http://www.roblox.com/asset/?id=616013216", jump = "http://www.roblox.com/asset/?id=616008936", climb = "http://www.roblox.com/asset/?id=616003713", fall = "http://www.roblox.com/asset/?id=616005863"},
@@ -137,10 +213,10 @@ local Animations = {
     {Name = "  🌟   Popstar",          idle1 = "http://www.roblox.com/asset/?id=1212900985", idle2 = "http://www.roblox.com/asset/?id=1212900985", walk = "http://www.roblox.com/asset/?id=1212980338", run = "http://www.roblox.com/asset/?id=1212980348", jump = "http://www.roblox.com/asset/?id=1212954642", climb = "http://www.roblox.com/asset/?id=1213044953", fall = "http://www.roblox.com/asset/?id=1212900995"},
     {Name = "  👸   Princess",         idle1 = "http://www.roblox.com/asset/?id=941003647", idle2 = "http://www.roblox.com/asset/?id=941013098", walk = "http://www.roblox.com/asset/?id=941028902", run = "http://www.roblox.com/asset/?id=941015281", jump = "http://www.roblox.com/asset/?id=941008832", climb = "http://www.roblox.com/asset/?id=940996062", fall = "http://www.roblox.com/asset/?id=941000007"},
     {Name = "  🤠   Cowboy",           idle1 = "http://www.roblox.com/asset/?id=1014390418", idle2 = "http://www.roblox.com/asset/?id=1014398616", walk = "http://www.roblox.com/asset/?id=1014421541", run = "http://www.roblox.com/asset/?id=1014401683", jump = "http://www.roblox.com/asset/?id=1014394726", climb = "http://www.roblox.com/asset/?id=1014380606", fall = "http://www.roblox.com/asset/?id=1014384571"},
-    {Name = "  🛡️   Patrol",           idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=1150944216", climb = "http://www.roblox.com/asset/?id=1148811837", fall = "http://www.roblox.com/asset/?id=1148863382"},
+    {Name = "  🛡️   Patrol",               idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=1150944216", climb = "http://www.roblox.com/asset/?id=1148811837", fall = "http://www.roblox.com/asset/?id=1148863382"},
 }
 
--- สร้างปุ่มสำหรับแต่ละ animation
+-- สร้างปุ่ม animation
 for _, anim in ipairs(Animations) do
     local Button = Instance.new("TextButton")
     Button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
@@ -150,11 +226,11 @@ for _, anim in ipairs(Animations) do
     Button.TextSize = 18
     Button.TextXAlignment = Enum.TextXAlignment.Left
     Button.Parent = ScrollingFrame
-    
+
     local BtnCorner = Instance.new("UICorner")
     BtnCorner.CornerRadius = UDim.new(0, 8)
     BtnCorner.Parent = Button
-    
+
     Button.MouseButton1Click:Connect(function()
         ApplyAnimation({
             idle1 = anim.idle1,
@@ -164,10 +240,14 @@ for _, anim in ipairs(Animations) do
             jump = anim.jump,
             climb = anim.climb,
             fall = anim.fall
-        })
+        }, anim.Name)
     end)
 end
 
-
 -- อัปเดต CanvasSize อัตโนมัติ
-ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, GridLayout.AbsoluteContentSize.Y + 20)
+GridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, GridLayout.AbsoluteContentSize.Y + 20)
+end)
+
+-- ตั้งค่าชื่อเริ่มต้น
+UpdateCurrentLabel(CurrentAnimName)
