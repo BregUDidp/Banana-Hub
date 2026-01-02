@@ -1,121 +1,103 @@
-local Section = avatarTab:Section({ 
-    Title = "               { [ - Flame Head Rainbow - ] }",
+local musicTab = Window:Tab({
+    Title = "||   - Boombox ID",
+    Icon = "drum", -- optional
+    Locked = false,
 })
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
+local Section = musicTab:Section({ 
+    Title = "                  { [ - Playing Music - ] }",
+})
 
---// Variables
-local CustomFire = nil
-local rainbowConnection = nil
-local FireEnabled = false
+-- สร้าง Sound Object (สำหรับเล่นเพลง)
+local MusicSound = Instance.new("Sound")
+MusicSound.Name = "BackgroundMusic"
+MusicSound.Looped = true  
+MusicSound.Volume = 0.5  
+MusicSound.Parent = game:GetService("SoundService")
 
-local currentHue = 0
-local rainbowSpeed = 0.2  -- ความเร็วเปลี่ยนสีรุ้ง (ค่าเริ่มต้น)
-local useRainbow = true   -- ใช้สีรุ้งหรือสีจาก ColorPicker
-local fixedColor = Color3.fromRGB(138, 43, 179)  -- สีสำรอง
-
---// ฟังก์ชันสร้าง/รีเซ็ตไฟ
-local function CreateRainbowFire()
-    local character = LocalPlayer.Character
-    if not character then return end
-    
-    local Head = character:FindFirstChild("Head") or character:WaitForChild("Head", 5)
-    if not Head then return end
-
-    -- ลบไฟเก่า
-    if Head:FindFirstChild("RainbowHeadFire") then
-        Head.RainbowHeadFire:Destroy()
-    end
-    if rainbowConnection then
-        rainbowConnection:Disconnect()
-        rainbowConnection = nil
-    end
-
-    -- สร้างไฟใหม่
-    CustomFire = Instance.new("Fire")
-    CustomFire.Name = "RainbowHeadFire"
-    CustomFire.Size = 5
-    CustomFire.Heat = 12
-    CustomFire.Enabled = true
-    CustomFire.Parent = Head
-
-    -- ลูปเปลี่ยนสี
-    rainbowConnection = RunService.Heartbeat:Connect(function(dt)
-        if not CustomFire or not CustomFire.Parent or not FireEnabled then
-            if rainbowConnection then rainbowConnection:Disconnect() end
-            return
-        end
-
-        if useRainbow then
-            currentHue = (currentHue + dt * rainbowSpeed) % 1
-            local color = Color3.fromHSV(currentHue, 1, 1)
-            CustomFire.Color = color
-            CustomFire.SecondaryColor = color
+local Input = musicTab:Input({
+    Title = "[ 🥁 ]  ID Music Play",
+    Desc = "[ - Input Music ID - ]",
+    Value = "",
+    InputIcon = "play",
+    Type = "Input",
+    Placeholder = "Enter text...",
+    Callback = function(input) 
+        local soundId = tonumber(input)
+        if soundId then
+            MusicSound.SoundId = "rbxassetid://" .. soundId
+            MusicSound:Play()
+            
         else
-            CustomFire.Color = fixedColor
-            CustomFire.SecondaryColor = fixedColor
+            
         end
-    end)
-end
-
---// ฟังก์ชันเปิด/ปิด
-local function SetFireState(state)
-    FireEnabled = state
-    if state then
-        CreateRainbowFire()
-    else
-        if CustomFire then CustomFire:Destroy() end
-        if rainbowConnection then rainbowConnection:Disconnect() end
-        CustomFire = nil
-        rainbowConnection = nil
-    end
-end
-
---// รองรับการเกิดใหม่
-LocalPlayer.CharacterAdded:Connect(function()
-    task.wait(2)
-    if FireEnabled then
-        CreateRainbowFire()
-    end
-end)
-
-local Toggle = avatarTab:Toggle({
-    Title = "[ 🌈 ]  Rainbow Flame Head",
-    Desc = "[ - Flame Head Rainbow - ]",
-    Icon = "flame",
-    Type = "Checkbox",
-    Value = false, -- default value
-    Callback = function(value) 
-        SetFireState(value)
     end
 })
 
-local Slider = avatarTab:Slider({
-    Title = "[ 📏 ]  Slider Flame",
-    Desc = "[ - Slider Flame Size - ]",
-    Step = 1,
-    Value = {
-        Min = 1,
-        Max = 5000,
-        Default = 5,
-    },
-    Callback = function(value)
-        CustomFire.Size = value
+local Button = musicTab:Button({
+    Title = "[ 🛑 ]  Stop Music ID",
+    Desc = "[ - Stop ID Music Input - ]",
+    Icon = "octagon-x",
+    Locked = false,
+    Callback = function()
+        MusicSound:Stop()
     end
 })
 
-local Slider = avatarTab:Slider({
-    Title = "[ 📏 ]  Slider Heats",
-    Desc = "[ - Slider Size Heats - ]",
+local Slider = musicTab:Slider({
+    Title = "[ 🔊 ]  Volume Music",
+    Desc = "[ - Volume Music ID - ]",
     Step = 1,
     Value = {
-        Min = 1,
+        Min = 0,
         Max = 5000,
-        Default = 12,
+        Default = 120,
     },
     Callback = function(value)
-        CustomFire.Heat = value
+        MusicSound.Volume = value / 100
+    end
+})
+
+local Section = musicTab:Section({ 
+    Title = "                       { [ - ID Music - ] }",
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🌮 ]  Music: Rainning Taco",
+    Desc = "[ - ID: 142376088 - Original - ]",
+    Icon = "ham",
+    Locked = false,
+    Callback = function()
+        setclipboard(142376088)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🌆 ]  Music: Meep City",
+    Desc = "[ - ID: 1840684208 - ]",
+    Icon = "building-2",
+    Locked = false,
+    Callback = function()
+        setclipboard(1840684208)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 🏛️ ]  Music: Roblox Classic",
+    Desc = "[ - ID: 1848354536 - ]",
+    Icon = "church",
+    Locked = false,
+    Callback = function()
+        setclipboard(1848354536)
+    end
+})
+
+local Button = musicTab:Button({
+    Title = "[ 💪 ]  Music: BodyParts",
+    Desc = "[ - ID: 127653283576622 - ]",
+    Icon = "bot-message-square",
+    Locked = false,
+    Callback = function()
+        setclipboard(127653283576622)
     end
 })
