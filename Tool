@@ -1,0 +1,95 @@
+-- ลูกอมสีม่วง Sparkles เทเลพอร์ต (แสงม่วงทั้งลูก + Effect)
+        local tool = Instance.new("Tool")
+        tool.Name = "🍭"
+        tool.ToolTip = "[ 🍭 ]  Teleport Tool"
+        tool.RequiresHandle = true
+
+        local player = game.Players.LocalPlayer
+
+        -- สร้าง Handle ลูกอมสีม่วง
+        local handle = Instance.new("Part")
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(2.2, 2.2, 2.2)
+        handle.Shape = Enum.PartType.Ball
+        handle.Material = Enum.Material.ForceField
+        handle.BrickColor = BrickColor.new("Royal purple")  -- สีใกล้เคียงที่สุดใน BrickColor
+        handle.Color = Color3.fromRGB(138, 43, 179)        -- ตั้งค่าสีจริงให้ตรงตาม RGB
+        handle.Transparency = 0.15
+        handle.CanCollide = false
+        handle.Parent = tool
+
+        -- Sparkles สีม่วง
+        local sparkles = Instance.new("Sparkles")
+        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+        sparkles.Enabled = false
+        sparkles.Parent = handle
+
+        -- ParticleEmitter สีม่วง
+        local particles = Instance.new("ParticleEmitter")
+        particles.Texture = "rbxassetid://241650934"
+        particles.Color = ColorSequence.new(
+            Color3.fromRGB(138, 43, 179),
+            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนลงนิดเพื่อความสวย
+        )
+
+        particles.Size = NumberSequence.new(0.4)
+        particles.Lifetime = NumberRange.new(1.5, 2.5)
+        particles.Rate = 20
+        particles.SpreadAngle = Vector2.new(45, 45)
+        particles.Speed = NumberRange.new(2)
+        particles.Parent = handle
+
+        -- PointLight สีม่วง
+        local light = Instance.new("PointLight")
+        light.Color = Color3.fromRGB(138, 43, 179)
+        light.Brightness = 2
+        light.Range = 10
+        light.Parent = handle
+
+        -- เสียงเทเลพอร์ต
+        local teleportSound = Instance.new("Sound")
+        teleportSound.SoundId = "rbxassetid://4861638982"
+        teleportSound.Volume = 0.7
+        teleportSound.Parent = handle
+
+        -- เอฟเฟกต์ตอนถือ/ปล่อย
+        tool.Equipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 50
+            light.Brightness = 0
+        end)
+
+        tool.Unequipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 20
+            light.Brightness = 2
+        end)
+
+        -- ฟังก์ชันเทเลพอร์ต
+        tool.Activated:Connect(function()
+            teleportSound:Play()
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local mouse = player:GetMouse()
+                local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+                character.HumanoidRootPart.CFrame = CFrame.new(pos)
+            end
+        end)
+
+        -- เสียงตอนถือเครื่องมือ (เพิ่มความเท่)
+        tool.Equipped:Connect(function()
+            local equipSound = Instance.new("Sound")
+            equipSound.SoundId = "rbxassetid://2865227271"
+            equipSound.Volume = 0.5
+            equipSound.Parent = player.Character:FindFirstChild("HumanoidRootPart")
+            if equipSound.Parent then
+                equipSound:Play()
+                equipSound.Ended:Connect(function()
+                    equipSound:Destroy()
+                end)
+            end
+        end)
+
+        -- ใส่ลง Backpack
+        player:WaitForChild("Backpack")
+        tool.Parent = player.Backpack
