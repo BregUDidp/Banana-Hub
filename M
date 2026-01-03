@@ -484,6 +484,233 @@ InfJumpToggle.TextColor3 = Color3.new(1,1,1)
 InfJumpToggle.Font = Enum.Font.Code
 InfJumpToggle.Parent = CheatsContent
 
+local ESPEnabled = false
+local ESPData = {}  -- เก็บ Highlight + BillboardGui ของแต่ละ player
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+-- ปุ่ม Toggle
+local ESPToggle = Instance.new("TextButton")
+ESPToggle.Size = UDim2.new(1, -20, 0, 40)
+ESPToggle.Position = UDim2.new(0, 10, 0, 240)
+ESPToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+ESPToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ESPToggle.BorderSizePixel = 2
+ESPToggle.Text = "ESP Player: OFF"
+ESPToggle.TextColor3 = Color3.new(1,1,1)
+ESPToggle.TextScaled = false
+ESPToggle.Font = Enum.Font.Code -- GothamBold
+ESPToggle.Parent = CheatsContent
+
+-- Glow Effect เมื่อเปิด
+local Glow = Instance.new("ImageLabel")
+Glow.Size = UDim2.new(1, 10, 1, 10)
+Glow.Position = UDim2.new(0, -5, 0, -5)
+Glow.BackgroundTransparency = 1
+Glow.Image = "rbxassetid://4996891970"
+Glow.ImageColor3 = Color3.fromRGB(0, 255, 0)
+Glow.ImageTransparency = 0.6
+Glow.Visible = false
+Glow.ZIndex = ESPToggle.ZIndex - 1
+Glow.Parent = ESPToggle
+
+-- อัปเดตปุ่ม
+local function updateToggleButton()
+    if ESPEnabled then
+        ESPToggle.Text = "ESP Player: ON"
+        ESPToggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        ESPToggle.BorderColor3 = Color3.fromRGB(0, 255, 0)
+        ESPToggle.TextColor3 = Color3.new(1, 1, 1)
+        Glow.Visible = true
+    else
+        ESPToggle.Text = "ESP Player: OFF"
+        ESPToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        ESPToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
+        ESPToggle.TextColor3 = Color3.new(1, 1, 1)
+        Glow.Visible = false
+    end
+end
+
+-- สร้าง ESP
+local function createESP(character, player)
+    if not character or not character:FindFirstChild("HumanoidRootPart") or not character:FindFirstChild("Head") then return end
+    
+    -- ล้างของเก่าถ้ามี
+    if ESPData[player] then
+        if ESPData[player].Highlight then ESPData[player].Highlight:Destroy() end
+        if ESPData[player].Billboard then ESPData[player].Billboard:Destroy() end
+    end
+    
+    -- Highlight (เห็นผ่านกำแพง)
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
+    highlight.FillTransparency = 0.4
+    highlight.OutlineTransparency = 0
+    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Adornee = character
+    highlight.Parent = character
+    highlight.Enabled = ESPEnabled
+    
+    -- BillboardGui
+    local billboard = Instance.new("BillboardGui")
+    billboard.Adornee = character.Head
+    billboard.Size = UDim2.new(0, 200, 0, 70)
+    billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.Enabled = ESPEnabled
+    billboard.Parent = character.Head
+    
+    -- ชื่อ: DisplayName (@Username)
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+    nameLabel.BackgroundTransparency = 1
+    
+    -- สร้างข้อความชื่อ
+    local display = player.DisplayName ~= player.Name and player.DisplayName or nil
+    if display then
+        nameLabel.Text = display .. " (@" .. player.Name .. ")"
+    else
+        nameLabel.Text = "@" .. player.Name
+    end
+    
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextScaled = true
+    nameLabel.Parent = billboard
+    
+    -- กล่องแถบเลือด
+    local healthBG = Instance.new("Frame")
+    healthBG.Size = UDim2.new(1, 0, 0.4, 0)
+    healthBG.Position = UDim2.new(0, 0, 0.55, 0)
+    healthBG.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    healthBG.BorderSizePixel = 2
+    healthBG.BorderColor3 = Color3.fromRGB(255, 0, 0)
+    healthBG.Parent = billboard
+    
+    -- แถบเลือด
+    local healthBar = Instance.new("Frame")
+    healthBar.Size = UDim2.new(1, 0, 1, 0)
+    healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    healthBar.BorderSizePixel = 0
+    healthBar.ZIndex = healthBG.ZIndex + 1
+    healthBar.Parent = healthBG
+    
+    -- ข้อความ HP ตรงกลางแถบเลือด
+    local healthText = Instance.new("TextLabel")
+    healthText.Size = UDim2.new(1, 0, 1, 0)
+    healthText.BackgroundTransparency = 1
+    healthText.Text = "HP: 100/100"
+    healthText.TextColor3 = Color3.new(1, 1, 1)
+    healthText.TextStrokeTransparency = 0
+    healthText.TextStrokeColor3 = Color3.new(0, 0, 0)
+    healthText.Font = Enum.Font.GothamBold
+    healthText.TextScaled = true
+    healthText.ZIndex = healthBG.ZIndex + 2
+    healthText.Parent = healthBG
+    
+    -- อัปเดตเลือด
+    local humanoid = character:FindFirstChild("Humanoid")
+    if humanoid then
+        local function updateHealth()
+            local health = math.floor(humanoid.Health)
+            local maxHealth = humanoid.MaxHealth
+            local healthPercent = math.clamp(health / maxHealth, 0, 1)
+            
+            healthBar.Size = UDim2.new(healthPercent, 0, 1, 0)
+            healthText.Text = health .. "/" .. maxHealth .. " HP"
+            
+            if healthPercent > 0.6 then
+                healthBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+            elseif healthPercent > 0.3 then
+                healthBar.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+            else
+                healthBar.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            end
+        end
+        
+        updateHealth()
+        humanoid.HealthChanged:Connect(updateHealth)
+    end
+    
+    ESPData[player] = {
+        Highlight = highlight,
+        Billboard = billboard
+    }
+end
+
+-- ฟังก์ชันเพิ่ม ESP
+local function addESP(player)
+    local function onCharacterAdded(char)
+        task.delay(0.5, function()
+            if char and char.Parent then
+                createESP(char, player)
+            end
+        end)
+    end
+    
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+    
+    player.CharacterAdded:Connect(onCharacterAdded)
+    player.CharacterRemoving:Connect(function()
+        if ESPData[player] then
+            if ESPData[player].Highlight then ESPData[player].Highlight:Destroy() end
+            if ESPData[player].Billboard then ESPData[player].Billboard:Destroy() end
+            ESPData[player] = nil
+        end
+    end)
+end
+
+-- เพิ่มให้ทุก player
+for _, player in pairs(Players:GetPlayers()) do
+    addESP(player)
+end
+
+Players.PlayerAdded:Connect(addESP)
+Players.PlayerRemoving:Connect(function(player)
+    if ESPData[player] then
+        if ESPData[player].Highlight then ESPData[player].Highlight:Destroy() end
+        if ESPData[player].Billboard then ESPData[player].Billboard:Destroy() end
+        ESPData[player] = nil
+    end
+end)
+
+-- Fallback เสถียร
+RunService.Heartbeat:Connect(function()
+    if not ESPEnabled then return end
+    for player, data in pairs(ESPData) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if not data.Highlight or not data.Highlight.Parent then
+                addESP(player)
+            end
+        end
+    end
+end)
+
+-- ปุ่ม Toggle
+ESPToggle.MouseButton1Click:Connect(function()
+    ESPEnabled = not ESPEnabled
+    updateToggleButton()
+    
+    if ESPLabel then
+        ESPLabel.Text = ESPEnabled and "ESP Player: ON" or "ESP Player: OFF"
+        ESPLabel.TextColor3 = ESPEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 100, 100)
+    end
+    
+    for _, data in pairs(ESPData) do
+        if data.Highlight then data.Highlight.Enabled = ESPEnabled end
+        if data.Billboard then data.Billboard.Enabled = ESPEnabled end
+    end
+end)
+
+-- เริ่มต้น
+updateToggleButton()
+
 -- ฟังก์ชัน Speed Hack
 SpeedToggle.MouseButton1Click:Connect(function()
     SpeedEnabled = not SpeedEnabled
@@ -520,7 +747,7 @@ end)
 -- Noclip
 NoclipToggle.MouseButton1Click:Connect(function()
     NoclipEnabled = not NoclipEnabled
-    NoclipToggle.Text = NoclipEnabled and "Noclip: ON (Press E to toggle)" or "Noclip: OFF (Press E to toggle)"
+    NoclipToggle.Text = NoclipEnabled and "Noclip Walling: ON" or "Noclip Walling: OFF"
     NoclipToggle.BackgroundColor3 = NoclipEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(200, 0, 0)
 
     if NoclipEnabled then
