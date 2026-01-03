@@ -203,7 +203,7 @@ end)
 -- แสดงคนที่อยู่ในเซิร์ฟเวอร์ตอนเปิด
 for _, plr in pairs(Players:GetPlayers()) do
     if plr ~= Player then
-        addLog(plr.Name .. " Is in server", Color3.fromRGB(200, 200, 200))
+        addLog(plr.Name .. " Is in server", Color3.fromRGB(138, 43, 179))
     end
 end
 
@@ -292,7 +292,7 @@ local Animations = {
     {Name = "  🧛   Vampire",         idle1 = "http://www.roblox.com/asset/?id=1083445855", idle2 = "http://www.roblox.com/asset/?id=1083450166", walk = "http://www.roblox.com/asset/?id=1083473930", run = "http://www.roblox.com/asset/?id=1083462077", jump = "http://www.roblox.com/asset/?id=1083455352", climb = "http://www.roblox.com/asset/?id=1083439238", fall = "http://www.roblox.com/asset/?id=1083443587"},
     {Name = "  🦸   Super Hero",      idle1 = "http://www.roblox.com/asset/?id=616111295", idle2 = "http://www.roblox.com/asset/?id=616113536", walk = "http://www.roblox.com/asset/?id=616122287", run = "http://www.roblox.com/asset/?id=616117076", jump = "http://www.roblox.com/asset/?id=616115533", climb = "http://www.roblox.com/asset/?id=616104706", fall = "http://www.roblox.com/asset/?id=616108001"},
     {Name = "  🧟   Zombie Classic    ( 1 )",  idle1 = "http://www.roblox.com/asset/?id=616158929", idle2 = "http://www.roblox.com/asset/?id=616160636", walk = "http://www.roblox.com/asset/?id=616168032", run = "http://www.roblox.com/asset/?id=616163682", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
-    {Name = "  🧟‍♂️   Zombie Classic  ( 2 )",    idle1 = "http://www.roblox.com/asset/?id=3489171152", idle2 = "http://www.roblox.com/asset/?id=3489171152", walk = "http://www.roblox.com/asset/?id=3489174223", run = "http://www.roblox.com/asset/?id=3489173414", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
+    {Name = "  🧟‍♂️   Zombie Classic    ( 2 )",    idle1 = "http://www.roblox.com/asset/?id=3489171152", idle2 = "http://www.roblox.com/asset/?id=3489171152", walk = "http://www.roblox.com/asset/?id=3489174223", run = "http://www.roblox.com/asset/?id=3489173414", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
     {Name = "  🧙   Mage",             idle1 = "http://www.roblox.com/asset/?id=707742142", idle2 = "http://www.roblox.com/asset/?id=707855907", walk = "http://www.roblox.com/asset/?id=707897309", run = "http://www.roblox.com/asset/?id=707861613", jump = "http://www.roblox.com/asset/?id=707853694", climb = "http://www.roblox.com/asset/?id=707826056", fall = "http://www.roblox.com/asset/?id=707829716"},
     {Name = "  👻   Ghost",            idle1 = "http://www.roblox.com/asset/?id=616006778", idle2 = "http://www.roblox.com/asset/?id=616008087", walk = "http://www.roblox.com/asset/?id=616010382", run = "http://www.roblox.com/asset/?id=616013216", jump = "http://www.roblox.com/asset/?id=616008936", climb = "http://www.roblox.com/asset/?id=616003713", fall = "http://www.roblox.com/asset/?id=616005863"},
     {Name = "  👴   Elder",            idle1 = "http://www.roblox.com/asset/?id=845397899", idle2 = "http://www.roblox.com/asset/?id=845400520", walk = "http://www.roblox.com/asset/?id=845403856", run = "http://www.roblox.com/asset/?id=845386501", jump = "http://www.roblox.com/asset/?id=845398858", climb = "http://www.roblox.com/asset/?id=845392038", fall = "http://www.roblox.com/asset/?id=845396048"},
@@ -318,7 +318,7 @@ for _, anim in ipairs(Animations) do
     btn.BorderColor3 = Color3.fromRGB(255, 0, 0)
     btn.BorderSizePixel = 2
     btn.Text = anim.Name
-    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.TextColor3 = Color3.new(255, 0, 0)
     btn.Font = Enum.Font.Code
     btn.TextSize = 18
     btn.TextXAlignment = Enum.TextXAlignment.Left
