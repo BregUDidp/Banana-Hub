@@ -472,6 +472,34 @@ NoclipToggle.TextColor3 = Color3.new(1,1,1)
 NoclipToggle.Font = Enum.Font.Code
 NoclipToggle.Parent = CheatsContent
 
+-- Noclip
+NoclipToggle.MouseButton1Click:Connect(function()
+    NoclipEnabled = not NoclipEnabled
+    NoclipToggle.Text = NoclipEnabled and "Noclip Walling: ON" or "Noclip Walling: OFF"
+    NoclipToggle.BackgroundColor3 = NoclipEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(200, 0, 0)
+
+    if NoclipEnabled then
+        NoclipConn = RunService.Stepped:Connect(function()
+            if Player.Character then
+                for _, part in pairs(Player.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if NoclipConn then NoclipConn:Disconnect() end
+        if Player.Character then
+            for _, part in pairs(Player.Character:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end)
+
 -- Infinite Jump
 local InfJumpToggle = Instance.new("TextButton")
 InfJumpToggle.Size = UDim2.new(1, -20, 0, 40)
@@ -497,9 +525,9 @@ ESPToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
 ESPToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
 ESPToggle.BorderSizePixel = 2
 ESPToggle.Text = "ESP Player: OFF"
-ESPToggle.TextColor3 = Color3.new(1,1,1)
+ESPToggle.TextColor3 = Color3.new(1, 1, 1)
 ESPToggle.TextScaled = false
-ESPToggle.Font = Enum.Font.Code -- GothamBold
+ESPToggle.Font = Enum.Font.Code
 ESPToggle.Parent = CheatsContent
 
 -- Glow Effect เมื่อเปิด
@@ -508,7 +536,7 @@ Glow.Size = UDim2.new(1, 10, 1, 10)
 Glow.Position = UDim2.new(0, -5, 0, -5)
 Glow.BackgroundTransparency = 1
 Glow.Image = "rbxassetid://4996891970"
-Glow.ImageColor3 = Color3.fromRGB(0, 255, 0)
+Glow.ImageColor3 = Color3.fromRGB(1, 1, 1)
 Glow.ImageTransparency = 0.6
 Glow.Visible = false
 Glow.ZIndex = ESPToggle.ZIndex - 1
@@ -519,7 +547,7 @@ local function updateToggleButton()
     if ESPEnabled then
         ESPToggle.Text = "ESP Player: ON"
         ESPToggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-        ESPToggle.BorderColor3 = Color3.fromRGB(0, 255, 0)
+        ESPToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
         ESPToggle.TextColor3 = Color3.new(1, 1, 1)
         Glow.Visible = true
     else
@@ -544,7 +572,7 @@ local function createESP(character, player)
     -- Highlight (เห็นผ่านกำแพง)
     local highlight = Instance.new("Highlight")
     highlight.FillColor = Color3.fromRGB(255, 0, 0)
-    highlight.OutlineColor = Color3.fromRGB(255, 255, 0)
+    highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
     highlight.FillTransparency = 0.4
     highlight.OutlineTransparency = 0
     highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
@@ -552,40 +580,53 @@ local function createESP(character, player)
     highlight.Parent = character
     highlight.Enabled = ESPEnabled
     
-    -- BillboardGui
+    -- BillboardGui (เพิ่มความสูงเพื่อรองรับ 2 บรรทัดชื่อ)
     local billboard = Instance.new("BillboardGui")
     billboard.Adornee = character.Head
-    billboard.Size = UDim2.new(0, 200, 0, 70)
-    billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+    billboard.Size = UDim2.new(0, 200, 0, 90)  -- สูงขึ้นเพื่อให้มีที่วางชื่อ 2 บรรทัด
+    billboard.StudsOffset = Vector3.new(0, 3.8, 0)
     billboard.AlwaysOnTop = true
     billboard.Enabled = ESPEnabled
     billboard.Parent = character.Head
     
-    -- ชื่อ: DisplayName (@Username)
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-    nameLabel.Position = UDim2.new(0, 0, 0, 0)
-    nameLabel.BackgroundTransparency = 1
+    -- DisplayName (บรรทัดบน)
+    local displayLabel = Instance.new("TextLabel")
+    displayLabel.Size = UDim2.new(1, 0, 0.35, 0)
+    displayLabel.Position = UDim2.new(0, 0, 0, 0)
+    displayLabel.BackgroundTransparency = 1
+    displayLabel.TextColor3 = Color3.new(1, 1, 1)
+    displayLabel.TextStrokeTransparency = 0
+    displayLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
+    displayLabel.Font = Enum.Font.Code
+    displayLabel.TextScaled = true
+    displayLabel.Parent = billboard
     
-    -- สร้างข้อความชื่อ
-    local display = player.DisplayName ~= player.Name and player.DisplayName or nil
-    if display then
-        nameLabel.Text = display .. " (@" .. player.Name .. ")"
+    -- Username (บรรทัดล่าง)
+    local usernameLabel = Instance.new("TextLabel")
+    usernameLabel.Size = UDim2.new(1, 0, 0.35, 0)
+    usernameLabel.Position = UDim2.new(0, 0, 0.35, 0)
+    usernameLabel.BackgroundTransparency = 1
+    usernameLabel.TextColor3 = Color3.new(0.8, 0.8, 0.8)  -- เทาอ่อนเพื่อแยกจาก DisplayName
+    usernameLabel.TextStrokeTransparency = 0
+    usernameLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
+    usernameLabel.Font = Enum.Font.Code
+    usernameLabel.TextScaled = true
+    usernameLabel.Parent = billboard
+    
+    -- ตั้งค่าชื่อ
+    if player.DisplayName ~= player.Name then
+        displayLabel.Text = player.DisplayName
+        usernameLabel.Text = "( " .. player.Name .. " )"
+        usernameLabel.Visible = true
     else
-        nameLabel.Text = "@" .. player.Name
+        displayLabel.Text = "( " .. player.Name .. " )"
+        usernameLabel.Visible = false  -- ซ่อนบรรทัดล่างถ้าชื่อซ้ำ
     end
-    
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
-    nameLabel.TextStrokeTransparency = 0
-    nameLabel.TextStrokeColor3 = Color3.fromRGB(255, 0, 0)
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextScaled = true
-    nameLabel.Parent = billboard
     
     -- กล่องแถบเลือด
     local healthBG = Instance.new("Frame")
-    healthBG.Size = UDim2.new(1, 0, 0.4, 0)
-    healthBG.Position = UDim2.new(0, 0, 0.55, 0)
+    healthBG.Size = UDim2.new(1, 0, 0.3, 0)
+    healthBG.Position = UDim2.new(0, 0, 0.7, 0)
     healthBG.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     healthBG.BorderSizePixel = 2
     healthBG.BorderColor3 = Color3.fromRGB(255, 0, 0)
@@ -603,11 +644,11 @@ local function createESP(character, player)
     local healthText = Instance.new("TextLabel")
     healthText.Size = UDim2.new(1, 0, 1, 0)
     healthText.BackgroundTransparency = 1
-    healthText.Text = "HP: 100/100"
-    healthText.TextColor3 = Color3.new(1, 1, 1)
+    healthText.Text = "100/100 HP"
+    healthText.TextColor3 = Color3.new(255, 0, 0)
     healthText.TextStrokeTransparency = 0
     healthText.TextStrokeColor3 = Color3.new(0, 0, 0)
-    healthText.Font = Enum.Font.GothamBold
+    healthText.Font = Enum.Font.Code
     healthText.TextScaled = true
     healthText.ZIndex = healthBG.ZIndex + 2
     healthText.Parent = healthBG
@@ -699,7 +740,7 @@ ESPToggle.MouseButton1Click:Connect(function()
     
     if ESPLabel then
         ESPLabel.Text = ESPEnabled and "ESP Player: ON" or "ESP Player: OFF"
-        ESPLabel.TextColor3 = ESPEnabled and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 100, 100)
+        ESPLabel.TextColor3 = ESPEnabled and Color3.fromRGB(1, 1, 1) or Color3.fromRGB(255, 100, 100)
     end
     
     for _, data in pairs(ESPData) do
@@ -741,44 +782,6 @@ end)
 RunService.Stepped:Connect(function()
     if SpeedEnabled and Player.Character and Player.Character:FindFirstChild("Humanoid") then
         Player.Character.Humanoid.WalkSpeed = SpeedValue
-    end
-end)
-
--- Noclip
-NoclipToggle.MouseButton1Click:Connect(function()
-    NoclipEnabled = not NoclipEnabled
-    NoclipToggle.Text = NoclipEnabled and "Noclip Walling: ON" or "Noclip Walling: OFF"
-    NoclipToggle.BackgroundColor3 = NoclipEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(200, 0, 0)
-
-    if NoclipEnabled then
-        NoclipConn = RunService.Stepped:Connect(function()
-            if Player.Character then
-                for _, part in pairs(Player.Character:GetDescendants()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
-                    end
-                end
-            end
-        end)
-    else
-        if NoclipConn then NoclipConn:Disconnect() end
-        if Player.Character then
-            for _, part in pairs(Player.Character:GetDescendants()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = true
-                end
-            end
-        end
-    end
-end)
-
--- Toggle Noclip ด้วยปุ่ม E
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.E and NoclipEnabled then
-        NoclipEnabled = not NoclipEnabled
-        NoclipToggle.Text = NoclipEnabled and "Noclip: ON" or "Noclip: OFF"
-        NoclipToggle.BackgroundColor3 = NoclipEnabled and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(200, 0, 0)
-        -- สลับสถานะเหมือนด้านบน
     end
 end)
 
