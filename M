@@ -21,7 +21,6 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "AkariHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = PlayerGui
-
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 420, 0, 680)  -- เพิ่มสูงขึ้นเพื่อรองรับ Logger
 MainFrame.Position = UDim2.new(0.5, -210, 0.5, -340)
@@ -751,6 +750,151 @@ end)
 
 -- เริ่มต้น
 updateToggleButton()
+
+-- Teleport Tools Toggle Button
+local ToolToggle = Instance.new("TextButton")
+ToolToggle.Size = UDim2.new(1, -20, 0, 40)
+ToolToggle.Position = UDim2.new(0, 10, 0, 300)
+ToolToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+ToolToggle.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ToolToggle.BorderSizePixel = 2
+ToolToggle.Text = "Teleport Tools: OFF"
+ToolToggle.TextColor3 = Color3.new(1, 1, 1)
+ToolToggle.Font = Enum.Font.Code
+ToolToggle.TextScaled = false
+ToolToggle.Parent = CheatsContent
+
+-- ตัวแปรสถานะ
+local ToolEnabled = false
+local TeleportTool = nil
+local Player = game.Players.LocalPlayer
+
+-- ฟังก์ชันสร้าง Teleport Tool (ลูกอมสีม่วงสุดเท่)
+local function createTeleportTool()
+    local tool = Instance.new("Tool")
+    tool.Name = "🍭"
+    tool.ToolTip = "[ 🍭 ] Teleport Tool"
+    tool.RequiresHandle = true
+
+    -- Handle ลูกอมสีม่วง
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(2.2, 2.2, 2.2)
+    handle.Shape = Enum.PartType.Ball
+    handle.Material = Enum.Material.ForceField
+    handle.Color = Color3.fromRGB(138, 43, 179)  -- สีม่วงเข้มสวย
+    handle.Transparency = 0.15
+    handle.CanCollide = false
+    handle.Parent = tool
+
+    -- Sparkles สีม่วง
+    local sparkles = Instance.new("Sparkles")
+    sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+    sparkles.Enabled = false
+    sparkles.Parent = handle
+
+    -- ParticleEmitter อนุภาคสีม่วง
+    local particles = Instance.new("ParticleEmitter")
+    particles.Texture = "rbxassetid://241650934"
+    particles.Color = ColorSequence.new(
+        Color3.fromRGB(138, 43, 179),
+        Color3.fromRGB(180, 100, 200)
+    )
+    particles.Size = NumberSequence.new(0.4)
+    particles.Lifetime = NumberRange.new(1.5, 2.5)
+    particles.Rate = 20
+    particles.SpreadAngle = Vector2.new(45, 45)
+    particles.Speed = NumberRange.new(2)
+    particles.Parent = handle
+
+    -- แสง PointLight
+    local light = Instance.new("PointLight")
+    light.Color = Color3.fromRGB(138, 43, 179)
+    light.Brightness = 2
+    light.Range = 10
+    light.Parent = handle
+
+    -- เสียงเทเลพอร์ต
+    local teleportSound = Instance.new("Sound")
+    teleportSound.SoundId = "rbxassetid://4861638982"
+    teleportSound.Volume = 0.7
+    teleportSound.Parent = handle
+
+    -- เอฟเฟกต์ตอนถือ/ปล่อย
+    tool.Equipped:Connect(function()
+        sparkles.Enabled = false
+        particles.Rate = 50
+        light.Brightness = 0
+    end)
+
+    tool.Unequipped:Connect(function()
+        sparkles.Enabled = false
+        particles.Rate = 20
+        light.Brightness = 2
+    end)
+
+    -- ฟังก์ชันเทเลพอร์ต (คลิกซ้าย)
+    tool.Activated:Connect(function()
+        teleportSound:Play()
+        local character = Player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local mouse = Player:GetMouse()
+            local targetPos = mouse.Hit.Position + Vector3.new(0, 5, 0)  -- ยกขึ้นนิดเพื่อไม่ติดพื้น
+            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+        end
+    end)
+
+    -- เสียงตอนหยิบ Tool
+    tool.Equipped:Connect(function()
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.5
+        equipSound.Parent = Player.Character:FindFirstChild("HumanoidRootPart")
+        if equipSound.Parent then
+            equipSound:Play()
+            equipSound.Ended:Connect(function()
+                equipSound:Destroy()
+            end)
+        end
+    end)
+
+    return tool
+end
+
+-- คลิกปุ่ม Toggle
+ToolToggle.MouseButton1Click:Connect(function()
+    ToolEnabled = not ToolEnabled
+
+    if ToolEnabled then
+        ToolToggle.Text = "Teleport Tools: ON"
+        ToolToggle.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        ToolToggle.TextColor3 = Color3.new(1, 1, 1)
+
+        -- สร้างและใส่ Tool ลง Backpack
+        TeleportTool = createTeleportTool()
+        TeleportTool.Parent = Player:WaitForChild("Backpack")
+
+    else
+        ToolToggle.Text = "Teleport Tools: OFF"
+        ToolToggle.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+        ToolToggle.TextColor3 = Color3.new(1, 1, 1)
+
+        -- ลบ Tool ออกจาก Backpack
+        if TeleportTool then
+            TeleportTool:Destroy()
+            TeleportTool = nil
+        end
+    end
+end)
+
+-- รองรับการตาย/เกิดใหม่ (ถ้าเปิดค้างไว้ Tool จะกลับมาเอง)
+Player.CharacterAdded:Connect(function()
+    if ToolEnabled and TeleportTool == nil then
+        task.wait(1)  -- รอ character โหลด
+        TeleportTool = createTeleportTool()
+        TeleportTool.Parent = Player:WaitForChild("Backpack")
+    end
+end)
 
 -- ฟังก์ชัน Speed Hack
 SpeedToggle.MouseButton1Click:Connect(function()
