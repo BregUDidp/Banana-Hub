@@ -66,7 +66,7 @@ CloseButton.Position = UDim2.new(1, -50, 0, 10)
 CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 CloseButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
 CloseButton.BorderSizePixel = 2
-CloseButton.Text = "X"
+CloseButton.Text = "✖️"
 CloseButton.TextColor3 = Color3.new(255, 255, 255)
 CloseButton.Font = Enum.Font.Code
 CloseButton.TextSize = 30
@@ -192,18 +192,18 @@ end
 -- แจ้งคนเข้า/ออก
 Players.PlayerAdded:Connect(function(plr)
     if plr ~= Player then
-        addLog(plr.Name .. " joined the game", Color3.fromRGB(0, 255, 0))
+        addLog(plr.Name .. " Joined the game", Color3.fromRGB(0, 255, 0))
     end
 end)
 
 Players.PlayerRemoving:Connect(function(plr)
-    addLog(plr.Name .. " left the game", Color3.fromRGB(255, 50, 50))
+    addLog(plr.Name .. " Left the game", Color3.fromRGB(255, 50, 50))
 end)
 
 -- แสดงคนที่อยู่ในเซิร์ฟเวอร์ตอนเปิด
 for _, plr in pairs(Players:GetPlayers()) do
     if plr ~= Player then
-        addLog(plr.Name .. " is in server", Color3.fromRGB(200, 200, 200))
+        addLog(plr.Name .. " Is in server", Color3.fromRGB(200, 200, 200))
     end
 end
 
@@ -288,7 +288,7 @@ if Player.Character then OnCharacterAdded(Player.Character) end
 
 local Animations = {
     -- (รายการ Animations ทั้งหมดเหมือนโค้ดก่อนหน้า)
-    {Name = " (--🕰️--) Akaris Style", idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=742637942", climb = "http://www.roblox.com/asset/?id=742636889", fall = "http://www.roblox.com/asset/?id=742637151"},
+    {Name = "  🕰️   Akaris Style", idle1 = "http://www.roblox.com/asset/?id=1149612882", idle2 = "http://www.roblox.com/asset/?id=1150842221", walk = "http://www.roblox.com/asset/?id=1151231493", run = "http://www.roblox.com/asset/?id=1150967949", jump = "http://www.roblox.com/asset/?id=742637942", climb = "http://www.roblox.com/asset/?id=742636889", fall = "http://www.roblox.com/asset/?id=742637151"},
     {Name = "  🧛   Vampire",         idle1 = "http://www.roblox.com/asset/?id=1083445855", idle2 = "http://www.roblox.com/asset/?id=1083450166", walk = "http://www.roblox.com/asset/?id=1083473930", run = "http://www.roblox.com/asset/?id=1083462077", jump = "http://www.roblox.com/asset/?id=1083455352", climb = "http://www.roblox.com/asset/?id=1083439238", fall = "http://www.roblox.com/asset/?id=1083443587"},
     {Name = "  🦸   Super Hero",      idle1 = "http://www.roblox.com/asset/?id=616111295", idle2 = "http://www.roblox.com/asset/?id=616113536", walk = "http://www.roblox.com/asset/?id=616122287", run = "http://www.roblox.com/asset/?id=616117076", jump = "http://www.roblox.com/asset/?id=616115533", climb = "http://www.roblox.com/asset/?id=616104706", fall = "http://www.roblox.com/asset/?id=616108001"},
     {Name = "  🧟   Zombie Classic    ( 1 )",  idle1 = "http://www.roblox.com/asset/?id=616158929", idle2 = "http://www.roblox.com/asset/?id=616160636", walk = "http://www.roblox.com/asset/?id=616168032", run = "http://www.roblox.com/asset/?id=616163682", jump = "http://www.roblox.com/asset/?id=616161997", climb = "http://www.roblox.com/asset/?id=616156119", fall = "http://www.roblox.com/asset/?id=616157476"},
@@ -446,7 +446,7 @@ local SpeedPlus = Instance.new("TextButton")
 SpeedPlus.Size = UDim2.new(0.25, -10, 0, 40)
 SpeedPlus.Position = UDim2.new(0.55, 0, 0, 60)
 SpeedPlus.BackgroundColor3 = Color3.fromRGB(0, 100, 0)
-SpeedPlus.Text = "↑ Normal"
+SpeedPlus.Text = "↑  Normal"
 SpeedPlus.TextColor3 = Color3.new(1,1,1)
 SpeedPlus.Font = Enum.Font.Code
 SpeedPlus.Parent = CheatsContent
@@ -455,7 +455,7 @@ local SpeedMinus = Instance.new("TextButton")
 SpeedMinus.Size = UDim2.new(0.25, -10, 0, 40)
 SpeedMinus.Position = UDim2.new(0.75, 0, 0, 60)
 SpeedMinus.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
-SpeedMinus.Text = "↓ Normal"
+SpeedMinus.Text = "↓  Normal"
 SpeedMinus.TextColor3 = Color3.new(1,1,1)
 SpeedMinus.Font = Enum.Font.Code
 SpeedMinus.Parent = CheatsContent
