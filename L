@@ -1996,7 +1996,7 @@ local Button = avatarTab:Button({
     Icon = "drama",
     Locked = false,
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/M"))()
     end
 })
 
