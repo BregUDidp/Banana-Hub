@@ -58,6 +58,200 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
+local Section = CreditTab:CreateSection("")
+
+
+
+local Section = CreditTab:CreateSection("")
+
+local PlayerListParagraph = CreditTab:CreateParagraph({
+   Title = "รายชื่อผู้เล่นทั้งหมด",
+   Content = "กำลังโหลด..."
+})
+
+local Section = CreditTab:CreateSection("")
+
+-- local PlayerCountLabel = CreditTab:CreateLabel("จำนวนผู้เล่น: 0 คน") --
+
+local ResetTimes = {}
+local RecentlyLeft = {}
+
+local LocalPlayer = game.Players.LocalPlayer
+local LocalPlayerName = LocalPlayer.Name
+
+local function GetTimeAgo(timestamp)
+   local currentTime = tick()
+   local timeDiff = currentTime - timestamp
+   
+   if timeDiff < 60 then
+      return math.floor(timeDiff) .. " Seconds Ago"
+   elseif timeDiff < 3600 then
+      return math.floor(timeDiff / 60) .. " A Minute Ago"
+   elseif timeDiff < 86400 then
+      local hours = math.floor(timeDiff / 3600)
+      local minutes = math.floor((timeDiff % 3600) / 60)
+      return hours .. " Hour. " .. minutes .. " A Minute Ago"
+   else
+      return "It's Been A long Time"
+   end
+end
+
+local function PlayLeaveSound()
+   local sound = Instance.new("Sound")
+   sound.SoundId = "rbxassetid://6670771770"
+   sound.Volume = 0.8
+   sound.Parent = game:GetService("SoundService")
+   sound:Play()
+   game:GetService("Debris"):AddItem(sound, 3)
+end
+
+local function OnPlayerReset(player)
+   ResetTimes[player.Name] = tick()
+end
+
+local function ConnectResetEvents()
+   for _, player in ipairs(game.Players:GetPlayers()) do
+      player.CharacterAdded:Connect(function()
+         OnPlayerReset(player)
+      end)
+      
+      if player.Character then
+         ResetTimes[player.Name] = tick()
+      end
+   end
+end
+
+local function UpdatePlayerList()
+   local players = game.Players:GetPlayers()
+   local playerCount = #players
+   
+   local localPlayerData = nil
+   local otherPlayers = {}
+   
+   -- แยกข้อมูลของคุณกับคนอื่น
+   for _, player in ipairs(players) do
+      local displayName = player.DisplayName or "No Name Player Show"
+      local username = player.Name
+      
+      local status = "    💥  Resetting - dying"
+      local resetInfo = "    ⏳  Wait For The Character to Load."
+      
+      if player.Character and player.Character:FindFirstChild("Humanoid") then
+         status = "    ✅  Online"
+         if ResetTimes[username] then
+            resetInfo = "    💥  Reset " .. GetTimeAgo(ResetTimes[username])
+         else
+            resetInfo = "    ✅ No Can Reset"
+         end
+      end
+      
+      local entry = {
+         display = displayName,
+         name = username,
+         status = status,
+         resetInfo = resetInfo
+      }
+      
+      if username == LocalPlayerName then
+         localPlayerData = entry
+      else
+         table.insert(otherPlayers, entry)
+      end
+   end
+   
+   local lines = {}
+   
+   -- 1. ชื่อคุณอยู่บนสุดเสมอ
+   if localPlayerData then
+      table.insert(lines, string.format(
+         "  ★  1. %s ( @ %s )  ←-- YOU\n   %s   |  %s",
+         localPlayerData.display, localPlayerData.name,
+         localPlayerData.status, localPlayerData.resetInfo
+      ))
+   end
+   
+   -- 2. ผู้เล่นคนอื่น (เรียงตามลำดับปกติของ GetPlayers)
+   for i, data in ipairs(otherPlayers) do
+      table.insert(lines, string.format(
+         "  %d. %s ( @ %s )\n   %s   |  %s",
+         i + 1, data.display, data.name, data.status, data.resetInfo
+      ))
+   end
+   
+   -- 3. คนที่เพิ่งออกเกม
+   for name, data in pairs(RecentlyLeft) do
+      local timeStr = GetTimeAgo(data.time)
+      table.insert(lines, string.format(
+         "  🔴  %s ( @ %s ) Leave The Game  •  %s",
+         data.displayName or name, name, timeStr
+      ))
+   end
+   
+   PlayerListParagraph:Set({
+      Title = string.format("                                                                                     (  %d Player  |  Leave %d Player  )", playerCount, #RecentlyLeft),
+      Content = table.concat(lines, "\n\n")
+   })
+   
+   
+end
+
+game.Players.PlayerRemoving:Connect(function(player)
+   PlayLeaveSound()
+   
+   RecentlyLeft[player.Name] = {
+      time = tick(),
+      displayName = player.DisplayName
+   }
+   
+   Rayfield:Notify({
+      Title = "[ 🔴 ]  Person Leave The Map!",
+      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Sever",
+      Duration = 3.5,
+      Image = "accessibility",
+   })
+   
+   task.delay(6, function()
+      RecentlyLeft[player.Name] = nil
+      pcall(UpdatePlayerList)
+   end)
+   
+   pcall(UpdatePlayerList)
+end)
+
+-- เริ่มต้น
+ConnectResetEvents()
+UpdatePlayerList()
+
+spawn(function()
+   while true do
+      task.wait(1.8)
+      pcall(function()
+         ConnectResetEvents()
+         UpdatePlayerList()
+      end)
+   end
+end)
+
+game.Players.PlayerAdded:Connect(function(player)
+   player.CharacterAdded:Connect(function()
+      OnPlayerReset(player)
+   end)
+   task.wait(1)
+   UpdatePlayerList()
+end)
+
+spawn(function()
+   while true do
+      task.wait(2)
+      if ResetTimes[LocalPlayerName] then
+         MyResetLabel:Set("Time Reseting You: " .. GetTimeAgo(ResetTimes[LocalPlayerName]))
+      else
+         MyResetLabel:Set("Time Reseting You: You Cant Reset")
+      end
+   end
+end)
+
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
 local Section = PTab:CreateSection("")
