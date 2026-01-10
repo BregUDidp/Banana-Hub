@@ -710,6 +710,8 @@ end)
 
 local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
 
+local Section = PTab:CreateSection("")
+
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Section = BTab:CreateSection("")
 
@@ -999,6 +1001,8 @@ BTab:CreateToggle({
 })
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
+
+local Section = BTab:CreateSection("")
 
 --// === TELEPORT TAB ===
 local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
@@ -1589,6 +1593,8 @@ friendTab:CreateButton({
 
 local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
 
+local Section = friendTab:CreateSection("")
+
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Solution", "flask-conical")
 local Section = espTab:CreateSection("")
@@ -1961,6 +1967,10 @@ espTab:CreateSlider({
     end,
 })
 
+local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend And Killing Player", Content = "Hitbox Player / Friend And Killing Player Style"})
+
+local Section = espTab:CreateSection("")
+
 -- Variables
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -2127,4 +2137,6 @@ espTab:CreateToggle({
         ClearPlayerESP(player)
     end)
 
-local Paragraph = espTab:CreateParagraph({Title = "ESP / Hitbox Player / Friend Sword And See", Content = "ESP / Hitbox Player / Friend Sword Are Multi Damage And See"})
+local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend And Look", Content = "ESP Player / Friend Friend And Looking"})
+
+local Section = espTab:CreateSection("")
