@@ -229,15 +229,15 @@ local Toggle = PTab:CreateToggle({
                             Debris:AddItem(smokeAnchor, 3)
 
                             Rayfield:Notify({
-                                Title = "[ ✅ ]  Webing Block Attached!",
-                                Content = "[ ⛏️ ]  Found Block / Walling",
+                                Title = "[ ⛏️ ]  Found Block / Walling",
+                                Content = "[ ✅ ]  Webing Block Attached!",
                                 Duration = 1,
                                 Image = "brick-wall"
                             })
                         else      
                             Rayfield:Notify({
-                                Title = "[ ❌ ]  No Webing Block Point!",
-                                Content = "[ ⛏️ ]  No Found Block / Walling",
+                                Title = "[ ⛏️ ]  No Found Block / Walling",
+                                Content = "[ ❌ ]  No Webing Block Point!",
                                 Duration = 1,
                                 Image = "brick-wall"
                             })
@@ -318,7 +318,7 @@ PTab:CreateSlider({
 })
 
 PTab:CreateSlider({
-    Name = "[ ⛏️ ]  Swinging Gravity Force",
+    Name = "[ 📏 ]  Swinging Gravity Force",
     Range = {20, 5000},
     Increment = 5,
     Suffix = " Swing Gravity",
@@ -327,7 +327,7 @@ PTab:CreateSlider({
     Callback = function(Value)
         swingGravity = Value
         Rayfield:Notify({
-           Title = "[ ⛏️ ]  Swinging Gravity Force!",
+           Title = "[ 📏 ]  Swinging Gravity Force!",
            Content = "Swinging Gravity: " .. Value,
            Duration = 1,
            Image = "pickaxe",
@@ -372,8 +372,8 @@ local function toggleSpeed(on)
     superSpeed = on
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
     Rayfield:Notify({
-        Title = superSpeed and "🏃‍♂️ Speed Run [ ✅ ]" or "🚶‍♂️ Speed Run [ 🛑 ]",
-        Content = superSpeed and "Become Speed Flash!" or "Become Speed Normal!",
+        Title = superSpeed and "[ 🏃 ]  Become Speed Flash!" or "[ 🚶‍♂️ ]  Become Speed Normal!",
+        Content = superSpeed and "[ ✅ ] Speed Running ON" or "[ 🛑 ]  Speed Running OFF",
         Duration = 1,
         Image = "bike",
     })
@@ -442,8 +442,8 @@ local FlyToggle = PTab:CreateToggle({
     Callback = function(Value)
         flying = Value
         Rayfield:Notify({
-            Title = Value and   "[ 🪁 ]  Flying On" or "[ 🪁 ]  Flying Off",
-            Content = Value and "[ ✅ ]  Click Flying On" or "[ 🛑 ]  Click Flying Off",
+            Title = Value and   "[ 🪁 ]  Flying ON" or "[ 🪁 ]  Flying ON",
+            Content = Value and "[ ✅ ]  Click Flying ON" or "[ 🛑 ]  Click Flying OFF",
             Duration = 1,
             Image = "luggage"
         })
@@ -576,6 +576,12 @@ local Toggle = PTab:CreateToggle({
    Flag = "Toggle1",
    Callback = function(Value)
        ToggleSit(Value)
+       Rayfield:Notify({
+            Title = Value and   "[ 🪑 ]  Forced To Sitting ON" or "[ 🪑 ]  Forced To Sitting OFF",
+            Content = Value and "[ ✅ ]  Forced To Sitting ON" or "[ 🛑 ]  Forced To Sitting OFF",
+            Duration = 1,
+            Image = "rocking-chair"
+        })
    end,
 })
 
@@ -707,438 +713,150 @@ local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wa
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Section = BTab:CreateSection("")
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local Debris = game:GetService("Debris")
-local UserInputService = game:GetService("UserInputService")
+local Player = game.Players.LocalPlayer
+local Backpack = Player:WaitForChild("Backpack")
 
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
+-- ตัวแปรเก็บ Tool เพื่อจัดการเปิด/ปิด
+local TeleportCandy = nil
 
-local laserEnabled = false
-local shooting = false
-local leftEyeAtt, rightEyeAtt
-local leftBeam, rightBeam
-local targetAttLeft, targetAttRight
-local leftParticle, rightParticle
-local leftSmoke, rightSmoke
-local leftEyeGlow, rightEyeGlow
-local laserSound
+-- ฟังก์ชันสร้างเครื่องมือลูกอมเทเลพอร์ต
+local function CreateTeleportCandy()
+    if TeleportCandy then return end -- ป้องกันการสร้างซ้ำ
 
-local laserColor = Color3.fromRGB(138, 43, 179)
-local darkPurple = Color3.fromRGB(100, 20, 160)
-local brightPurple = Color3.fromRGB(180, 80, 255)
+    local tool = Instance.new("Tool")
+    tool.Name = " 🍭 "
+    tool.ToolTip = "[ 🍭 ] Teleport Tool"
+    tool.RequiresHandle = true
 
--- ตั้งค่า Recoil & Damage
-local headShake = 0.08          -- การสั่นของหัว (recoil)
-local damagePerTick = 0         -- ความเสียหายต่อครั้ง
-local damageInterval = 0.1      -- ทุก 0.1 วินาที
-local lastDamageTick = 0
+    -- Handle ลูกอม
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(2.2, 2.2, 2.2)
+    handle.Shape = Enum.PartType.Ball
+    handle.Material = Enum.Material.ForceField
+    handle.Color = Color3.fromRGB(138, 43, 179) -- ม่วงเข้มสวย
+    handle.Transparency = 0.15
+    handle.CanCollide = false
+    handle.Parent = tool
 
-local function createAttachments()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local head = character:WaitForChild("Head")
-    
-    leftEyeAtt = Instance.new("Attachment")
-    leftEyeAtt.Name = "LeftEyeAttachment"
-    leftEyeAtt.Position = Vector3.new(-0.3, 0.2, -0.5)
-    leftEyeAtt.Parent = head
-    
-    rightEyeAtt = Instance.new("Attachment")
-    rightEyeAtt.Name = "RightEyeAttachment"
-    rightEyeAtt.Position = Vector3.new(0.3, 0.2, -0.5)
-    rightEyeAtt.Parent = head
-    
-    targetAttLeft = Instance.new("Attachment")
-    targetAttLeft.Parent = workspace.Terrain
-    
-    targetAttRight = Instance.new("Attachment")
-    targetAttRight.Parent = workspace.Terrain
+    -- Sparkles ม่วง
+    local sparkles = Instance.new("Sparkles")
+    sparkles.SparkleColor = Color3.fromRGB(200, 100, 255)
+    sparkles.Enabled = false
+    sparkles.Parent = handle
 
-    -- เสียงเลเซอร์
-    laserSound = Instance.new("Sound")
-    laserSound.Name = "PurpleLaserSound"
-    laserSound.SoundId = "rbxassetid://138087185"
-    laserSound.Volume = 0.8
-    laserSound.Looped = true
-    laserSound.Parent = head
-    laserSound:Stop()
-end
+    -- ParticleEmitter ม่วงสวยงาม
+    local particles = Instance.new("ParticleEmitter")
+    particles.Texture = "rbxassetid://241650934" -- 241650934 --
+    particles.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
+    })
 
-local function createBeams()
-    leftBeam = Instance.new("Beam")
-    leftBeam.Attachment0 = leftEyeAtt
-    leftBeam.Attachment1 = targetAttLeft
-    leftBeam.Color = ColorSequence.new(laserColor)
-    leftBeam.Width0 = 2.0
-    leftBeam.Width1 = 2.0
-    leftBeam.Texture = "rbxassetid://6060542021"
-    leftBeam.TextureMode = Enum.TextureMode.Stretch
-    leftBeam.TextureSpeed = 3
-    leftBeam.LightEmission = 1
-    leftBeam.Brightness = 8
-    leftBeam.FaceCamera = true
-    leftBeam.Segments = 20
-    leftBeam.Enabled = false
-    leftBeam.Parent = workspace
-    
-    rightBeam = leftBeam:Clone()
-    rightBeam.Attachment0 = rightEyeAtt
-    rightBeam.Attachment1 = targetAttRight
-    rightBeam.Parent = workspace
-end
+    particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.2), NumberSequenceKeypoint.new(1,1)})
+    particles.Size = NumberSequence.new(0.5, 0)
+    particles.Lifetime = NumberRange.new(1.2, 2.8)
+    particles.Rate = 25
+    particles.Speed = NumberRange.new(3, 6)
+    particles.SpreadAngle = Vector2.new(60, 60)
+    particles.Parent = handle
 
-local function createParticles()
-    leftParticle = Instance.new("ParticleEmitter")
-    leftParticle.Parent = leftEyeAtt
-    leftParticle.Texture = "rbxasset://textures/particles/fire_main.dds"
-    leftParticle.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(0.5, laserColor), ColorSequenceKeypoint.new(1, brightPurple)})
-    leftParticle.LightEmission = 0.8
-    leftParticle.Brightness = 8
-    leftParticle.Size = NumberSequence.new({NumberSequenceKeypoint.new(0, 0.9), NumberSequenceKeypoint.new(0.5, 1.5), NumberSequenceKeypoint.new(1, 0)})
-    leftParticle.Transparency = NumberSequence.new(0.3, 1)
-    leftParticle.Lifetime = NumberRange.new(0.5, 0.9)
-    leftParticle.Rate = 90
-    leftParticle.Speed = NumberRange.new(15, 25)
-    leftParticle.Enabled = false
-    
-    rightParticle = leftParticle:Clone()
-    rightParticle.Parent = rightEyeAtt
+    -- แสงม่วงรอบตัว
+    local light = Instance.new("PointLight")
+    light.Color = Color3.fromRGB(180, 80, 255)
+    light.Brightness = 0
+    light.Range = 0
+    light.Parent = handle
 
-    leftSmoke = Instance.new("ParticleEmitter")
-    leftSmoke.Parent = leftEyeAtt
-    leftSmoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
-    leftSmoke.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(1, Color3.fromRGB(140, 60, 200))})
-    leftSmoke.LightEmission = 0.3
-    leftSmoke.Brightness = 3
-    leftSmoke.Size = NumberSequence.new(0.5, 1.3)
-    leftSmoke.Transparency = NumberSequence.new(0.6, 1)
-    leftSmoke.Lifetime = NumberRange.new(1.5, 2.8)
-    leftSmoke.Rate = 18
-    leftSmoke.Enabled = false
-    
-    rightSmoke = leftSmoke:Clone()
-    rightSmoke.Parent = rightEyeAtt
+    -- เสียงเทเลพอร์ต
+    local teleportSound = Instance.new("Sound")
+    teleportSound.SoundId = "rbxassetid://4861638982"
+    teleportSound.Volume = 0.8
+    teleportSound.Parent = handle
 
-    leftEyeGlow = Instance.new("ParticleEmitter")
-    leftEyeGlow.Parent = leftEyeAtt
-    leftEyeGlow.Texture = "rbxasset://textures/particles/fire_main.dds"
-    leftEyeGlow.Color = ColorSequence.new(laserColor)
-    leftEyeGlow.LightEmission = 0.9
-    leftEyeGlow.Brightness = 7
-    leftEyeGlow.Size = NumberSequence.new(0.4, 0.7)
-    leftEyeGlow.Transparency = NumberSequence.new(0.4, 0.8)
-    leftEyeGlow.Lifetime = NumberRange.new(0.3, 0.6)
-    leftEyeGlow.Rate = 35
-    leftEyeGlow.Speed = NumberRange.new(0, 3)
-    leftEyeGlow.Enabled = false
-    
-    rightEyeGlow = leftEyeGlow:Clone()
-    rightEyeGlow.Parent = rightEyeAtt
-end
-
-local function applyRecoil()
-    -- สั่นหัวเล็กน้อย (ไม่มีกล้อง)
-    if player.Character and player.Character:FindFirstChild("Head") then
-        local head = player.Character.Head
-        local shake = CFrame.new(
-            math.random(-headShake, headShake),
-            math.random(-headShake, headShake),
-            math.random(-headShake, headShake)
-        )
-        head.CFrame = head.CFrame * shake
-    end
-end
-
-local function createImpactEffects(position)
-    local att = Instance.new("Attachment")
-    att.WorldPosition = position
-    att.Parent = workspace.Terrain
-    
-    local fire = Instance.new("ParticleEmitter")
-    fire.Parent = att
-    fire.Texture = "rbxasset://textures/particles/fire_main.dds"
-    fire.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, darkPurple), ColorSequenceKeypoint.new(0.4, laserColor), ColorSequenceKeypoint.new(1, brightPurple)})
-    fire.LightEmission = 0.9
-    fire.Brightness = 10
-    fire.Size = NumberSequence.new(1.8, 0)
-    fire.Transparency = NumberSequence.new(0.2, 1)
-    fire.Lifetime = NumberRange.new(1.0, 1.8)
-    fire.Rate = 120
-    fire.Speed = NumberRange.new(8, 18)
-    fire.Acceleration = Vector3.new(0, 12, 0)
-    fire.Enabled = true
-    
-    local smoke = Instance.new("ParticleEmitter")
-    smoke.Parent = att
-    smoke.Texture = "rbxasset://textures/particles/smoke_main.dds"
-    smoke.Color = ColorSequence.new(darkPurple, Color3.fromRGB(140, 60, 200))
-    smoke.Size = NumberSequence.new(1.5, 3.0)
-    smoke.Transparency = NumberSequence.new(0.7, 1)
-    smoke.Lifetime = NumberRange.new(2.0, 4.0)
-    smoke.Rate = 50
-    smoke.Enabled = true
-    
-    Debris:AddItem(att, 3)
-end
-
-local function updateLaser()
-    if not laserEnabled or not shooting or not player.Character then return end
-    local head = player.Character:FindFirstChild("Head")
-    if not head then return end
-    
-    local originLeft = leftEyeAtt.WorldPosition
-    local originRight = rightEyeAtt.WorldPosition
-    local direction = (mouse.Hit.Position - head.Position).Unit * 500
-    
-    local rayParams = RaycastParams.new()
-    rayParams.FilterDescendantsInstances = {player.Character}
-    rayParams.FilterType = Enum.RaycastFilterType.Blacklist
-    
-    -- ตาซ้าย
-    local resultLeft = workspace:Raycast(originLeft, direction, rayParams)
-    if resultLeft then
-        targetAttLeft.WorldPosition = resultLeft.Position
-        createImpactEffects(resultLeft.Position)
-        
-        local humanoid = resultLeft.Instance:FindFirstAncestorOfClass("Model") and resultLeft.Instance:FindFirstAncestorOfClass("Model"):FindFirstChildOfClass("Humanoid")
-        if humanoid and humanoid.Parent ~= player.Character then
-            local now = tick()
-            if now - lastDamageTick >= damageInterval then
-                humanoid:TakeDamage(damagePerTick)
-                lastDamageTick = now
-            end
+    -- เสียงตอนถือ
+    tool.Equipped:Connect(function()
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.6
+        equipSound.Parent = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+        if equipSound.Parent then
+            equipSound:Play()
+            game.Debris:AddItem(equipSound, 3)
         end
-    else
-        targetAttLeft.WorldPosition = originLeft + direction
-    end
-    
-    -- ตาขวา
-    local resultRight = workspace:Raycast(originRight, direction, rayParams)
-    if resultRight then
-        targetAttRight.WorldPosition = resultRight.Position
-        createImpactEffects(resultRight.Position)
-        
-        local humanoid = resultRight.Instance:FindFirstAncestorOfClass("Model") and resultLeft.Instance:FindFirstAncestorOfClass("Model"):FindFirstChildOfClass("Humanoid")
-        if humanoid and humanoid.Parent ~= player.Character then
-            local now = tick()
-            if now - lastDamageTick >= damageInterval then
-                humanoid:TakeDamage(damagePerTick)
-                lastDamageTick = now
-            end
-        end
-    else
-        targetAttRight.WorldPosition = originRight + direction
-    end
-    
-    applyRecoil()
-end
 
--- คลิกซ้าย = ยิง
-UserInputService.InputBegan:Connect(function(input)
-    if laserEnabled and input.UserInputType == Enum.UserInputType.MouseButton1 then
-        shooting = true
-        leftBeam.Enabled = true
-        rightBeam.Enabled = true
-        leftParticle.Enabled = true
-        rightParticle.Enabled = true
-        leftSmoke.Enabled = true
-        rightSmoke.Enabled = true
-        leftEyeGlow.Enabled = true
-        rightEyeGlow.Enabled = true
-        if laserSound then laserSound:Play() end
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        shooting = false
-        leftBeam.Enabled = false
-        rightBeam.Enabled = false
-        leftParticle.Enabled = false
-        rightParticle.Enabled = false
-        leftSmoke.Enabled = false
-        rightSmoke.Enabled = false
-        leftEyeGlow.Enabled = false
-        rightEyeGlow.Enabled = false
-        if laserSound then laserSound:Stop() end
-    end
-end)
-
-RunService.RenderStepped:Connect(updateLaser)
-
-local function enableLaser()
-    if player.Character then
-        createAttachments()
-        createBeams()
-        createParticles()
-    end
-    
-    laserEnabled = true
-    
-    Rayfield:Notify({
-               Title = "[ 🎥 ]  Beamming Laser Player!",
-               Content = "[ ✅ ]  Beamming Laser On!",
-               Duration = 1,
-               Image = "telescope",
-             })
-end
-
-local function disableLaser()
-    laserEnabled = false
-    shooting = false
-    
-    if leftBeam then leftBeam:Destroy() end
-    if rightBeam then rightBeam:Destroy() end
-    if leftEyeAtt then leftEyeAtt:Destroy() end
-    if rightEyeAtt then rightEyeAtt:Destroy() end
-    if targetAttLeft then targetAttLeft:Destroy() end
-    if targetAttRight then targetAttRight:Destroy() end
-    if leftParticle then leftParticle:Destroy() end
-    if rightParticle then rightParticle:Destroy() end
-    if leftSmoke then leftSmoke:Destroy() end
-    if rightSmoke then rightSmoke:Destroy() end
-    if leftEyeGlow then leftEyeGlow:Destroy() end
-    if rightEyeGlow then rightEyeGlow:Destroy() end
-    if laserSound then laserSound:Stop(); laserSound:Destroy() end
-    
-    Rayfield:Notify({
-               Title = "[ 🎥 ]  Beamming Laser Player!",
-               Content = "[ 🛑 ]  Beamming Laser Off!",
-               Duration = 1,
-               Image = "telescope",
-             })
-end
-
-BTab:CreateButton({
-    Name = "[ 🎥 ]  Beamming Laser Eyes   [ - Beamming Eyes - ]",
-    Callback = function()
-        if laserEnabled then
-            disableLaser()
-        else
-            enableLaser()
-        end
-    end
-})
-
-player.CharacterAdded:Connect(function()
-    if laserEnabled then
-        disableLaser()
-        task.wait(1)
-        enableLaser()
-    end
-end)
-
-local Paragraph = BTab:CreateParagraph({Title = "Laser Beamming Eyes For Laging Player", Content = "Laser Beamming Eyes For Laging Player And Style"})
-
-local Section = BTab:CreateSection("")
-
-BTab:CreateButton({
-    Name = "[ 🍭 ]  Teleport Tool   [ - Sword - ]",
-    Callback = function()
-        -- ลูกอมสีม่วง Sparkles เทเลพอร์ต (แสงม่วงทั้งลูก + Effect)
-        local tool = Instance.new("Tool")
-        tool.Name = "🍭"
-        tool.ToolTip = "[ 🍭 ]  Teleport Tool"
-        tool.RequiresHandle = true
-
-        local player = game.Players.LocalPlayer
-
-        -- สร้าง Handle ลูกอมสีม่วง
-        local handle = Instance.new("Part")
-        handle.Name = "Handle"
-        handle.Size = Vector3.new(2.2, 2.2, 2.2)
-        handle.Shape = Enum.PartType.Ball
-        handle.Material = Enum.Material.ForceField
-        handle.BrickColor = BrickColor.new("Royal purple")  -- สีใกล้เคียงที่สุดใน BrickColor
-        handle.Color = Color3.fromRGB(138, 43, 179)        -- ตั้งค่าสีจริงให้ตรงตาม RGB
-        handle.Transparency = 0.15
-        handle.CanCollide = false
-        handle.Parent = tool
-
-        -- Sparkles สีม่วง
-        local sparkles = Instance.new("Sparkles")
-        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
         sparkles.Enabled = false
-        sparkles.Parent = handle
+        particles.Rate = 60
+        light.Brightness = 5
+    end)
 
-        -- ParticleEmitter สีม่วง
-        local particles = Instance.new("ParticleEmitter")
-        particles.Texture = "rbxassetid://241650934"
-        particles.Color = ColorSequence.new(
-            Color3.fromRGB(138, 43, 179),
-            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนลงนิดเพื่อความสวย
-        )
+    tool.Unequipped:Connect(function()
+        sparkles.Enabled = true
+        particles.Rate = 25
+        light.Brightness = 3
+    end)
 
-        particles.Size = NumberSequence.new(0.4)
-        particles.Lifetime = NumberRange.new(1.5, 2.5)
-        particles.Rate = 20
-        particles.SpreadAngle = Vector2.new(45, 45)
-        particles.Speed = NumberRange.new(2)
-        particles.Parent = handle
-
-        -- PointLight สีม่วง
-        local light = Instance.new("PointLight")
-        light.Color = Color3.fromRGB(138, 43, 179)
-        light.Brightness = 2
-        light.Range = 10
-        light.Parent = handle
-
-        -- เสียงเทเลพอร์ต
-        local teleportSound = Instance.new("Sound")
-        teleportSound.SoundId = "rbxassetid://4861638982"
-        teleportSound.Volume = 0.7
-        teleportSound.Parent = handle
-
-        -- เอฟเฟกต์ตอนถือ/ปล่อย
-        tool.Equipped:Connect(function()
-            sparkles.Enabled = false
-            particles.Rate = 50
-            light.Brightness = 0
-        end)
-
-        tool.Unequipped:Connect(function()
-            sparkles.Enabled = false
-            particles.Rate = 20
-            light.Brightness = 2
-        end)
-
-        -- ฟังก์ชันเทเลพอร์ต
-        tool.Activated:Connect(function()
-            teleportSound:Play()
-            local character = player.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                local mouse = player:GetMouse()
-                local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
-                character.HumanoidRootPart.CFrame = CFrame.new(pos)
-            end
-        end)
-
-        -- เสียงตอนถือเครื่องมือ (เพิ่มความเท่)
-        tool.Equipped:Connect(function()
-            local equipSound = Instance.new("Sound")
-            equipSound.SoundId = "rbxassetid://2865227271"
-            equipSound.Volume = 0.5
-            equipSound.Parent = player.Character:FindFirstChild("HumanoidRootPart")
-            if equipSound.Parent then
-                equipSound:Play()
-                equipSound.Ended:Connect(function()
-                    equipSound:Destroy()
+    -- ฟังก์ชันเทเลพอร์ตเมื่อคลิก
+    tool.Activated:Connect(function()
+        if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return end
+        
+        teleportSound:Play()
+        
+        local mouse = Player:GetMouse()
+        local targetPos = mouse.Hit.Position + Vector3.new(0, 3.5, 0) -- ยกสูงนิดหน่อยไม่ติดพื้น
+        
+        -- เอฟเฟกต์หายตัวเล็กน้อยก่อนเทเล
+        local char = Player.Character
+        for _, part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") and part ~= char.HumanoidRootPart then
+                part.Transparency = 0.4
+                task.delay(0.25, function()
+                    if part and part.Parent then
+                        part.Transparency = 0
+                    end
                 end)
             end
-        end)
+        end
+        
+        char.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+    end)
 
-        -- ใส่ลง Backpack
-        player:WaitForChild("Backpack")
-        tool.Parent = player.Backpack
+    -- เก็บตัวแปร
+    TeleportCandy = tool
+    tool.Parent = Backpack
+end
 
-        Rayfield:Notify({
-            Title = "[ 🍭 ]  Teleport Tool",
-            Content = "[ 🍭 ]  Finish You Got Teleport Tool  🏁",
+-- ฟังก์ชันลบเครื่องมือ
+local function RemoveTeleportCandy()
+    if TeleportCandy and TeleportCandy.Parent then
+        TeleportCandy:Destroy()
+        TeleportCandy = nil
+    end
+end
+
+BTab:CreateToggle({
+   Name = "[ 🍭 ]  Teleport Tools  [ - Toggle - ]",
+   CurrentValue = false,
+   Flag = "ToggleCandy",
+   Callback = function(Value)
+      if Value then
+         CreateTeleportCandy()
+         Rayfield:Notify({
+            Title = "[ 🍭 ]  Teleport Tools ON",
+            Content = "[ ✅ ]  Teleport Tools ON",
             Duration = 1,
             Image = "lollipop",
-        })
-    end
+         })
+      else
+         RemoveTeleportCandy()
+         Rayfield:Notify({
+            Title = "[ 🍭 ]  Teleport Tools OFF",
+            Content = "[ 🛑 ]  Teleport Tools OFF",
+            Duration = 1,
+            Image = "lollipop",
+         })
+      end
+   end,
 })
 
 local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
