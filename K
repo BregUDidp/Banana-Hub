@@ -6,8 +6,26 @@
 
 local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
 
+local function GetThaiDate()
+    local monthsThai = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    }
+    
+    local time = os.date("*t")
+    local day = time.day
+    local month = monthsThai[time.month]
+    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    
+    return day .. " " .. month .. " " .. year
+end
+
+local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
+
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(    |",
+   Name = "   |   Akari Hub   :(    |   ( " .. CurrentDate .. " )   |" ,
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  :(   ",
 
@@ -480,6 +498,88 @@ local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Runni
 local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
+
+local Section = PTab:CreateSection("")
+
+local SittingEnabled = false
+local SitConnection = nil
+local player = game.Players.LocalPlayer
+
+-- ฟังก์ชันบังคับนั่ง
+local function ForceSit()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    
+    if humanoid then
+        -- บังคับให้ Humanoid นั่ง (แม้ไม่มี Seat)
+        humanoid.Sit = true
+        
+        -- ป้องกันไม่ให้ลุกอัตโนมัติ
+        if humanoid.SeatPart then
+            humanoid.SeatPart = nil
+        end
+    end
+end
+
+-- ฟังก์ชันเปิด/ปิด การนั่งค้าง
+local function ToggleSit(enabled)
+    SittingEnabled = enabled
+    
+    if enabled then
+        ForceSit()
+        
+        -- อัปเดตทุกครั้งที่ตัวละครเกิดใหม่ หรือเปลี่ยนสถานะ
+        SitConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if SittingEnabled then
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid and humanoid.Sit == false then
+                        humanoid.Sit = true
+                    end
+                end
+            end
+        end)
+        
+        -- ถ้าตายแล้วเกิดใหม่ ให้นั่งต่ออัตโนมัติ
+        player.CharacterAdded:Connect(function()
+            if SittingEnabled then
+                task.wait(0.5) -- รอให้ตัวละครโหลดเสร็จ
+                ForceSit()
+            end
+        end)
+        
+        
+        
+    else
+        -- ปิดการนั่ง
+        if SitConnection then
+            SitConnection:Disconnect()
+            SitConnection = nil
+        end
+        
+        local character = player.Character
+        if character then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid.Sit = false
+            end
+        end
+        
+        
+    end
+end
+
+local Toggle = PTab:CreateToggle({
+   Name = "[ 🪑 ]  Forced To Sitting",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+       ToggleSit(Value)
+   end,
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Sitting For Playing Any Status Map", Content = "Sitting For Playing Any Status Mapping"})
 
 local Section = PTab:CreateSection("")
 
@@ -2110,169 +2210,155 @@ espTab:CreateSlider({
     end,
 })
 
-local ESPEnabled = false
-local Drawings = {}
-local Highlights = {}
-
-local RunService = game:GetService("RunService")
+-- Variables
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- สร้างหรืออัปเดต Drawing ESP สำหรับ player
-local function SetupDrawingESP(player)
-    if player == Players.LocalPlayer then return end
-    
-    -- ลบของเก่าถ้ามี
-    if Drawings[player] then
-        if Drawings[player].Box then Drawings[player].Box:Remove() end
-        if Drawings[player].Name then Drawings[player].Name:Remove() end
-    end
-    
-    local Box = Drawing.new("Square")
-    Box.Thickness = 2
-    Box.Filled = false
-    Box.Color = Color3.fromRGB(138, 43, 179)
-    Box.Visible = false
+local EspEnabled = false
+local ESPColor = Color3.fromRGB(138, 43, 179)  -- สีม่วงเดิม
 
-    local Name = Drawing.new("Text")
-    Name.Size = 16
-    Name.Center = true
-    Name.Outline = true
-    Name.Color = Color3.fromRGB(138, 43, 179)
-    Name.Visible = false
+-- Table สำหรับเก็บข้อมูล ESP ของแต่ละ player (รวมตัวเรา)
+local PlayerESP = {}  -- [player] = {Highlight = ..., NameGui = ..., HealthConn = ..., ToolConnAdded = ..., ToolConnRemoved = ...}
 
-    Drawings[player] = {Box = Box, Name = Name}
-end
-
--- สร้างหรืออัปเดต Highlight สำหรับ player
-local function SetupHighlight(player)
-    if player == Players.LocalPlayer then return end
-    
-    -- ลบของเก่าถ้ามี
-    if Highlights[player] then
-        if Highlights[player] and Highlights[player].Parent then
-            Highlights[player]:Destroy()
-        end
-    end
+-- ฟังก์ชันสร้าง/อัปเดต ESP สำหรับ player หนึ่งคน
+local function UpdatePlayerESP(player)
+    if not EspEnabled then return end
     
     local character = player.Character
-    if character then
-        local highlight = Instance.new("Highlight")
-        highlight.Parent = character
-        highlight.FillColor = Color3.fromRGB(138, 43, 179)
-        highlight.OutlineColor = Color3.fromRGB(138, 43, 179)
-        highlight.FillTransparency = 0.4
-        highlight.OutlineTransparency = 0
-        highlight.Enabled = ESPEnabled  -- เปิดทันทีถ้า ESP เปิดอยู่
+    if not character then return end
+    
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid then return end
+    
+    local head = character:FindFirstChild("Head")
+    if not head then return end
+    
+    local equippedTool = character:FindFirstChildOfClass("Tool")
+    local toolName = equippedTool and equippedTool.Name or " ❌ "
+    
+    local hp = math.floor(humanoid.Health)
+    local maxHp = math.floor(humanoid.MaxHealth)
+    
+    -- Highlight glow รอบตัว
+    local espData = PlayerESP[player]
+    if not espData then
+        espData = {}
+        PlayerESP[player] = espData
+    end
+    
+    if not espData.Highlight then
+        espData.Highlight = Instance.new("Highlight")
+        espData.Highlight.Adornee = character
+        espData.Highlight.FillColor = ESPColor
+        espData.Highlight.OutlineColor = ESPColor
+        espData.Highlight.FillTransparency = 0.5
+        espData.Highlight.OutlineTransparency = 0
+        espData.Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        espData.Highlight.Parent = character
+    end
+    
+    -- BillboardGui บนหัว (แสดงทั้ง DisplayName และ Name)
+    if not espData.NameGui then
+        espData.NameGui = Instance.new("BillboardGui")
+        espData.NameGui.Adornee = head
+        espData.NameGui.Size = UDim2.new(0, 250, 0, 120)  -- ขยายให้พอใส่ 4 บรรทัดสบายๆ
+        espData.NameGui.StudsOffset = Vector3.new(0, 3, 0)
+        espData.NameGui.AlwaysOnTop = true
+        espData.NameGui.Parent = head
         
-        Highlights[player] = highlight
+        local text = Instance.new("TextLabel")
+        text.Name = "InfoText"
+        text.BackgroundTransparency = 1
+        text.Size = UDim2.new(1, 0, 1, 0)
+        text.TextColor3 = ESPColor
+        text.TextStrokeTransparency = 0.3
+        text.TextStrokeColor3 = Color3.new(0, 0, 0)
+        text.Font = Enum.Font.GothamBold
+        text.TextSize = 18
+        text.TextYAlignment = Enum.TextYAlignment.Center
+        text.Parent = espData.NameGui
+    end
+    
+    if espData.NameGui:FindFirstChild("InfoText") then
+        espData.NameGui.InfoText.Text = 
+              player.DisplayName .. "\n" ..        -- ชื่อที่แสดงในเกม (ส่วนใหญ่เป็นชื่อเล่น)
+            "( " .. player.Name .. " )\n" ..          -- Username จริง (อยู่ในวงเล็บ)
+            "Items: " .. toolName .. "\n" ..
+            "( HP: " .. hp .. "/" .. maxHp .. " )"
     end
 end
 
--- อัปเดต Drawing ESP ทุกเฟรม
-local function UpdateESP()
-    if not ESPEnabled then return end
-    
-    for player, draws in pairs(Drawings) do
-        local character = player.Character
-        if character and character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") and character:FindFirstChild("Humanoid") then
-            local root = character.HumanoidRootPart
-            local head = character.Head
-            local humanoid = character.Humanoid
-            
-            if humanoid.Health <= 0 then
-                draws.Box.Visible = false
-                draws.Name.Visible = false
-                continue
-            end
-
-            local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(root.Position)
-            
-            if onScreen then
-
-                -- คำนวณขนาด Box (ปรับให้แม่นยำขึ้น)
-                local topPos = workspace.CurrentCamera:WorldToViewportPoint(head.Position + Vector3.new(0, 3, 0))
-                local bottomPos = workspace.CurrentCamera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0))
-                local sizeY = math.abs(topPos.Y - bottomPos.Y)
-                local sizeX = sizeY * 0.8
-
-                draws.Box.Size = Vector2.new(sizeX, sizeY)
-                draws.Box.Position = Vector2.new(screenPos.X - sizeX / 2, screenPos.Y - sizeY / 2)
-                draws.Box.Visible = true
-
-                -- ชื่อ + เลือด
-                draws.Name.Text = player.Name .. " [ " .. math.floor(humanoid.Health) .. " ]"
-                draws.Name.Position = Vector2.new(screenPos.X, screenPos.Y - sizeY / 2 - 20)
-                draws.Name.Visible = true
-            else
-                draws.Box.Visible = false
-                draws.Name.Visible = false
-            end
-        else
-            draws.Box.Visible = false
-            draws.Name.Visible = false
-        end
+-- ฟังก์ชันล้าง ESP ของ player
+local function ClearPlayerESP(player)
+    local espData = PlayerESP[player]
+    if espData then
+        if espData.Highlight then espData.Highlight:Destroy() end
+        if espData.NameGui then espData.NameGui:Destroy() end
+        if espData.HealthConn then espData.HealthConn:Disconnect() end
+        if espData.ToolConnAdded then espData.ToolConnAdded:Disconnect() end
+        if espData.ToolConnRemoved then espData.ToolConnRemoved:Disconnect() end
+        PlayerESP[player] = nil
     end
 end
 
--- ฟังก์ชันจัดการเมื่อ character โหลด
-local function OnCharacterAdded(player)
-    if player == Players.LocalPlayer then return end
+-- ฟังก์ชันตั้งค่า ESP เมื่อ character โหลด
+local function OnCharacterAdded(player, character)
+    if not EspEnabled then return end
     
-    -- รอให้ character โหลดส่วนสำคัญ
-    local character = player.Character or player.CharacterAdded:Wait()
-    character:WaitForChild("HumanoidRootPart")
-    character:WaitForChild("Head")
-    character:WaitForChild("Humanoid")
+    -- อัปเดตทันที
+    UpdatePlayerESP(player)
     
-    SetupDrawingESP(player)
-    SetupHighlight(player)
+    -- เชื่อมต่อ event สำหรับอัปเดต realtime
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        local espData = PlayerESP[player] or {}
+        espData.HealthConn = humanoid.HealthChanged:Connect(function() UpdatePlayerESP(player) end)
+        PlayerESP[player] = espData
+    end
+    
+    -- เช็คการเปลี่ยน Tool
+    local espData = PlayerESP[player] or {}
+    espData.ToolConnAdded = character.ChildAdded:Connect(function(child)
+        if child:IsA("Tool") then UpdatePlayerESP(player) end
+    end)
+    espData.ToolConnRemoved = character.ChildRemoved:Connect(function(child)
+        if child:IsA("Tool") then UpdatePlayerESP(player) end
+    end)
+    PlayerESP[player] = espData
 end
 
--- ฟังก์ชันเปิด ESP
+-- เปิด ESP ทั้งหมด (รวมตัวเรา)
 local function EnableESP()
-    -- สำหรับผู้เล่นที่มีอยู่แล้ว
     for _, player in pairs(Players:GetPlayers()) do
         if player.Character then
-            OnCharacterAdded(player)
+            OnCharacterAdded(player, player.Character)
         end
-        player.CharacterAdded:Connect(function()
-            OnCharacterAdded(player)
-        end)
+        player.CharacterAdded:Connect(function(char) OnCharacterAdded(player, char) end)
     end
     
-    -- ผู้เล่นใหม่เข้ามา
+    -- สำหรับ player ที่ join ใหม่
     Players.PlayerAdded:Connect(function(player)
-        player.CharacterAdded:Connect(function()
-            OnCharacterAdded(player)
-        end)
+        if EspEnabled then
+            player.CharacterAdded:Connect(function(char) OnCharacterAdded(player, char) end)
+            if player.Character then
+                OnCharacterAdded(player, player.Character)
+            end
+        end
     end)
 end
 
--- ฟังก์ชันปิด ESP
+-- ปิด ESP ทั้งหมด
 local function DisableESP()
-    -- ลบ Drawing ทั้งหมด
-    for player, draws in pairs(Drawings) do
-        if draws.Box then draws.Box:Remove() end
-        if draws.Name then draws.Name:Remove() end
+    for _, player in pairs(Players:GetPlayers()) do
+        ClearPlayerESP(player)
     end
-    Drawings = {}
-    
-    -- ปิดและลบ Highlight ทั้งหมด
-    for player, highlight in pairs(Highlights) do
-        if highlight and highlight.Parent then
-            highlight.Enabled = false
-            highlight:Destroy()
-        end
-    end
-    Highlights = {}
 end
 
 espTab:CreateToggle({
     Name = "[ 💡 ]  ESP Hitbox Player  [ 138, 43, 179 ]   [ All ]",
     CurrentValue = false,
     Callback = function(Value)
-        ESPEnabled = Value
-
+       EspEnabled = Value
         if Value then
             EnableESP()
         else
@@ -2282,7 +2368,12 @@ espTab:CreateToggle({
 })
 
 -- อัปเดตทุกเฟรม
-RunService.RenderStepped:Connect(UpdateESP)
+ -- รอตัวละครใหม่ในอนาคต (respawn)
+    player.CharacterAdded:Connect(onCharacterAdded)
+    
+    -- ล้างเมื่อตัวละครหาย (ตายชั่วคราว)
+    player.CharacterRemoving:Connect(function()
+        ClearPlayerESP(player)
+    end)
 
 local Paragraph = espTab:CreateParagraph({Title = "ESP / Hitbox Player / Friend Sword And See", Content = "ESP / Hitbox Player / Friend Sword Are Multi Damage And See"})
-
