@@ -725,7 +725,7 @@ local function CreateTeleportCandy()
 
     local tool = Instance.new("Tool")
     tool.Name = " 🍭 "
-    tool.ToolTip = "[ 🍭 ] Teleport Tool"
+    tool.ToolTip = "[ 🍭 ] Teleport Tools Warping"
     tool.RequiresHandle = true
 
     -- Handle ลูกอม
@@ -863,106 +863,139 @@ local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Frie
 
 local Section = BTab:CreateSection("")
 
-BTab:CreateButton({
-    Name = "[ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]",
-    Callback = function()
-        local player = game.Players.LocalPlayer
+local Player = game.Players.LocalPlayer
+local Backpack = Player:WaitForChild("Backpack")
 
-        -- สร้าง Tool
-        local tool = Instance.new("Tool")
-        tool.Name = "🚲"
-        tool.ToolTip = "[ 🚲 ]  Recoil Speed"
-        tool.RequiresHandle = true  -- ต้องมี Handle เพื่อให้เห็นลูกอม
+local NormalWalkSpeed = 17      -- ความเร็วปกติ
+local BoostWalkSpeed = 30       -- ความเร็วตอนถือ (ปรับได้ตามต้องการ)
 
-        -- ความเร็วเดินปกติ (ส่วนใหญ่คือ 18)
-        local NormalWalkSpeed = 17
+-- ตัวแปรเก็บ Tool
+local RecoilBike = nil
 
-        -- สร้าง Handle ลูกอมสีม่วง
-        local handle = Instance.new("Part")
-        handle.Name = "Handle"
-        handle.Size = Vector3.new(2.2, 2.2, 2.2)
-        handle.Shape = Enum.PartType.Ball
-        handle.Material = Enum.Material.ForceField
-        handle.Color = Color3.fromRGB(138, 43, 179)        -- สีม่วงตรงตาม RGB
-        handle.Transparency = 0.15
-        handle.CanCollide = false
-        handle.Parent = tool
+-- ฟังก์ชันสร้าง Tool จักรยานสีม่วง + Speed Boost
+local function CreateRecoilBike()
+    if RecoilBike then return end -- ไม่ให้สร้างซ้ำ
 
-        -- Sparkles สีม่วง
-        local sparkles = Instance.new("Sparkles")
-        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+    local tool = Instance.new("Tool")
+    tool.Name = "🚲"
+    tool.ToolTip = "[ 🚲 ]  Recoil Tools Speed Boost"
+    tool.RequiresHandle = true
+
+    -- Handle ลูกอม/ลูกบอลสีม่วง
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(2.2, 2.2, 2.2)
+    handle.Shape = Enum.PartType.Ball
+    handle.Material = Enum.Material.ForceField
+    handle.Color = Color3.fromRGB(138, 43, 179)
+    handle.Transparency = 0.15
+    handle.CanCollide = false
+    handle.Parent = tool
+
+    -- Sparkles สีม่วง
+    local sparkles = Instance.new("Sparkles")
+    sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
+    sparkles.Enabled = false
+    sparkles.Parent = handle
+
+    -- ParticleEmitter ม่วงสวยงาม
+    local particles = Instance.new("ParticleEmitter")
+    particles.Texture = "rbxassetid://241650934"
+    particles.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
+    })
+
+    particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.3), NumberSequenceKeypoint.new(1,1)})
+    particles.Size = NumberSequence.new(0.5, 0)
+    particles.Lifetime = NumberRange.new(1.2, 2.8)
+    particles.Rate = 0
+    particles.Speed = NumberRange.new(4, 8)
+    particles.SpreadAngle = Vector2.new(50, 50)
+    particles.Parent = handle
+
+    -- แสงม่วง
+    local light = Instance.new("PointLight")
+    light.Color = Color3.fromRGB(180, 80, 255)
+    light.Brightness = 0
+    light.Range = 0
+    light.Parent = handle
+
+    -- เสียงตอนถือ
+    tool.Equipped:Connect(function()
         sparkles.Enabled = false
-        sparkles.Parent = handle
+        particles.Rate = 60
+        light.Brightness = 5
 
-        -- ParticleEmitter สีม่วง
-        local particles = Instance.new("ParticleEmitter")
-        particles.Texture = "rbxassetid://241650934" -- 241650934 --
-        particles.Color = ColorSequence.new(
-            Color3.fromRGB(138, 43, 179),
-            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนเพื่อความสวย
-        )
-        
-        particles.Size = NumberSequence.new(0.4)
-        particles.Lifetime = NumberRange.new(1.5, 2.5)
-        particles.Rate = 20
-        particles.SpreadAngle = Vector2.new(45, 45)
-        particles.Speed = NumberRange.new(2)
-        particles.Parent = handle
+        -- เพิ่มความเร็ว
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = BoostWalkSpeed
+        end
 
-        -- PointLight สีม่วง
-        local light = Instance.new("PointLight")
-        light.Color = Color3.fromRGB(138, 43, 179)
-        light.Brightness = 2
-        light.Range = 10
-        light.Parent = handle
+        -- เสียงเท่ ๆ
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.6
+        equipSound.Parent = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+        if equipSound.Parent then
+            equipSound:Play()
+            game.Debris:AddItem(equipSound, 3)
+        end
+    end)
 
-        -- เอฟเฟกต์ตอนถือเครื่องมือ
-        tool.Equipped:Connect(function()
-            if sparkles then sparkles.Enabled = false end
-            particles.Rate = 50
-            light.Brightness = 0
+    tool.Unequipped:Connect(function()
+        sparkles.Enabled = true
+        particles.Rate = 30
+        light.Brightness = 3
 
-            -- เพิ่มความเร็วเดิน
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = 30
-            end
+        -- คืนความเร็วปกติ
+        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
+        end
+    end)
 
-            -- เสียงตอนถือ
-            local equipSound = Instance.new("Sound")
-            equipSound.SoundId = "rbxassetid://2865227271" -- 2865227271 --
-            equipSound.Volume = 0.5
-            equipSound.Parent = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            if equipSound.Parent then
-                equipSound:Play()
-                equipSound.Ended:Connect(function()
-                    equipSound:Destroy()
-                end)
-            end
-        end)
+    -- เก็บไว้ในตัวแปร
+    RecoilBike = tool
+    tool.Parent = Backpack
+end
 
-        tool.Unequipped:Connect(function()
-            if sparkles then sparkles.Enabled = false end
-            particles.Rate = 20
-            light.Brightness = 2
+-- ฟังก์ชันลบ Tool
+local function RemoveRecoilBike()
+    if RecoilBike and RecoilBike.Parent then
+        RecoilBike:Destroy()
+        RecoilBike = nil
+    end
+end
 
-            -- กลับความเร็วปกติ
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
-            end
-        end)
+-- [ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]
 
-        -- ใส่ Tool เข้า Backpack
-        player:WaitForChild("Backpack")
-        tool.Parent = player.Backpack
-
-        -- แจ้งเตือน
-        Rayfield:Notify({
-            Title = "[ 🚲 ]  Recoil Tool",
-            Content = "[ 🚲 ]  Finish You Got Recoil Tool  🏁",
+BTab:CreateToggle({
+   Name = "[ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]",
+   CurrentValue = false,
+   Flag = "ToggleBike",
+   Callback = function(Value)
+      if Value then
+         CreateRecoilBike()
+         Rayfield:Notify({
+            Title = "[ 🚲 ]  Recoil Tools Running ON",
+            Content = "[ ✅ ]  Recoil Tools Running ON",
             Duration = 1,
             Image = "bike",
-        })
-    end
+         })
+      else
+         RemoveRecoilBike()
+         -- คืนความเร็วปกติทันที (ป้องกันค้าง)
+         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+            Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
+         end
+         Rayfield:Notify({
+            Title = "[ 🚲 ]  Recoil Tools Running OFF",
+            Content = "[ 🛑 ]  Recoil Tools Running OFF",
+            Duration = 1,
+            Image = "bike",
+         })
+      end
+   end,
 })
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
