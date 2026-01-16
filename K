@@ -83,7 +83,7 @@ local Button = CreditTab:CreateButton({
          if success then
             -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
             AnimationStatusLabel:Set(
-               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish !</b></font>'
+               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish</b></font>'
             )
 
             Rayfield:Notify({
@@ -2098,7 +2098,7 @@ if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
 
 -- Toggle ใน UI (เปลี่ยนชื่อให้เข้ากับธีมม่วง)
 espTab:CreateToggle({
-    Name = "[ 🟪 ]  Purple Glowing Tool  [ - Permanent Purple - ]",
+    Name = "[ 🟪 ]  Purple Glowing Tool   [ - Permanent Purple - ]",
     CurrentValue = false,
     Callback = function(v) 
         TogglePurpleTool(v) 
@@ -2203,7 +2203,7 @@ LocalPlayer.CharacterAdded:Connect(SetupGun)
 if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
 
 espTab:CreateToggle({
-    Name = "[ 🌈 ]  Rainbow Mountain Tool  [ - Permanent Rainbow - ]",
+    Name = "[ 🌈 ]  Rainbow Mountain Tool   [ - Permanent Rainbow - ]",
     CurrentValue = false,
     Callback = function(v) ToggleRainbowGun(v) end
 })
@@ -2238,7 +2238,7 @@ local HeadSize = 20
 local connections = {}
 
 espTab:CreateToggle({
-    Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]   [ - All - ]",
+    Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]    [ - All - ]",
     CurrentValue = false,
     Flag = "HitboxExpander",
     Callback = function(Value)
@@ -2451,7 +2451,7 @@ local function DisableESP()
 end
 
 espTab:CreateToggle({
-    Name = "[ 💡 ]  ESP Character Player  [ - 138, 43, 179 - ]   [ - All - ]",
+    Name = "[ 💡 ]  ESP Character Player   [ - 138, 43, 179 - ]    [ - All - ]",
     CurrentValue = false,
     Callback = function(Value)
        EspEnabled = Value
