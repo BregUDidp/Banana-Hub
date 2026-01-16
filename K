@@ -27,7 +27,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   :(    |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  :(   ",
+   LoadingTitle = "   Akari Hub  All Map   ",
 
    LoadingSubtitle = "",
    
@@ -61,10 +61,107 @@ local Window = Rayfield:CreateWindow({
 local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
 local Section = CreditTab:CreateSection("")
 
+-- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
+local AnimationStatusLabel = CreditTab:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
 local Button = CreditTab:CreateButton({
    Name = "                                                                      💃",
    Callback = function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
+      )
+
+      
+
+      -- รันโหลดแบบไม่ให้ UI ค้าง
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish !</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title = "Animation Hub",
+               Content = "[ ✅ ]  Animations Hub Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Cancel !</b></font>'
+            )
+
+            
+         end
+
+         -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
+})
+
+local Section = CreditTab:CreateSection("")
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = CreditTab:CreateLabel(
+   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+)
+
+CreditTab:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
+      end)
    end,
 })
 
