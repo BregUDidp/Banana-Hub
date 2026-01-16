@@ -2451,7 +2451,7 @@ local function DisableESP()
 end
 
 espTab:CreateToggle({
-    Name = "[ 💡 ]  ESP Hitbox Player  [ - 138, 43, 179 - ]   [ - All - ]",
+    Name = "[ 💡 ]  ESP Character Player  [ - 138, 43, 179 - ]   [ - All - ]",
     CurrentValue = false,
     Callback = function(Value)
        EspEnabled = Value
