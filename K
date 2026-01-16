@@ -1015,7 +1015,7 @@ local TeleportCandy = nil
 
 -- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle)
 local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(255, 215, 0)"><b>Status:  OFF Teleport Tools</b></font>'
+   '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Teleport Warping Tools</b></font>'
 )
 
 -- ฟังก์ชันสร้างเครื่องมือลูกอมเทเลพอร์ต
@@ -1140,7 +1140,7 @@ BTab:CreateToggle({
          
          -- แสดง Label สีเขียวว่าโหลดเสร็จแล้ว
          StatusLabel:Set(
-            '<font color="rgb(0, 255, 100)"><b>ON :  -  Teleport Tools</b></font>'
+            '<font color="rgb(0, 255, 100)"><b>ON :  -  Teleport Warping Tools</b></font>'
          )
          
          Rayfield:Notify({
@@ -1154,7 +1154,7 @@ BTab:CreateToggle({
          
          -- แสดง Label สีแดง/เหลืองว่าปิดแล้ว
          StatusLabel:Set(
-            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Teleport Tools</b></font>'
+            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Teleport Warping Tools</b></font>'
          )
          
          Rayfield:Notify({
@@ -1167,7 +1167,7 @@ BTab:CreateToggle({
          -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ (optional)
          task.delay(5, function()
             StatusLabel:Set(
-               '<font color="rgb(255, 215, 0)"><b>Status:  OFF Teleport Tools</b></font>'
+               '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Teleport Warping Tools</b></font>'
             )
          end)
       end
@@ -1189,7 +1189,7 @@ local RecoilBike = nil
 
 -- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle เพื่อให้อยู่ถาวรใน Tab)
 local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(255, 215, 0)"><b>Status:  OFF Recoil Speed Tools</b></font>'
+   '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Recoil Speed Tools</b></font>'
 )
 
 -- ฟังก์ชันสร้าง Tool จักรยานสีม่วง + Speed Boost
@@ -1328,7 +1328,7 @@ BTab:CreateToggle({
          -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ
          task.delay(5, function()
             StatusLabel:Set(
-               '<font color="rgb(255, 215, 0)"><b>Status:  OFF Recoil Speed Tools</b></font>'
+               '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Recoil Speed Tools</b></font>'
             )
          end)
       end
