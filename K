@@ -4,7 +4,7 @@
 
 -- ( [ (138, 43, 179) ] )
 
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua"))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local function GetThaiDate()
     local monthsThai = {
@@ -25,7 +25,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(    |   ( " .. CurrentDate .. " )   |" ,
+   Name = "   |   Akari Hub   :(    |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  :(   ",
 
@@ -61,7 +61,12 @@ local Window = Rayfield:CreateWindow({
 local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
 local Section = CreditTab:CreateSection("")
 
-
+local Button = CreditTab:CreateButton({
+   Name = "                                                                      💃",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+   end,
+})
 
 local Section = CreditTab:CreateSection("")
 
@@ -71,8 +76,6 @@ local PlayerListParagraph = CreditTab:CreateParagraph({
 })
 
 local Section = CreditTab:CreateSection("")
-
--- local PlayerCountLabel = CreditTab:CreateLabel("จำนวนผู้เล่น: 0 คน") --
 
 local ResetTimes = {}
 local RecentlyLeft = {}
