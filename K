@@ -1015,13 +1015,18 @@ local Backpack = Player:WaitForChild("Backpack")
 -- ตัวแปรเก็บ Tool เพื่อจัดการเปิด/ปิด
 local TeleportCandy = nil
 
+-- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle)
+local StatusLabel = BTab:CreateLabel(
+   '<font color="rgb(255, 215, 0)"><b>Status:  OFF Teleport Tools</b></font>'
+)
+
 -- ฟังก์ชันสร้างเครื่องมือลูกอมเทเลพอร์ต
 local function CreateTeleportCandy()
     if TeleportCandy then return end -- ป้องกันการสร้างซ้ำ
 
     local tool = Instance.new("Tool")
     tool.Name = " 🍭 "
-    tool.ToolTip = "[ 🍭 ] Teleport Tools Warping"
+    tool.ToolTip = "[ 🍭 ]  Teleport Tools Warping"
     tool.RequiresHandle = true
 
     -- Handle ลูกอม
@@ -1030,7 +1035,7 @@ local function CreateTeleportCandy()
     handle.Size = Vector3.new(2.2, 2.2, 2.2)
     handle.Shape = Enum.PartType.Ball
     handle.Material = Enum.Material.ForceField
-    handle.Color = Color3.fromRGB(138, 43, 179) -- ม่วงเข้มสวย
+    handle.Color = Color3.fromRGB(138, 43, 179)
     handle.Transparency = 0.15
     handle.CanCollide = false
     handle.Parent = tool
@@ -1043,12 +1048,11 @@ local function CreateTeleportCandy()
 
     -- ParticleEmitter ม่วงสวยงาม
     local particles = Instance.new("ParticleEmitter")
-    particles.Texture = "rbxassetid://241650934" -- 241650934 --
+    particles.Texture = "rbxassetid://241650934"
     particles.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
     })
-
     particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.2), NumberSequenceKeypoint.new(1,1)})
     particles.Size = NumberSequence.new(0.5, 0)
     particles.Lifetime = NumberRange.new(1.2, 2.8)
@@ -1099,9 +1103,8 @@ local function CreateTeleportCandy()
         teleportSound:Play()
         
         local mouse = Player:GetMouse()
-        local targetPos = mouse.Hit.Position + Vector3.new(0, 3.5, 0) -- ยกสูงนิดหน่อยไม่ติดพื้น
+        local targetPos = mouse.Hit.Position + Vector3.new(0, 3.5, 0)
         
-        -- เอฟเฟกต์หายตัวเล็กน้อยก่อนเทเล
         local char = Player.Character
         for _, part in pairs(char:GetDescendants()) do
             if part:IsA("BasePart") and part ~= char.HumanoidRootPart then
@@ -1117,7 +1120,6 @@ local function CreateTeleportCandy()
         char.HumanoidRootPart.CFrame = CFrame.new(targetPos)
     end)
 
-    -- เก็บตัวแปร
     TeleportCandy = tool
     tool.Parent = Backpack
 end
@@ -1137,6 +1139,12 @@ BTab:CreateToggle({
    Callback = function(Value)
       if Value then
          CreateTeleportCandy()
+         
+         -- แสดง Label สีเขียวว่าโหลดเสร็จแล้ว
+         StatusLabel:Set(
+            '<font color="rgb(0, 255, 100)"><b>ON :  -  Teleport Tools</b></font>'
+         )
+         
          Rayfield:Notify({
             Title = "[ 🍭 ]  Teleport Tools ON",
             Content = "[ ✅ ]  Teleport Tools ON",
@@ -1145,12 +1153,25 @@ BTab:CreateToggle({
          })
       else
          RemoveTeleportCandy()
+         
+         -- แสดง Label สีแดง/เหลืองว่าปิดแล้ว
+         StatusLabel:Set(
+            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Teleport Tools</b></font>'
+         )
+         
          Rayfield:Notify({
             Title = "[ 🍭 ]  Teleport Tools OFF",
             Content = "[ 🛑 ]  Teleport Tools OFF",
             Duration = 1,
             Image = "lollipop",
          })
+         
+         -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(5, function()
+            StatusLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Status:  OFF Teleport Tools</b></font>'
+            )
+         end)
       end
    end,
 })
@@ -1167,6 +1188,11 @@ local BoostWalkSpeed = 30       -- ความเร็วตอนถือ (�
 
 -- ตัวแปรเก็บ Tool
 local RecoilBike = nil
+
+-- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle เพื่อให้อยู่ถาวรใน Tab)
+local StatusLabel = BTab:CreateLabel(
+   '<font color="rgb(255, 215, 0)"><b>Status:  OFF Recoil Speed Tools</b></font>'
+)
 
 -- ฟังก์ชันสร้าง Tool จักรยานสีม่วง + Speed Boost
 local function CreateRecoilBike()
@@ -1201,7 +1227,6 @@ local function CreateRecoilBike()
         ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
     })
-
     particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.3), NumberSequenceKeypoint.new(1,1)})
     particles.Size = NumberSequence.new(0.5, 0)
     particles.Lifetime = NumberRange.new(1.2, 2.8)
@@ -1263,8 +1288,6 @@ local function RemoveRecoilBike()
     end
 end
 
--- [ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]
-
 BTab:CreateToggle({
    Name = "[ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]",
    CurrentValue = false,
@@ -1272,6 +1295,12 @@ BTab:CreateToggle({
    Callback = function(Value)
       if Value then
          CreateRecoilBike()
+         
+         -- แสดง Label สีเขียวว่าโหลดเสร็จแล้ว
+         StatusLabel:Set(
+            '<font color="rgb(0, 255, 100)"><b>ON :  -  Recoil Speed Tools</b></font>'
+         )
+         
          Rayfield:Notify({
             Title = "[ 🚲 ]  Recoil Tools Running ON",
             Content = "[ ✅ ]  Recoil Tools Running ON",
@@ -1280,16 +1309,30 @@ BTab:CreateToggle({
          })
       else
          RemoveRecoilBike()
+         
          -- คืนความเร็วปกติทันที (ป้องกันค้าง)
          if Player.Character and Player.Character:FindFirstChild("Humanoid") then
             Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
          end
+         
+         -- แสดง Label สีแดงว่าปิดแล้ว
+         StatusLabel:Set(
+            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Recoil Speed Tools</b></font>'
+         )
+         
          Rayfield:Notify({
             Title = "[ 🚲 ]  Recoil Tools Running OFF",
             Content = "[ 🛑 ]  Recoil Tools Running OFF",
             Duration = 1,
             Image = "bike",
          })
+         
+         -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ
+         task.delay(5, function()
+            StatusLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Status:  OFF Recoil Speed Tools</b></font>'
+            )
+         end)
       end
    end,
 })
@@ -2197,7 +2240,7 @@ local HeadSize = 20
 local connections = {}
 
 espTab:CreateToggle({
-    Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]   [ All ]",
+    Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]   [ - All - ]",
     CurrentValue = false,
     Flag = "HitboxExpander",
     Callback = function(Value)
@@ -2250,7 +2293,7 @@ espTab:CreateToggle({
 })
 
 espTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Hitbox Size   [ All ]",
+    Name = "[ 📏 ]  Slider Hitbox Size   [ - All - ]",
     Range = {20, 5000},
     Increment = 1,
     Suffix = " Hitbox Boxing Size",
@@ -2410,7 +2453,7 @@ local function DisableESP()
 end
 
 espTab:CreateToggle({
-    Name = "[ 💡 ]  ESP Hitbox Player  [ 138, 43, 179 ]   [ All ]",
+    Name = "[ 💡 ]  ESP Hitbox Player  [ - 138, 43, 179 - ]   [ - All - ]",
     CurrentValue = false,
     Callback = function(Value)
        EspEnabled = Value
