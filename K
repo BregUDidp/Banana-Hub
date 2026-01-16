@@ -1,5 +1,3 @@
--- ( [ Icon Cat 111948200153431 ] ) --
-
 -- ( [ https://sirius.menu/rayfield ] ) --
 
 -- ( [ (138, 43, 179) ] )
@@ -1133,7 +1131,7 @@ local function RemoveTeleportCandy()
 end
 
 BTab:CreateToggle({
-   Name = "[ 🍭 ]  Teleport Tools  [ - Toggle - ]",
+   Name = "[ 🍭 ]  Teleport Tools   [  -  Toggle  -  ]",
    CurrentValue = false,
    Flag = "ToggleCandy",
    Callback = function(Value)
@@ -1289,7 +1287,7 @@ local function RemoveRecoilBike()
 end
 
 BTab:CreateToggle({
-   Name = "[ 🚲 ]  Recoil Tool  [ - 30 - ]   [ - Recoil - ]",
+   Name = "[ 🚲 ]  Recoil Tool   [  -  Speed  30  -  ]",
    CurrentValue = false,
    Flag = "ToggleBike",
    Callback = function(Value)
