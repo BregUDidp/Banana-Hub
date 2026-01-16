@@ -166,8 +166,8 @@ CreditTab:CreateButton({
 local Section = CreditTab:CreateSection("")
 
 local PlayerListParagraph = CreditTab:CreateParagraph({
-   Title = "รายชื่อผู้เล่นทั้งหมด",
-   Content = "กำลังโหลด..."
+   Title = "List Player name",
+   Content = "Loading..."
 })
 
 local Section = CreditTab:CreateSection("")
