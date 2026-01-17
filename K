@@ -61,7 +61,7 @@ local Section = CreditTab:CreateSection("")
 
 -- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
 local AnimationStatusLabel = CreditTab:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 local Button = CreditTab:CreateButton({
@@ -95,7 +95,7 @@ local Button = CreditTab:CreateButton({
          else
             -- ล้มเหลว → แสดงสีแดง
             AnimationStatusLabel:Set(
-               '<font color="rgb(255, 70, 70)"><b>Loading Cancel !</b></font>'
+               '<font color="rgb(255, 70, 70)"><b>Loading Animation Hub Cancel</b></font>'
             )
 
             
@@ -104,7 +104,7 @@ local Button = CreditTab:CreateButton({
          -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
          task.delay(6, function()
             AnimationStatusLabel:Set(
-               '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
             )
          end)
       end)
@@ -115,7 +115,7 @@ local Section = CreditTab:CreateSection("")
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = CreditTab:CreateLabel(
-   '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 CreditTab:CreateButton({
@@ -1015,7 +1015,7 @@ local TeleportCandy = nil
 
 -- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle)
 local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Teleport Warping Tools</b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 -- ฟังก์ชันสร้างเครื่องมือลูกอมเทเลพอร์ต
@@ -1167,7 +1167,7 @@ BTab:CreateToggle({
          -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ (optional)
          task.delay(5, function()
             StatusLabel:Set(
-               '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Teleport Warping Tools</b></font>'
+               '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
             )
          end)
       end
@@ -1189,7 +1189,7 @@ local RecoilBike = nil
 
 -- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle เพื่อให้อยู่ถาวรใน Tab)
 local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Recoil Speed Tools</b></font>'
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
 
 -- ฟังก์ชันสร้าง Tool จักรยานสีม่วง + Speed Boost
@@ -1328,7 +1328,7 @@ BTab:CreateToggle({
          -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ
          task.delay(5, function()
             StatusLabel:Set(
-               '<font color="rgb(255, 215, 0)"><b>Status:  OFF  Recoil Speed Tools</b></font>'
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
             )
          end)
       end
