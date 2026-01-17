@@ -1167,7 +1167,7 @@ BTab:CreateToggle({
          -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ (optional)
          task.delay(5, function()
             StatusLabel:Set(
-               '<font color="rgb(0, 255, 100)"><b> --- </b></font>'
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
             )
          end)
       end
