@@ -1,0 +1,72 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local function GetThaiDate()
+    local monthsThai = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    }
+    
+    local time = os.date("*t")
+    local day = time.day
+    local month = monthsThai[time.month]
+    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    
+    return day .. " " .. month .. " " .. year
+end
+
+local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
+
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
+local Window = Rayfield:CreateWindow({
+   Name = "   |   Akari Hub   :(    |   (  " .. CurrentDate .. "  )   |" ,
+   Icon = "webhook",
+   LoadingTitle = "   Akari Hub  All Map   ",
+
+   LoadingSubtitle = "",
+   
+   ShowText = " 🌑 ",
+   Theme = "Default",
+   ToggleUIKeybind = "G",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "akari"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🌑"}
+   }
+})
+
+local LoaderTab = Window:CreateTab("||   - Loader Script", "circle-ellipsis")
+local Section = LoaderTab:CreateSection("")
+
+local Button = LoaderTab:CreateButton({
+   Name = "( - 💥 - )    Click Loader Scrip Akari Hub    ( -  1, 2, 3  - )",
+   Callback = function()
+       local Section = LoaderTab:CreateSection("")
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari UNC Test Executer - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari   |   UNC Test Executer ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/UNC"))() end})
+       local Section = LoaderTab:CreateSection("")
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari All Map - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari   |   All Map ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       local Section = LoaderTab:CreateSection("")
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari Executer Script - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari   |   Executer Script ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Executer"))() end})
+       local Section = LoaderTab:CreateSection("")
+   end,
+})
