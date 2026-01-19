@@ -11,10 +11,28 @@ local Camera = workspace.CurrentCamera
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+local function GetThaiDate()
+    local monthsThai = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    }
+    
+    local time = os.date("*t")
+    local day = time.day
+    local month = monthsThai[time.month]
+    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    
+    return day .. " " .. month .. " " .. year
+end
+
+local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
+
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(   |",
+   Name = "   |   Akari Hub   |   Aimbot   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  :(   ",
+   LoadingTitle = "   Akari Hub  All Map   ",
 
    LoadingSubtitle = "",
    
@@ -26,7 +44,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
-      FileName = "Big Hub"
+      FileName = "akari"
    },
    Discord = {
       Enabled = false,
@@ -656,6 +674,81 @@ AimbotTab:CreateToggle({
 })
 
 local Paragraph = AimbotTab:CreateParagraph({Title = "ESP Player / Friend Tracer Is Automatic", Content = "ESP Player / Friend Tracer Is Automatic Style"})
+
+AimbotTab:CreateSection("")
+
+local HitboxEnabled = false
+local HeadSize = 20
+local connections = {}
+
+AimbotTab:CreateToggle({
+    Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]    [ - All - ]",
+    CurrentValue = false,
+    Flag = "HitboxExpander",
+    Callback = function(Value)
+        HitboxEnabled = Value
+        
+        if Value then
+            connections["Hitbox"] = game:GetService('RunService').RenderStepped:Connect(function()
+                if not HitboxEnabled then return end
+                
+                for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+                    if v.Name ~= game.Players.LocalPlayer.Name and v.Character then
+                        pcall(function()
+                            local hrp = v.Character:FindFirstChild("HumanoidRootPart")
+                            if hrp then
+                                hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
+                                hrp.Transparency = 0.7
+
+                                -- เปลี่ยนเป็นสีเขียว RGB(138, 43, 179)
+                                hrp.Color = Color3.fromRGB(138, 43, 179)
+                                hrp.Material = "Neon"
+                                hrp.CanCollide = false
+                            end
+                        end)
+                    end
+                end
+            end)
+            
+            
+        else
+            if connections["Hitbox"] then
+                connections["Hitbox"]:Disconnect()
+            end
+            
+            -- Reset hitbox ของทุกคนกลับค่าเดิม
+            for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+                if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                    pcall(function()
+                        local hrp = v.Character.HumanoidRootPart
+                        hrp.Size = Vector3.new(2, 2, 1)
+                        hrp.Transparency = 1
+                        hrp.Material = "Plastic"
+                        hrp.CanCollide = false
+                    end)
+                end
+            end
+            
+           
+        end
+    end,
+})
+
+AimbotTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Hitbox Size   [ - All - ]",
+    Range = {20, 5000},
+    Increment = 1,
+    Suffix = " Hitbox Boxing Size",
+    CurrentValue = 20,
+    Flag = "HeadSize",
+    Callback = function(Value)
+        HeadSize = Value
+    end,
+})
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "Hitbox Player / Friend And Killing Player", Content = "Hitbox Player / Friend And Killing Player Style"})
+
+AimbotTab:CreateSection("")
 
 --// Rainbow Gun Tab
 RainbowTab:CreateSection("")
