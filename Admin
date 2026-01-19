@@ -227,7 +227,7 @@ local CustomTheme = {
 }
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("   |   Akari Hub   |   All Map   |", CustomTheme)
+local Window = Library.CreateLib("   |   Akari Hub   |   Admin   |", CustomTheme)
 
 local Tab = Window:NewTab("|| -  Tab Rejoin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
