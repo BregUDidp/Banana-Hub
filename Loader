@@ -19,9 +19,9 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(    |   (  " .. CurrentDate .. "  )   |" ,
+   Name = "   |   Akari Hub   |   Loader   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  All Map   ",
+   LoadingTitle = "   Akari Hub  Loader Script   ",
 
    LoadingSubtitle = "",
    
@@ -64,6 +64,9 @@ local Button = LoaderTab:CreateButton({
        local Section = LoaderTab:CreateSection("")
        local Section = LoaderTab:CreateSection("{ ( - Script Akari All Map - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari   |   All Map ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       local Section = LoaderTab:CreateSection("")
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari Aimbot Player - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari   |   Aimbot Player ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
        local Section = LoaderTab:CreateSection("")
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Executer Script - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari   |   Executer Script ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Executer"))() end})
