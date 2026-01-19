@@ -56,7 +56,7 @@ local LoaderTab = Window:CreateTab("||   - Loader Script", "circle-ellipsis")
 local Section = LoaderTab:CreateSection("")
 
 local Button = LoaderTab:CreateButton({
-   Name = "( - 💥 - )    Click Loader Scrip Akari Hub    ( -  1, 2, 3  - )",
+   Name = "( - 💥 - )    Click Loader Script Akari Hub    ( -  1, 2, 3  - )",
    Callback = function()
        local Section = LoaderTab:CreateSection("")
        local Section = LoaderTab:CreateSection("{ ( - Script Akari UNC Test Executer - ) }")
@@ -65,8 +65,8 @@ local Button = LoaderTab:CreateButton({
        local Section = LoaderTab:CreateSection("{ ( - Script Akari All Map - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari   |   All Map ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
        local Section = LoaderTab:CreateSection("")
-       local Section = LoaderTab:CreateSection("{ ( - Script Akari All Map - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   Sever Side Admin ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari Admin - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari   |   Admin ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
        local Section = LoaderTab:CreateSection("")
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Aimbot Player - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari   |   Aimbot Player ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
@@ -76,3 +76,5 @@ local Button = LoaderTab:CreateButton({
        local Section = LoaderTab:CreateSection("")
    end,
 })
+
+local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
