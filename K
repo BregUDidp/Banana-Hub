@@ -19,7 +19,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = "   |   Akari Hub   :(    |   (  " .. CurrentDate .. "  )   |" ,
+   Name = "   |   Akari Hub   |   All Map   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  All Map   ",
 
