@@ -227,7 +227,7 @@ local CustomTheme = {
 }
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = Library.CreateLib("[ 🕸️ ]   Akari Hub", CustomTheme)
+local Window = Library.CreateLib("   |   Akari Hub   |   All Map   |", CustomTheme)
 
 local Tab = Window:NewTab("|| -  Tab Rejoin")
 local Section = Tab:NewSection("[ 🕸️ ]  Script Rejoin")
@@ -245,7 +245,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Dance")
 Section:NewButton("[ 1 ]  Dance Hubs", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -255,7 +255,7 @@ end)
 Section:NewButton("[ 2 ]  Dance Hubs", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -265,7 +265,7 @@ end)
 Section:NewButton("[ 3 ]  Animation Sonic Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -277,7 +277,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Admin All")
 Section:NewButton("Infinite Yield Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -287,7 +287,7 @@ end)
 Section:NewButton("Hitboxs Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -297,7 +297,7 @@ end)
 Section:NewButton("Invisible Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -307,7 +307,7 @@ end)
 Section:NewButton("Paranoia Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -317,7 +317,7 @@ end)
 Section:NewButton("COOLCLAN Gui Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -329,7 +329,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Fling")
 Section:NewButton("Flings GUI Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -339,7 +339,7 @@ end)
 Section:NewButton("Fling Dropdown Player Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -349,7 +349,7 @@ end)
 Section:NewButton("Fling X Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -359,7 +359,7 @@ end)
 Section:NewButton("Fling Animation Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -369,7 +369,7 @@ end)
 Section:NewButton("Fling Player All Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -381,7 +381,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Ring / Tornado")
 Section:NewButton("Voids Hubs   [ - BlackHole - ]", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -391,17 +391,17 @@ end)
 Section:NewButton("Rings Hubs   [ - Tornado - ]", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
-	loadstring(game:HttpGet("https://pastebin.com/raw/RXUicki8"))()
+	loadstring(game:HttpGet("https://pastebin.com/raw/aZjaAr6F"))()
 end)
 
 Section:NewButton("Telekinesis Hubs", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -412,7 +412,12 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Tools Giver")
 
 Section:NewButton("Tools TP Hubs", "ButtonInfo", function()
     print("Clicked")
-    loadstring(game:HttpGet("https://pastebin.com/raw/DwGjVLUE"))()
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "Loading Script! 🏁",
+        Text = "________________________________________________________",
+        Duration = 5
+      })
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Tool"))()
 end)
 
 local Tab = Window:NewTab("|| -  Tab Script [1]")
@@ -421,7 +426,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script Akari Hub")
 Section:NewButton("Script Akari Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -433,7 +438,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Script All")
 Section:NewButton("Script SYSTEMBROKEN Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
@@ -446,7 +451,7 @@ local Section = Tab:NewSection("[ 🕸️ ]  Map | BARRY'S PRISON RUN! (OBBY) |"
 Section:NewButton("Script | Admin Barry Hub", "ButtonInfo", function()
     print("Clicked")
 	game.StarterGui:SetCore("SendNotification", {
-        Title = "โหลดสคริป สำเร็จ! 🏁",
+        Title = "Loading Script! 🏁",
         Text = "________________________________________________________",
         Duration = 5
       })
