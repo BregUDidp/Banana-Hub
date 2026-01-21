@@ -2471,3 +2471,18 @@ espTab:CreateToggle({
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend And Look", Content = "ESP Player / Friend Friend And Looking"})
 
 local Section = espTab:CreateSection("")
+
+local catTab = Window:CreateTab("cat")
+local Section = catTab:CreateSection("Cat")
+
+local CatButton = catTab:CreateButton({
+   Name = "Akari Hub",
+   Callback = function()
+       Rayfield:Notify({
+         Title = "Test",
+         Content = "Akari Hub No 1",
+         Duration = 1,
+         Image = "eye",
+       })
+   end,
+})
