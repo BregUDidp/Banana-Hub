@@ -53,7 +53,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
-local Section = CreditTab:CreateSection("")
+local Divider = CreditTab:CreateDivider()
 
 -- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
 local AnimationStatusLabel = CreditTab:CreateLabel(
@@ -107,7 +107,7 @@ local Button = CreditTab:CreateButton({
    end,
 })
 
-local Section = CreditTab:CreateSection("")
+local Divider = CreditTab:CreateDivider()
 
 -- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
 local RejoinCountdownLabel = CreditTab:CreateLabel(
@@ -159,14 +159,14 @@ CreditTab:CreateButton({
    end,
 })
 
-local Section = CreditTab:CreateSection("")
+local Divider = CreditTab:CreateDivider()
 
 local PlayerListParagraph = CreditTab:CreateParagraph({
    Title = "List Player name",
    Content = "Loading..."
 })
 
-local Section = CreditTab:CreateSection("")
+local Divider = CreditTab:CreateDivider()
 
 local ResetTimes = {}
 local RecentlyLeft = {}
@@ -348,7 +348,7 @@ end)
 
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 -- โหลดบริการที่จำเป็น
 local RunService = game:GetService("RunService")
@@ -625,7 +625,7 @@ PTab:CreateSlider({
 
 local Paragraph = PTab:CreateParagraph({Title = "Forging Block Player / Friend Sword", Content = "Forging Block Player / Friend Sword Are Multi Block"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -780,14 +780,14 @@ local SpeedSlider = PTab:CreateSlider({
 
 local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For Style", Content = "Flying For Building And Fly For Style Super Man"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
 local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
 
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local SittingEnabled = false
 local SitConnection = nil
@@ -875,7 +875,7 @@ local Toggle = PTab:CreateToggle({
 
 local Paragraph = PTab:CreateParagraph({Title = "Sitting For Playing Any Status Map", Content = "Sitting For Playing Any Status Mapping"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local InfiniteJumpEnabled = false
 
@@ -922,7 +922,7 @@ end)
 
 local Paragraph = PTab:CreateParagraph({Title = "Infinite Jumpping For Building Style Rabbit", Content = "Infinite Jumpping For Building Style Rabbit And Kangaroo"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local ResetZoomButton = PTab:CreateButton({
     Name = "[ 🗞️ ]  Reseting Zoom Altra",
@@ -984,7 +984,7 @@ local InfiniteZoomSlider = PTab:CreateSlider({
 
 local Paragraph = PTab:CreateParagraph({Title = "Infinite Zoom For See Your Player / Friend", Content = "Infinite Zoom For See Your Player / Friend And Look"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walling Hole", Callback=function(val) noclipEnabled=val end})
 
@@ -998,10 +998,10 @@ end)
 
 local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
 
-local Section = PTab:CreateSection("")
+local Divider = PTab:CreateDivider()
 
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
-local Section = BTab:CreateSection("")
+local Divider = BTab:CreateDivider()
 
 local Player = game.Players.LocalPlayer
 local Backpack = Player:WaitForChild("Backpack")
@@ -1172,7 +1172,7 @@ BTab:CreateToggle({
 
 local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
 
-local Section = BTab:CreateSection("")
+local Divider = BTab:CreateDivider()
 
 local Player = game.Players.LocalPlayer
 local Backpack = Player:WaitForChild("Backpack")
@@ -1333,11 +1333,11 @@ BTab:CreateToggle({
 
 local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend", Content = "Recoil Tool Is Good For Speed Flash"})
 
-local Section = BTab:CreateSection("")
+local Divider = BTab:CreateDivider()
 
 --// === TELEPORT TAB ===
 local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -1451,7 +1451,7 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 -- ===== ปุ่มวาปธรรมดา =====
 friendTab:CreateButton({
@@ -1581,7 +1581,7 @@ end
 
 local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Friend Normal / Auto", Content = "Teleport To Player / Friend Normal / Become Auto"})
 
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 -- ตัวแปรสำหรับ Hitbox เฉพาะเป้าหมาย
 local TargetHitboxEnabled = false
@@ -1720,7 +1720,7 @@ end
 
 local Paragraph = friendTab:CreateParagraph({Title = "ESP / Hitbox Boxing For Kill Player And Reset", Content = "ESP / Hitbox Boxing For Kill Player And Reseting"})
 
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 -- ===== ตัวแปรสำหรับ ESP ทั้งสองแบบ =====
 local currentESPHighlight = nil -- สำหรับ Highlight ทั้งคู่
@@ -1897,7 +1897,7 @@ game:GetService("RunService").RenderStepped:Connect(UpdateESP)
 
 local Paragraph = friendTab:CreateParagraph({Title = "ESP To Player / Friend Normal", Content = "ESP To Player / Friend Become Normal"})
 
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 -- ===== ปุ่มใหม่: กลับไปตำแหน่งเดิม =====
 friendTab:CreateButton({
@@ -1924,11 +1924,11 @@ friendTab:CreateButton({
 
 local Paragraph = friendTab:CreateParagraph({Title = "Return To Your Point", Content = "Return To Your Point And Save Point"})
 
-local Section = friendTab:CreateSection("")
+local Divider = friendTab:CreateDivider()
 
 --// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Solution", "flask-conical")
-local Section = espTab:CreateSection("")
+local Divider = espTab:CreateDivider()
 
 local MouseTPEnabled = false
 local Mouse = game.Players.LocalPlayer:GetMouse()
@@ -1979,9 +1979,9 @@ Player.CharacterAdded:Connect(function()
     MouseTPEnabled = Rayfield.Flags.MouseTP.CurrentValue
 end)
 
-local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport For Player / Friend", Content = "Clicking Teleport Is Good For Building"})
+local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport Bypass For Player / Friend", Content = "Clicking Teleport Bypass Is Good For Building"})
 
-local Section = espTab:CreateSection("")
+local Divider = espTab:CreateDivider()
 
 local PurpleTool = {
     Enabled = false,
@@ -2225,9 +2225,7 @@ local Paragraph = espTab:CreateParagraph({Title = "Purple / RainbowTool For Cool
 
 RunService.RenderStepped:Connect(updateESP)
 
--- Here --
-
-local Section = espTab:CreateSection("")
+local Divider = espTab:CreateDivider()
 
 local HitboxEnabled = false
 local HeadSize = 20
@@ -2300,7 +2298,7 @@ espTab:CreateSlider({
 
 local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend And Killing Player", Content = "Hitbox Player / Friend And Killing Player Style"})
 
-local Section = espTab:CreateSection("")
+local Divider = espTab:CreateDivider()
 
 -- Variables
 local Players = game:GetService("Players")
@@ -2470,4 +2468,4 @@ espTab:CreateToggle({
 
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend And Look", Content = "ESP Player / Friend Friend And Looking"})
 
-local Section = espTab:CreateSection("")
+local Divider = espTab:CreateDivider()
