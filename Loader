@@ -100,6 +100,6 @@ local Button = LoaderTab:CreateButton({
 
 local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
 
-local Divider = LoaderTab:CreateDivider()\
+local Divider = LoaderTab:CreateDivider()
 
 local Section = LoaderTab:CreateSection("")
