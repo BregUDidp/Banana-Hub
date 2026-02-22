@@ -53,28 +53,53 @@ local Window = Rayfield:CreateWindow({
 })
 
 local LoaderTab = Window:CreateTab("||   - Loader Script", "circle-ellipsis")
-local Section = LoaderTab:CreateSection("")
+local Divider = LoaderTab:CreateDivider()
 
 local Button = LoaderTab:CreateButton({
    Name = "( - 💥 - )    Click Loader Script Akari Hub    ( -  1, 2, 3  - )",
    Callback = function()
+       
+       Rayfield:Notify({
+          Title = "[ 👑 ]  The Script Have Premium",
+          Content = "[ 🟢 ]  The All Script Have WORKING",
+          Duration = 2,
+          Image = "loader",
+       })
+       Wait(2)
+
        local Section = LoaderTab:CreateSection("")
+       local Section = LoaderTab:CreateSection("")
+       local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari UNC Test Executer - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   UNC Test Executer ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/UNC"))() end})
-       local Section = LoaderTab:CreateSection("")
-       local Section = LoaderTab:CreateSection("{ ( - Script Akari All Map - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   All Map ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
-       local Section = LoaderTab:CreateSection("")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   UNC Test Executer ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/UNC"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping   [ - Best Script - ] ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Admin - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   Admin ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
-       local Section = LoaderTab:CreateSection("")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Admin Server Side ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Aimbot Player - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   Aimbot Player ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
-       local Section = LoaderTab:CreateSection("")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Aimbot Player ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Aimbot"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Executer Script - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari   |   Executer Script ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Executer"))() end})
-       local Section = LoaderTab:CreateSection("")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Executer Script ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Executer"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
    end,
 })
 
 local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+
+local Divider = LoaderTab:CreateDivider()\
+
+local Section = LoaderTab:CreateSection("")
