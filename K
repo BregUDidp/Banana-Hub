@@ -194,10 +194,10 @@ end
 local function PlayLeaveSound()
    local sound = Instance.new("Sound")
    sound.SoundId = "rbxassetid://6670771770"
-   sound.Volume = 0.8
+   sound.Volume = 0.4
    sound.Parent = game:GetService("SoundService")
    sound:Play()
-   game:GetService("Debris"):AddItem(sound, 3)
+   game:GetService("Debris"):AddItem(sound, 1)
 end
 
 local function OnPlayerReset(player)
@@ -1003,170 +1003,111 @@ local Divider = PTab:CreateDivider()
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Divider = BTab:CreateDivider()
 
-local Player = game.Players.LocalPlayer
-local Backpack = Player:WaitForChild("Backpack")
+local Button = BTab:CreateButton({
+   Name = "[ 🍭 ]   Teleport Tools   [  -  Button  -  ]",
+   Callback = function()
+        
+        Rayfield:Notify({
+            Title = "[ 🍭 ]  Teleport Tools Click",
+            Content = "[ ✅ ]  Teleport Tools Click",
+            Duration = 1,
+            Image = "lollipop",
+         })
 
--- ตัวแปรเก็บ Tool เพื่อจัดการเปิด/ปิด
-local TeleportCandy = nil
+        local tool = Instance.new("Tool")
+        tool.Name = "🍭"
+        tool.ToolTip = "[ 🍭 ]  Teleport Tool"
+        tool.RequiresHandle = true
 
--- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle)
-local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-)
+        local player = game.Players.LocalPlayer
 
--- ฟังก์ชันสร้างเครื่องมือลูกอมเทเลพอร์ต
-local function CreateTeleportCandy()
-    if TeleportCandy then return end -- ป้องกันการสร้างซ้ำ
+        -- สร้าง Handle ลูกอมสีม่วง
+        local handle = Instance.new("Part")
+        handle.Name = "Handle"
+        handle.Size = Vector3.new(2.2, 2.2, 2.2)
+        handle.Shape = Enum.PartType.Ball
+        handle.Material = Enum.Material.ForceField
+        handle.BrickColor = BrickColor.new("Royal purple")  -- สีใกล้เคียงที่สุดใน BrickColor
+        handle.Color = Color3.fromRGB(138, 43, 179)        -- ตั้งค่าสีจริงให้ตรงตาม RGB
+        handle.Transparency = 0.15
+        handle.CanCollide = false
+        handle.Parent = tool
 
-    local tool = Instance.new("Tool")
-    tool.Name = " 🍭 "
-    tool.ToolTip = "[ 🍭 ]  Teleport Tools Warping"
-    tool.RequiresHandle = true
-
-    -- Handle ลูกอม
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(2.2, 2.2, 2.2)
-    handle.Shape = Enum.PartType.Ball
-    handle.Material = Enum.Material.ForceField
-    handle.Color = Color3.fromRGB(138, 43, 179)
-    handle.Transparency = 0.15
-    handle.CanCollide = false
-    handle.Parent = tool
-
-    -- Sparkles ม่วง
-    local sparkles = Instance.new("Sparkles")
-    sparkles.SparkleColor = Color3.fromRGB(200, 100, 255)
-    sparkles.Enabled = false
-    sparkles.Parent = handle
-
-    -- ParticleEmitter ม่วงสวยงาม
-    local particles = Instance.new("ParticleEmitter")
-    particles.Texture = "rbxassetid://241650934"
-    particles.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
-    })
-    particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.2), NumberSequenceKeypoint.new(1,1)})
-    particles.Size = NumberSequence.new(0.5, 0)
-    particles.Lifetime = NumberRange.new(1.2, 2.8)
-    particles.Rate = 25
-    particles.Speed = NumberRange.new(3, 6)
-    particles.SpreadAngle = Vector2.new(60, 60)
-    particles.Parent = handle
-
-    -- แสงม่วงรอบตัว
-    local light = Instance.new("PointLight")
-    light.Color = Color3.fromRGB(180, 80, 255)
-    light.Brightness = 0
-    light.Range = 0
-    light.Parent = handle
-
-    -- เสียงเทเลพอร์ต
-    local teleportSound = Instance.new("Sound")
-    teleportSound.SoundId = "rbxassetid://4861638982"
-    teleportSound.Volume = 0.8
-    teleportSound.Parent = handle
-
-    -- เสียงตอนถือ
-    tool.Equipped:Connect(function()
-        local equipSound = Instance.new("Sound")
-        equipSound.SoundId = "rbxassetid://2865227271"
-        equipSound.Volume = 0.6
-        equipSound.Parent = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if equipSound.Parent then
-            equipSound:Play()
-            game.Debris:AddItem(equipSound, 3)
-        end
-
+        -- Sparkles สีม่วง
+        local sparkles = Instance.new("Sparkles")
+        sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
         sparkles.Enabled = false
-        particles.Rate = 60
-        light.Brightness = 5
-    end)
+        sparkles.Parent = handle
 
-    tool.Unequipped:Connect(function()
-        sparkles.Enabled = true
-        particles.Rate = 25
-        light.Brightness = 3
-    end)
+        -- ParticleEmitter สีม่วง
+        local particles = Instance.new("ParticleEmitter")
+        particles.Texture = "rbxassetid://241650934"
+        particles.Color = ColorSequence.new(
+            Color3.fromRGB(138, 43, 179),
+            Color3.fromRGB(180, 100, 200)  -- ม่วงอ่อนลงนิดเพื่อความสวย
+        )
 
-    -- ฟังก์ชันเทเลพอร์ตเมื่อคลิก
-    tool.Activated:Connect(function()
-        if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return end
-        
-        teleportSound:Play()
-        
-        local mouse = Player:GetMouse()
-        local targetPos = mouse.Hit.Position + Vector3.new(0, 3.5, 0)
-        
-        local char = Player.Character
-        for _, part in pairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part ~= char.HumanoidRootPart then
-                part.Transparency = 0.4
-                task.delay(0.25, function()
-                    if part and part.Parent then
-                        part.Transparency = 0
-                    end
+        particles.Size = NumberSequence.new(0.4)
+        particles.Lifetime = NumberRange.new(1.5, 2.5)
+        particles.Rate = 20
+        particles.SpreadAngle = Vector2.new(45, 45)
+        particles.Speed = NumberRange.new(2)
+        particles.Parent = handle
+
+        -- PointLight สีม่วง
+        local light = Instance.new("PointLight")
+        light.Color = Color3.fromRGB(138, 43, 179)
+        light.Brightness = 2
+        light.Range = 10
+        light.Parent = handle
+
+        -- เสียงเทเลพอร์ต
+        local teleportSound = Instance.new("Sound")
+        teleportSound.SoundId = "rbxassetid://4861638982"
+        teleportSound.Volume = 0.7
+        teleportSound.Parent = handle
+
+        -- เอฟเฟกต์ตอนถือ/ปล่อย
+        tool.Equipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 50
+            light.Brightness = 0
+        end)
+
+        tool.Unequipped:Connect(function()
+            sparkles.Enabled = false
+            particles.Rate = 20
+            light.Brightness = 2
+        end)
+
+        -- ฟังก์ชันเทเลพอร์ต
+        tool.Activated:Connect(function()
+            teleportSound:Play()
+            local character = player.Character
+            if character and character:FindFirstChild("HumanoidRootPart") then
+                local mouse = player:GetMouse()
+                local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+                character.HumanoidRootPart.CFrame = CFrame.new(pos)
+            end
+        end)
+
+        -- เสียงตอนถือเครื่องมือ (เพิ่มความเท่)
+        tool.Equipped:Connect(function()
+            local equipSound = Instance.new("Sound")
+            equipSound.SoundId = "rbxassetid://2865227271"
+            equipSound.Volume = 0.5
+            equipSound.Parent = player.Character:FindFirstChild("HumanoidRootPart")
+            if equipSound.Parent then
+                equipSound:Play()
+                equipSound.Ended:Connect(function()
+                    equipSound:Destroy()
                 end)
             end
-        end
-        
-        char.HumanoidRootPart.CFrame = CFrame.new(targetPos)
-    end)
+        end)
 
-    TeleportCandy = tool
-    tool.Parent = Backpack
-end
-
--- ฟังก์ชันลบเครื่องมือ
-local function RemoveTeleportCandy()
-    if TeleportCandy and TeleportCandy.Parent then
-        TeleportCandy:Destroy()
-        TeleportCandy = nil
-    end
-end
-
-BTab:CreateToggle({
-   Name = "[ 🍭 ]   Teleport Tools   [  -  Toggle  -  ]",
-   CurrentValue = false,
-   Flag = "ToggleCandy",
-   Callback = function(Value)
-      if Value then
-         CreateTeleportCandy()
-         
-         -- แสดง Label สีเขียวว่าโหลดเสร็จแล้ว
-         StatusLabel:Set(
-            '<font color="rgb(0, 255, 100)"><b>ON :  -  Teleport Warping Tools</b></font>'
-         )
-         
-         Rayfield:Notify({
-            Title = "[ 🍭 ]  Teleport Tools ON",
-            Content = "[ ✅ ]  Teleport Tools ON",
-            Duration = 1,
-            Image = "lollipop",
-         })
-      else
-         RemoveTeleportCandy()
-         
-         -- แสดง Label สีแดง/เหลืองว่าปิดแล้ว
-         StatusLabel:Set(
-            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Teleport Warping Tools</b></font>'
-         )
-         
-         Rayfield:Notify({
-            Title = "[ 🍭 ]  Teleport Tools OFF",
-            Content = "[ 🛑 ]  Teleport Tools OFF",
-            Duration = 1,
-            Image = "lollipop",
-         })
-         
-         -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ (optional)
-         task.delay(5, function()
-            StatusLabel:Set(
-               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-            )
-         end)
-      end
+        -- ใส่ลง Backpack
+        player:WaitForChild("Backpack")
+        tool.Parent = player.Backpack
    end,
 })
 
@@ -1174,160 +1115,129 @@ local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Frie
 
 local Divider = BTab:CreateDivider()
 
-local Player = game.Players.LocalPlayer
+local Button = BTab:CreateButton({
+   Name = "[ 🚲 ]   Recoil Tool   [  -  Speed  30  -  ]",
+   Callback = function()
+
+       Rayfield:Notify({
+            Title = "[ 🚲 ]  Recoil Tools Running Click",
+            Content = "[ ✅ ]  Recoil Tools Running Click",
+            Duration = 1,
+            Image = "bike",
+         })
+
+       local Player = game.Players.LocalPlayer
 local Backpack = Player:WaitForChild("Backpack")
 
 local NormalWalkSpeed = 17      -- ความเร็วปกติ
 local BoostWalkSpeed = 30       -- ความเร็วตอนถือ (ปรับได้ตามต้องการ)
 
--- ตัวแปรเก็บ Tool
-local RecoilBike = nil
+-- สร้าง Tool
+local tool = Instance.new("Tool")
+tool.Name = "🚲"
+tool.ToolTip = "[ 🚲 ]  Recoil Tools Speed Boost"
+tool.RequiresHandle = true
 
--- สร้าง Label สำหรับแสดงสถานะ (ทำครั้งเดียว อยู่นอก Toggle เพื่อให้อยู่ถาวรใน Tab)
-local StatusLabel = BTab:CreateLabel(
-   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-)
+-- Handle ลูกอม/ลูกบอลสีม่วง
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Size = Vector3.new(2.2, 2.2, 2.2)
+handle.Shape = Enum.PartType.Ball
+handle.Material = Enum.Material.ForceField
+handle.Color = Color3.fromRGB(138, 43, 179)
+handle.Transparency = 0.15
+handle.CanCollide = false
+handle.Parent = tool
 
--- ฟังก์ชันสร้าง Tool จักรยานสีม่วง + Speed Boost
-local function CreateRecoilBike()
-    if RecoilBike then return end -- ไม่ให้สร้างซ้ำ
+-- Sparkles สีม่วง
+local sparkles = Instance.new("Sparkles")
+sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
+sparkles.Enabled = false
+sparkles.Parent = handle
 
-    local tool = Instance.new("Tool")
-    tool.Name = "🚲"
-    tool.ToolTip = "[ 🚲 ]  Recoil Tools Speed Boost"
-    tool.RequiresHandle = true
+-- ParticleEmitter ม่วงสวยงาม
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxassetid://241650934"
+particles.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
+})
+particles.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.3), 
+    NumberSequenceKeypoint.new(1, 1)
+})
+particles.Size = NumberSequence.new(0.5, 0)
+particles.Lifetime = NumberRange.new(1.2, 2.8)
+particles.Rate = 0
+particles.Speed = NumberRange.new(4, 8)
+particles.SpreadAngle = Vector2.new(50, 50)
+particles.Parent = handle
 
-    -- Handle ลูกอม/ลูกบอลสีม่วง
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(2.2, 2.2, 2.2)
-    handle.Shape = Enum.PartType.Ball
-    handle.Material = Enum.Material.ForceField
-    handle.Color = Color3.fromRGB(138, 43, 179)
-    handle.Transparency = 0.15
-    handle.CanCollide = false
-    handle.Parent = tool
+-- แสงม่วง
+local light = Instance.new("PointLight")
+light.Color = Color3.fromRGB(180, 80, 255)
+light.Brightness = 0
+light.Range = 0
+light.Parent = handle
 
-    -- Sparkles สีม่วง
-    local sparkles = Instance.new("Sparkles")
-    sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
-    sparkles.Enabled = false
-    sparkles.Parent = handle
+-- ตัวแปรเก็บ WalkSpeed เดิม
+local originalSpeed = NormalWalkSpeed
 
-    -- ParticleEmitter ม่วงสวยงาม
-    local particles = Instance.new("ParticleEmitter")
-    particles.Texture = "rbxassetid://241650934"
-    particles.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
-    })
-    particles.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.3), NumberSequenceKeypoint.new(1,1)})
-    particles.Size = NumberSequence.new(0.5, 0)
-    particles.Lifetime = NumberRange.new(1.2, 2.8)
-    particles.Rate = 0
-    particles.Speed = NumberRange.new(4, 8)
-    particles.SpreadAngle = Vector2.new(50, 50)
-    particles.Parent = handle
-
-    -- แสงม่วง
-    local light = Instance.new("PointLight")
-    light.Color = Color3.fromRGB(180, 80, 255)
-    light.Brightness = 0
-    light.Range = 0
-    light.Parent = handle
-
-    -- เสียงตอนถือ
-    tool.Equipped:Connect(function()
-        sparkles.Enabled = false
-        particles.Rate = 60
-        light.Brightness = 5
-
-        -- เพิ่มความเร็ว
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = BoostWalkSpeed
-        end
-
-        -- เสียงเท่ ๆ
-        local equipSound = Instance.new("Sound")
-        equipSound.SoundId = "rbxassetid://2865227271"
-        equipSound.Volume = 0.6
-        equipSound.Parent = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if equipSound.Parent then
-            equipSound:Play()
-            game.Debris:AddItem(equipSound, 3)
-        end
-    end)
-
-    tool.Unequipped:Connect(function()
-        sparkles.Enabled = true
-        particles.Rate = 30
-        light.Brightness = 3
-
-        -- คืนความเร็วปกติ
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
-        end
-    end)
-
-    -- เก็บไว้ในตัวแปร
-    RecoilBike = tool
-    tool.Parent = Backpack
-end
-
--- ฟังก์ชันลบ Tool
-local function RemoveRecoilBike()
-    if RecoilBike and RecoilBike.Parent then
-        RecoilBike:Destroy()
-        RecoilBike = nil
+-- Function สำหรับอัพเดทความเร็ว
+local function updateSpeed(humanoid, speed)
+    if humanoid then
+        humanoid.WalkSpeed = speed
     end
 end
 
-BTab:CreateToggle({
-   Name = "[ 🚲 ]   Recoil Tool   [  -  Speed  30  -  ]",
-   CurrentValue = false,
-   Flag = "ToggleBike",
-   Callback = function(Value)
-      if Value then
-         CreateRecoilBike()
-         
-         -- แสดง Label สีเขียวว่าโหลดเสร็จแล้ว
-         StatusLabel:Set(
-            '<font color="rgb(0, 255, 100)"><b>ON :  -  Recoil Speed Tools</b></font>'
-         )
-         
-         Rayfield:Notify({
-            Title = "[ 🚲 ]  Recoil Tools Running ON",
-            Content = "[ ✅ ]  Recoil Tools Running ON",
-            Duration = 1,
-            Image = "bike",
-         })
-      else
-         RemoveRecoilBike()
-         
-         -- คืนความเร็วปกติทันที (ป้องกันค้าง)
-         if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = NormalWalkSpeed
-         end
-         
-         -- แสดง Label สีแดงว่าปิดแล้ว
-         StatusLabel:Set(
-            '<font color="rgb(255, 70, 70)"><b>OFF :  -  Recoil Speed Tools</b></font>'
-         )
-         
-         Rayfield:Notify({
-            Title = "[ 🚲 ]  Recoil Tools Running OFF",
-            Content = "[ 🛑 ]  Recoil Tools Running OFF",
-            Duration = 1,
-            Image = "bike",
-         })
-         
-         -- หลังจาก 5 วินาที รีเซ็ต Label กลับไปสถานะปกติ
-         task.delay(5, function()
-            StatusLabel:Set(
-               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-            )
-         end)
-      end
+-- Event ตอนถือ Tool
+tool.Equipped:Connect(function()
+    sparkles.Enabled = false
+    particles.Rate = 60
+    light.Brightness = 5
+    
+    -- เก็บความเร็วเดิม
+    local character = Player.Character
+    local humanoid = character and character:FindFirstChild("Humanoid")
+    if humanoid then
+        originalSpeed = humanoid.WalkSpeed
+        updateSpeed(humanoid, BoostWalkSpeed)
+    end
+    
+    -- เสียงเท่ ๆ
+    local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.6
+        equipSound.Parent = humanoidRootPart
+        equipSound:Play()
+        game:GetService("Debris"):AddItem(equipSound, 3)
+    end
+end)
+
+-- Event ตอนวาง Tool
+tool.Unequipped:Connect(function()
+    sparkles.Enabled = true
+    particles.Rate = 30
+    light.Brightness = 3
+    
+    -- คืนความเร็วเดิม
+    local character = Player.Character
+    local humanoid = character and character:FindFirstChild("Humanoid")
+    updateSpeed(humanoid, originalSpeed)
+end)
+
+-- จัดการ Character ใหม่ (Respawn)
+Player.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    originalSpeed = NormalWalkSpeed
+    updateSpeed(humanoid, NormalWalkSpeed)
+end)
+
+-- ใส่ Tool ลง Backpack
+tool.Parent = Backpack
+
    end,
 })
 
