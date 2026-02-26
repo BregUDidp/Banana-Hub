@@ -1003,6 +1003,8 @@ local Divider = PTab:CreateDivider()
 local BTab = Window:CreateTab("||   - Backpack Tool", "backpack")
 local Divider = BTab:CreateDivider()
 
+local Label = BTab:CreateLabel(" [ - This Item Teleport Is Not Bypass On In Mapping - ]", "lollipop", Color3.fromRGB(138, 43, 179) , false)
+
 local Button = BTab:CreateButton({
    Name = "[ 🍭 ]   Teleport Tools   [  -  Button  -  ]",
    Callback = function()
@@ -1114,6 +1116,8 @@ local Button = BTab:CreateButton({
 local Paragraph = BTab:CreateParagraph({Title = "Teleport Tool For Player / Friend", Content = "Teleport Tool Is Good For Building"})
 
 local Divider = BTab:CreateDivider()
+
+local Label = BTab:CreateLabel(" [ - This Item Recoil Tool Is Bypass On In Mapping - ]", "bike", Color3.fromRGB(138, 43, 179) , false)
 
 local Button = BTab:CreateButton({
    Name = "[ 🚲 ]   Recoil Tool   [  -  Speed  30  -  ]",
