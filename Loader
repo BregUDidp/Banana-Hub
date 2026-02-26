@@ -40,15 +40,15 @@ local Window = Rayfield:CreateWindow({
       Invite = "noinvitelink",
       RememberJoins = true
    },
-   KeySystem = false,
+   KeySystem = true,
    KeySettings = {
-      Title = "",
-      Subtitle = "",
-      Note = "",
+      Title = "Get Keys System Akari Hub",
+      Subtitle = "Gave Keys Form Site In Input",
+      Note = "The Akari Hub Have So Power Script",
       FileName = "",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = {"🌑"}
+      Key = {"AKARI-02JK1I9-PO5JI1"}
    }
 })
 
