@@ -46,7 +46,7 @@ local Window = Rayfield:CreateWindow({
       Subtitle = "Gave Keys Form Site In Input",
       Note = "The Akari Hub Have So Power Script",
       FileName = "",
-      SaveKey = true,
+      SaveKey = false,
       GrabKeyFromSite = true,
       Key = {"AKARI-02JK1I9-PO5JI1"}
    }
