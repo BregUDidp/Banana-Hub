@@ -240,11 +240,11 @@ run.RenderStepped:Connect(function()
     end
 end)
 
-AimbotTab:CreateSection("")
+local Divider = AimbotTab:CreateDivider()
 
 -- GUI: ใช้ปุ่ม FOV เป็นปุ่มเปิด Aimbot
 AimbotTab:CreateToggle({
-    Name = "[ 🎯 ]  Aimbots Player",
+    Name = "[ 🎯 ]  Aimbot Smooth Player",
     CurrentState = false,
     Callback = function(v) 
         showFov = v
@@ -487,7 +487,7 @@ end)
 --// ============================================== --
 
 --// ESP Tab (ใช้ AimbotTab ต่อ)
-AimbotTab:CreateSection("")
+local Divider = AimbotTab:CreateDivider()
 
 AimbotTab:CreateToggle({
     Name = "[ 🔍 ]  ESP Player Rainbow  [ - Tracer - ]",
@@ -675,7 +675,7 @@ AimbotTab:CreateToggle({
 
 local Paragraph = AimbotTab:CreateParagraph({Title = "ESP Player / Friend Tracer Is Automatic", Content = "ESP Player / Friend Tracer Is Automatic Style"})
 
-AimbotTab:CreateSection("")
+local Divider = AimbotTab:CreateDivider()
 
 local HitboxEnabled = false
 local HeadSize = 20
@@ -748,10 +748,10 @@ AimbotTab:CreateSlider({
 
 local Paragraph = AimbotTab:CreateParagraph({Title = "Hitbox Player / Friend And Killing Player", Content = "Hitbox Player / Friend And Killing Player Style"})
 
-AimbotTab:CreateSection("")
+local Divider = AimbotTab:CreateDivider()
 
 --// Rainbow Gun Tab
-RainbowTab:CreateSection("")
+local Divider = RainbowTab:CreateDivider()
 
 local PurpleTool = {
     Enabled = false,
@@ -878,3 +878,5 @@ RainbowTab:CreateToggle({
 })
 
 local Paragraph = RainbowTab:CreateParagraph({Title = "Rainbow Tool For Cool Style", Content = "Rainbow Tool Is Good For Style Gun / Sword"})
+
+local Divider = RainbowTab:CreateDivider()
