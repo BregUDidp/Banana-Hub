@@ -19,7 +19,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 
 -- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
-   Name = " |   Akari Hub   |   Premium   |   (  " .. CurrentDate .. "  )   |" ,
+   Name = "   |   Akari Hub   |   Loader   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
    LoadingTitle = "   Akari Hub  Loader Script Premium   ",
 
@@ -28,8 +28,8 @@ local Window = Rayfield:CreateWindow({
    ShowText = " 🌑 ",
    Theme = "Default",
    ToggleUIKeybind = "G",
-   DisableRayfieldPrompts = true,
-   DisableBuildWarnings = true,
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false,
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
@@ -44,11 +44,11 @@ local Window = Rayfield:CreateWindow({
    KeySettings = {
       Title = "Get Keys System Akari Hub",
       Subtitle = "Gave Keys Form Site In Input",
-      Note = "The Akari Hub Have So Power Script",
+      Note = "Here It Is Website Script  ↓  https://pastes.io/get-keys-s",
       FileName = "",
-      SaveKey = false,
+      SaveKey = true,
       GrabKeyFromSite = false,
-      Key = {"AKARI-02JK1I9-PO5JI1"}
+      Key = {"AKARI-02JK1I9-PO5JI1", "AKARI-03PJK19-SO7BI2", "AKARI-04BVC29-ZO8HI2"}
    }
 })
 
