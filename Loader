@@ -48,7 +48,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = {"AKARI-02JK1I9-PO5JI1"}
+      Key = {"AKARI-02JK1I9-PO5JI1", "AKARI-03PJK19-SO7BI2", "AKARI-04BVC29-ZO8HI2"}
    }
 })
 
