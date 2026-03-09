@@ -103,3 +103,36 @@ local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For 
 local Divider = LoaderTab:CreateDivider()
 
 local Section = LoaderTab:CreateSection("")
+
+local LoaderSTab = Window:CreateTab("||   - Loader Script Mapping", "map")
+local Divider = LoaderSTab:CreateDivider()
+
+local Button = LoaderSTab:CreateButton({
+   Name = "( - 💥 - )    Click Loader Script Akari Hub    ( -  1, 2, 3  - )",
+   Callback = function()
+       
+       Rayfield:Notify({
+          Title = "[ 👑 ]  The Script Have Premium",
+          Content = "[ 🟢 ]  The All Script Have WORKING",
+          Duration = 2,
+          Image = "loader",
+       })
+       Wait(2)
+       
+       local Section = LoaderSTab:CreateSection("")
+       local Section = LoaderSTab:CreateSection("")
+       local Divider = LoaderSTab:CreateDivider()
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari Lucky Block BattleGround - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   Lucky Block BattleGround ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Lucky"))() end})
+	   
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderSTab:CreateDivider()
+
+   end,
+})
+
+local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+
+local Divider = LoaderSTab:CreateDivider()
+
+local Section = LoaderSTab:CreateSection("")
