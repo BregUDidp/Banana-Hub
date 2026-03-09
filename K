@@ -2135,7 +2135,7 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
-local Paragraph = espTab:CreateParagraph({Title = "Purple / RainbowTool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style Gun / Sword"})
+local Paragraph = espTab:CreateParagraph({Title = "Purple / Rainbow Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style Gun / Sword"})
 
 RunService.RenderStepped:Connect(updateESP)
 
