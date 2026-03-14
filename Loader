@@ -52,7 +52,7 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-local LoaderTab = Window:CreateTab("||   - Loader Script", "circle-ellipsis")
+local LoaderTab = Window:CreateTab("||   - Loader Script Universal", "circle-ellipsis")
 local Divider = LoaderTab:CreateDivider()
 
 local Button = LoaderTab:CreateButton({
@@ -104,7 +104,7 @@ local Divider = LoaderTab:CreateDivider()
 
 local Section = LoaderTab:CreateSection("")
 
-local LoaderSTab = Window:CreateTab("||   - Loader Script Mapping", "map")
+local LoaderSTab = Window:CreateTab("||   - Loader Script Gamming", "map")
 local Divider = LoaderSTab:CreateDivider()
 
 local Button = LoaderSTab:CreateButton({
@@ -124,6 +124,11 @@ local Button = LoaderSTab:CreateButton({
        local Divider = LoaderSTab:CreateDivider()
        local Section = LoaderSTab:CreateSection("{ ( - Script Akari Lucky Block BattleGround - ) }")
        LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   Lucky Block BattleGround ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Lucky"))() end})
+	   
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderSTab:CreateDivider()
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari [FPS] Flick Shot - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   [FPS] Flick Shot ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Flick%20Shot"))() end})
 	   
        local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderSTab:CreateDivider()
