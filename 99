@@ -346,6 +346,59 @@ spawn(function()
    end
 end)
 
+local BringTab = Window:CreateTab("||   - Bring Items", "shopping-basket")
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Player )",
+   Callback = function()
+       loadstring(game:HttpGet("https://pastebin.com/raw/KrExcNtd"))()
+   end,
+})
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Campfire )",
+   Callback = function()
+       loadstring(game:HttpGet("https://pastebin.com/raw/upnDhT5T"))()
+   end,
+})
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Scrape )",
+   Callback = function()
+       loadstring(game:HttpGet("https://pastebin.com/raw/9GjWtQuE"))()
+   end,
+})
+
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Fire For Style", Content = "Bring All Fire For Style Log - Coal"})
+
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔩 ]  Bring Scrape - Bolt - Sheet Metal  ( Player )",
+   Callback = function()
+       loadstring(game:HttpGet(""))()
+   end,
+})
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔩 ]  Bring Fire - Bolt - Sheet Metal  ( Campfire )",
+   Callback = function()
+       loadstring(game:HttpGet(""))()
+   end,
+})
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🔩 ]  Bring Fire - Bolt - Sheet Metal  ( Scrape )",
+   Callback = function()
+       loadstring(game:HttpGet(""))()
+   end,
+})
+
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Scrape For Style", Content = "Bring All Fire For Style Sheet Metal - Bolt"})
+
+local Divider = BringTab:CreateDivider()
+
 --// === PLAYER TAB ===
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
 local Divider = PTab:CreateDivider()
@@ -927,7 +980,7 @@ local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wa
 local Divider = PTab:CreateDivider()
 
 --// === TELEPORT TAB ===
-local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
+local friendTab = Window:CreateTab("||   - Teleport Player", "bug-play")
 local Divider = friendTab:CreateDivider()
 
 local Players = game:GetService("Players")
