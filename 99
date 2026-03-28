@@ -350,6 +350,27 @@ local BringTab = Window:CreateTab("||   - Bring Items", "shopping-basket")
 local Divider = BringTab:CreateDivider()
 
 local Button = BringTab:CreateButton({
+   Name = "[ 💜 ]  God Mode - No Die - No Hungry  ( God Mode )",
+   Callback = function()
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local DamagePlayer = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer")
+
+spawn(function()
+    while true do
+        DamagePlayer:FireServer(-1/0)
+        wait(0.1)
+    end
+end)
+
+   end,
+})
+
+local Paragraph = BringTab:CreateParagraph({Title = "Gode Mode No Die Everything", Content = "Gode Mode No Die Everything And No Hungry"})
+
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
    Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Player )",
    Callback = function()
        loadstring(game:HttpGet("https://pastebin.com/raw/KrExcNtd"))()
@@ -370,6 +391,24 @@ local Button = BringTab:CreateButton({
    end,
 })
 
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🌲 ]  Bring Campfire - Log  ( Player )",
+   Callback = function()
+       loadstring(game:HttpGet("https://pastebin.com/raw/F4ZVPJr8"))()
+   end,
+})
+
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
+   Name = "[ 👕 ]  Bring Campfire - Leather Body  ( Player )",
+   Callback = function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Leather"))()
+   end,
+})
+
 local Paragraph = BringTab:CreateParagraph({Title = "Bring All Fire For Style", Content = "Bring All Fire For Style Log - Coal"})
 
 local Divider = BringTab:CreateDivider()
@@ -377,21 +416,14 @@ local Divider = BringTab:CreateDivider()
 local Button = BringTab:CreateButton({
    Name = "[ 🔩 ]  Bring Scrape - Bolt - Sheet Metal  ( Player )",
    Callback = function()
-       loadstring(game:HttpGet(""))()
-   end,
-})
-
-local Button = BringTab:CreateButton({
-   Name = "[ 🔩 ]  Bring Fire - Bolt - Sheet Metal  ( Campfire )",
-   Callback = function()
-       loadstring(game:HttpGet(""))()
+       loadstring(game:HttpGet("https://pastebin.com/raw/Zv9jder4"))()
    end,
 })
 
 local Button = BringTab:CreateButton({
    Name = "[ 🔩 ]  Bring Fire - Bolt - Sheet Metal  ( Scrape )",
    Callback = function()
-       loadstring(game:HttpGet(""))()
+       loadstring(game:HttpGet("https://pastebin.com/raw/NhU69RXS"))()
    end,
 })
 
