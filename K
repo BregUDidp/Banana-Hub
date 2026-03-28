@@ -986,7 +986,21 @@ local Paragraph = PTab:CreateParagraph({Title = "Infinite Zoom For See Your Play
 
 local Divider = PTab:CreateDivider()
 
-local noclipToggle = PTab:CreateToggle({Name="[ 🧱 ]  Noclips Walling Hole", Callback=function(val) noclipEnabled=val end})
+local noclipToggle = PTab:CreateToggle({
+   Name = "[ 🧱 ]  Noclips Walling Hole",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+       noclipEnabled= Value
+
+       Rayfield:Notify({
+            Title = Value and   "[ 🧱 ]  Walling Mode On" or "[ 🧱 ]  Walling Mode Off",
+            Content = Value and "[ ✅ ]  Walling Noclips Enable!" or "[ 🛑 ]  Walling Noclips Disabled!",
+            Duration = 1,
+            Image = "brick-wall"
+        })
+   end,
+})
 
 RS.Stepped:Connect(function()
     if noclipEnabled and char then
