@@ -352,7 +352,12 @@ local Divider = BringTab:CreateDivider()
 local Button = BringTab:CreateButton({
    Name = "[ 💜 ]  God Mode - No Die - No Hungry  ( God Mode )",
    Callback = function()
-
+Rayfield:Notify({
+   Title =   "[ 💜 ]  Active God Mode",
+   Content = "[ ✅ ]  Active God Mode Not Die",
+   Duration = 1,
+   Image = "heart-pulse",
+})
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DamagePlayer = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DamagePlayer")
 
@@ -373,6 +378,12 @@ local Divider = BringTab:CreateDivider()
 local Button = BringTab:CreateButton({
    Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Player )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🔥 ]  Bring Log - Coal",
+   Content = "[ ✅ ]  Bring Log - Coal ( Player )",
+   Duration = 1,
+   Image = "person-standing",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/KrExcNtd"))()
    end,
 })
@@ -380,6 +391,12 @@ local Button = BringTab:CreateButton({
 local Button = BringTab:CreateButton({
    Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Campfire )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🔥 ]  Bring Log - Coal",
+   Content = "[ ✅ ]  Bring Log - Coal ( Campfire )",
+   Duration = 1,
+   Image = "flame-kindling",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/upnDhT5T"))()
    end,
 })
@@ -387,35 +404,106 @@ local Button = BringTab:CreateButton({
 local Button = BringTab:CreateButton({
    Name = "[ 🔥 ]  Bring Campfire - Log - Coal  ( Scrape )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🔥 ]  Bring Log - Coal",
+   Content = "[ ✅ ]  Bring Log - Coal ( Scrape )",
+   Duration = 1,
+   Image = "anvil",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/9GjWtQuE"))()
    end,
 })
+
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Campfire For Log - Chair", Content = "Bring All Campfire For Log - Chair And Together"})
 
 local Divider = BringTab:CreateDivider()
 
 local Button = BringTab:CreateButton({
    Name = "[ 🌲 ]  Bring Campfire - Log  ( Player )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🌲 ]  Bring Log",
+   Content = "[ ✅ ]  Bring Log ( Player )",
+   Duration = 1,
+   Image = "tree-pine",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/F4ZVPJr8"))()
    end,
 })
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🌲 ]  Bring Campfire - Log - Chair  ( Campfire )",
+   Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🌲 ]  Bring Log - Chair",
+   Content = "[ ✅ ]  Bring Log ( Campfire )",
+   Duration = 1,
+   Image = "tree-pine",
+})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Log2"))()
+   end,
+})
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🌲 ]  Bring Campfire - Log  ( Scrape )",
+   Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🌲 ]  Bring Log",
+   Content = "[ ✅ ]  Bring Log ( Scrape )",
+   Duration = 1,
+   Image = "tree-pine",
+})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Log"))()
+   end,
+})
+
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Campfire For Log - Chair", Content = "Bring All Campfire For Log - Chair And Together"})
 
 local Divider = BringTab:CreateDivider()
 
 local Button = BringTab:CreateButton({
    Name = "[ 👕 ]  Bring Campfire - Leather Body  ( Player )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🌲 ]  Bring Leather Body",
+   Content = "[ ✅ ]  Bring Leather Body ( Player )",
+   Duration = 1,
+   Image = "shirt",
+})
        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Leather"))()
    end,
 })
 
-local Paragraph = BringTab:CreateParagraph({Title = "Bring All Fire For Style", Content = "Bring All Fire For Style Log - Coal"})
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Shirt For Style", Content = "Bring All Shirt For Style Iron Body - Leather Body"})
+
+local Divider = BringTab:CreateDivider()
+
+local Button = BringTab:CreateButton({
+   Name = "[ 🥧 ]  Bring Campfire - Steak  ( Campfire )",
+   Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🥧 ]  Bring Campfire - Steak",
+   Content = "[ ✅ ]  Bring Campfire - Steak ( Campfire )",
+   Duration = 1,
+   Image = "beef",
+})
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Food"))()
+   end,
+})
+
+local Paragraph = BringTab:CreateParagraph({Title = "Bring All Food For Style", Content = "Bring All Food For Style Steak"})
 
 local Divider = BringTab:CreateDivider()
 
 local Button = BringTab:CreateButton({
    Name = "[ 🔩 ]  Bring Scrape - Bolt - Sheet Metal  ( Player )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🔩 ]  Bring Bolt Sheet Metal",
+   Content = "[ ✅ ]  Bring Bolt Metal ( Player )",
+   Duration = 1,
+   Image = "anvil",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/Zv9jder4"))()
    end,
 })
@@ -423,6 +511,12 @@ local Button = BringTab:CreateButton({
 local Button = BringTab:CreateButton({
    Name = "[ 🔩 ]  Bring Fire - Bolt - Sheet Metal  ( Scrape )",
    Callback = function()
+   Rayfield:Notify({
+   Title =   "[ 🔩 ]  Bring Bolt Sheet Metal",
+   Content = "[ ✅ ]  Bring Bolt Metal ( Scrape )",
+   Duration = 1,
+   Image = "anvil",
+})
        loadstring(game:HttpGet("https://pastebin.com/raw/NhU69RXS"))()
    end,
 })
@@ -1126,6 +1220,60 @@ Players.PlayerRemoving:Connect(function(p)
         disableESP()
     end
 end)
+
+local Divider = friendTab:CreateDivider()
+
+-- ===== ปุ่ม “ลากศพทั้งหมด” (ไม่ใช้ dropdown) =====
+friendTab:CreateButton({
+    Name = "[ 💀 ]  Drag All Friend ( No Need To Choose Name )",
+    Callback = function()
+        -- เตรียมตัวเรา
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        -- เตรียม RemoteEvents
+        local remoteEvents = ReplicatedStorage:FindFirstChild("RemoteEvents")
+        local startDragging = remoteEvents and remoteEvents:FindFirstChild("RequestStartDraggingItem")
+        local stopDragging  = remoteEvents and remoteEvents:FindFirstChild("StopDraggingItem")
+
+        if not (startDragging and stopDragging) then
+            return
+        end
+
+        -- หา “ศพทั้งหมด”
+        local bodies = getAllBodies()
+        if #bodies == 0 then
+            return
+        end
+
+        
+
+        task.spawn(function()
+            for _, body in ipairs(bodies) do
+                -- กันกรณีออบเจ็กต์หายระหว่างทาง
+                if body and body.Parent then
+                    local inst = (typeof(cloneref) == "function") and cloneref(body) or body
+                    startDragging:FireServer(inst)
+                    task.wait(0.02)
+
+                    -- เลือกพาร์ทอ้างอิงเพื่อวางให้ใกล้ตัวเรา
+                    local refPart = findAnyBasePart(body)
+                    if refPart then
+                        -- ใช้ PivotTo ให้ทั้งโมเดลเลื่อนมาหน้าเรา
+                        body:PivotTo(hrp.CFrame * CFrame.new(0, 0, -DragOffset))
+                    end
+
+                    task.wait(0.05)
+                    stopDragging:FireServer(inst)
+                    task.wait(DragDelay)
+                end
+            end
+
+        end)
+    end
+})
+
+local Paragraph = friendTab:CreateParagraph({Title = "Drag All Player / Friend Normal / Beacause Die", Content = "Drag All Player / Friend Normal / Beacause Died"})
 
 local Divider = friendTab:CreateDivider()
 
