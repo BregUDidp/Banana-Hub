@@ -48,7 +48,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "",
       SaveKey = true,
       GrabKeyFromSite = false,
-      Key = {"AKARI-02JK1I9-PO5JI1", "AKARI-03PJK19-SO7BI2", "AKARI-04BVC29-ZO8HI2"}
+      Key = {"AKARI-02JK1I9-PO5JI1", "AKARI-03PJK19-SO7BI2", "AKARI-04BVC29-ZO8HI2", "AKARI-PEJ189-09JKU7A1"}
    }
 })
 
@@ -121,6 +121,11 @@ local Button = LoaderSTab:CreateButton({
        
        local Section = LoaderSTab:CreateSection("")
        local Section = LoaderSTab:CreateSection("")
+       local Divider = LoaderSTab:CreateDivider()
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping   [ - Best Script - ] ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderSTab:CreateDivider()
        local Section = LoaderSTab:CreateSection("{ ( - Script Akari Lucky Block BattleGround - ) }")
        LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   Lucky Block BattleGround ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Lucky"))() end})
