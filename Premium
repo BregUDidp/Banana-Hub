@@ -132,6 +132,11 @@ local Button = LoaderSTab:CreateButton({
 	   
        local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderSTab:CreateDivider()
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari Arsenal - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   Arsenal ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Arsenal"))() end})
+	   
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderSTab:CreateDivider()
        local Section = LoaderSTab:CreateSection("{ ( - Script Akari [FPS] Flick Shot - ) }")
        LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   [FPS] Flick Shot ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Flick%20Shot"))() end})
 	   
