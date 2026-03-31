@@ -877,7 +877,7 @@ AimbotTab:CreateSlider({
 
 AimbotTab:CreateParagraph({
     Title = "ESP Enemy + Skeleton",
-    Content = "• ESP Box + Tracer + Health Bar สำหรับศัตรู\n• Skeleton ESP (กระดูก)เปิด/ปิดได้\n• กระดูกจะเป็นสี Rainbow\n• ทำงานเฉพาะกับนอกทีม"
+    Content = "• ESP Box + Tracer + Health Bar for enemies\n• Skeleton ESP (bones) can be turned on/off\n• Bones will be Rainbow colored\n• Only works on outside teams"
 })
 
 local Divider = AimbotTab:CreateDivider()
