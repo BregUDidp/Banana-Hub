@@ -391,7 +391,7 @@ local HPText = nil
 
 --// Rainbow Color
 local function GetRainbow()
-    RainbowHue = (RainbowHue + (RainbowSpeed / 60)) % 1
+    RainbowHue = (RainbowHue + (RainbowSpeed / 1000)) % 1
     return Color3.fromHSV(RainbowHue, 1, 1)
 end
 
