@@ -63,6 +63,300 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
+local AnimationStatusLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+local Button = CreditTab:CreateButton({
+   Name = "                                                                      💃",
+   Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
+      )
+
+      
+
+      -- รันโหลดแบบไม่ให้ UI ค้าง
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title = "Animation Hub",
+               Content = "[ ✅ ]  Animations Hub Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Animation Hub Cancel</b></font>'
+            )
+
+            
+         end
+
+         -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+CreditTab:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local PlayerListParagraph = CreditTab:CreateParagraph({
+   Title = "List Player name",
+   Content = "Loading..."
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local ResetTimes = {}
+local RecentlyLeft = {}
+
+local LocalPlayer = game.Players.LocalPlayer
+local LocalPlayerName = LocalPlayer.Name
+
+local function GetTimeAgo(timestamp)
+   local currentTime = tick()
+   local timeDiff = currentTime - timestamp
+   
+   if timeDiff < 60 then
+      return math.floor(timeDiff) .. " Seconds Ago"
+   elseif timeDiff < 3600 then
+      return math.floor(timeDiff / 60) .. " A Minute Ago"
+   elseif timeDiff < 86400 then
+      local hours = math.floor(timeDiff / 3600)
+      local minutes = math.floor((timeDiff % 3600) / 60)
+      return hours .. " Hour. " .. minutes .. " A Minute Ago"
+   else
+      return "It's Been A long Time"
+   end
+end
+
+local function PlayLeaveSound()
+   local sound = Instance.new("Sound")
+   sound.SoundId = "rbxassetid://6670771770"
+   sound.Volume = 0.4
+   sound.Parent = game:GetService("SoundService")
+   sound:Play()
+   game:GetService("Debris"):AddItem(sound, 1)
+end
+
+local function OnPlayerReset(player)
+   ResetTimes[player.Name] = tick()
+end
+
+local function ConnectResetEvents()
+   for _, player in ipairs(game.Players:GetPlayers()) do
+      player.CharacterAdded:Connect(function()
+         OnPlayerReset(player)
+      end)
+      
+      if player.Character then
+         ResetTimes[player.Name] = tick()
+      end
+   end
+end
+
+local function UpdatePlayerList()
+   local players = game.Players:GetPlayers()
+   local playerCount = #players
+   
+   local localPlayerData = nil
+   local otherPlayers = {}
+   
+   -- แยกข้อมูลของคุณกับคนอื่น
+   for _, player in ipairs(players) do
+      local displayName = player.DisplayName or "No Name Player Show"
+      local username = player.Name
+      
+      local status = "    💥  Resetting - dying"
+      local resetInfo = "    ⏳  Wait For The Character to Load."
+      
+      if player.Character and player.Character:FindFirstChild("Humanoid") then
+         status = "    ✅  Online"
+         if ResetTimes[username] then
+            resetInfo = "    💥  Reset " .. GetTimeAgo(ResetTimes[username])
+         else
+            resetInfo = "    ✅ No Can Reset"
+         end
+      end
+      
+      local entry = {
+         display = displayName,
+         name = username,
+         status = status,
+         resetInfo = resetInfo
+      }
+      
+      if username == LocalPlayerName then
+         localPlayerData = entry
+      else
+         table.insert(otherPlayers, entry)
+      end
+   end
+   
+   local lines = {}
+   
+   -- 1. ชื่อคุณอยู่บนสุดเสมอ
+   if localPlayerData then
+      table.insert(lines, string.format(
+         "  ★  1. %s ( @ %s )  ←-- YOU\n   %s   |  %s",
+         localPlayerData.display, localPlayerData.name,
+         localPlayerData.status, localPlayerData.resetInfo
+      ))
+   end
+   
+   -- 2. ผู้เล่นคนอื่น (เรียงตามลำดับปกติของ GetPlayers)
+   for i, data in ipairs(otherPlayers) do
+      table.insert(lines, string.format(
+         "  %d. %s ( @ %s )\n   %s   |  %s",
+         i + 1, data.display, data.name, data.status, data.resetInfo
+      ))
+   end
+   
+   -- 3. คนที่เพิ่งออกเกม
+   for name, data in pairs(RecentlyLeft) do
+      local timeStr = GetTimeAgo(data.time)
+      table.insert(lines, string.format(
+         "  🔴  %s ( @ %s ) Leave The Game  •  %s",
+         data.displayName or name, name, timeStr
+      ))
+   end
+   
+   PlayerListParagraph:Set({
+      Title = string.format("                                                                                     (  %d Player  |  Leave %d Player  )", playerCount, #RecentlyLeft),
+      Content = table.concat(lines, "\n\n")
+   })
+   
+   
+end
+
+game.Players.PlayerRemoving:Connect(function(player)
+   PlayLeaveSound()
+   
+   RecentlyLeft[player.Name] = {
+      time = tick(),
+      displayName = player.DisplayName
+   }
+   
+   Rayfield:Notify({
+      Title = "[ 🔴 ]  Person Leave The Map!",
+      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Sever",
+      Duration = 3.5,
+      Image = "accessibility",
+   })
+   
+   task.delay(6, function()
+      RecentlyLeft[player.Name] = nil
+      pcall(UpdatePlayerList)
+   end)
+   
+   pcall(UpdatePlayerList)
+end)
+
+-- เริ่มต้น
+ConnectResetEvents()
+UpdatePlayerList()
+
+spawn(function()
+   while true do
+      task.wait(1.8)
+      pcall(function()
+         ConnectResetEvents()
+         UpdatePlayerList()
+      end)
+   end
+end)
+
+game.Players.PlayerAdded:Connect(function(player)
+   player.CharacterAdded:Connect(function()
+      OnPlayerReset(player)
+   end)
+   task.wait(1)
+   UpdatePlayerList()
+end)
+
+spawn(function()
+   while true do
+      task.wait(2)
+      if ResetTimes[LocalPlayerName] then
+         MyResetLabel:Set("Time Reseting You: " .. GetTimeAgo(ResetTimes[LocalPlayerName]))
+      else
+         MyResetLabel:Set("Time Reseting You: You Cant Reset")
+      end
+   end
+end)
+
 --// Tabs
 local AimbotTab = Window:CreateTab("||   - Aimbot Player - ESP", "locate-fixed")
 local RainbowTab = Window:CreateTab("||   - Color Guning", "swords")
@@ -880,3 +1174,583 @@ RainbowTab:CreateToggle({
 local Paragraph = RainbowTab:CreateParagraph({Title = "Rainbow Tool For Cool Style", Content = "Rainbow Tool Is Good For Style Gun / Sword"})
 
 local Divider = RainbowTab:CreateDivider()
+
+--// === PLAYER TAB ===
+local PTab = Window:CreateTab("||   - Physical  X", "snail")
+local Divider = PTab:CreateDivider()
+
+-- โหลดบริการที่จำเป็น
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")  -- สำหรับลบ object อัตโนมัติ
+
+-- ตัวแปรเริ่มต้น
+local swingSpeed = 80
+local swingGravity = 50
+local maxWebDistance = 1500
+
+local swingConnection
+local inputConnection1
+local inputConnection2
+
+local isSwinging = false
+local webPoint = nil
+
+local webBeam = nil          -- Beam สำหรับเส้นใย
+local playerAttachment = nil -- Attachment ที่มือ/แขนผู้เล่น
+local anchorAttachment = nil -- Attachment ที่จุดติดใย
+
+-- Toggle สำหรับ Spider-Man Swing
+local Toggle = PTab:CreateToggle({
+    Name = "[ ⛏️ ]  Swinging Webbing Block  [ - R6 / R15 - ]",
+    CurrentValue = false,
+    Flag = "SpiderSwing",
+    Callback = function(Value)
+        Rayfield:Notify({
+            Title = Value and   "[ ⛏️ ]  Swinging Mode On" or "[ ⛏️ ]  Swinging Mode Off",
+            Content = Value and "[ ✅ ]  Swing Webing Enable!" or "[ 🛑 ]  Swing Webing Disabled!",
+            Duration = 1,
+            Image = "pickaxe"
+        })
+
+        local LP = Players.LocalPlayer
+
+        if Value then
+            -- รอ Character
+            if not LP.Character then
+                LP.CharacterAdded:Wait()
+            end
+
+            local Char = LP.Character
+            local Hum = Char:FindFirstChild("Humanoid")
+            if not Hum then return end
+
+            -- ตรวจสอบ RigType เพื่อเลือกส่วนมือขวา
+            local rightHandPart
+            if Hum.RigType == Enum.HumanoidRigType.R15 then
+                rightHandPart = Char:FindFirstChild("RightHand") or Char:WaitForChild("RightHand")
+            else -- R6
+                rightHandPart = Char:FindFirstChild("Right Arm") or Char:WaitForChild("Right Arm")
+            end
+
+            -- สร้าง Attachment ที่มือขวา (หรือแขนขวาใน R6)
+            playerAttachment = Instance.new("Attachment")
+            playerAttachment.Name = "WebAttachment_Player"
+            playerAttachment.Parent = rightHandPart
+
+            -- Heartbeat สำหรับการเหวี่ยง
+            swingConnection = RunService.Heartbeat:Connect(function()
+                if Char and Char:FindFirstChild("HumanoidRootPart") and Char:FindFirstChild("Humanoid") then
+                    local Root = Char.HumanoidRootPart
+                    local Hum = Char.Humanoid
+
+                    if isSwinging and webPoint then
+                        local direction = (webPoint - Root.Position).Unit
+
+                        local velocity = direction * swingSpeed
+                        Root.Velocity = Vector3.new(velocity.X, swingGravity, velocity.Z)
+
+                        local lookCFrame = CFrame.new(Root.Position, webPoint)
+                        Root.CFrame = Root.CFrame:Lerp(lookCFrame, 0.2)
+
+                        Hum:ChangeState(Enum.HumanoidStateType.Freefall)
+                    end
+                end
+            end)
+
+            -- กดคลิกซ้ายเพื่อยิงใย
+            inputConnection1 = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    if Char and Char:FindFirstChild("HumanoidRootPart") then
+                        local camera = Workspace.CurrentCamera
+
+                        local params = RaycastParams.new()
+                        params.FilterDescendantsInstances = {Char}
+                        params.FilterType = Enum.RaycastFilterType.Exclude
+
+                        local rayResult = Workspace:Raycast(camera.CFrame.Position, camera.CFrame.LookVector * maxWebDistance, params)
+
+                        if rayResult and rayResult.Position then
+                            webPoint = rayResult.Position
+                            isSwinging = true
+
+                            -- สร้าง Attachment ที่จุดติดใย
+                            anchorAttachment = Instance.new("Attachment")
+                            anchorAttachment.Name = "WebAttachment_Anchor"
+                            anchorAttachment.WorldPosition = webPoint
+                            anchorAttachment.Parent = Workspace.Terrain
+
+                            -- สร้าง Beam - เส้นใยใหญ่ หนา แบบ Spider-Man
+                            webBeam = Instance.new("Beam")
+                            webBeam.Name = "SpiderWeb"
+                            webBeam.Attachment0 = playerAttachment
+                            webBeam.Attachment1 = anchorAttachment
+                            
+                            webBeam.FaceCamera = true
+                            webBeam.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+                            webBeam.LightEmission = 1.5
+                            webBeam.LightInfluence = 0
+                            webBeam.Transparency = NumberSequence.new(0.3)
+                            webBeam.Width0 = 2.0
+                            webBeam.Width1 = 1.5
+                            
+                            webBeam.Texture = "rbxassetid://6060542021"
+                            webBeam.TextureMode = Enum.TextureMode.Stretch
+                            webBeam.TextureSpeed = 3
+                            webBeam.TextureLength = 8
+                            
+                            webBeam.Parent = Char
+
+                            -- === เพิ่มเอฟเฟกต์ควันสีม่วง ===
+                            local purpleColor = ColorSequence.new(Color3.fromRGB(138, 43, 179))
+
+                            -- ควันที่มือ (จุดยิง)
+                            local smokeHand = Instance.new("ParticleEmitter")
+                            smokeHand.Parent = rightHandPart
+                            smokeHand.Texture = "rbxasset://textures/particles/smoke_main.dds"  -- texture ควันมาตรฐาน Roblox
+                            smokeHand.Color = purpleColor
+                            smokeHand.Transparency = NumberSequence.new(0.5, 1)
+                            smokeHand.Size = NumberSequence.new(1, 3)
+                            smokeHand.Lifetime = NumberRange.new(0.8, 1.5)
+                            smokeHand.Rate = 100  -- พุ่งแรงตอนยิง
+                            smokeHand.Speed = NumberRange.new(5, 15)
+                            smokeHand.SpreadAngle = Vector2.new(45, 45)
+                            smokeHand.LightEmission = 0.3
+                            smokeHand.Enabled = true
+
+                            -- ควันที่จุดติดผนัง
+                            local smokeAnchor = Instance.new("ParticleEmitter")
+                            smokeAnchor.Parent = anchorAttachment
+                            smokeAnchor.Texture = "rbxasset://textures/particles/smoke_main.dds"
+                            smokeAnchor.Color = purpleColor
+                            smokeAnchor.Transparency = NumberSequence.new(0.4, 1)
+                            smokeAnchor.Size = NumberSequence.new(2, 5)
+                            smokeAnchor.Lifetime = NumberRange.new(1, 2)
+                            smokeAnchor.Rate = 150
+                            smokeAnchor.Speed = NumberRange.new(2, 8)
+                            smokeAnchor.SpreadAngle = Vector2.new(360, 360)
+                            smokeAnchor.LightEmission = 0.2
+                            smokeAnchor.Enabled = true
+
+                            -- หยุด emit ควันหลังจาก delay (เพื่อไม่ให้ฟุ้งตลอดเวลา)
+                            task.delay(0.5, function()
+                                smokeHand.Enabled = false
+                                smokeAnchor.Enabled = false
+                            end)
+
+                            -- ลบ ParticleEmitter อัตโนมัติหลังจบ
+                            Debris:AddItem(smokeHand, 3)
+                            Debris:AddItem(smokeAnchor, 3)
+
+                            Rayfield:Notify({
+                                Title = "[ ⛏️ ]  Found Block / Walling",
+                                Content = "[ ✅ ]  Webing Block Attached!",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        else      
+                            Rayfield:Notify({
+                                Title = "[ ⛏️ ]  No Found Block / Walling",
+                                Content = "[ ❌ ]  No Webing Block Point!",
+                                Duration = 1,
+                                Image = "brick-wall"
+                            })
+                        end
+                    end
+                end
+            end)
+
+            -- ปล่อยคลิกเพื่อตัดใย
+            inputConnection2 = UserInputService.InputEnded:Connect(function(input, gameProcessed)
+                if gameProcessed then return end
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    isSwinging = false
+                    webPoint = nil
+
+                    if webBeam then webBeam:Destroy() end
+                    if anchorAttachment then anchorAttachment:Destroy() end
+                    webBeam = nil
+                    anchorAttachment = nil
+                end
+            end)
+
+        else
+            -- ปิดทุกอย่าง
+            if swingConnection then swingConnection:Disconnect() end
+            if inputConnection1 then inputConnection1:Disconnect() end
+            if inputConnection2 then inputConnection2:Disconnect() end
+
+            isSwinging = false
+            webPoint = nil
+
+            if webBeam then webBeam:Destroy() end
+            if anchorAttachment then anchorAttachment:Destroy() end
+            if playerAttachment then playerAttachment:Destroy() end
+
+            if LP.Character and LP.Character:FindFirstChild("Humanoid") then
+                LP.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end
+    end,
+})
+
+-- Slider ต่าง ๆ (เหมือนเดิม แต่ปรับ Notify ให้สวยขึ้น)
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Swinging Webbing Speed",
+    Range = {50, 5000},
+    Increment = 5,
+    Suffix = " Swing Speed",
+    CurrentValue = 80,
+    Flag = "SwingSpeed",
+    Callback = function(Value)
+        swingSpeed = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Speed!",
+           Content = "Swinging Speed: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Webbing Distance",
+    Range = {50, 5000},
+    Increment = 10,
+    Suffix = " Swing Distance",
+    CurrentValue = 1500,
+    Flag = "WebDistance",
+    Callback = function(Value)
+        maxWebDistance = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Distance!",
+           Content = "Swinging Distance: " .. Value,
+           Duration = 1,
+           Image = "ruler",
+         })
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Swinging Gravity Force",
+    Range = {20, 5000},
+    Increment = 5,
+    Suffix = " Swing Gravity",
+    CurrentValue = 50,
+    Flag = "SwingLift",
+    Callback = function(Value)
+        swingGravity = Value
+        Rayfield:Notify({
+           Title = "[ 📏 ]  Swinging Gravity Force!",
+           Content = "Swinging Gravity: " .. Value,
+           Duration = 1,
+           Image = "pickaxe",
+         })
+    end
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Forging Block Player / Friend Sword", Content = "Forging Block Player / Friend Sword Are Multi Block"})
+
+local Divider = PTab:CreateDivider()
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local character = player.Character or player.CharacterAdded:Wait()
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.Space then
+		ascend = false
+	elseif input.KeyCode == Enum.KeyCode.LeftShift then
+		descend = false
+	end
+end)
+
+local Players = game:GetService("Players")
+local RS = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local humanoid = char:WaitForChild("Humanoid")
+
+local superSpeed = false
+local runSpeed = 16
+local noclipEnabled = false
+ 
+-- ฟังก์ชันวิ่งเร็ว
+local function toggleSpeed(on)
+    superSpeed = on
+    humanoid.WalkSpeed = superSpeed and runSpeed or 16
+    Rayfield:Notify({
+        Title = superSpeed and "[ 🏃 ]  Become Speed Flash!" or "[ 🚶‍♂️ ]  Become Speed Normal!",
+        Content = superSpeed and "[ ✅ ] Speed Running ON" or "[ 🛑 ]  Speed Running OFF",
+        Duration = 1,
+        Image = "bike",
+    })
+end
+
+-- Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local flying = false
+local flySpeed = 50
+local flyConnection
+local bodyVelocity
+local bodyGyro
+
+local function updateFly()
+    local character = player.Character
+    if not character or not flying then return end
+    
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+    
+    local camera = workspace.CurrentCamera
+    local horizontal = Vector3.new(0, 0, 0)
+    
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        horizontal = horizontal + camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        horizontal = horizontal - camera.CFrame.LookVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        horizontal = horizontal - camera.CFrame.RightVector
+    end
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        horizontal = horizontal + camera.CFrame.RightVector
+    end
+    
+    local vertical = 0
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        vertical = 1
+    elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+        vertical = -1
+    end
+    
+    local moveDir = horizontal + Vector3.new(0, vertical, 0)
+    if moveDir.Magnitude > 0 then
+        bodyVelocity.Velocity = moveDir.Unit * flySpeed
+    else
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    end
+    
+    bodyGyro.CFrame = camera.CFrame
+end
+
+local FlyToggle = PTab:CreateToggle({
+    Name = "[ 🪁 ]  Flying Gravity",
+    CurrentValue = false,
+    Flag = "FlyEnabled",
+    Callback = function(Value)
+        flying = Value
+        Rayfield:Notify({
+            Title = Value and   "[ 🪁 ]  Flying ON" or "[ 🪁 ]  Flying ON",
+            Content = Value and "[ ✅ ]  Click Flying ON" or "[ 🛑 ]  Click Flying OFF",
+            Duration = 1,
+            Image = "luggage"
+        })
+
+        local character = player.Character
+        if not character then return end
+        
+        local humanoid = character:FindFirstChild("Humanoid")
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not humanoidRootPart then return end
+        
+        if Value then
+            humanoid.PlatformStand = true
+            
+            bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+            bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+            bodyVelocity.Parent = humanoidRootPart
+            
+            bodyGyro = Instance.new("BodyGyro")
+            bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+            bodyGyro.CFrame = humanoidRootPart.CFrame
+            bodyGyro.Parent = humanoidRootPart
+            
+            flyConnection = RunService.Heartbeat:Connect(updateFly)
+        else
+            humanoid.PlatformStand = false
+            if bodyVelocity then bodyVelocity:Destroy() end
+            if bodyGyro then bodyGyro:Destroy() end
+            if flyConnection then flyConnection:Disconnect() end
+        end
+    end,
+})
+
+local SpeedSlider = PTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Flying Speed",
+    Range = {50, 5000},
+    Increment = 5,
+    Suffix = " Flying Speed",
+    CurrentValue = 50,
+    Flag = "FlySpeed",
+    Callback = function(Value)
+        flySpeed = Value
+    end,
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For Style", Content = "Flying For Building And Fly For Style Super Man"})
+
+local Divider = PTab:CreateDivider()
+
+local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
+local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+
+local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
+
+local Divider = PTab:CreateDivider()
+
+local InfiniteJumpEnabled = false
+
+PTab:CreateToggle({
+    Name = "[ 🦘 ]  Infinite Jump Power",
+    CurrentValue = false,
+    Flag = "InfiniteJumpToggle",
+    Callback = function(Value)
+        InfiniteJumpEnabled = Value
+        Rayfield:Notify({
+            Title = Value and   "[ 🦘 ]  Infinite Power Jump On" or "[ 🦘 ]  Infinite Power Jump Off",
+            Content = Value and "[ ✅ ]  Infinite Power Jump On" or "[ 🛑 ]  Infinite Power Jump Off",
+            Duration = 1,
+            Image = "rabbit"
+        })
+        if Value then
+        end
+    end
+})
+
+PTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Jump Power",
+    Range = {50, 5000},
+    Increment = 1,
+    Suffix = " Jumping Power",
+    CurrentValue = 50,
+    Flag = "JumpPowerSlider",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character.Humanoid.JumpPower = Value
+        end
+    end
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+            player.Character.Humanoid:ChangeState("Jumping")
+        end
+    end
+end)
+
+local Paragraph = PTab:CreateParagraph({Title = "Infinite Jumpping For Building Style Rabbit", Content = "Infinite Jumpping For Building Style Rabbit And Kangaroo"})
+
+local Divider = PTab:CreateDivider()
+
+local ResetZoomButton = PTab:CreateButton({
+    Name = "[ 🗞️ ]  Reseting Zoom Altra",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        
+        InfiniteZoomEnabled = false
+        
+        player.CameraMaxZoomDistance = 400
+        player.CameraMinZoomDistance = 0.5
+        
+        Rayfield:Notify({
+            Title = "[ 🔎 ] Infinite Zoom Off",
+            Content = "The Infinite Zoom Has New",
+            Duration = 1,
+            Image = "zoom-out",
+        })
+    end,
+})
+
+local InfiniteZoomSlider = PTab:CreateSlider({
+    Name = "[ 📏 ]  Infinite Zoom Distance",
+    Range = {400, 10000},
+    Increment = 100,       
+    Suffix = " Infinite Zoom",
+    CurrentValue = 400,    -- เริ่มต้นที่ค่าเดิมของ Roblox
+    Flag = "InfiniteZoomSlider",
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        
+        -- ตั้งค่าระยะซูมสูงสุด
+        player.CameraMaxZoomDistance = Value
+        
+        -- คงค่าระยะซูมใกล้สุดไว้ (เพื่อไม่ให้ซูมเข้าใกล้เกินไป)
+        player.CameraMinZoomDistance = 0.5
+        
+        -- แจ้งเตือนด้วย Rayfield Notify
+        if Value == 400 then
+            
+        
+
+        elseif Value >= 8000 then
+            Rayfield:Notify({
+                Title = "[ 📏 ]  Infinite Zoom",
+                Content = "Zoom Distance: " .. Value .. " Studs",
+                Duration = 1,
+                Image = "zoom-in",
+            })
+        else
+            Rayfield:Notify({
+                Title = "[ 📏 ]  Zoom Adjusted",
+                Content = "Distance Zoom: " .. Value .. " Studs",
+                Duration = 1,
+                Image = "zoom-in",
+            })
+        end
+    end,
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Infinite Zoom For See Your Player / Friend", Content = "Infinite Zoom For See Your Player / Friend And Look"})
+
+local Divider = PTab:CreateDivider()
+
+local noclipToggle = PTab:CreateToggle({
+   Name = "[ 🧱 ]  Noclips Walling Hole",
+   CurrentValue = false,
+   Flag = "Toggle1",
+   Callback = function(Value)
+       noclipEnabled= Value
+
+       Rayfield:Notify({
+            Title = Value and   "[ 🧱 ]  Walling Mode On" or "[ 🧱 ]  Walling Mode Off",
+            Content = Value and "[ ✅ ]  Walling Noclips Enable!" or "[ 🛑 ]  Walling Noclips Disabled!",
+            Duration = 1,
+            Image = "brick-wall"
+        })
+   end,
+})
+
+RS.Stepped:Connect(function()
+    if noclipEnabled and char then
+        for _,part in pairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then part.CanCollide=false end
+        end
+    end
+end)
+
+local Paragraph = PTab:CreateParagraph({Title = "Noclips For Walling And Hack Wall", Content = "Noclips For Walling And Hack Walling"})
+
+local Divider = PTab:CreateDivider()
