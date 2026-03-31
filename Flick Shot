@@ -63,6 +63,300 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
+local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
+local AnimationStatusLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+local Button = CreditTab:CreateButton({
+   Name = "                                                                      💃",
+   Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
+      )
+
+      
+
+      -- รันโหลดแบบไม่ให้ UI ค้าง
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title = "Animation Hub",
+               Content = "[ ✅ ]  Animations Hub Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Animation Hub Cancel</b></font>'
+            )
+
+            
+         end
+
+         -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+CreditTab:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local PlayerListParagraph = CreditTab:CreateParagraph({
+   Title = "List Player name",
+   Content = "Loading..."
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local ResetTimes = {}
+local RecentlyLeft = {}
+
+local LocalPlayer = game.Players.LocalPlayer
+local LocalPlayerName = LocalPlayer.Name
+
+local function GetTimeAgo(timestamp)
+   local currentTime = tick()
+   local timeDiff = currentTime - timestamp
+   
+   if timeDiff < 60 then
+      return math.floor(timeDiff) .. " Seconds Ago"
+   elseif timeDiff < 3600 then
+      return math.floor(timeDiff / 60) .. " A Minute Ago"
+   elseif timeDiff < 86400 then
+      local hours = math.floor(timeDiff / 3600)
+      local minutes = math.floor((timeDiff % 3600) / 60)
+      return hours .. " Hour. " .. minutes .. " A Minute Ago"
+   else
+      return "It's Been A long Time"
+   end
+end
+
+local function PlayLeaveSound()
+   local sound = Instance.new("Sound")
+   sound.SoundId = "rbxassetid://6670771770"
+   sound.Volume = 0.4
+   sound.Parent = game:GetService("SoundService")
+   sound:Play()
+   game:GetService("Debris"):AddItem(sound, 1)
+end
+
+local function OnPlayerReset(player)
+   ResetTimes[player.Name] = tick()
+end
+
+local function ConnectResetEvents()
+   for _, player in ipairs(game.Players:GetPlayers()) do
+      player.CharacterAdded:Connect(function()
+         OnPlayerReset(player)
+      end)
+      
+      if player.Character then
+         ResetTimes[player.Name] = tick()
+      end
+   end
+end
+
+local function UpdatePlayerList()
+   local players = game.Players:GetPlayers()
+   local playerCount = #players
+   
+   local localPlayerData = nil
+   local otherPlayers = {}
+   
+   -- แยกข้อมูลของคุณกับคนอื่น
+   for _, player in ipairs(players) do
+      local displayName = player.DisplayName or "No Name Player Show"
+      local username = player.Name
+      
+      local status = "    💥  Resetting - dying"
+      local resetInfo = "    ⏳  Wait For The Character to Load."
+      
+      if player.Character and player.Character:FindFirstChild("Humanoid") then
+         status = "    ✅  Online"
+         if ResetTimes[username] then
+            resetInfo = "    💥  Reset " .. GetTimeAgo(ResetTimes[username])
+         else
+            resetInfo = "    ✅ No Can Reset"
+         end
+      end
+      
+      local entry = {
+         display = displayName,
+         name = username,
+         status = status,
+         resetInfo = resetInfo
+      }
+      
+      if username == LocalPlayerName then
+         localPlayerData = entry
+      else
+         table.insert(otherPlayers, entry)
+      end
+   end
+   
+   local lines = {}
+   
+   -- 1. ชื่อคุณอยู่บนสุดเสมอ
+   if localPlayerData then
+      table.insert(lines, string.format(
+         "  ★  1. %s ( @ %s )  ←-- YOU\n   %s   |  %s",
+         localPlayerData.display, localPlayerData.name,
+         localPlayerData.status, localPlayerData.resetInfo
+      ))
+   end
+   
+   -- 2. ผู้เล่นคนอื่น (เรียงตามลำดับปกติของ GetPlayers)
+   for i, data in ipairs(otherPlayers) do
+      table.insert(lines, string.format(
+         "  %d. %s ( @ %s )\n   %s   |  %s",
+         i + 1, data.display, data.name, data.status, data.resetInfo
+      ))
+   end
+   
+   -- 3. คนที่เพิ่งออกเกม
+   for name, data in pairs(RecentlyLeft) do
+      local timeStr = GetTimeAgo(data.time)
+      table.insert(lines, string.format(
+         "  🔴  %s ( @ %s ) Leave The Game  •  %s",
+         data.displayName or name, name, timeStr
+      ))
+   end
+   
+   PlayerListParagraph:Set({
+      Title = string.format("                                                                                     (  %d Player  |  Leave %d Player  )", playerCount, #RecentlyLeft),
+      Content = table.concat(lines, "\n\n")
+   })
+   
+   
+end
+
+game.Players.PlayerRemoving:Connect(function(player)
+   PlayLeaveSound()
+   
+   RecentlyLeft[player.Name] = {
+      time = tick(),
+      displayName = player.DisplayName
+   }
+   
+   Rayfield:Notify({
+      Title = "[ 🔴 ]  Person Leave The Map!",
+      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Sever",
+      Duration = 3.5,
+      Image = "accessibility",
+   })
+   
+   task.delay(6, function()
+      RecentlyLeft[player.Name] = nil
+      pcall(UpdatePlayerList)
+   end)
+   
+   pcall(UpdatePlayerList)
+end)
+
+-- เริ่มต้น
+ConnectResetEvents()
+UpdatePlayerList()
+
+spawn(function()
+   while true do
+      task.wait(1.8)
+      pcall(function()
+         ConnectResetEvents()
+         UpdatePlayerList()
+      end)
+   end
+end)
+
+game.Players.PlayerAdded:Connect(function(player)
+   player.CharacterAdded:Connect(function()
+      OnPlayerReset(player)
+   end)
+   task.wait(1)
+   UpdatePlayerList()
+end)
+
+spawn(function()
+   while true do
+      task.wait(2)
+      if ResetTimes[LocalPlayerName] then
+         MyResetLabel:Set("Time Reseting You: " .. GetTimeAgo(ResetTimes[LocalPlayerName]))
+      else
+         MyResetLabel:Set("Time Reseting You: You Cant Reset")
+      end
+   end
+end)
+
 --// Tabs
 local AimbotTab = Window:CreateTab("||   - Aimbot Player - ESP", "locate-fixed")
 local RainbowTab = Window:CreateTab("||   - Color Guning", "swords")
@@ -266,21 +560,26 @@ AimbotTab:CreateSlider({
 local Paragraph = AimbotTab:CreateParagraph({Title = "Aimbot Player / Friend Is Rainbow Color", Content = "Aimbot Player / Friend Is Rainbow Color And Style"})
 
 --// ============================================== --
---//                   ESP SYSTEM                  --
+--//     FULL ESP + SKELETON ESP (แสดงทุกคน)
 --// ============================================== --
+
 local ESP = {
-    Enabled = false,
-    Tracer = true,
+    Enabled = false,              -- เปิด/ปิด ESP หลัก
+    SkeletonEnabled = true,       -- Skeleton จะเปิดตาม ESP หลักโดย default
+    TracerEnabled = true,
+    RainbowSpeed = 2.8,
     Boxes = {},
-    RainbowSpeed = 1
+    SkeletonLines = {}
 }
 
-local function Rainbow(t, offset)
+local function Rainbow(offset)
     return Color3.fromHSV((tick() * ESP.RainbowSpeed + (offset or 0)) % 1, 1, 1)
 end
 
-local function CreateESP(player)
+--// ==================== BOX ESP ====================
+local function CreateBoxESP(player)
     if ESP.Boxes[player] then return end
+    
     local box = {}
     box.Square = Drawing.new("Square")
     box.Square.Thickness = 2
@@ -297,73 +596,208 @@ local function CreateESP(player)
     box.Tracer.Thickness = 2
     box.Tracer.Visible = false
 
+    box.HealthBar = Drawing.new("Square")
+    box.HealthBar.Thickness = 1
+    box.HealthBar.Filled = true
+    box.HealthBar.Visible = false
+
     ESP.Boxes[player] = box
 end
 
-local function RemoveESP(player)
+local function RemoveBoxESP(player)
     local box = ESP.Boxes[player]
     if box then
-        for _, v in pairs(box) do pcall(v.Remove, v) end
+        for _, obj in pairs(box) do pcall(function() obj:Remove() end) end
         ESP.Boxes[player] = nil
     end
 end
 
---// ESP Loop
+--// ==================== SKELETON ESP ====================
+local function CreateSkeleton(player)
+    if ESP.SkeletonLines[player] then return end
+    
+    local lines = {}
+    local boneConnections = {
+        {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
+        {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
+        {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
+        {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
+        {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"}
+    }
+
+    for _, pair in ipairs(boneConnections) do
+        local line = Drawing.new("Line")
+        line.Thickness = 1.8
+        line.Transparency = 1
+        line.Visible = false
+        table.insert(lines, { Line = line, Bone1 = pair[1], Bone2 = pair[2] })
+    end
+
+    ESP.SkeletonLines[player] = lines
+end
+
+local function RemoveSkeleton(player)
+    if ESP.SkeletonLines[player] then
+        for _, data in pairs(ESP.SkeletonLines[player]) do
+            pcall(function() data.Line:Remove() end)
+        end
+        ESP.SkeletonLines[player] = nil
+    end
+end
+
+--// ==================== MAIN LOOP ====================
 RunService.RenderStepped:Connect(function()
     if not ESP.Enabled then
-        for p, _ in pairs(ESP.Boxes) do RemoveESP(p) end
+        for p in pairs(ESP.Boxes) do RemoveBoxESP(p) end
+        for p in pairs(ESP.SkeletonLines) do RemoveSkeleton(p) end
         return
     end
 
     for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local hum = player.Character:FindFirstChild("Humanoid")
-            if hum and hum.Health > 0 then
-                CreateESP(player)
-                local box = ESP.Boxes[player]
-                local root = player.Character.HumanoidRootPart
-                local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+        if player == LocalPlayer then continue end
 
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local character = player.Character
+            local humanoid = character:FindFirstChild("Humanoid")
+            local root = character:FindFirstChild("HumanoidRootPart")
+
+            if humanoid and root and humanoid.Health > 0 then
+                local rootPos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+                -- Box ESP + Name + Tracer + HealthBar
                 if onScreen then
-                    local scale = math.clamp(2000 / (Camera.CFrame.Position - root.Position).Magnitude, 20, 200)
-                    local size = Vector2.new(scale * 0.6, scale)
-                    local center = Vector2.new(pos.X, pos.Y)
+                    CreateBoxESP(player)
+                    local box = ESP.Boxes[player]
 
-                    -- Box
+                    local distance = (Camera.CFrame.Position - root.Position).Magnitude
+                    local scale = math.clamp(2000 / distance, 18, 220)
+                    local size = Vector2.new(scale * 0.65, scale * 1.8)
+                    local center = Vector2.new(rootPos.X, rootPos.Y)
+
+                    local color = Rainbow(0)
+
                     box.Square.Size = size
                     box.Square.Position = center - size/2
-                    box.Square.Color = Rainbow(1, 0)
+                    box.Square.Color = color
                     box.Square.Visible = true
 
-                    -- Name
-                    box.Name.Position = center + Vector2.new(0, -size.Y/2 - 18)
-                    box.Name.Text = player.Name
-                    box.Name.Color = Rainbow(1, 0.15)
+                    box.Name.Position = center + Vector2.new(0, -size.Y/2 - 22)
+                    box.Name.Text = player.DisplayName
+                    box.Name.Color = Rainbow(0.1)
                     box.Name.Visible = true
 
-                    -- Tracer
-                    if ESP.Tracer then
-                        local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+                    if ESP.TracerEnabled then
+                        local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y - 30)
                         box.Tracer.From = screenCenter
-                        box.Tracer.To = center
-                        box.Tracer.Color = Rainbow(1, 0.25)
+                        box.Tracer.To = Vector2.new(rootPos.X, rootPos.Y + size.Y/2 - 5)
+                        box.Tracer.Color = color
                         box.Tracer.Visible = true
+                    else
+                        box.Tracer.Visible = false
+                    end
+
+                    local hpPercent = humanoid.Health / humanoid.MaxHealth
+                    local barHeight = size.Y * hpPercent
+                    box.HealthBar.Size = Vector2.new(4, barHeight)
+                    box.HealthBar.Position = Vector2.new(center.X - size.X/2 - 8, center.Y - size.Y/2 + (size.Y - barHeight))
+                    box.HealthBar.Color = Color3.fromHSV(hpPercent * 0.33, 1, 1)
+                    box.HealthBar.Visible = true
+                else
+                    RemoveBoxESP(player)
+                end
+
+                -- Skeleton ESP (ทำงานเมื่อเปิด ESP หลัก)
+                if ESP.SkeletonEnabled then
+                    CreateSkeleton(player)
+                    local skel = ESP.SkeletonLines[player]
+                    if skel then
+                        for _, data in ipairs(skel) do
+                            local part1 = character:FindFirstChild(data.Bone1)
+                            local part2 = character:FindFirstChild(data.Bone2)
+                            
+                            if part1 and part2 then
+                                local p1, vis1 = Camera:WorldToViewportPoint(part1.Position)
+                                local p2, vis2 = Camera:WorldToViewportPoint(part2.Position)
+                                
+                                if vis1 and vis2 then
+                                    data.Line.From = Vector2.new(p1.X, p1.Y)
+                                    data.Line.To = Vector2.new(p2.X, p2.Y)
+                                    data.Line.Color = Rainbow(0.3)
+                                    data.Line.Visible = true
+                                else
+                                    data.Line.Visible = false
+                                end
+                            else
+                                data.Line.Visible = false
+                            end
+                        end
                     end
                 else
-                    box.Square.Visible = false
-                    box.Name.Visible = false
-                    box.Tracer.Visible = false
+                    RemoveSkeleton(player)
                 end
+
             else
-                RemoveESP(player)
+                RemoveBoxESP(player)
+                RemoveSkeleton(player)
             end
         else
-            RemoveESP(player)
+            RemoveBoxESP(player)
+            RemoveSkeleton(player)
         end
     end
 end)
 
-Players.PlayerRemoving:Connect(RemoveESP)
+Players.PlayerRemoving:Connect(function(player)
+    RemoveBoxESP(player)
+    RemoveSkeleton(player)
+end)
+
+--// ==================== GUI ====================
+local Divider = AimbotTab:CreateDivider()
+
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  ESP Player Rainbow ( Box + Name + HP )",
+    CurrentValue = false,
+    Callback = function(v)
+        ESP.Enabled = v
+        -- เมื่อเปิด ESP หลัก จะเปิด Skeleton อัตโนมัติ
+        if v then
+            ESP.SkeletonEnabled = true
+        end
+    end
+})
+
+AimbotTab:CreateToggle({
+    Name = "[ 🦴 ]  Skeleton ESP ( ESP Skeleton )",
+    CurrentValue = true,
+    Callback = function(v)
+        ESP.SkeletonEnabled = v
+    end
+})
+
+AimbotTab:CreateToggle({
+    Name = "[ 📍 ]  Tracer ESP Player",
+    CurrentValue = true,
+    Callback = function(v)
+        ESP.TracerEnabled = v
+    end
+})
+
+AimbotTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Rainbow Speed",
+    Range = {0.5, 8},
+    Increment = 0.1,
+    Suffix = "x",
+    CurrentValue = 2.8,
+    Callback = function(v)
+        ESP.RainbowSpeed = v
+    end
+})
+
+AimbotTab:CreateParagraph({
+    Title = "ESP + Skeleton ESP",
+    Content = "• ESP Player Rainbow enabled = Automatically enables both Box and Skeleton.\n• Skeleton can be enabled/disabled separately.\n• Shows everyone on the map (no team checking).\n• Skeletons and boxes are beautifully colored in Rainbow."
+})
 
 --// ============================================== --
 --//              RAINBOW GUN SYSTEM               --
@@ -481,29 +915,6 @@ Players.PlayerRemoving:Connect(function(p)
         ESPObjects[p] = nil
     end
 end)
-
---// ============================================== --
---//                  GUI CONTROLS                 --
---// ============================================== --
-
---// ESP Tab (ใช้ AimbotTab ต่อ)
-local Divider = AimbotTab:CreateDivider()
-
-AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  ESP Player Rainbow  [ - Tracer - ]",
-    CurrentValue = false,
-    Callback = function(v) ESP.Enabled = v end
-})
-
-AimbotTab:CreateToggle({
-    Name = "[ 🔍 ]  Tracer ESP Player Rainbow Automatic",
-    CurrentValue = true,
-    Callback = function(v) ESP.Tracer = v end
-})
-
-local Paragraph = AimbotTab:CreateParagraph({Title = "ESP Player / Friend Tracer Is Automatic", Content = "ESP Player / Friend Tracer Is Automatic Style"})
-
-local Divider = AimbotTab:CreateDivider()
 
 --// Rainbow Gun Tab
 local Divider = RainbowTab:CreateDivider()
