@@ -881,3 +881,146 @@ AimbotTab:CreateParagraph({
 })
 
 local Divider = AimbotTab:CreateDivider()
+
+--// ============================================== --
+--//   TELEPORT KILL LOOP + TEAM CHECK (Arsenal)
+--// ============================================== --
+
+local KillTab = Window:CreateTab("|| - Killing Loop", "skull")
+
+local KillLoop = {
+    Enabled = false,
+    TeamCheck = true,                    -- เปิดเป็นค่าเริ่มต้น (ฆ่าเฉพาะศัตรู)
+    TeleportOffset = Vector3.new(0, 3.8, 0),   -- อยู่เหนือหัว
+    DelayBetweenKills = 0.32,
+    CurrentTarget = nil,
+    LoopConnection = nil
+}
+
+-- ตรวจสอบว่าเป็นศัตรูหรือไม่
+local function IsEnemy(player)
+    if not KillLoop.TeamCheck then return true end          -- ถ้าปิด Team Check = ฆ่าทุกคน
+    if not LocalPlayer.Team or not player.Team then return true end
+    return player.Team ~= LocalPlayer.Team
+end
+
+local function GetClosestEnemy()
+    local closest = nil
+    local shortest = math.huge
+    
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            
+            if not IsEnemy(player) then continue end   -- ข้ามคนในทีม
+
+            local humanoid = player.Character:FindFirstChild("Humanoid")
+            if humanoid and humanoid.Health > 0 then
+                local dist = (player.Character.Head.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                if dist < shortest then
+                    shortest = dist
+                    closest = player
+                end
+            end
+        end
+    end
+    return closest
+end
+
+local function AutoShoot()
+    local tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+    if tool then
+        -- ยิงอัตโนมัติ (วิธีที่เสถียรที่สุดใน Arsenal)
+        local mouse = LocalPlayer:GetMouse()
+        mouse.Button1Down:Fire()
+        task.wait(0.06)
+        mouse.Button1Up:Fire()
+    end
+end
+
+local function StartKillLoop()
+    if KillLoop.LoopConnection then KillLoop.LoopConnection:Disconnect() end
+    
+    KillLoop.LoopConnection = RunService.Heartbeat:Connect(function()
+        if not KillLoop.Enabled then return end
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+
+        local target = GetClosestEnemy()
+        if target and target.Character and target.Character:FindFirstChild("Head") then
+            KillLoop.CurrentTarget = target
+            
+            -- Teleport ไปบนหัว
+            local headPos = target.Character.Head.Position
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(headPos + KillLoop.TeleportOffset, headPos)
+            
+            -- ยิง
+            task.wait(0.07)
+            AutoShoot()
+            
+            task.wait(KillLoop.DelayBetweenKills)
+        end
+    end)
+end
+
+local function StopKillLoop()
+    if KillLoop.LoopConnection then
+        KillLoop.LoopConnection:Disconnect()
+        KillLoop.LoopConnection = nil
+    end
+    KillLoop.CurrentTarget = nil
+end
+
+--// ==================== GUI ====================
+local Divider = KillTab:CreateDivider()
+
+KillTab:CreateToggle({
+    Name = "[ ☠️ ]  Teleport Kill Loop ( TP On The Head + Shooting )",
+    CurrentValue = false,
+    Callback = function(v)
+        KillLoop.Enabled = v
+        
+        if v then
+            
+            StartKillLoop()
+        else
+            
+            StopKillLoop()
+        end
+    end
+})
+
+KillTab:CreateToggle({
+    Name = "[ 🛡️ ]  Team Check ( Kill Only Enemies )",
+    CurrentValue = true,
+    Callback = function(v)
+        KillLoop.TeamCheck = v
+    end
+})
+
+KillTab:CreateSlider({
+    Name = "[ ⏱️ ]  Delay Between Kills",
+    Range = {0.1, 1.2},
+    Increment = 0.05,
+    Suffix = " Second Delay",
+    CurrentValue = 0.32,
+    Callback = function(v)
+        KillLoop.DelayBetweenKills = v
+    end
+})
+
+KillTab:CreateSlider({
+    Name = "[ 📏 ]  Teleport Height Head",
+    Range = {1.5, 6},
+    Increment = 0.1,
+    Suffix = " Height Player",
+    CurrentValue = 3.8,
+    Callback = function(v)
+        KillLoop.TeleportOffset = Vector3.new(0, v, 0)
+    end
+})
+
+KillTab:CreateParagraph({
+    Title = "Teleport Kill Loop + Team Check",
+    Content = "• TP (Port) over the enemy's head and auto-fire.\n• Team Check enabled = Kill only non-team members.\n• Team Check disabled = Kill everyone.\n• Possibly on the Flick Shot map.\n• Warning: Severe cheating will result in a quick ban."
+})
+
+local Divider = KillTab:CreateDivider()
