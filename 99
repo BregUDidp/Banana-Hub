@@ -384,7 +384,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "person-standing",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/KrExcNtd"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Fire"))()
    end,
 })
 
@@ -397,7 +397,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "flame-kindling",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/upnDhT5T"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Fire%20Campfire"))()
    end,
 })
 
@@ -410,7 +410,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "anvil",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/9GjWtQuE"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Fire%20Scrape"))()
    end,
 })
 
@@ -427,7 +427,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "tree-pine",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/F4ZVPJr8"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Log"))()
    end,
 })
 
@@ -504,7 +504,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "anvil",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/Zv9jder4"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Scrape"))()
    end,
 })
 
@@ -517,7 +517,7 @@ local Button = BringTab:CreateButton({
    Duration = 1,
    Image = "anvil",
 })
-       loadstring(game:HttpGet("https://pastebin.com/raw/NhU69RXS"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/99Night/refs/heads/main/Bring%20Scrape%202"))()
    end,
 })
 
