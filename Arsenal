@@ -600,7 +600,7 @@ AimbotTab:CreateToggle({
 
 AimbotTab:CreateSlider({
     Name = "[ 📏 ]  FOV Circle Size",
-    Range = {50, 800},
+    Range = {50, 5000},
     Increment = 5,
     Suffix = " FOV Circle Size",
     CurrentValue = 120,
@@ -611,7 +611,7 @@ AimbotTab:CreateSlider({
 
 AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Aimbot Smoothness",
-    Range = {1, 100},
+    Range = {1, 5000},
     Increment = 1,
     Suffix = " Smooth Aimbot",
     CurrentValue = 30,
@@ -622,7 +622,7 @@ AimbotTab:CreateSlider({
 
 AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Slider Prediction",
-    Range = {0, 0.5},
+    Range = {0, 5000},
     Increment = 0.005,
     Suffix = " Prediction Player",
     CurrentValue = 0.135,
@@ -892,7 +892,7 @@ AimbotTab:CreateToggle({
 
 AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Slider Rainbow Speed",
-    Range = {0.5, 8},
+    Range = {0.5, 5000},
     Increment = 0.1,
     Suffix = " Rainbow Speed",
     CurrentValue = 0.6,
@@ -1024,7 +1024,7 @@ KillTab:CreateToggle({
 
 KillTab:CreateSlider({
     Name = "[ ⏱️ ]  Delay Between Kills",
-    Range = {0.1, 1.2},
+    Range = {0.1, 5000},
     Increment = 0.05,
     Suffix = " Second Delay",
     CurrentValue = 0.32,
@@ -1035,7 +1035,7 @@ KillTab:CreateSlider({
 
 KillTab:CreateSlider({
     Name = "[ 📏 ]  Teleport Height Head",
-    Range = {1.5, 6},
+    Range = {1.5, 5000},
     Increment = 0.1,
     Suffix = " Height Player",
     CurrentValue = 3.8,
