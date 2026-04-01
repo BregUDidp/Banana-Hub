@@ -647,7 +647,7 @@ local ESP = {
     Tracer = true,
     SkeletonEnabled = false,     -- เปิด/ปิด ESP กระดูก
     TeamCheck = true,
-    RainbowSpeed = 3,
+    RainbowSpeed = 0.5,
     Boxes = {},
     SkeletonLines = {}           -- เก็บเส้นกระดูก
 }
@@ -895,7 +895,7 @@ AimbotTab:CreateSlider({
     Range = {0.5, 8},
     Increment = 0.1,
     Suffix = " Rainbow Speed",
-    CurrentValue = 3.0,
+    CurrentValue = 0.6,
     Callback = function(v)
         ESP.RainbowSpeed = v
     end
