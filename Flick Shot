@@ -311,7 +311,7 @@ game.Players.PlayerRemoving:Connect(function(player)
    
    Rayfield:Notify({
       Title = "[ 🔴 ]  Person Leave The Map!",
-      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Sever",
+      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Server",
       Duration = 3.5,
       Image = "accessibility",
    })
