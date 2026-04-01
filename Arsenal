@@ -357,9 +357,9 @@ spawn(function()
    end
 end)
 
---// ============================================== --
---// AIMBOT + TEAM CHECK สำหรับ Arsenal (Rayfield UI)
---// ============================================== --
+-- ============================================== --
+-- AIMBOT + WALL CHECK (ไม่เล็งผ่านกำแพง) สำหรับ Arsenal
+-- ============================================== --
 
 local AimbotTab = Window:CreateTab("|| - Aimbot Player - ESP", "locate-fixed")
 
@@ -380,8 +380,7 @@ local Prediction = 0.135
 local RainbowSpeed = 3
 local RainbowHue = 0
 
---// Team Check Setting
-local TeamCheck = true   -- เปิด Team Check เป็นค่าเริ่มต้น
+local TeamCheck = true
 
 --// Drawing Objects
 local FOVCircle = nil
@@ -395,7 +394,7 @@ local function GetRainbow()
     return Color3.fromHSV(RainbowHue, 1, 1)
 end
 
---// Create Drawing Objects
+--// Create Drawing
 local function CreateFOVCircle()
     local circle = Drawing.new("Circle")
     circle.Thickness = 2
@@ -431,20 +430,47 @@ local function CreateHPText()
     return text
 end
 
---// Initialize
 FOVCircle = CreateFOVCircle()
 LockLine = CreateLockLine()
 TargetName = CreateTargetName()
 HPText = CreateHPText()
 
---// Team Check Function
+--// Team Check
 local function IsSameTeam(player)
-    if not TeamCheck then return false end                    -- ถ้าปิด Team Check = เล็งทุกคน
+    if not TeamCheck then return false end
     if not player.Team or not LocalPlayer.Team then return false end
     return player.Team == LocalPlayer.Team
 end
 
---// Get Closest Player (มี Team Check)
+--// Wall Check (Visibility Check) - สำคัญมาก
+local function IsVisible(targetHead)
+    if not targetHead then return false end
+    
+    local origin = Camera.CFrame.Position
+    local direction = (targetHead.Position - origin)
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character}  -- ข้ามตัวเราเอง
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.IgnoreWater = true
+    
+    local result = Workspace:Raycast(origin, direction, raycastParams)
+    
+    -- ถ้า Raycast ไม่โดนอะไร หรือ โดนเป้าหมายเอง = มองเห็นได้
+    if not result then 
+        return true 
+    end
+    
+    -- ตรวจว่าส่วนที่โดนเป็นส่วนของเป้าหมายหรือไม่
+    local hitCharacter = result.Instance:FindFirstAncestorWhichIsA("Model")
+    if hitCharacter and hitCharacter == targetHead.Parent then
+        return true
+    end
+    
+    return false
+end
+
+--// Get Closest Player (มี Team Check + Wall Check)
 local function GetClosestPlayer()
     local closest = nil
     local shortestDist = math.huge
@@ -452,9 +478,8 @@ local function GetClosestPlayer()
 
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
-            -- ตรวจสอบ Team Check
             if IsSameTeam(player) then
-                continue  -- ข้ามคนในทีมเดียวกัน
+                continue
             end
 
             local character = player.Character
@@ -467,7 +492,8 @@ local function GetClosestPlayer()
                 if onScreen then
                     local distance = (Vector2.new(screenPos.X, screenPos.Y) - center).Magnitude
                     
-                    if distance <= FOVRadius and distance < shortestDist then
+                    -- ตรวจ Wall Check
+                    if distance <= FOVRadius and distance < shortestDist and IsVisible(head) then
                         shortestDist = distance
                         closest = player
                     end
@@ -516,9 +542,10 @@ RunService.RenderStepped:Connect(function()
             local predictedPos = GetPredictedPosition(head)
             local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos)
             
+            -- เล็งแบบ Smooth
             Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, Smoothness)
             
-            -- Lock Line + Info
+            -- Visuals
             local headScreenPos = Camera:WorldToViewportPoint(predictedPos)
             
             LockLine.From = center
@@ -532,7 +559,7 @@ RunService.RenderStepped:Connect(function()
             TargetName.Visible = true
 
             local hpPercent = math.floor((humanoid.Health / humanoid.MaxHealth) * 100)
-            HPText.Text = string.format("%d/%d (%d%%)", humanoid.Health, humanoid.MaxHealth, hpPercent)
+            HPText.Text = string.format("%d%%", hpPercent)
             HPText.Position = Vector2.new(headScreenPos.X, headScreenPos.Y - 25)
             HPText.Color = rainbow
             HPText.Visible = true
@@ -557,7 +584,7 @@ local Divider = AimbotTab:CreateDivider()
 
 AimbotTab:CreateToggle({
     Name = "[ 🎯 ]  Aimbot Smooth Player",
-    CurrentState = false,
+    CurrentValue = false,
     Callback = function(Value)
         AimbotEnabled = Value
     end
@@ -565,14 +592,14 @@ AimbotTab:CreateToggle({
 
 AimbotTab:CreateToggle({
     Name = "[ 🛡️ ]  Team Check  ( Not A Member The Team )",
-    CurrentState = true,
+    CurrentValue = true,
     Callback = function(Value)
         TeamCheck = Value
     end
 })
 
 AimbotTab:CreateSlider({
-    Name = "[ 📏 ]  Slider FOV Circle Size",
+    Name = "[ 📏 ]  FOV Circle Size",
     Range = {50, 800},
     Increment = 5,
     Suffix = " FOV Circle Size",
@@ -583,7 +610,7 @@ AimbotTab:CreateSlider({
 })
 
 AimbotTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Aimbot Smoothness",
+    Name = "[ 📏 ]  Aimbot Smoothness",
     Range = {1, 100},
     Increment = 1,
     Suffix = " Smooth Aimbot",
@@ -605,9 +632,11 @@ AimbotTab:CreateSlider({
 })
 
 AimbotTab:CreateParagraph({
-    Title = "Aimbot Arsenal + Team Check",
-    Content = "• Team Check enabled = You can see people on your team.\n• Team Check disabled = Creates everyone in FOV.\n• Works well in Arsenal (FFA / Team Deathmatch)."
+    Title = "Aimbot + Wall Check",
+    Content = "• Time behind a wall = Automatic mural aimbot\n• Walk away from the wall and description = Automatic aiming\n• Top Rainbow Hitbox helps to see the target more clearly\n• Check team open, check team"
 })
+
+AimbotTab:CreateDivider()
 
 --// ============================================== --
 --//     ESP ENEMY ONLY + SKELETON ESP (กระดูก)
@@ -618,7 +647,7 @@ local ESP = {
     Tracer = true,
     SkeletonEnabled = false,     -- เปิด/ปิด ESP กระดูก
     TeamCheck = true,
-    RainbowSpeed = 3.0,
+    RainbowSpeed = 3,
     Boxes = {},
     SkeletonLines = {}           -- เก็บเส้นกระดูก
 }
@@ -828,9 +857,6 @@ RunService.RenderStepped:Connect(function()
 end)
 
 Players.PlayerRemoving:Connect(RemoveESP)
-
---// ==================== GUI ====================
-local Divider = AimbotTab:CreateDivider()
 
 AimbotTab:CreateToggle({
     Name = "[ 🔍 ]  ESP Enemy Only ( Show Only Enemies )",
