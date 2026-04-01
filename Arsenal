@@ -357,6 +357,45 @@ spawn(function()
    end
 end)
 
+local TeamTab = Window:CreateTab("|| - Team Check Player", "shield")
+local Divider = TeamTab:CreateDivider()
+
+TeamTab:CreateToggle({
+    Name = "[ 🛡️ ]  Team Check  ( Aimbot - Player )",
+    CurrentValue = true,
+    Callback = function(Value)
+        TeamCheck = Value
+    end
+})
+
+local Paragraph = TeamTab:CreateParagraph({Title = "The Team Check Player Is Choose The Enemy And Aimbot", Content = "The Team Check Player Is Choose The Enemy And Aimbot"})
+
+local Divider = TeamTab:CreateDivider()
+
+TeamTab:CreateToggle({
+    Name = "[ 🛡️ ]  Team Check  ( ESP - Tracer - Player )",
+    CurrentState = true,
+    Callback = function(Value)
+        ESP.TeamCheck = Value
+    end
+})
+
+local Paragraph = TeamTab:CreateParagraph({Title = "The Team Check Player Is Choose The Enemy And Aimbot", Content = "The Team Check Player Is Choose The Enemy And Aimbot"})
+
+local Divider = TeamTab:CreateDivider()
+
+TeamTab:CreateToggle({
+    Name = "[ 🛡️ ]  Team Check  ( Height Head - Player )",
+    CurrentValue = true,
+    Callback = function(Value)
+        KillLoop.TeamCheck = Value
+    end
+})
+
+local Paragraph = TeamTab:CreateParagraph({Title = "The Team Check Player Is Choose The Enemy And Aimbot", Content = "The Team Check Player Is Choose The Enemy And Aimbot"})
+
+local Divider = TeamTab:CreateDivider()
+
 -- ============================================== --
 -- AIMBOT + WALL CHECK (ไม่เล็งผ่านกำแพง) สำหรับ Arsenal
 -- ============================================== --
@@ -587,14 +626,6 @@ AimbotTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         AimbotEnabled = Value
-    end
-})
-
-AimbotTab:CreateToggle({
-    Name = "[ 🛡️ ]  Team Check  ( Not A Member The Team )",
-    CurrentValue = true,
-    Callback = function(Value)
-        TeamCheck = Value
     end
 })
 
@@ -875,14 +906,6 @@ AimbotTab:CreateToggle({
 })
 
 AimbotTab:CreateToggle({
-    Name = "[ 🛡️ ]  Team Check - Show Only Enemies",
-    CurrentState = true,
-    Callback = function(v)
-        ESP.TeamCheck = v
-    end
-})
-
-AimbotTab:CreateToggle({
     Name = "[ 📍 ]  Tracer ESP Player",
     CurrentValue = true,
     Callback = function(v)
@@ -1014,14 +1037,6 @@ KillTab:CreateToggle({
     end
 })
 
-KillTab:CreateToggle({
-    Name = "[ 🛡️ ]  Team Check ( Kill Only Enemies )",
-    CurrentValue = true,
-    Callback = function(v)
-        KillLoop.TeamCheck = v
-    end
-})
-
 KillTab:CreateSlider({
     Name = "[ ⏱️ ]  Delay Between Kills",
     Range = {0.1, 5000},
@@ -1050,3 +1065,4 @@ KillTab:CreateParagraph({
 })
 
 local Divider = KillTab:CreateDivider()
+
