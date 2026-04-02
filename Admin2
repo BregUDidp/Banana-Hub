@@ -246,6 +246,63 @@ local function teleportToPlayer(targetName)
 	end
 end
 
+-- ================== ฟังก์ชัน Sit / Unsits ==================
+local function ForceSit()
+	local character = player.Character
+	if not character then return end
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid.Sit = true
+	end
+end
+
+local function ToggleSit(enabled)
+	SittingEnabled = enabled
+	
+	if enabled then
+		ForceSit()
+		
+		-- ลูปบังคับให้นั่งตลอดเวลา
+		if SitConnection then SitConnection:Disconnect() end
+		SitConnection = RunService.Heartbeat:Connect(function()
+			if SittingEnabled then
+				local character = player.Character
+				if character then
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					if humanoid and not humanoid.Sit then
+						humanoid.Sit = true
+					end
+				end
+			end
+		end)
+		
+		-- เมื่อเกิดใหม่ก็นั่งต่อ
+		player.CharacterAdded:Connect(function()
+			if SittingEnabled then
+				task.wait(0.6)
+				ForceSit()
+			end
+		end)
+		
+		
+	else
+		if SitConnection then
+			SitConnection:Disconnect()
+			SitConnection = nil
+		end
+		
+		local character = player.Character
+		if character then
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				humanoid.Sit = false
+			end
+		end
+		
+		
+	end
+end
+
 -- ================== Tool Teleport (🍭) ==================
 local function giveTeleportTool()
 	local tool = Instance.new("Tool")
@@ -419,16 +476,34 @@ player.Chatted:Connect(function(message)
 		 ToggleSit(true)
 	elseif msg == "/unsit" then
 		 ToggleSit(false)
-	elseif msg == "/infinitejump" then
+	elseif msg == "/infinitejump" or msg == "/if" then
 		enableInfiniteJump()
-	elseif msg == "/uninfinitejump" then
+	elseif msg == "/uninfinitejump" or msg == "/unif" then
 		disableInfiniteJump()
-	elseif msg == "/invisible" then
+	elseif msg == "/invisible" or msg == "/iv" then
 		makeInvisible()
-	elseif msg == "/uninvisible" then
+	elseif msg == "/uninvisible" or msg == "/univ" then
 		makeVisible()
 	elseif msg == "/infiniteyield" or msg == "/iy" then
-		 loadInfiniteYield()
+		 loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    elseif msg == "/animation" or msg == "/an" then
+		 loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+	end
+end)
+
+-- เมื่อตัวละครเกิดใหม่
+player.CharacterAdded:Connect(function(character)
+	task.wait(0.5)
+	if flying then stopFlying() end
+	if isFrozen then isFrozen = false end
+	
+	local humanoid = character:WaitForChild("Humanoid")
+	humanoid.WalkSpeed = originalWalkSpeed
+	humanoid.JumpPower = originalJumpPower
+	
+	if SittingEnabled then
+		task.wait(0.6)
+		ForceSit()
 	end
 end)
 
@@ -438,8 +513,158 @@ game.StarterGui:SetCore("SendNotification", {
         Duration = 2
       })
 wait(2)
-game.StarterGui:SetCore("SendNotification", {
-        Title = "[ ⌨️ ]  -  Command Chat",
-        Text =  "/fly - /unfly - /speed - /jump - /sit - /unsit - /freeze - /unfreeze /tp - /tooltp - /toolrecoil - /infinitejump - /uninfinitejump - /invisible - /uninvisible",
-        Duration = 1000
-      })
+
+-- สมุดโน้ต Command Chat (LocalScript)
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- สร้าง ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CommandNotepad"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Frame (สมุดโน้ต)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "NotepadFrame"
+mainFrame.Size = UDim2.new(0, 420, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -210, 0.5, -160)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true  -- ลากได้
+mainFrame.Visible = false
+mainFrame.Parent = screenGui
+
+-- มุมโค้ง
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
+
+-- Title Bar
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 40)
+titleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 12)
+titleCorner.Parent = titleBar
+
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -80, 1, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = " 📔  Note ( Command Chat )"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Parent = titleBar
+
+-- ปุ่มปิด
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextScaled = true
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = titleBar
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeButton
+
+-- ScrollingFrame สำหรับเนื้อหา
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Size = UDim2.new(1, -20, 1, -60)
+scrollingFrame.Position = UDim2.new(0, 10, 0, 50)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.BorderSizePixel = 0
+scrollingFrame.ScrollBarThickness = 6
+scrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
+scrollingFrame.Parent = mainFrame
+
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 8)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = scrollingFrame
+
+-- เนื้อหาคำสั่ง (TextLabel)
+local contentLabel = Instance.new("TextLabel")
+contentLabel.Size = UDim2.new(1, -10, 0, 0)
+contentLabel.BackgroundTransparency = 1
+contentLabel.Text = [[
+
+ /fly
+ /unfly
+
+ /speed
+ /jump
+
+ /sit
+ /unsit
+
+ /freeze
+ /unfreeze
+
+ /rejoin
+
+ /tp
+ /tooltp
+ /toolrecoil
+
+ /infinitejump = /if
+ /uninfinitejump = /unif
+
+ /invisible = /iv
+ /uninvisible = /univ
+
+ /infiniteyield = /iy
+
+ /animation = /an
+
+]]
+contentLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
+contentLabel.TextXAlignment = Enum.TextXAlignment.Left
+contentLabel.TextYAlignment = Enum.TextYAlignment.Top
+contentLabel.TextWrapped = true
+contentLabel.TextScaled = false
+contentLabel.Font = Enum.Font.Gotham
+contentLabel.TextSize = 16
+contentLabel.AutomaticSize = Enum.AutomaticSize.Y
+contentLabel.Parent = scrollingFrame
+
+-- ปุ่มเปิด/ปิดสมุดโน้ต (มุมขวาล่าง)
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0, 60, 0, 60)
+toggleButton.Position = UDim2.new(1, -75, 1, -75)
+toggleButton.BackgroundColor3 = Color3.fromRGB(70, 130, 255)
+toggleButton.Text = "📔"
+toggleButton.TextScaled = true
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(1, 0)
+toggleCorner.Parent = toggleButton
+
+-- ฟังก์ชันเปิด-ปิด
+local function toggleNotepad()
+    mainFrame.Visible = not mainFrame.Visible
+end
+
+toggleButton.MouseButton1Click:Connect(toggleNotepad)
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+end)
+
+-- แสดง Notification แบบเดิมครั้งแรกเมื่อเข้าเกม
+--game.StarterGui:SetCore("SendNotification", {
+--    Title = "📔 สมุดโน้ตคำสั่ง",
+--    Text = "กดปุ่ม 📔 มุมขวาล่างเพื่อเปิดสมุดโน้ต\nมีคำสั่งทั้งหมดที่คุณต้องการแล้ว!",
+--    Duration = 8,
+--    Icon = "rbxassetid://6031097228"  -- ไอคอนหนังสือ (เปลี่ยนได้)
+--})
