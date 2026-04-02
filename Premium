@@ -21,7 +21,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |   Loader   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  Loader Script Premium   ",
+   LoadingTitle = "   Akari Hub  Loader Premium   ",
 
    LoadingSubtitle = "",
    
@@ -79,6 +79,11 @@ local Button = LoaderTab:CreateButton({
        LoaderTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping   [ - Best Script - ] ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
        
        local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari Admin Command Search - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Admin Command Search ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin2"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - /fly - /unfly - /teleport - /tooltp", Content = "Click Scripter Loader For Run - /fly - /unfly - /teleport - /tooltp - /toolrecoil - /speed - /jump"})
        local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Admin - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Admin Server Side ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin"))() end})
