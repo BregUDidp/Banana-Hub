@@ -359,7 +359,7 @@ player.Chatted:Connect(function(message)
 		local power = msg:match("/jump%s*(%d+)")
 		setJumpPower(power)
 		
-	elseif args[1]:lower() == "/teleport" and args[2] then
+	elseif args[1]:lower() == "/tp" and args[2] then
 		local targetName = args[2]
 		teleportToPlayer(targetName)
 		
