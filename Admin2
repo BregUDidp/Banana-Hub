@@ -1,0 +1,392 @@
+-- Fly + SpeedWalk + JumpPower + Teleport + Rejoin + Tool + Recoil Tool
+-- วางเป็น LocalScript ใน StarterPlayer > StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TeleportService = game:GetService("TeleportService")
+local Debris = game:GetService("Debris")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local flying = false
+local currentFlySpeed = 50
+local originalWalkSpeed = 16
+local originalJumpPower = 50
+
+local bv = nil
+local bg = nil
+local connection = nil
+
+-- ================== ฟังก์ชันบิน ==================
+local function startFlying(speed)
+	if flying then
+		currentFlySpeed = tonumber(speed) or currentFlySpeed
+		return
+	end
+	
+	flying = true
+	currentFlySpeed = tonumber(speed) or 50
+	
+	local character = player.Character or player.CharacterAdded:Wait()
+	local root = character:WaitForChild("HumanoidRootPart")
+	local humanoid = character:WaitForChild("Humanoid")
+	
+	originalWalkSpeed = humanoid.WalkSpeed
+	originalJumpPower = humanoid.JumpPower
+	
+	bv = Instance.new("BodyVelocity")
+	bv.Name = "FlyVelocity"
+	bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+	bv.Velocity = Vector3.new(0, 0, 0)
+	bv.Parent = root
+	
+	bg = Instance.new("BodyGyro")
+	bg.Name = "FlyGyro"
+	bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+	bg.D = 100
+	bg.P = 10000
+	bg.Parent = root
+	
+	humanoid.PlatformStand = true
+	
+	connection = RunService.RenderStepped:Connect(function()
+		if not flying or not root then return end
+		
+		local moveDirection = Vector3.new(0, 0, 0)
+		
+		if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection += camera.CFrame.LookVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection -= camera.CFrame.LookVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.A) then moveDirection -= camera.CFrame.RightVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.D) then moveDirection += camera.CFrame.RightVector end
+		if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDirection += Vector3.new(0, 1, 0) end
+		if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDirection -= Vector3.new(0, 1, 0) end
+		
+		if moveDirection.Magnitude > 0 then
+			moveDirection = moveDirection.Unit
+		end
+		
+		bv.Velocity = moveDirection * currentFlySpeed
+		bg.CFrame = CFrame.new(root.Position, root.Position + camera.CFrame.LookVector)
+	end)
+end
+
+local function stopFlying()
+	if not flying then return end
+	flying = false
+	if connection then connection:Disconnect() connection = nil end
+	
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChild("Humanoid")
+		local root = character:FindFirstChild("HumanoidRootPart")
+		if root then
+			if bv then bv:Destroy() end
+			if bg then bg:Destroy() end
+		end
+		if humanoid then
+			humanoid.PlatformStand = false
+			humanoid.WalkSpeed = originalWalkSpeed
+			humanoid.JumpPower = originalJumpPower
+		end
+	end
+end
+
+-- ================== ฟังก์ชันอื่น ๆ ==================
+local function setWalkSpeed(speed)
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChild("Humanoid")
+		if humanoid then
+			originalWalkSpeed = humanoid.WalkSpeed
+			humanoid.WalkSpeed = tonumber(speed) or 16
+		end
+	end
+end
+
+local function setJumpPower(power)
+	local character = player.Character
+	if character then
+		local humanoid = character:FindFirstChild("Humanoid")
+		if humanoid then
+			originalJumpPower = humanoid.JumpPower
+			humanoid.JumpPower = tonumber(power) or 50
+		end
+	end
+end
+
+local function teleportToPlayer(targetName)
+	if targetName:lower() == "me" then return end
+	local targetPlayer = nil
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= player and p.Name:lower():find(targetName:lower()) then
+			targetPlayer = p
+			break
+		end
+	end
+	if not targetPlayer then return end
+	
+	local targetChar = targetPlayer.Character
+	if not targetChar or not targetChar:FindFirstChild("HumanoidRootPart") then return end
+	
+	local myChar = player.Character
+	if myChar and myChar:FindFirstChild("HumanoidRootPart") then
+		myChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+	end
+end
+
+local function rejoinServer()
+	game.StarterGui:SetCore("SendNotification", {
+		Title = "Rejoin",
+		Text = "กำลัง Rejoin เซิร์ฟเวอร์ใหม่...",
+		Duration = 3
+	})
+	TeleportService:Teleport(game.PlaceId, player)
+end
+
+-- ================== Tool Teleport (🍭) ==================
+local function giveTeleportTool()
+	local tool = Instance.new("Tool")
+	tool.Name = "🍭"
+	tool.ToolTip = "[ 🍭 ] Teleport Tool"
+	tool.RequiresHandle = true
+	
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(2.2, 2.2, 2.2)
+	handle.Shape = Enum.PartType.Ball
+	handle.Material = Enum.Material.ForceField
+	handle.Color = Color3.fromRGB(138, 43, 179)
+	handle.Transparency = 0.15
+	handle.CanCollide = false
+	handle.Parent = tool
+	
+	local sparkles = Instance.new("Sparkles")
+	sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+	sparkles.Enabled = false
+	sparkles.Parent = handle
+	
+	local particles = Instance.new("ParticleEmitter")
+	particles.Texture = "rbxassetid://241650934"
+	particles.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(180, 100, 200))
+	})
+	particles.Size = NumberSequence.new(0.4)
+	particles.Lifetime = NumberRange.new(1.5, 2.5)
+	particles.Rate = 20
+	particles.SpreadAngle = Vector2.new(45, 45)
+	particles.Speed = NumberRange.new(2)
+	particles.Parent = handle
+	
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(138, 43, 179)
+	light.Brightness = 2
+	light.Range = 10
+	light.Parent = handle
+	
+	local teleportSound = Instance.new("Sound")
+	teleportSound.SoundId = "rbxassetid://4861638982"
+	teleportSound.Volume = 0.7
+	teleportSound.Parent = handle
+	
+	tool.Equipped:Connect(function()
+		sparkles.Enabled = false
+		particles.Rate = 50
+		light.Brightness = 0
+	end)
+	
+	tool.Unequipped:Connect(function()
+		sparkles.Enabled = false
+		particles.Rate = 20
+		light.Brightness = 2
+	end)
+	
+	tool.Activated:Connect(function()
+		teleportSound:Play()
+		local character = player.Character
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			local mouse = player:GetMouse()
+			local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+			character.HumanoidRootPart.CFrame = CFrame.new(pos)
+		end
+	end)
+	
+	tool.Equipped:Connect(function()
+		local equipSound = Instance.new("Sound")
+		equipSound.SoundId = "rbxassetid://2865227271"
+		equipSound.Volume = 0.5
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		if root then
+			equipSound.Parent = root
+			equipSound:Play()
+			equipSound.Ended:Connect(function() equipSound:Destroy() end)
+		end
+	end)
+	
+	player:WaitForChild("Backpack")
+	tool.Parent = player.Backpack
+	
+	game.StarterGui:SetCore("SendNotification", {
+		Title = "🍭 Teleport Tool",
+		Text = "ได้รับ Tool ลูกอมเทเลพอร์ตแล้ว!",
+		Duration = 4
+	})
+end
+
+-- ================== Tool Recoil Speed Boost (🚲) ==================
+local function giveRecoilTool()
+	local tool = Instance.new("Tool")
+	tool.Name = "🚲"
+	tool.ToolTip = "[ 🚲 ] Recoil Tools Speed Boost"
+	tool.RequiresHandle = true
+	
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(2.2, 2.2, 2.2)
+	handle.Shape = Enum.PartType.Ball
+	handle.Material = Enum.Material.ForceField
+	handle.Color = Color3.fromRGB(138, 43, 179)
+	handle.Transparency = 0.15
+	handle.CanCollide = false
+	handle.Parent = tool
+	
+	local sparkles = Instance.new("Sparkles")
+	sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
+	sparkles.Enabled = false
+	sparkles.Parent = handle
+	
+	local particles = Instance.new("ParticleEmitter")
+	particles.Texture = "rbxassetid://241650934"
+	particles.Color = ColorSequence.new({
+		ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+		ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
+	})
+	particles.Transparency = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.3),
+		NumberSequenceKeypoint.new(1, 1)
+	})
+	particles.Size = NumberSequence.new(0.5, 0)
+	particles.Lifetime = NumberRange.new(1.2, 2.8)
+	particles.Rate = 0
+	particles.Speed = NumberRange.new(4, 8)
+	particles.SpreadAngle = Vector2.new(50, 50)
+	particles.Parent = handle
+	
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(180, 80, 255)
+	light.Brightness = 0
+	light.Range = 0
+	light.Parent = handle
+	
+	local NormalWalkSpeed = 17
+	local BoostWalkSpeed = 30
+	local originalSpeed = NormalWalkSpeed
+	
+	local function updateSpeed(humanoid, speed)
+		if humanoid then
+			humanoid.WalkSpeed = speed
+		end
+	end
+	
+	tool.Equipped:Connect(function()
+		sparkles.Enabled = false
+		particles.Rate = 60
+		light.Brightness = 5
+		
+		local character = player.Character
+		local humanoid = character and character:FindFirstChild("Humanoid")
+		if humanoid then
+			originalSpeed = humanoid.WalkSpeed
+			updateSpeed(humanoid, BoostWalkSpeed)
+		end
+		
+		local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+		if humanoidRootPart then
+			local equipSound = Instance.new("Sound")
+			equipSound.SoundId = "rbxassetid://2865227271"
+			equipSound.Volume = 0.6
+			equipSound.Parent = humanoidRootPart
+			equipSound:Play()
+			Debris:AddItem(equipSound, 3)
+		end
+	end)
+	
+	tool.Unequipped:Connect(function()
+		sparkles.Enabled = true
+		particles.Rate = 30
+		light.Brightness = 3
+		
+		local character = player.Character
+		local humanoid = character and character:FindFirstChild("Humanoid")
+		updateSpeed(humanoid, originalSpeed)
+	end)
+	
+	player.CharacterAdded:Connect(function(character)
+		local humanoid = character:WaitForChild("Humanoid")
+		originalSpeed = NormalWalkSpeed
+		updateSpeed(humanoid, NormalWalkSpeed)
+	end)
+	
+	player:WaitForChild("Backpack")
+	tool.Parent = player.Backpack
+	
+	game.StarterGui:SetCore("SendNotification", {
+		Title = "🚲 Recoil Tool",
+		Text = "ได้รับ Tool เร่งความเร็วแล้ว!\nถือแล้วเดินเร็วขึ้นเป็น 30",
+		Duration = 5
+	})
+end
+
+-- ================== รับคำสั่งแชท ==================
+player.Chatted:Connect(function(message)
+	local msg = message:lower()
+	local args = message:split(" ")
+	
+	if msg == "/fly" or msg:match("^/fly%s*%d*$") then
+		local speed = msg:match("/fly%s*(%d+)")
+		startFlying(speed)
+		
+	elseif msg == "/unfly" then
+		stopFlying()
+		
+	elseif msg:match("^/speed%s*%d+$") then
+		local speed = msg:match("/speed%s*(%d+)")
+		setWalkSpeed(speed)
+		
+	elseif msg:match("^/jump%s*%d+$") then
+		local power = msg:match("/jump%s*(%d+)")
+		setJumpPower(power)
+		
+	elseif args[1]:lower() == "/teleport" and args[2] then
+		local targetName = args[2]
+		teleportToPlayer(targetName)
+		
+	elseif msg == "/rejoin" then
+		rejoinServer()
+		
+	elseif msg == "/tooltp" then
+		giveTeleportTool()
+		
+	elseif msg == "/toolrecoil" then   -- คำสั่งใหม่
+		giveRecoilTool()
+	end
+end)
+
+-- เมื่อตัวละครเกิดใหม่
+player.CharacterAdded:Connect(function(character)
+	wait(0.5)
+	if flying then
+		stopFlying()
+	end
+	local humanoid = character:WaitForChild("Humanoid")
+	humanoid.WalkSpeed = originalWalkSpeed
+	humanoid.JumpPower = originalJumpPower
+end)
+
+game.StarterGui:SetCore("SendNotification", {
+        Title = "  [ ✅ ]  -  Attach The Game",
+        Text =  "Akari The Admin Command Use Pastbin And Anything And Run",
+        Duration = 2
+      })
