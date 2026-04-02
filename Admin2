@@ -1,6 +1,3 @@
--- Fly + Speed + Jump + Teleport + Rejoin + Tool + Recoil + Freeze Script
--- วางเป็น LocalScript ใน StarterPlayer > StarterPlayerScripts
-
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -15,11 +12,18 @@ local currentFlySpeed = 50
 local originalWalkSpeed = 16
 local originalJumpPower = 50
 local isFrozen = false
+local SittingEnabled = false
+local SitConnection = nil
+
+local infiniteJumpEnabled = false
+local infiniteJumpConnection = nil
+
+local isInvisible = false
+local originalTransparency = {}
 
 local bv = nil
 local bg = nil
-local connection = nil
-local freezeConnection = nil
+local flyConnection = nil
 
 -- ================== ฟังก์ชันบิน ==================
 local function startFlying(speed)
@@ -27,7 +31,6 @@ local function startFlying(speed)
 		currentFlySpeed = tonumber(speed) or currentFlySpeed
 		return
 	end
-	
 	flying = true
 	currentFlySpeed = tonumber(speed) or 50
 	
@@ -39,13 +42,11 @@ local function startFlying(speed)
 	originalJumpPower = humanoid.JumpPower
 	
 	bv = Instance.new("BodyVelocity")
-	bv.Name = "FlyVelocity"
 	bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 	bv.Velocity = Vector3.new(0, 0, 0)
 	bv.Parent = root
 	
 	bg = Instance.new("BodyGyro")
-	bg.Name = "FlyGyro"
 	bg.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 	bg.D = 100
 	bg.P = 10000
@@ -53,9 +54,8 @@ local function startFlying(speed)
 	
 	humanoid.PlatformStand = true
 	
-	connection = RunService.RenderStepped:Connect(function()
+	flyConnection = RunService.RenderStepped:Connect(function()
 		if not flying or not root then return end
-		
 		local moveDirection = Vector3.new(0, 0, 0)
 		if UserInputService:IsKeyDown(Enum.KeyCode.W) then moveDirection += camera.CFrame.LookVector end
 		if UserInputService:IsKeyDown(Enum.KeyCode.S) then moveDirection -= camera.CFrame.LookVector end
@@ -64,9 +64,7 @@ local function startFlying(speed)
 		if UserInputService:IsKeyDown(Enum.KeyCode.Space) then moveDirection += Vector3.new(0, 1, 0) end
 		if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then moveDirection -= Vector3.new(0, 1, 0) end
 		
-		if moveDirection.Magnitude > 0 then
-			moveDirection = moveDirection.Unit
-		end
+		if moveDirection.Magnitude > 0 then moveDirection = moveDirection.Unit end
 		
 		bv.Velocity = moveDirection * currentFlySpeed
 		bg.CFrame = CFrame.new(root.Position, root.Position + camera.CFrame.LookVector)
@@ -76,7 +74,7 @@ end
 local function stopFlying()
 	if not flying then return end
 	flying = false
-	if connection then connection:Disconnect() connection = nil end
+	if flyConnection then flyConnection:Disconnect() flyConnection = nil end
 	
 	local character = player.Character
 	if character then
@@ -92,6 +90,29 @@ local function stopFlying()
 			humanoid.JumpPower = originalJumpPower
 		end
 	end
+end
+
+-- ================== Infinite Jump ==================
+local function enableInfiniteJump()
+	if infiniteJumpEnabled then return end
+	infiniteJumpEnabled = true
+	infiniteJumpConnection = UserInputService.JumpRequest:Connect(function()
+		local character = player.Character
+		if character then
+			local humanoid = character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end
+	end)
+	
+end
+
+local function disableInfiniteJump()
+	if not infiniteJumpEnabled then return end
+	infiniteJumpEnabled = false
+	if infiniteJumpConnection then infiniteJumpConnection:Disconnect() infiniteJumpConnection = nil end
+	
 end
 
 -- ================== ฟังก์ชัน Freeze / Unfreeze ==================
@@ -130,11 +151,7 @@ local function freezePlayer()
 		gyro.Parent = root
 	end
 	
-	game.StarterGui:SetCore("SendNotification", {
-		Title = "❄️ Freeze",
-		Text = "คุณถูกแช่แข็งแล้ว!",
-		Duration = 3
-	})
+	
 end
 
 local function unfreezePlayer()
@@ -162,38 +179,47 @@ local function unfreezePlayer()
 		end
 	end
 	
-	game.StarterGui:SetCore("SendNotification", {
-		Title = "❄️ Unfreeze",
-		Text = "คุณถูกปลดแช่แข็งแล้ว!",
-		Duration = 3
-	})
+	
 end
 
--- ================== ฟังก์ชันอื่น ๆ (เดิม) ==================
-local function setWalkSpeed(speed)
+-- ================== Invisible ==================
+local function makeInvisible()
+	if isInvisible then return end
+	isInvisible = true
 	local character = player.Character
-	if character then
-		local humanoid = character:FindFirstChild("Humanoid")
-		if humanoid then
-			originalWalkSpeed = humanoid.WalkSpeed
-			humanoid.WalkSpeed = tonumber(speed) or 16
+	if not character then return end
+	
+	originalTransparency = {}
+	for _, part in ipairs(character:GetDescendants()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			originalTransparency[part] = part.Transparency
+			part.Transparency = 1
+		elseif part:IsA("Decal") then
+			originalTransparency[part] = part.Transparency
+			part.Transparency = 1
 		end
 	end
+	
 end
 
-local function setJumpPower(power)
+local function makeVisible()
+	if not isInvisible then return end
+	isInvisible = false
 	local character = player.Character
-	if character then
-		local humanoid = character:FindFirstChild("Humanoid")
-		if humanoid then
-			originalJumpPower = humanoid.JumpPower
-			humanoid.JumpPower = tonumber(power) or 50
-		end
+	if not character then return end
+	for part, trans in pairs(originalTransparency) do
+		if part and part.Parent then part.Transparency = trans end
 	end
+	
 end
 
+-- ================== Teleport to Player (/tp) ==================
 local function teleportToPlayer(targetName)
-	if targetName:lower() == "me" then return end
+	if targetName:lower() == "me" then
+		
+		return
+	end
+	
 	local targetPlayer = nil
 	for _, p in ipairs(Players:GetPlayers()) do
 		if p ~= player and p.Name:lower():find(targetName:lower()) then
@@ -201,35 +227,151 @@ local function teleportToPlayer(targetName)
 			break
 		end
 	end
-	if not targetPlayer then return end
+	
+	if not targetPlayer then
+		
+		return
+	end
 	
 	local targetChar = targetPlayer.Character
-	if not targetChar or not targetChar:FindFirstChild("HumanoidRootPart") then return end
+	if not targetChar or not targetChar:FindFirstChild("HumanoidRootPart") then
+		
+		return
+	end
 	
 	local myChar = player.Character
 	if myChar and myChar:FindFirstChild("HumanoidRootPart") then
 		myChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame + Vector3.new(0, 3, 0)
+		
 	end
 end
 
-local function rejoinServer()
-	game.StarterGui:SetCore("SendNotification", { Title = "Rejoin", Text = "กำลัง Rejoin เซิร์ฟเวอร์ใหม่...", Duration = 3 })
-	TeleportService:Teleport(game.PlaceId, player)
-end
-
+-- ================== Tool Teleport (🍭) ==================
 local function giveTeleportTool()
-	-- (โค้ด Tool 🍭 เดิมทั้งหมด - ย่อเพื่อความกระชับ)
-	-- ... (เหมือนเวอร์ชันก่อนหน้า) ...
-	-- ถ้าต้องการโค้ด Tool เต็ม สามารถบอกได้
-	game.StarterGui:SetCore("SendNotification", { Title = "🍭 Teleport Tool", Text = "ได้รับ Tool ลูกอมเทเลพอร์ตแล้ว!", Duration = 4 })
+	local tool = Instance.new("Tool")
+	tool.Name = "🍭"
+	tool.ToolTip = "[ 🍭 ] Teleport Tool"
+	tool.RequiresHandle = true
+	
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(2.2, 2.2, 2.2)
+	handle.Shape = Enum.PartType.Ball
+	handle.Material = Enum.Material.ForceField
+	handle.Color = Color3.fromRGB(138, 43, 179)
+	handle.Transparency = 0.15
+	handle.CanCollide = false
+	handle.Parent = tool
+	
+	local sparkles = Instance.new("Sparkles")
+	sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+	sparkles.Parent = handle
+	
+	local particles = Instance.new("ParticleEmitter")
+	particles.Texture = "rbxassetid://241650934"
+	particles.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179), Color3.fromRGB(180, 100, 200))
+	particles.Size = NumberSequence.new(0.4)
+	particles.Lifetime = NumberRange.new(1.5, 2.5)
+	particles.Rate = 20
+	particles.SpreadAngle = Vector2.new(45, 45)
+	particles.Speed = NumberRange.new(2)
+	particles.Parent = handle
+	
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(138, 43, 179)
+	light.Brightness = 2
+	light.Range = 10
+	light.Parent = handle
+	
+	local sound = Instance.new("Sound")
+	sound.SoundId = "rbxassetid://4861638982"
+	sound.Volume = 0.7
+	sound.Parent = handle
+	
+	tool.Activated:Connect(function()
+		sound:Play()
+		local character = player.Character
+		if character and character:FindFirstChild("HumanoidRootPart") then
+			local mouse = player:GetMouse()
+			local pos = mouse.Hit.Position + Vector3.new(0, 3, 0)
+			character.HumanoidRootPart.CFrame = CFrame.new(pos)
+		end
+	end)
+	
+	player:WaitForChild("Backpack")
+	tool.Parent = player.Backpack
+	
+	 
 end
 
+-- ================== Tool Recoil Speed (🚲) ==================
 local function giveRecoilTool()
-	-- (โค้ด Tool 🚲 เดิมทั้งหมด - ย่อเพื่อความกระชับ)
-	game.StarterGui:SetCore("SendNotification", { Title = "🚲 Recoil Tool", Text = "ได้รับ Tool เร่งความเร็วแล้ว!", Duration = 4 })
+	local tool = Instance.new("Tool")
+	tool.Name = "🚲"
+	tool.ToolTip = "[ 🚲 ] Recoil Speed Boost"
+	tool.RequiresHandle = true
+	
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(2.2, 2.2, 2.2)
+	handle.Shape = Enum.PartType.Ball
+	handle.Material = Enum.Material.ForceField
+	handle.Color = Color3.fromRGB(138, 43, 179)
+	handle.Transparency = 0.15
+	handle.CanCollide = false
+	handle.Parent = tool
+	
+	local sparkles = Instance.new("Sparkles")
+	sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
+	sparkles.Parent = handle
+	
+	local particles = Instance.new("ParticleEmitter")
+	particles.Texture = "rbxassetid://241650934"
+	particles.Color = ColorSequence.new(Color3.fromRGB(138, 43, 179), Color3.fromRGB(200, 120, 255))
+	particles.Size = NumberSequence.new(0.5, 0)
+	particles.Lifetime = NumberRange.new(1.2, 2.8)
+	particles.Rate = 0
+	particles.Speed = NumberRange.new(4, 8)
+	particles.SpreadAngle = Vector2.new(50, 50)
+	particles.Parent = handle
+	
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(180, 80, 255)
+	light.Brightness = 0
+	light.Range = 0
+	light.Parent = handle
+	
+	local boostSpeed = 30
+	local originalSpeed = 16
+	
+	tool.Equipped:Connect(function()
+		local character = player.Character
+		local humanoid = character and character:FindFirstChild("Humanoid")
+		if humanoid then
+			originalSpeed = humanoid.WalkSpeed
+			humanoid.WalkSpeed = boostSpeed
+		end
+		particles.Rate = 60
+		light.Brightness = 5
+	end)
+	
+	tool.Unequipped:Connect(function()
+		local character = player.Character
+		local humanoid = character and character:FindFirstChild("Humanoid")
+		if humanoid then
+			humanoid.WalkSpeed = originalSpeed
+		end
+		particles.Rate = 30
+		light.Brightness = 3
+	end)
+	
+	player:WaitForChild("Backpack")
+	tool.Parent = player.Backpack
+	
+	
 end
 
--- ================== รับคำสั่งแชท ==================
+-- ================== รับคำสั่งจากแชท ==================
 player.Chatted:Connect(function(message)
 	local msg = message:lower()
 	local args = message:split(" ")
@@ -243,17 +385,22 @@ player.Chatted:Connect(function(message)
 		
 	elseif msg:match("^/speed%s*%d+$") then
 		local speed = msg:match("/speed%s*(%d+)")
-		setWalkSpeed(speed)
+		local character = player.Character
+		if character then
+			local humanoid = character:FindFirstChild("Humanoid")
+			if humanoid then humanoid.WalkSpeed = tonumber(speed) or 16 end
+		end
 		
 	elseif msg:match("^/jump%s*%d+$") then
 		local power = msg:match("/jump%s*(%d+)")
-		setJumpPower(power)
+		local character = player.Character
+		if character then
+			local humanoid = character:FindFirstChild("Humanoid")
+			if humanoid then humanoid.JumpPower = tonumber(power) or 50 end
+		end
 		
-	elseif args[1]:lower() == "/tp" and args[2] then
+	elseif args[1] == "/tp" and args[2] then
 		teleportToPlayer(args[2])
-		
-	elseif msg == "/rejoin" then
-		rejoinServer()
 		
 	elseif msg == "/tooltp" then
 		giveTeleportTool()
@@ -261,29 +408,38 @@ player.Chatted:Connect(function(message)
 	elseif msg == "/toolrecoil" then
 		giveRecoilTool()
 		
-	elseif msg == "/freeze" then
-		freezePlayer()
+	elseif msg == "/rejoin" then
+		TeleportService:Teleport(game.PlaceId, player)
 		
+	elseif msg == "/freeze" then
+		 freezePlayer()
 	elseif msg == "/unfreeze" then
-		unfreezePlayer()
+		 unfreezePlayer()
+	elseif msg == "/sit" then
+		 ToggleSit(true)
+	elseif msg == "/unsit" then
+		 ToggleSit(false)
+	elseif msg == "/infinitejump" then
+		enableInfiniteJump()
+	elseif msg == "/uninfinitejump" then
+		disableInfiniteJump()
+	elseif msg == "/invisible" then
+		makeInvisible()
+	elseif msg == "/uninvisible" then
+		makeVisible()
+	elseif msg == "/infiniteyield" or msg == "/iy" then
+		 loadInfiniteYield()
 	end
-end)
-
--- เมื่อตัวละครเกิดใหม่
-player.CharacterAdded:Connect(function(character)
-	wait(0.5)
-	if flying then stopFlying() end
-	if isFrozen then
-		isFrozen = false  -- รีเซ็ตสถานะเมื่อ respawn
-	end
-	
-	local humanoid = character:WaitForChild("Humanoid")
-	humanoid.WalkSpeed = originalWalkSpeed
-	humanoid.JumpPower = originalJumpPower
 end)
 
 game.StarterGui:SetCore("SendNotification", {
-        Title = "  [ ✅ ]  -  Attach The Game",
+        Title = "[ ✅ ]  -  Attach The Game",
         Text =  "Akari The Admin Command Use Pastbin And Anything And Run",
         Duration = 2
+      })
+wait(2)
+game.StarterGui:SetCore("SendNotification", {
+        Title = "[ ⌨️ ]  -  Command Chat",
+        Text =  "/fly - /unfly - /speed - /jump - /sit - /unsit - /freeze - /unfreeze /tp - /tooltp - /toolrecoil - /infinitejump - /uninfinitejump - /invisible - /uninvisible",
+        Duration = 1000
       })
