@@ -1,0 +1,836 @@
+--// ============================================== --
+--//          AIMBOT + ESP + RAINBOW TOOL HUB      --
+--// ============================================== --
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+--// Services
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local function GetThaiDate()
+    local monthsThai = {
+        "January", "February", "March", "April",
+        "May", "June", "July", "August",
+        "September", "October", "November", "December"
+    }
+    
+    local time = os.date("*t")
+    local day = time.day
+    local month = monthsThai[time.month]
+    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    
+    return day .. " " .. month .. " " .. year
+end
+
+local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
+
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
+local Window = Rayfield:CreateWindow({
+   Name = "   |   Akari Hub   |   Murder Mystery 2   |   (  " .. CurrentDate .. "  )   |" ,
+   Icon = "webhook",
+   LoadingTitle = "   Akari Hub  Murder Mystery 2   ",
+
+   LoadingSubtitle = "",
+   
+   ShowText = " 🌑 ",
+   Theme = "Default",
+   ToggleUIKeybind = "G",
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "akari"
+   },
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+   KeySystem = false,
+   KeySettings = {
+      Title = "",
+      Subtitle = "",
+      Note = "",
+      FileName = "",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"🌑"}
+   }
+})
+
+local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
+local AnimationStatusLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+local Button = CreditTab:CreateButton({
+   Name = "                                                                      💃",
+   Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
+      )
+
+      
+
+      -- รันโหลดแบบไม่ให้ UI ค้าง
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Animation Hub Loading Finish</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title = "Animation Hub",
+               Content = "[ ✅ ]  Animations Hub Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Animation Hub Cancel</b></font>'
+            )
+
+            
+         end
+
+         -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+-- สร้าง Label ด้วยสีเขียวตั้งแต่แรก
+local RejoinCountdownLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+CreditTab:CreateButton({
+   Name = "                                                                      🕰️",
+   Callback = function()
+      local countdown = 5
+      
+      spawn(function()
+         while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
+            )
+            task.wait(1)
+            countdown = countdown - 1
+         end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
+         RejoinCountdownLabel:Set(
+            '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
+         )
+         task.wait(0.7)
+         
+         -- รีจอย
+         local success, err = pcall(function()
+            local ts = game:GetService("TeleportService")
+            local p = game:GetService("Players").LocalPlayer
+            ts:TeleportToPlaceInstance(game.PlaceId, game.JobId, p)
+         end)
+         
+         if not success then
+            -- ถ้าล้มเหลว เปลี่ยนเป็นสีแดง
+            RejoinCountdownLabel:Set(
+               '<font color="rgb(255, 80, 80)"><b>Rejoin Failed: ' .. tostring(err) .. '</b></font>'
+            )
+            task.delay(5, function()
+
+               -- กลับไปสีเขียวเดิมหลัง 5 วินาที
+               RejoinCountdownLabel:Set(
+                  '<font color="rgb(0, 255, 100)"><b>🕰️ Ready to Rejoin</b></font>'
+               )
+            end)
+         end
+      end)
+   end,
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local PlayerListParagraph = CreditTab:CreateParagraph({
+   Title = "List Player name",
+   Content = "Loading..."
+})
+
+local Divider = CreditTab:CreateDivider()
+
+local ResetTimes = {}
+local RecentlyLeft = {}
+
+local LocalPlayer = game.Players.LocalPlayer
+local LocalPlayerName = LocalPlayer.Name
+
+local function GetTimeAgo(timestamp)
+   local currentTime = tick()
+   local timeDiff = currentTime - timestamp
+   
+   if timeDiff < 60 then
+      return math.floor(timeDiff) .. " Seconds Ago"
+   elseif timeDiff < 3600 then
+      return math.floor(timeDiff / 60) .. " A Minute Ago"
+   elseif timeDiff < 86400 then
+      local hours = math.floor(timeDiff / 3600)
+      local minutes = math.floor((timeDiff % 3600) / 60)
+      return hours .. " Hour. " .. minutes .. " A Minute Ago"
+   else
+      return "It's Been A long Time"
+   end
+end
+
+local function PlayLeaveSound()
+   local sound = Instance.new("Sound")
+   sound.SoundId = "rbxassetid://6670771770"
+   sound.Volume = 0.4
+   sound.Parent = game:GetService("SoundService")
+   sound:Play()
+   game:GetService("Debris"):AddItem(sound, 1)
+end
+
+local function OnPlayerReset(player)
+   ResetTimes[player.Name] = tick()
+end
+
+local function ConnectResetEvents()
+   for _, player in ipairs(game.Players:GetPlayers()) do
+      player.CharacterAdded:Connect(function()
+         OnPlayerReset(player)
+      end)
+      
+      if player.Character then
+         ResetTimes[player.Name] = tick()
+      end
+   end
+end
+
+local function UpdatePlayerList()
+   local players = game.Players:GetPlayers()
+   local playerCount = #players
+   
+   local localPlayerData = nil
+   local otherPlayers = {}
+   
+   -- แยกข้อมูลของคุณกับคนอื่น
+   for _, player in ipairs(players) do
+      local displayName = player.DisplayName or "No Name Player Show"
+      local username = player.Name
+      
+      local status = "    💥  Resetting - dying"
+      local resetInfo = "    ⏳  Wait For The Character to Load."
+      
+      if player.Character and player.Character:FindFirstChild("Humanoid") then
+         status = "    ✅  Online"
+         if ResetTimes[username] then
+            resetInfo = "    💥  Reset " .. GetTimeAgo(ResetTimes[username])
+         else
+            resetInfo = "    ✅ No Can Reset"
+         end
+      end
+      
+      local entry = {
+         display = displayName,
+         name = username,
+         status = status,
+         resetInfo = resetInfo
+      }
+      
+      if username == LocalPlayerName then
+         localPlayerData = entry
+      else
+         table.insert(otherPlayers, entry)
+      end
+   end
+   
+   local lines = {}
+   
+   -- 1. ชื่อคุณอยู่บนสุดเสมอ
+   if localPlayerData then
+      table.insert(lines, string.format(
+         "  ★  1. %s ( @ %s )  ←-- YOU\n   %s   |  %s",
+         localPlayerData.display, localPlayerData.name,
+         localPlayerData.status, localPlayerData.resetInfo
+      ))
+   end
+   
+   -- 2. ผู้เล่นคนอื่น (เรียงตามลำดับปกติของ GetPlayers)
+   for i, data in ipairs(otherPlayers) do
+      table.insert(lines, string.format(
+         "  %d. %s ( @ %s )\n   %s   |  %s",
+         i + 1, data.display, data.name, data.status, data.resetInfo
+      ))
+   end
+   
+   -- 3. คนที่เพิ่งออกเกม
+   for name, data in pairs(RecentlyLeft) do
+      local timeStr = GetTimeAgo(data.time)
+      table.insert(lines, string.format(
+         "  🔴  %s ( @ %s ) Leave The Game  •  %s",
+         data.displayName or name, name, timeStr
+      ))
+   end
+   
+   PlayerListParagraph:Set({
+      Title = string.format("                                                                                     (  %d Player  |  Leave %d Player  )", playerCount, #RecentlyLeft),
+      Content = table.concat(lines, "\n\n")
+   })
+   
+   
+end
+
+game.Players.PlayerRemoving:Connect(function(player)
+   PlayLeaveSound()
+   
+   RecentlyLeft[player.Name] = {
+      time = tick(),
+      displayName = player.DisplayName
+   }
+   
+   Rayfield:Notify({
+      Title = "[ 🔴 ]  Person Leave The Map!",
+      Content = player.DisplayName .. " ( " .. player.Name .. " ) Leave The Server",
+      Duration = 3.5,
+      Image = "accessibility",
+   })
+   
+   task.delay(6, function()
+      RecentlyLeft[player.Name] = nil
+      pcall(UpdatePlayerList)
+   end)
+   
+   pcall(UpdatePlayerList)
+end)
+
+-- เริ่มต้น
+ConnectResetEvents()
+UpdatePlayerList()
+
+spawn(function()
+   while true do
+      task.wait(1.8)
+      pcall(function()
+         ConnectResetEvents()
+         UpdatePlayerList()
+      end)
+   end
+end)
+
+game.Players.PlayerAdded:Connect(function(player)
+   player.CharacterAdded:Connect(function()
+      OnPlayerReset(player)
+   end)
+   task.wait(1)
+   UpdatePlayerList()
+end)
+
+spawn(function()
+   while true do
+      task.wait(2)
+      if ResetTimes[LocalPlayerName] then
+         MyResetLabel:Set("Time Reseting You: " .. GetTimeAgo(ResetTimes[LocalPlayerName]))
+      else
+         MyResetLabel:Set("Time Reseting You: You Cant Reset")
+      end
+   end
+end)
+
+--// ============================================== --
+--//               AIMBOT SETTINGS                 --
+--// ============================================== --
+
+local AimbotTab = Window:CreateTab("||   - Aimbot Player - ESP", "locate-fixed")
+
+--// ============================================== --
+--//     AIMBOT + WALL CHECK (Role-Based)         --
+--// ============================================== --
+
+local plrs = game:GetService("Players")
+local plr = plrs.LocalPlayer
+local cam = workspace.CurrentCamera
+local run = game:GetService("RunService")
+
+-- Aimbot Settings
+local target = nil
+local fovRadius = 120
+local showFov = false
+local smoothness = 0.12
+local prediction = 0.135
+
+-- Drawing Objects
+local fovCircle = Drawing.new("Circle")
+fovCircle.Thickness = 3
+fovCircle.Filled = false
+fovCircle.Transparency = 1
+fovCircle.NumSides = 80
+fovCircle.Visible = false
+
+local lockLine = Drawing.new("Line")
+lockLine.Thickness = 3
+lockLine.Transparency = 1
+lockLine.Visible = false
+
+local targetName = Drawing.new("Text")
+targetName.Size = 18
+targetName.Center = true
+targetName.Outline = true
+targetName.Font = 2
+targetName.Visible = false
+
+local hpText = Drawing.new("Text")
+hpText.Size = 16
+hpText.Center = true
+hpText.Outline = true
+hpText.Font = 2
+hpText.Visible = false
+
+-- Rainbow
+local rainbowHue = 0
+local function getRainbow()
+    rainbowHue = (rainbowHue + 0.003) % 1
+    return Color3.fromHSV(rainbowHue, 1, 1)
+end
+
+-- ตรวจจับ Role
+local function GetRole(player)
+    if not player or not player.Character then return "Innocent" end
+    local backpack = player:FindFirstChild("Backpack")
+    
+    -- Murderer
+    if backpack then
+        for _, tool in pairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name:lower():find("knife") or tool.Name:lower():find("murder")) then
+                return "Murderer"
+            end
+        end
+    end
+    if player.Character then
+        for _, tool in pairs(player.Character:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name:lower():find("knife") or tool.Name:lower():find("murder")) then
+                return "Murderer"
+            end
+        end
+    end
+    
+    -- Sheriff
+    if backpack then
+        for _, tool in pairs(backpack:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name:lower():find("gun") or tool.Name:lower():find("revolver") or tool.Name:lower():find("sheriff")) then
+                return "Sheriff"
+            end
+        end
+    end
+    if player.Character then
+        for _, tool in pairs(player.Character:GetChildren()) do
+            if tool:IsA("Tool") and (tool.Name:lower():find("gun") or tool.Name:lower():find("revolver") or tool.Name:lower():find("sheriff")) then
+                return "Sheriff"
+            end
+        end
+    end
+    return "Innocent"
+end
+
+-- Wall Check
+local function IsVisible(targetHead)
+    local origin = cam.CFrame.Position
+    local direction = (targetHead.Position - origin)
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {plr.Character or {}}
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.IgnoreWater = true
+    
+    local result = workspace:Raycast(origin, direction, raycastParams)
+    
+    if not result then return true end
+    
+    local hitChar = result.Instance:FindFirstAncestorWhichIsA("Model")
+    if hitChar and hitChar == targetHead.Parent then
+        return true
+    end
+    return false
+end
+
+-- Get Closest Player ตาม Role ของเรา
+local function GetClosestPlayerInFOV()
+    local closest = nil
+    local dist = math.huge
+    local center = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+    
+    local myRole = GetRole(plr)
+
+    for _, v in pairs(plrs:GetPlayers()) do
+        if v ~= plr and v.Character and v.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health > 0 then
+            
+            local isTarget = false
+            
+            if myRole == "Murderer" then
+                isTarget = true                          -- Murderer เล็งทุกคน
+            elseif myRole == "Sheriff" then
+                isTarget = (GetRole(v) == "Murderer")   -- Sheriff เล็งเฉพาะ Murderer
+            else
+                isTarget = (GetRole(v) == "Murderer")   -- Innocent เล็งเฉพาะ Murderer
+            end
+
+            if isTarget then
+                local head = v.Character.Head
+                local pos, onScreen = cam:WorldToViewportPoint(head.Position)
+                
+                if onScreen then
+                    local screenPos = Vector2.new(pos.X, pos.Y)
+                    local mag = (screenPos - center).Magnitude
+                    
+                    if mag <= fovRadius and mag < dist and IsVisible(head) then
+                        dist = mag
+                        closest = v
+                    end
+                end
+            end
+        end
+    end
+    return closest
+end
+
+-- Predict Position
+local function getPredictedPosition(head)
+    local root = head.Parent:FindFirstChild("HumanoidRootPart")
+    if root then
+        local v = root.Velocity
+        local d = (cam.CFrame.Position - head.Position).Magnitude
+        return head.Position + (v * d * prediction / 100)
+    end
+    return head.Position
+end
+
+-- ==================== AIMBOT MAIN LOOP ====================
+run.RenderStepped:Connect(function()
+    local center = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+    local rainbow = getRainbow()
+
+    if showFov then
+        fovCircle.Position = center
+        fovCircle.Radius = fovRadius
+        fovCircle.Color = rainbow
+        fovCircle.Visible = true
+
+        target = GetClosestPlayerInFOV()
+        if target and target.Character and target.Character:FindFirstChild("Head") then
+            local head = target.Character.Head
+            local hum = target.Character.Humanoid
+            local pred = getPredictedPosition(head)
+
+            local targetCF = CFrame.new(cam.CFrame.Position, pred)
+            cam.CFrame = cam.CFrame:Lerp(targetCF, smoothness)
+
+            local headPos = cam:WorldToViewportPoint(pred)
+            
+            -- Lock Line
+            lockLine.From = center
+            lockLine.To = Vector2.new(headPos.X, headPos.Y)
+            lockLine.Color = Color3.fromRGB(255, 0, 0)
+            lockLine.Visible = true
+
+            -- Target Name + Role
+            local role = GetRole(target)
+            targetName.Text = target.DisplayName .. " [" .. role .. "]"
+            targetName.Position = Vector2.new(headPos.X, headPos.Y - 40)
+            targetName.Color = Color3.fromRGB(255, 0, 0)
+            targetName.Visible = true
+
+            -- HP Text
+            local hpPercent = math.floor((hum.Health / hum.MaxHealth) * 100)
+            hpText.Text = hum.Health .. "/" .. hum.MaxHealth .. " (" .. hpPercent .. "%)"
+            hpText.Position = Vector2.new(headPos.X, headPos.Y + 25)
+            hpText.Color = Color3.fromRGB(255, 0, 0)
+            hpText.Visible = true
+
+            fovCircle.Thickness = 4
+        else
+            lockLine.Visible = false
+            targetName.Visible = false
+            hpText.Visible = false
+            fovCircle.Thickness = 3
+        end
+    else
+        fovCircle.Visible = false
+        lockLine.Visible = false
+        targetName.Visible = false
+        hpText.Visible = false
+        target = nil
+    end
+end)
+
+--// ==================== AIMBOT GUI ====================
+local Divider1 = AimbotTab:CreateDivider()
+
+AimbotTab:CreateToggle({
+    Name = "[ 🎯 ]  Aimbot Role-Based  ( Wall Check )",
+    CurrentState = false,
+    Callback = function(v) 
+        showFov = v
+    end
+})
+
+AimbotTab:CreateSlider({
+    Name = "[ 📏 ]  Slider FOV Circle",
+    Range = {50, 5000}, 
+    Increment = 5, 
+    Suffix = " FOV Circle Size", 
+    CurrentValue = 120,
+    Callback = function(v) fovRadius = v end
+})
+
+AimbotTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Smooth Aimbot",
+    Range = {1, 5000}, 
+    Increment = 1, 
+    Suffix = " Aimbot Smooth", 
+    CurrentValue = 30,
+    Callback = function(v) smoothness = v / 100 end
+})
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "Aimbot Auto Killer Murder is Have Good Idea To The Best Kill", Content = "Aimbot Auto Killer Murder is Have Good Idea To The Best Nice Killer"})
+
+--// ============================================== --
+--//          ESP Rainbow (Mixed Color)            --
+--// ============================================== --
+
+local ESP_Rainbow = {
+    Enabled = false,
+    TracerEnabled = true,
+    SkeletonEnabled = false,
+    RainbowSpeed = 0.5,
+    Boxes = {},
+    SkeletonLines = {}
+}
+
+-- Bones สำหรับ Skeleton
+local bones = {
+    {"Head", "UpperTorso"}, {"UpperTorso", "LowerTorso"},
+    {"UpperTorso", "LeftUpperArm"}, {"LeftUpperArm", "LeftLowerArm"}, {"LeftLowerArm", "LeftHand"},
+    {"UpperTorso", "RightUpperArm"}, {"RightUpperArm", "RightLowerArm"}, {"RightLowerArm", "RightHand"},
+    {"LowerTorso", "LeftUpperLeg"}, {"LeftUpperLeg", "LeftLowerLeg"}, {"LeftLowerLeg", "LeftFoot"},
+    {"LowerTorso", "RightUpperLeg"}, {"RightUpperLeg", "RightLowerLeg"}, {"RightLowerLeg", "RightFoot"}
+}
+
+local function Rainbow(offset)
+    return Color3.fromHSV((tick() * ESP_Rainbow.RainbowSpeed + (offset or 0)) % 1, 1, 1)
+end
+
+local function CreateBoxESP(player)
+    if ESP_Rainbow.Boxes[player] then return end
+    local box = {}
+    box.Square = Drawing.new("Square") 
+    box.Square.Thickness = 2 
+    box.Square.Filled = false
+
+    box.Name = Drawing.new("Text") 
+    box.Name.Size = 16 
+    box.Name.Center = true 
+    box.Name.Outline = true
+
+    box.Tracer = Drawing.new("Line") 
+    box.Tracer.Thickness = 2
+
+    box.HealthBar = Drawing.new("Square") 
+    box.HealthBar.Thickness = 1 
+    box.HealthBar.Filled = true
+
+    ESP_Rainbow.Boxes[player] = box
+end
+
+local function CreateSkeleton(player)
+    if ESP_Rainbow.SkeletonLines[player] then return end
+    local skel = {}
+    for _, bone in ipairs(bones) do
+        local line = Drawing.new("Line")
+        line.Thickness = 1.5
+        table.insert(skel, {Bone1 = bone[1], Bone2 = bone[2], Line = line})
+    end
+    ESP_Rainbow.SkeletonLines[player] = skel
+end
+
+local function RemoveRainbowESP(player)
+    if ESP_Rainbow.Boxes[player] then
+        for _, v in pairs(ESP_Rainbow.Boxes[player]) do pcall(function() v:Remove() end) end
+        ESP_Rainbow.Boxes[player] = nil
+    end
+    if ESP_Rainbow.SkeletonLines[player] then
+        for _, v in pairs(ESP_Rainbow.SkeletonLines[player]) do pcall(function() v.Line:Remove() end) end
+        ESP_Rainbow.SkeletonLines[player] = nil
+    end
+end
+
+-- Main Loop สำหรับ ESP สายรุ่ง
+run.RenderStepped:Connect(function()
+    if not ESP_Rainbow.Enabled then
+        for p in pairs(ESP_Rainbow.Boxes) do RemoveRainbowESP(p) end
+        return
+    end
+
+    for _, player in pairs(plrs:GetPlayers()) do
+        if player == plr then continue end
+
+        local role = GetRole(player)  -- ใช้ฟังก์ชัน GetRole จาก Aimbot
+
+        -- กำหนดสีตาม Role
+        local boxColor
+        if role == "Murderer" then
+            boxColor = Color3.fromRGB(255, 0, 0)      -- แดง
+        elseif role == "Sheriff" then
+            boxColor = Color3.fromRGB(0, 100, 255)   -- น้ำเงิน
+        else
+            boxColor = Rainbow(0)                    -- คนทั่วไป = สีรุ้ง
+        end
+
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local char = player.Character
+            local hum = char:FindFirstChild("Humanoid")
+            local root = char:FindFirstChild("HumanoidRootPart")
+
+            if hum and root and hum.Health > 0 then
+                local rootPos, onScreen = cam:WorldToViewportPoint(root.Position)
+
+                if onScreen then
+                    CreateBoxESP(player)
+                    local box = ESP_Rainbow.Boxes[player]
+
+                    local distance = (cam.CFrame.Position - root.Position).Magnitude
+                    local scale = math.clamp(2000 / distance, 18, 220)
+                    local size = Vector2.new(scale * 0.65, scale * 1.8)
+                    local centerPos = Vector2.new(rootPos.X, rootPos.Y)
+
+                    -- Box
+                    box.Square.Size = size
+                    box.Square.Position = centerPos - size/2
+                    box.Square.Color = boxColor
+                    box.Square.Visible = true
+
+                    -- Name
+                    box.Name.Position = centerPos + Vector2.new(0, -size.Y/2 - 25)
+                    box.Name.Text = player.DisplayName .. " [" .. role .. "]"
+                    box.Name.Color = boxColor
+                    box.Name.Visible = true
+
+                    -- Tracer
+                    if ESP_Rainbow.TracerEnabled then
+                        local bottom = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y - 30)
+                        box.Tracer.From = bottom
+                        box.Tracer.To = Vector2.new(rootPos.X, rootPos.Y + size.Y/2)
+                        box.Tracer.Color = boxColor
+                        box.Tracer.Visible = true
+                    else
+                        box.Tracer.Visible = false
+                    end
+
+                    -- Health Bar
+                    local hpPercent = hum.Health / hum.MaxHealth
+                    local barH = size.Y * hpPercent
+                    box.HealthBar.Size = Vector2.new(4, barH)
+                    box.HealthBar.Position = Vector2.new(centerPos.X - size.X/2 - 8, centerPos.Y - size.Y/2 + (size.Y - barH))
+                    box.HealthBar.Color = Color3.fromHSV(hpPercent * 0.33, 1, 1)
+                    box.HealthBar.Visible = true
+
+                    -- Skeleton
+                    if ESP_Rainbow.SkeletonEnabled then
+                        CreateSkeleton(player)
+                        local skel = ESP_Rainbow.SkeletonLines[player]
+                        for _, data in ipairs(skel) do
+                            local p1 = char:FindFirstChild(data.Bone1)
+                            local p2 = char:FindFirstChild(data.Bone2)
+                            if p1 and p2 then
+                                local v1, vis1 = cam:WorldToViewportPoint(p1.Position)
+                                local v2, vis2 = cam:WorldToViewportPoint(p2.Position)
+                                if vis1 and vis2 then
+                                    data.Line.From = Vector2.new(v1.X, v1.Y)
+                                    data.Line.To = Vector2.new(v2.X, v2.Y)
+                                    data.Line.Color = boxColor
+                                    data.Line.Visible = true
+                                else
+                                    data.Line.Visible = false
+                                end
+                            else
+                                data.Line.Visible = false
+                            end
+                        end
+                    else
+                        if ESP_Rainbow.SkeletonLines[player] then
+                            for _, data in ipairs(ESP_Rainbow.SkeletonLines[player]) do 
+                                data.Line.Visible = false 
+                            end
+                        end
+                    end
+
+                else
+                    RemoveRainbowESP(player)
+                end
+            else
+                RemoveRainbowESP(player)
+            end
+        else
+            RemoveRainbowESP(player)
+        end
+    end
+end)
+
+plrs.PlayerRemoving:Connect(RemoveRainbowESP)
+
+--// ==================== GUI ====================
+local Divider3 = AimbotTab:CreateDivider()
+
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  ESP Player Innocent",
+    CurrentState = false,
+    Callback = function(v)
+        ESP_Rainbow.Enabled = v
+    end
+})
+
+AimbotTab:CreateToggle({
+    Name = "[ 🔍 ]  Tracer ESP Player",
+    CurrentState = true,
+    Callback = function(v) ESP_Rainbow.TracerEnabled = v end
+})
+
+AimbotTab:CreateToggle({
+    Name = "[ 💀 ]  Skeleton ESP Player",
+    CurrentState = false,
+    Callback = function(v) ESP_Rainbow.SkeletonEnabled = v end
+})
+
+AimbotTab:CreateSlider({
+    Name = "[ 📏 ]  Slider ESP And Tracer",
+    Range = {0.5, 8},
+    Increment = 0.1,
+    Suffix = " Slider Speed Rainbow",
+    CurrentValue = 2.8,
+    Callback = function(v)
+        ESP_Rainbow.RainbowSpeed = v
+    end
+})
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "Auto Killer Murder is Have Good Idea To The Best Kill", Content = "Auto Killer Murder is Have Good Idea To The Best Nice Killer"})
+
+local Divider1 = AimbotTab:CreateDivider()
