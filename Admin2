@@ -486,6 +486,8 @@ player.Chatted:Connect(function(message)
 		makeVisible()
 	elseif msg == "/infiniteyield" or msg == "/iy" then
 		 loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+	elseif msg == "/flingscript" or msg == "/fs" then
+		 loadstring(game:HttpGet("https://raw.githubusercontent.com/SVG-CARLOS/I-spent-soo-much-time-making-this-script-that-I-cant-make-a-good-title/refs/heads/main/Invisfling"))()
     elseif msg == "/animation" or msg == "/an" then
 		 loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))()
 	end
@@ -623,6 +625,7 @@ contentLabel.Text = [[
  /uninvisible = /univ
 
  /infiniteyield = /iy
+ /flingscript = /fs
 
  /animation = /an
 
