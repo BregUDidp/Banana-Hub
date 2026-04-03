@@ -662,10 +662,7 @@ AimbotTab:CreateSlider({
     end
 })
 
-AimbotTab:CreateParagraph({
-    Title = "Aimbot + Wall Check",
-    Content = "• Time behind a wall = Automatic mural aimbot\n• Walk away from the wall and description = Automatic aiming\n• Top Rainbow Hitbox helps to see the target more clearly\n• Check team open, check team"
-})
+local Paragraph = AimbotTab:CreateParagraph({Title = "The Fuction Aimbot Is Have A Wall Check Team Check Have Anything", Content = "The Fuction Aimbot Is Have A Wall Check Team Check Have Anything A Tiggerbot"})
 
 AimbotTab:CreateDivider()
 
@@ -924,10 +921,7 @@ AimbotTab:CreateSlider({
     end
 })
 
-AimbotTab:CreateParagraph({
-    Title = "ESP Enemy + Skeleton",
-    Content = "• ESP Box + Tracer + Health Bar for enemies\n• Skeleton ESP (bones) can be turned on/off\n• Bones will be Rainbow colored\n• Only works on outside teams"
-})
+local Paragraph = AimbotTab:CreateParagraph({Title = "The Fuction ESP Is Have A Tracer And Highlight But My Script Not Have A Highlight", Content = "The Fuction ESP Is Have A Tracer And Highlight But My Script Not Have A Highlight"})
 
 local Divider = AimbotTab:CreateDivider()
 
@@ -1059,10 +1053,6 @@ KillTab:CreateSlider({
     end
 })
 
-KillTab:CreateParagraph({
-    Title = "Teleport Kill Loop + Team Check",
-    Content = "• TP (Port) over the enemy's head and auto-fire.\n• Team Check enabled = Kill only non-team members.\n• Team Check disabled = Kill everyone.\n• Possibly on the Flick Shot map.\n• Warning: Severe cheating will result in a quick ban."
-})
+local Paragraph = KillTab:CreateParagraph({Title = "The Kill Loop Is On The Head Player And Persent Hight", Content = "The Kill Loop Is On The Head Player And Persent Hight Player"})
 
 local Divider = KillTab:CreateDivider()
-
