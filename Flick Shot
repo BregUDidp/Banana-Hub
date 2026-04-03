@@ -787,7 +787,7 @@ AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Slider Rainbow Speed",
     Range = {0.5, 8},
     Increment = 0.1,
-    Suffix = "x",
+    Suffix = " Slider Rainbow ESP",
     CurrentValue = 2.8,
     Callback = function(v)
         ESP.RainbowSpeed = v
