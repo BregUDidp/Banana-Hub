@@ -21,7 +21,7 @@ local CurrentDate = GetThaiDate()  -- เช่น "8 มกราคม 2569"
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |   Loader   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
-   LoadingTitle = "   Akari Hub  Loader Premium   ",
+   LoadingTitle = "   Akari Hub  Loader Script Premium   ",
 
    LoadingSubtitle = "",
    
@@ -147,7 +147,12 @@ local Button = LoaderSTab:CreateButton({
 	   
        local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderSTab:CreateDivider()
-       
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari Murder Mystery 2 - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   Murder Mystery 2 ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Murder"))() end})
+	   
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderSTab:CreateDivider()
+
        local Section = LoaderSTab:CreateSection("{ ( - Script Akari 99 Night In The Forest - ) }")
        LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   99 Night In The Forest ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/99"))() end})
 	   
