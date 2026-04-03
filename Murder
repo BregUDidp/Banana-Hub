@@ -824,7 +824,7 @@ AimbotTab:CreateSlider({
     Name = "[ 📏 ]  Slider ESP And Tracer",
     Range = {0.5, 8},
     Increment = 0.1,
-    Suffix = " Slider Speed Rainbow",
+    Suffix = " Slider Speed ESP",
     CurrentValue = 2.8,
     Callback = function(v)
         ESP_Rainbow.RainbowSpeed = v
@@ -1140,22 +1140,6 @@ local char = player.Character or player.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local humanoid = char:WaitForChild("Humanoid")
 
-local superSpeed = false
-local runSpeed = 16
-local noclipEnabled = false
- 
--- ฟังก์ชันวิ่งเร็ว
-local function toggleSpeed(on)
-    superSpeed = on
-    humanoid.WalkSpeed = superSpeed and runSpeed or 16
-    Rayfield:Notify({
-        Title = superSpeed and "[ 🏃 ]  Become Speed Flash!" or "[ 🚶‍♂️ ]  Become Speed Normal!",
-        Content = superSpeed and "[ ✅ ] Speed Running ON" or "[ 🛑 ]  Speed Running OFF",
-        Duration = 1,
-        Image = "bike",
-    })
-end
-
 -- Services
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -1268,13 +1252,6 @@ local SpeedSlider = PTab:CreateSlider({
 })
 
 local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For Style", Content = "Flying For Building And Fly For Style Super Man"})
-
-local Divider = PTab:CreateDivider()
-
-local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
-
-local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
 local Divider = PTab:CreateDivider()
 
