@@ -682,7 +682,7 @@ local function toggleInvisibility()
         seat.CFrame = savedPosition
 
         setCharacterTransparency(player.Character, 0.5)
-        createNotification("Invisibility ON", "You are now invisible")
+        
     else
         -- Remove invisible chair
         local invisChair = workspace:FindFirstChild("invischair")
@@ -692,7 +692,7 @@ local function toggleInvisibility()
             setCharacterTransparency(player.Character, 0)
         end
 
-        createNotification("Invisibility OFF", "You are now visible")
+        
     end
 end
 
@@ -762,26 +762,10 @@ local function initialize()
         playerState.originalSpeed = humanoid.WalkSpeed
     end
 
-    createNotification("Loaded", "Invisibility Tool is ready!")
+    
 end
 
 initialize()
-
-local Divider1 = AimbotTab:CreateDivider()
-
--- Invisibility Toggle
-local InvisToggle = AimbotTab:CreateToggle({
-    Name = "[ 👻 ]  Invisibility Hide Player",
-    CurrentValue = false,
-    Flag = "InvisibilityFlag",
-    Callback = function(Value)
-        if Value ~= playerState.isInvisible then
-            toggleInvisibility()
-        end
-    end,
-})
-
-local Paragraph = AimbotTab:CreateParagraph({Title = "The Invisible Is Hide The Murder Mystery 2", Content = "The Invisible Is Hide The Murder Mystery 2 Is The Style"})
 
 local Divider1 = AimbotTab:CreateDivider()
 
@@ -1545,6 +1529,22 @@ local SpeedButton = PTab:CreateButton({
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
 local Divider = PTab:CreateDivider()
+
+-- Invisibility Toggle
+local InvisToggle = PTab:CreateToggle({
+    Name = "[ 👻 ]  Invisibility Hide Player",
+    CurrentValue = false,
+    Flag = "InvisibilityFlag",
+    Callback = function(Value)
+        if Value ~= playerState.isInvisible then
+            toggleInvisibility()
+        end
+    end,
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "The Invisible Is Hide The Murder Mystery 2", Content = "The Invisible Is Hide The Murder Mystery 2 Is The Style"})
+
+local Divider1 = PTab:CreateDivider()
 
 local SittingEnabled = false
 local SitConnection = nil
