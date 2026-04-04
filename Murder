@@ -582,7 +582,207 @@ run.RenderStepped:Connect(function()
     end
 end)
 
---// ==================== AIMBOT GUI ====================
+-- Invisible Tab --
+
+local CONFIG = {
+--    TOGGLE_KEY = Enum.KeyCode.X,
+    DEFAULT_SPEED = 16,
+    BOOSTED_SPEED = 48,
+    SOUND_ID = "rbxassetid://942127495",
+    INVISIBILITY_POSITION = Vector3.new(-25.95, 84, 3537.55),
+    NOTIFICATION_DURATION = 3,
+}
+
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+-- Variables
+local player = Players.LocalPlayer
+
+local playerState = {
+    isInvisible = false,
+    isSpeedBoosted = false,
+    originalSpeed = CONFIG.DEFAULT_SPEED,
+}
+
+local sound = Instance.new("Sound")
+sound.SoundId = CONFIG.SOUND_ID
+sound.Volume = 0.5
+sound.Parent = player:WaitForChild("PlayerGui")
+
+-- Utility Functions
+local function createNotification(title: string, text: string)
+    StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = CONFIG.NOTIFICATION_DURATION,
+    })
+end
+
+local function setCharacterTransparency(character: Model, transparency: number)
+    for _, descendant in character:GetDescendants() do
+        if descendant:IsA("BasePart") or descendant:IsA("Decal") then
+            descendant.Transparency = transparency
+        end
+    end
+end
+
+local function getHumanoid(): Humanoid?
+    local character = player.Character
+    if not character then return nil end
+    return character:FindFirstChildOfClass("Humanoid")
+end
+
+local function getHumanoidRootPart(): BasePart?
+    local character = player.Character
+    if not character then return nil end
+    return character:FindFirstChild("HumanoidRootPart")
+end
+
+local function playSound()
+    if sound then sound:Play() end
+end
+
+-- Core Functions
+local function toggleInvisibility()
+    if not player.Character then 
+        warn("Character not found") 
+        return 
+    end
+
+    playerState.isInvisible = not playerState.isInvisible
+    playSound()
+
+    if playerState.isInvisible then
+        local humanoidRootPart = getHumanoidRootPart()
+        if not humanoidRootPart then return end
+
+        local savedPosition = humanoidRootPart.CFrame
+        player.Character:MoveTo(CONFIG.INVISIBILITY_POSITION)
+        task.wait(0.15)
+
+        -- Create invisible seat
+        local seat = Instance.new("Seat")
+        seat.Name = "invischair"
+        seat.Anchored = false
+        seat.CanCollide = false
+        seat.Transparency = 1
+        seat.Position = CONFIG.INVISIBILITY_POSITION
+        seat.Parent = workspace
+
+        local weld = Instance.new("Weld")
+        weld.Part0 = seat
+        weld.Part1 = player.Character:FindFirstChild("Torso") or player.Character:FindFirstChild("UpperTorso")
+        weld.Parent = seat
+
+        task.wait()
+        seat.CFrame = savedPosition
+
+        setCharacterTransparency(player.Character, 0.5)
+        createNotification("Invisibility ON", "You are now invisible")
+    else
+        -- Remove invisible chair
+        local invisChair = workspace:FindFirstChild("invischair")
+        if invisChair then invisChair:Destroy() end
+
+        if player.Character then
+            setCharacterTransparency(player.Character, 0)
+        end
+
+        createNotification("Invisibility OFF", "You are now visible")
+    end
+end
+
+local function toggleSpeedBoost()
+    local humanoid = getHumanoid()
+    if not humanoid then return end
+
+    playerState.isSpeedBoosted = not playerState.isSpeedBoosted
+    playSound()
+
+    if playerState.isSpeedBoosted then
+        humanoid.WalkSpeed = CONFIG.BOOSTED_SPEED
+        createNotification("Speed Boost ON", `Speed: {CONFIG.BOOSTED_SPEED}`)
+    else
+        humanoid.WalkSpeed = playerState.originalSpeed
+        createNotification("Speed Boost OFF", `Speed: {playerState.originalSpeed}`)
+    end
+end
+
+local function resetPlayerState()
+    playerState.isInvisible = false
+    playerState.isSpeedBoosted = false
+
+    local invisChair = workspace:FindFirstChild("invischair")
+    if invisChair then invisChair:Destroy() end
+
+    if player.Character then
+        setCharacterTransparency(player.Character, 0)
+    end
+
+    local humanoid = getHumanoid()
+    if humanoid then
+        humanoid.WalkSpeed = playerState.originalSpeed
+    end
+end
+
+-- Hotkey (กด X เพื่อ Toggle Invisibility)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == CONFIG.TOGGLE_KEY then
+        toggleInvisibility()
+        
+        -- อัพเดท Toggle ใน Rayfield
+        InvisToggle:Set(not playerState.isInvisible)  -- ซิงค์สถานะ
+    end
+end)
+
+-- Character Respawn Handling
+player.CharacterAdded:Connect(function()
+    resetPlayerState()
+    task.wait(1)
+    local humanoid = getHumanoid()
+    if humanoid then
+        playerState.originalSpeed = humanoid.WalkSpeed
+        humanoid.WalkSpeed = CONFIG.DEFAULT_SPEED
+    end
+end)
+
+-- Initialize
+local function initialize()
+    if not player.Character then
+        player.CharacterAdded:Wait()
+    end
+
+    local humanoid = getHumanoid()
+    if humanoid then
+        playerState.originalSpeed = humanoid.WalkSpeed
+    end
+
+    createNotification("Loaded", "Invisibility Tool is ready!")
+end
+
+initialize()
+
+local Divider1 = AimbotTab:CreateDivider()
+
+-- Invisibility Toggle
+local InvisToggle = AimbotTab:CreateToggle({
+    Name = "[ 👻 ]  Invisibility Hide Player",
+    CurrentValue = false,
+    Flag = "InvisibilityFlag",
+    Callback = function(Value)
+        if Value ~= playerState.isInvisible then
+            toggleInvisibility()
+        end
+    end,
+})
+
+local Paragraph = AimbotTab:CreateParagraph({Title = "The Invisible Is Hide The Murder Mystery 2", Content = "The Invisible Is Hide The Murder Mystery 2 Is The Style"})
+
 local Divider1 = AimbotTab:CreateDivider()
 
 AimbotTab:CreateToggle({
@@ -1325,6 +1525,24 @@ local SpeedSlider = PTab:CreateSlider({
 })
 
 local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For Style", Content = "Flying For Building And Fly For Style Super Man"})
+
+local Divider = PTab:CreateDivider()
+
+local SpeedButton = PTab:CreateButton({
+    Name = "[ 🏃‍♀️ ]  Walking Or Running  ( Button Running )",
+    Callback = function()
+        toggleSpeedBoost()
+
+         Rayfield:Notify({
+            Title =   "[ 🏃 ]  Become Speed Flash!",
+            Content = "[ ✅ ]  Speed Running ON",
+            Duration = 1,
+            Image = "bike",
+        })
+    end,
+})
+
+local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
 local Divider = PTab:CreateDivider()
 
