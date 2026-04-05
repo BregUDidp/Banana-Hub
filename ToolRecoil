@@ -1,0 +1,111 @@
+local Player = game.Players.LocalPlayer
+local Backpack = Player:WaitForChild("Backpack")
+
+local NormalWalkSpeed = 17      -- ความเร็วปกติ
+local BoostWalkSpeed = 30       -- ความเร็วตอนถือ (ปรับได้ตามต้องการ)
+
+-- สร้าง Tool
+local tool = Instance.new("Tool")
+tool.Name = "🚲"
+tool.ToolTip = "[ 🚲 ]  Recoil Tools Speed Boost"
+tool.RequiresHandle = true
+
+-- Handle ลูกอม/ลูกบอลสีม่วง
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Size = Vector3.new(2.2, 2.2, 2.2)
+handle.Shape = Enum.PartType.Ball
+handle.Material = Enum.Material.ForceField
+handle.Color = Color3.fromRGB(138, 43, 179)
+handle.Transparency = 0.15
+handle.CanCollide = false
+handle.Parent = tool
+
+-- Sparkles สีม่วง
+local sparkles = Instance.new("Sparkles")
+sparkles.SparkleColor = Color3.fromRGB(180, 80, 255)
+sparkles.Enabled = false
+sparkles.Parent = handle
+
+-- ParticleEmitter ม่วงสวยงาม
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxassetid://241650934"
+particles.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 179)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 120, 255))
+})
+particles.Transparency = NumberSequence.new({
+    NumberSequenceKeypoint.new(0, 0.3), 
+    NumberSequenceKeypoint.new(1, 1)
+})
+particles.Size = NumberSequence.new(0.5, 0)
+particles.Lifetime = NumberRange.new(1.2, 2.8)
+particles.Rate = 0
+particles.Speed = NumberRange.new(4, 8)
+particles.SpreadAngle = Vector2.new(50, 50)
+particles.Parent = handle
+
+-- แสงม่วง
+local light = Instance.new("PointLight")
+light.Color = Color3.fromRGB(180, 80, 255)
+light.Brightness = 0
+light.Range = 0
+light.Parent = handle
+
+-- ตัวแปรเก็บ WalkSpeed เดิม
+local originalSpeed = NormalWalkSpeed
+
+-- Function สำหรับอัพเดทความเร็ว
+local function updateSpeed(humanoid, speed)
+    if humanoid then
+        humanoid.WalkSpeed = speed
+    end
+end
+
+-- Event ตอนถือ Tool
+tool.Equipped:Connect(function()
+    sparkles.Enabled = false
+    particles.Rate = 60
+    light.Brightness = 5
+    
+    -- เก็บความเร็วเดิม
+    local character = Player.Character
+    local humanoid = character and character:FindFirstChild("Humanoid")
+    if humanoid then
+        originalSpeed = humanoid.WalkSpeed
+        updateSpeed(humanoid, BoostWalkSpeed)
+    end
+    
+    -- เสียงเท่ ๆ
+    local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+    if humanoidRootPart then
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.6
+        equipSound.Parent = humanoidRootPart
+        equipSound:Play()
+        game:GetService("Debris"):AddItem(equipSound, 3)
+    end
+end)
+
+-- Event ตอนวาง Tool
+tool.Unequipped:Connect(function()
+    sparkles.Enabled = true
+    particles.Rate = 30
+    light.Brightness = 3
+    
+    -- คืนความเร็วเดิม
+    local character = Player.Character
+    local humanoid = character and character:FindFirstChild("Humanoid")
+    updateSpeed(humanoid, originalSpeed)
+end)
+
+-- จัดการ Character ใหม่ (Respawn)
+Player.CharacterAdded:Connect(function(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    originalSpeed = NormalWalkSpeed
+    updateSpeed(humanoid, NormalWalkSpeed)
+end)
+
+-- ใส่ Tool ลง Backpack
+tool.Parent = Backpack
