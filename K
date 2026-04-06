@@ -1935,7 +1935,7 @@ espTab:CreateButton({
 
 -- ปุ่ม TPSpawn (เทเลพอร์ตไปยังจุดที่บันทึกไว้)
 espTab:CreateButton({
-    Name = "[ 🔵 ]  TP To Spawn   [ - Teleport To Spawn - ]",
+    Name = "[ 🔵 ]  TP To Spawn    [ - Teleport To Spawn - ]",
     Callback = function()
         if not SavedSpawnCFrame then
             
