@@ -1911,6 +1911,59 @@ local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport Bypass For 
 
 local Divider = espTab:CreateDivider()
 
+-- ตัวแปรเก็บตำแหน่ง Spawn
+local SavedSpawnCFrame = nil
+
+-- ปุ่ม SetSpawn (บันทึกตำแหน่งปัจจุบันเป็นจุดเกิด)
+espTab:CreateButton({
+    Name = "[ 🔴 ]  Setting Spawn   [ - Save Spawn - ]",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local root = character:WaitForChild("HumanoidRootPart")
+        
+        SavedSpawnCFrame = root.CFrame
+        Rayfield:Notify({
+            Title =   "[ 🔴 ]  Setting Save Spawn",
+            Content = "[ ✅ ]  Setting Save Spawn Finish!",
+            Duration = 1,
+            Image = "door-closed",
+        })
+        
+    end
+})
+
+-- ปุ่ม TPSpawn (เทเลพอร์ตไปยังจุดที่บันทึกไว้)
+espTab:CreateButton({
+    Name = "[ 🔵 ]  TP To Spawn   [ - Teleport To Spawn - ]",
+    Callback = function()
+        if not SavedSpawnCFrame then
+            
+            return
+        end
+        
+        local player = game.Players.LocalPlayer
+        local character = player.Character
+        if not character then
+            character = player.CharacterAdded:Wait()
+        end
+        
+        local root = character:WaitForChild("HumanoidRootPart")
+        root.CFrame = SavedSpawnCFrame + Vector3.new(0, 3, 0) -- ยกขึ้นนิดหน่อยเพื่อไม่ให้ติดพื้น
+        
+        Rayfield:Notify({
+            Title =   "[ 🔵 ]  Teleport To Spawn",
+            Content = "[ ✅ ]  Teleport To Spawn Finish",
+            Duration = 1,
+            Image = "door-open",
+        })
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Set Spawn And Teleport Is Have A Good For Map", Content = "The Set Spawn And Teleport Is Have A Good For Map Games"})
+
+local Divider = espTab:CreateDivider()
+
 local PurpleTool = {
     Enabled = false,
     Current = nil,
@@ -1995,16 +2048,16 @@ local function TogglePurpleTool(state)
     PurpleTool.Enabled = state
     if state then
         Rayfield:Notify({
-           Title = "[ ✅ ]  Purple Tools On",
-           Content = "[ 🟪 ]  Purple Tools Finish",
+           Title = "[ 🟪 ]  Purple Tools Finish",
+           Content = "[ ✅ ]  Purple Tools On",
            Duration = 1,
            Image = "grape",
          })
         if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
     else
         Rayfield:Notify({
-           Title = "[ ❌ ] Purple Tools Off",
-           Content = "[ 🟪 ] Purple Tools Finish",
+           Title = "[ 🟪 ] Purple Tools Finish",
+           Content = "[ ❌ ] Purple Tools Off",
            Duration = 1,
            Image = "grape",
          })
@@ -2101,8 +2154,8 @@ local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
         Rayfield:Notify({
-           Title = "[ ✅ ]  Rainbow Tools On",
-           Content = "[ 🌈 ]  Rainbow Tools Finish",
+           Title = "[ 🌈 ]  Rainbow Tools Finish",
+           Content = "[ ✅ ]  Rainbow Tools On",
            Duration = 1,
            Image = "rainbow",
          })
@@ -2112,8 +2165,8 @@ local function ToggleRainbowGun(state)
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
         Rayfield:Notify({
-           Title = "[ ❌ ]  Rainbow Tools Off",
-           Content = "[ 🌈 ]  Rainbow Tools Finish",
+           Title = "[ 🌈 ]  Rainbow Tools Finish",
+           Content = "[ ❌ ]  Rainbow Tools Off",
            Duration = 1,
            Image = "rainbow",
          })
