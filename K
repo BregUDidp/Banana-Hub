@@ -1913,8 +1913,60 @@ local Divider = espTab:CreateDivider()
 
 -- ตัวแปรเก็บตำแหน่ง Spawn
 local SavedSpawnCFrame = nil
+local SpawnMarker = nil
 
--- ปุ่ม SetSpawn (บันทึกตำแหน่งปัจจุบันเป็นจุดเกิด)
+-- สีม่วงตามที่ต้องการ
+local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
+
+local function CreateSpawnMarker(cframe)
+    -- ลบ Marker เก่าถ้ามี
+    if SpawnMarker and SpawnMarker.Parent then
+        SpawnMarker:Destroy()
+    end
+
+    -- สร้าง Part เป็นวงกลมเล็ก ๆ บนพื้น
+    local marker = Instance.new("Part")
+    marker.Name = "SpawnMarker"
+    marker.Shape = Enum.PartType.Cylinder
+    marker.Size = Vector3.new(4, 0.2, 4)           -- ขนาดวงกลม
+    marker.CFrame = cframe * CFrame.Angles(math.rad(90), 0, 0)
+    marker.Color = PURPLE_COLOR
+    marker.Material = Enum.Material.Neon
+    marker.Transparency = 0.25
+    marker.Anchored = true
+    marker.CanCollide = false
+    marker.Parent = workspace
+
+    -- BillboardGui วงกลมลอยด้านบน
+    local billboard = Instance.new("BillboardGui")
+    billboard.Size = UDim2.new(0, 90, 0, 90)
+    billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+    billboard.AlwaysOnTop = true
+    billboard.LightInfluence = 0
+    billboard.Parent = marker
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(1, 0, 1, 0)
+    circle.BackgroundColor3 = PURPLE_COLOR
+    circle.BackgroundTransparency = 0.35
+    circle.BorderSizePixel = 0
+    circle.Parent = billboard
+
+    -- ทำให้เป็นวงกลม
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0.5, 0)
+    corner.Parent = circle
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(255, 255, 255)
+    stroke.Thickness = 3.5
+    stroke.Transparency = 0.2
+    stroke.Parent = circle
+
+    SpawnMarker = marker
+end
+
+-- ปุ่ม Set Spawn
 espTab:CreateButton({
     Name = "[ 🔴 ]  Setting Spawn   [ - Save Spawn - ]",
     Callback = function()
@@ -1923,17 +1975,20 @@ espTab:CreateButton({
         local root = character:WaitForChild("HumanoidRootPart")
         
         SavedSpawnCFrame = root.CFrame
+        
+        -- สร้าง Marker สีม่วง
+        CreateSpawnMarker(SavedSpawnCFrame)
+        
         Rayfield:Notify({
             Title =   "[ 🔴 ]  Setting Save Spawn",
             Content = "[ ✅ ]  Setting Save Spawn Finish!",
             Duration = 1,
             Image = "door-closed",
         })
-        
     end
 })
 
--- ปุ่ม TPSpawn (เทเลพอร์ตไปยังจุดที่บันทึกไว้)
+-- ปุ่ม TP To Spawn
 espTab:CreateButton({
     Name = "[ 🔵 ]  TP To Spawn    [ - Teleport To Spawn - ]",
     Callback = function()
@@ -1949,14 +2004,39 @@ espTab:CreateButton({
         end
         
         local root = character:WaitForChild("HumanoidRootPart")
-        root.CFrame = SavedSpawnCFrame + Vector3.new(0, 3, 0) -- ยกขึ้นนิดหน่อยเพื่อไม่ให้ติดพื้น
+        root.CFrame = SavedSpawnCFrame + Vector3.new(0, 4, 0)
         
-        Rayfield:Notify({
+         Rayfield:Notify({
             Title =   "[ 🔵 ]  Teleport To Spawn",
             Content = "[ ✅ ]  Teleport To Spawn Finish",
             Duration = 1,
             Image = "door-open",
         })
+    end
+})
+
+-- ปุ่มลบ Marker
+espTab:CreateButton({
+    Name = "[ 🗑️ ]  Remove Spawn Marker  [ - Remove Marker - ]",
+    Callback = function()
+        if SpawnMarker and SpawnMarker.Parent then
+            SpawnMarker:Destroy()
+            SpawnMarker = nil
+            
+            Rayfield:Notify({
+            Title =   "[ 🗑️ ]  Teleport To Spawn",
+            Content = "[ ✅ ]  Teleport To Spawn Finish",
+            Duration = 1,
+            Image = "eraser",
+        })
+        else
+             Rayfield:Notify({
+            Title =   "[ 🗑️ ]  Teleport To Spawn",
+            Content = "[ 🛑 ]  Teleport To Spawn Finish",
+            Duration = 1,
+            Image = "eraser",
+        })
+        end
     end
 })
 
@@ -2048,7 +2128,7 @@ local function TogglePurpleTool(state)
     PurpleTool.Enabled = state
     if state then
         Rayfield:Notify({
-           Title = "[ 🟪 ]  Purple Tools Finish",
+           Title =   "[ 🟪 ]  Purple Tools Finish",
            Content = "[ ✅ ]  Purple Tools On",
            Duration = 1,
            Image = "grape",
@@ -2056,8 +2136,8 @@ local function TogglePurpleTool(state)
         if LocalPlayer.Character then SetupTool(LocalPlayer.Character) end
     else
         Rayfield:Notify({
-           Title = "[ 🟪 ] Purple Tools Finish",
-           Content = "[ ❌ ] Purple Tools Off",
+           Title =   "[ 🟪 ] Purple Tools Finish",
+           Content = "[ 🛑 ] Purple Tools Off",
            Duration = 1,
            Image = "grape",
          })
@@ -2154,7 +2234,7 @@ local function ToggleRainbowGun(state)
     RainbowGun.Enabled = state
     if state then
         Rayfield:Notify({
-           Title = "[ 🌈 ]  Rainbow Tools Finish",
+           Title =   "[ 🌈 ]  Rainbow Tools Finish",
            Content = "[ ✅ ]  Rainbow Tools On",
            Duration = 1,
            Image = "rainbow",
@@ -2165,8 +2245,8 @@ local function ToggleRainbowGun(state)
         if LocalPlayer.Character then SetupGun(LocalPlayer.Character) end
     else
         Rayfield:Notify({
-           Title = "[ 🌈 ]  Rainbow Tools Finish",
-           Content = "[ ❌ ]  Rainbow Tools Off",
+           Title =   "[ 🌈 ]  Rainbow Tools Finish",
+           Content = "[ 🛑 ]  Rainbow Tools Off",
            Duration = 1,
            Image = "rainbow",
          })
