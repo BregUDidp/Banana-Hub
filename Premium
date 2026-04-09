@@ -80,6 +80,11 @@ local Button = LoaderTab:CreateButton({
        
        local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderTab:CreateDivider()
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari Curser Mouse Akari - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Curser Mouse Akari ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Curser%20Akari"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari Admin Command Search - ) }")
        LoaderTab:CreateButton({Name = "||   - Akari Hub   |   Admin Command Search ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Admin2"))() end})
        
