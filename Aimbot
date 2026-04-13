@@ -94,7 +94,7 @@ local Button = CreditTab:CreateButton({
             )
 
             Rayfield:Notify({
-               Title = "Animation Hub",
+               Title =   "[ 💃 ]  Animation Hub",
                Content = "[ ✅ ]  Animations Hub Finish",
                Duration = 1,
                Image = "podcast",
@@ -117,6 +117,63 @@ local Button = CreditTab:CreateButton({
       end)
    end,
 })
+
+local Paragraph = CreditTab:CreateParagraph({Title = "Animation Akari For The Style Walk And Running But Is Still Work", Content = "Animation Akari For The Style Walk And Running But Is Still Working"})
+
+local Divider = CreditTab:CreateDivider()
+
+local AnimationStatusLabel = CreditTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+local Button = CreditTab:CreateButton({
+   Name = "                                                                      🖱️",
+   Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Curser Mouse Akari...</b></font>'
+      )
+
+      
+
+      -- รันโหลดแบบไม่ให้ UI ค้าง
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Curser%20Akari"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Curser Mouse Akari Loading Finish</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title =   "[ 🖱️ ]  Curser Mouse Akari",
+               Content = "[ ✅ ]  Curser Mouse Akari Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Curser Mouse Akari Cancel</b></font>'
+            )
+
+            
+         end
+
+         -- หลังจากแสดงผลเสร็จ 6 วินาที ให้รีเซ็ต Label กลับไปสถานะปกติ (optional)
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
+})
+
+local Paragraph = CreditTab:CreateParagraph({Title = "Curser Mouse Akari Is For Style Games And FPS", Content = "Curser Mouse Akari Is For Style Games And FPS And Style"})
 
 local Divider = CreditTab:CreateDivider()
 
@@ -169,6 +226,8 @@ CreditTab:CreateButton({
       end)
    end,
 })
+
+local Paragraph = CreditTab:CreateParagraph({Title = "Rejoin The Game For Run Script And Bug", Content = "Rejoin The Game For Run Script And Bugging The Games"})
 
 local Divider = CreditTab:CreateDivider()
 
