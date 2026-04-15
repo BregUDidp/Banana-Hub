@@ -1897,7 +1897,6 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- ==================== Hitbox Boxing ====================
 espTab:CreateToggle({
     Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]    [ - All - ]",
     CurrentValue = false,
@@ -1984,7 +1983,7 @@ local function UpdatePlayerESP(player)
     if not humanoid or not head then return end
 
     local equippedTool = character:FindFirstChildOfClass("Tool")
-    local toolName = equippedTool and equippedTool.Name or " ❌ "
+    local toolName = equippedTool and equippedTool.Name or " ( ❌ )  Not Found  ( ❌ ) "
 
     local hp = math.floor(humanoid.Health)
     local maxHp = math.floor(humanoid.MaxHealth)
@@ -2055,7 +2054,7 @@ end
 local function OnCharacterAdded(player, character)
     if not EspEnabled then return end
     
-    task.wait(0.1)  -- รอตัวละครโหลดเสร็จ
+--    task.wait(0.1)  -- รอตัวละครโหลดเสร็จ
     UpdatePlayerESP(player)
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -2071,13 +2070,13 @@ local function OnCharacterAdded(player, character)
     local espData = PlayerESP[player] or {}
     espData.ToolConnAdded = character.ChildAdded:Connect(function(child)
         if child:IsA("Tool") then 
-            task.wait(0.05)
+--            task.wait(0.05)
             UpdatePlayerESP(player) 
         end
     end)
     espData.ToolConnRemoved = character.ChildRemoved:Connect(function(child)
         if child:IsA("Tool") then 
-            task.wait(0.05)
+--            task.wait(0.05)
             UpdatePlayerESP(player) 
         end
     end)
