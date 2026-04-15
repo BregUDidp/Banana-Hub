@@ -2131,7 +2131,6 @@ local function DisableESP()
     end
 end
 
--- ==================== Toggle ====================
 espTab:CreateToggle({
     Name = "[ 💡 ]  ESP Character Player   [ - 138, 43, 179 - ]    [ - All - ]",
     CurrentValue = false,
