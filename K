@@ -593,7 +593,7 @@ local FlyToggle = PTab:CreateToggle({
 
 local FlyKeybind = PTab:CreateKeybind({
     Name = "[ 🔑 ]  Toggle Keybind Flying",
-    CurrentKeybind = "F",
+    CurrentKeybind = "",
     HoldToInteract = false,
     Flag = "FlyKeybind",
     Callback = function()
