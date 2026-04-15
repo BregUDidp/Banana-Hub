@@ -947,7 +947,7 @@ local Divider = BTab:CreateDivider()
 local Label = BTab:CreateLabel(" [ - This Item Recoil Tool Is Bypass On In Mapping - ]", "bike", Color3.fromRGB(138, 43, 179) , false)
 
 local Button = BTab:CreateButton({
-   Name = "[ 🚲 ]   Recoil Tool   [  -  Speed  30  -  ]",
+   Name = "[ 🚲 ]   Recoil Tools   [  -  Speed  30  -  ]",
    Callback = function()
 
        Rayfield:Notify({
@@ -1832,9 +1832,9 @@ Players.PlayerRemoving:Connect(function(p)
     end
 end)
 
-local Paragraph = espTab:CreateParagraph({Title = "Purple / Rainbow Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style Gun / Sword"})
-
 RunService.RenderStepped:Connect(updateESP)
+
+local Paragraph = espTab:CreateParagraph({Title = "Purple / Rainbow Tool For Cool Style", Content = "Purple / Rainbow Tool Is Good For Style Gun / Sword"})
 
 local Divider = espTab:CreateDivider()
 
@@ -1842,6 +1842,62 @@ local HitboxEnabled = false
 local HeadSize = 20
 local connections = {}
 
+-- ฟังก์ชันสร้าง ESP Skeleton สีม่วง
+local function createPurpleSkeleton(character)
+    if not character then return end
+    
+    -- ลบ ESP เก่าถ้ามี
+    if character:FindFirstChild("PurpleSkeletonESP") then
+        character.PurpleSkeletonESP:Destroy()
+    end
+    
+    local skeletonFolder = Instance.new("Folder")
+    skeletonFolder.Name = "PurpleSkeletonESP"
+    skeletonFolder.Parent = character
+    
+    local parts = {
+        "Head", "HumanoidRootPart", 
+        "Left Arm", "Right Arm", 
+        "Left Leg", "Right Leg",
+        "UpperTorso", "LowerTorso"  -- สำหรับ R15
+    }
+    
+    for _, partName in ipairs(parts) do
+        local part = character:FindFirstChild(partName)
+        if part and part:IsA("BasePart") then
+            local highlight = Instance.new("Highlight")
+            highlight.Name = "PurpleHighlight"
+            highlight.FillColor = Color3.fromRGB(138, 43, 179)   -- สีม่วง
+            highlight.OutlineColor = Color3.fromRGB(200, 100, 255) -- ขอบม่วงอ่อน
+            highlight.FillTransparency = 0.4
+            highlight.OutlineTransparency = 0
+            highlight.Adornee = part
+            highlight.Parent = skeletonFolder
+        end
+    end
+end
+
+-- ฟังก์ชันลบ ESP Skeleton
+local function removePurpleSkeleton(character)
+    if character and character:FindFirstChild("PurpleSkeletonESP") then
+        character.PurpleSkeletonESP:Destroy()
+    end
+end
+
+-- เชื่อมต่อ RenderStepped สำหรับ ESP
+RunService.RenderStepped:Connect(function()
+    for _, v in pairs(Players:GetPlayers()) do
+        if v ~= Players.LocalPlayer and v.Character then
+            if HitboxEnabled then
+                createPurpleSkeleton(v.Character)
+            else
+                removePurpleSkeleton(v.Character)
+            end
+        end
+    end
+end)
+
+-- ==================== Hitbox Boxing ====================
 espTab:CreateToggle({
     Name = "[ ⚔️ ]  Hitbox Boxing Player   [ - Sword - ]    [ - All - ]",
     CurrentValue = false,
@@ -1850,19 +1906,17 @@ espTab:CreateToggle({
         HitboxEnabled = Value
         
         if Value then
-            connections["Hitbox"] = game:GetService('RunService').RenderStepped:Connect(function()
+            connections["Hitbox"] = RunService.RenderStepped:Connect(function()
                 if not HitboxEnabled then return end
                 
-                for _, v in pairs(game:GetService('Players'):GetPlayers()) do
-                    if v.Name ~= game.Players.LocalPlayer.Name and v.Character then
+                for _, v in pairs(Players:GetPlayers()) do
+                    if v ~= Players.LocalPlayer and v.Character then
                         pcall(function()
                             local hrp = v.Character:FindFirstChild("HumanoidRootPart")
                             if hrp then
                                 hrp.Size = Vector3.new(HeadSize, HeadSize, HeadSize)
                                 hrp.Transparency = 0.7
-
-                                -- เปลี่ยนเป็นสีเขียว RGB(138, 43, 179)
-                                hrp.Color = Color3.fromRGB(138, 43, 179)
+                                hrp.Color = Color3.fromRGB(138, 43, 179)  -- สีม่วงเดียวกับ ESP
                                 hrp.Material = "Neon"
                                 hrp.CanCollide = false
                             end
@@ -1870,27 +1924,26 @@ espTab:CreateToggle({
                     end
                 end
             end)
-            
-            
         else
             if connections["Hitbox"] then
                 connections["Hitbox"]:Disconnect()
+                connections["Hitbox"] = nil
             end
             
-            -- Reset hitbox ของทุกคนกลับค่าเดิม
-            for _, v in pairs(game:GetService('Players'):GetPlayers()) do
+            -- Reset Hitbox กลับปกติ
+            for _, v in pairs(Players:GetPlayers()) do
                 if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                     pcall(function()
                         local hrp = v.Character.HumanoidRootPart
                         hrp.Size = Vector3.new(2, 2, 1)
                         hrp.Transparency = 1
+                        hrp.Color = Color3.fromRGB(255, 255, 255)
                         hrp.Material = "Plastic"
                         hrp.CanCollide = false
                     end)
                 end
+                removePurpleSkeleton(v.Character)
             end
-            
-           
         end
     end,
 })
@@ -1916,37 +1969,33 @@ local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 local EspEnabled = false
-local ESPColor = Color3.fromRGB(138, 43, 179)  -- สีม่วงเดิม
+local ESPColor = Color3.fromRGB(138, 43, 179)  -- สีม่วง
 
--- Table สำหรับเก็บข้อมูล ESP ของแต่ละ player (รวมตัวเรา)
-local PlayerESP = {}  -- [player] = {Highlight = ..., NameGui = ..., HealthConn = ..., ToolConnAdded = ..., ToolConnRemoved = ...}
+local PlayerESP = {}  
 
--- ฟังก์ชันสร้าง/อัปเดต ESP สำหรับ player หนึ่งคน
+-- ฟังก์ชันสร้าง/อัปเดต ESP
 local function UpdatePlayerESP(player)
     if not EspEnabled then return end
-    
+    if not player.Character then return end
+
     local character = player.Character
-    if not character then return end
-    
     local humanoid = character:FindFirstChildOfClass("Humanoid")
-    if not humanoid then return end
-    
     local head = character:FindFirstChild("Head")
-    if not head then return end
-    
+    if not humanoid or not head then return end
+
     local equippedTool = character:FindFirstChildOfClass("Tool")
     local toolName = equippedTool and equippedTool.Name or " ❌ "
-    
+
     local hp = math.floor(humanoid.Health)
     local maxHp = math.floor(humanoid.MaxHealth)
-    
-    -- Highlight glow รอบตัว
+
     local espData = PlayerESP[player]
     if not espData then
         espData = {}
         PlayerESP[player] = espData
     end
-    
+
+    -- Highlight
     if not espData.Highlight then
         espData.Highlight = Instance.new("Highlight")
         espData.Highlight.Adornee = character
@@ -1957,16 +2006,16 @@ local function UpdatePlayerESP(player)
         espData.Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
         espData.Highlight.Parent = character
     end
-    
-    -- BillboardGui บนหัว (แสดงทั้ง DisplayName และ Name)
+
+    -- BillboardGui
     if not espData.NameGui then
         espData.NameGui = Instance.new("BillboardGui")
         espData.NameGui.Adornee = head
-        espData.NameGui.Size = UDim2.new(0, 250, 0, 120)  -- ขยายให้พอใส่ 4 บรรทัดสบายๆ
+        espData.NameGui.Size = UDim2.new(0, 250, 0, 120)
         espData.NameGui.StudsOffset = Vector3.new(0, 3, 0)
         espData.NameGui.AlwaysOnTop = true
         espData.NameGui.Parent = head
-        
+
         local text = Instance.new("TextLabel")
         text.Name = "InfoText"
         text.BackgroundTransparency = 1
@@ -1979,17 +2028,17 @@ local function UpdatePlayerESP(player)
         text.TextYAlignment = Enum.TextYAlignment.Center
         text.Parent = espData.NameGui
     end
-    
+
     if espData.NameGui:FindFirstChild("InfoText") then
         espData.NameGui.InfoText.Text = 
-              player.DisplayName .. "\n" ..        -- ชื่อที่แสดงในเกม (ส่วนใหญ่เป็นชื่อเล่น)
-            "( " .. player.Name .. " )\n" ..          -- Username จริง (อยู่ในวงเล็บ)
+            player.DisplayName .. "\n" ..
+            "( " .. player.Name .. " )\n" ..
             "Items: " .. toolName .. "\n" ..
             "( HP: " .. hp .. "/" .. maxHp .. " )"
     end
 end
 
--- ฟังก์ชันล้าง ESP ของ player
+-- ล้าง ESP
 local function ClearPlayerESP(player)
     local espData = PlayerESP[player]
     if espData then
@@ -2002,64 +2051,92 @@ local function ClearPlayerESP(player)
     end
 end
 
--- ฟังก์ชันตั้งค่า ESP เมื่อ character โหลด
+-- เมื่อตัวละครโหลด
 local function OnCharacterAdded(player, character)
     if not EspEnabled then return end
     
-    -- อัปเดตทันที
+    task.wait(0.1)  -- รอตัวละครโหลดเสร็จ
     UpdatePlayerESP(player)
-    
-    -- เชื่อมต่อ event สำหรับอัปเดต realtime
+
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     if humanoid then
         local espData = PlayerESP[player] or {}
-        espData.HealthConn = humanoid.HealthChanged:Connect(function() UpdatePlayerESP(player) end)
+        espData.HealthConn = humanoid.HealthChanged:Connect(function()
+            UpdatePlayerESP(player)
+        end)
         PlayerESP[player] = espData
     end
-    
-    -- เช็คการเปลี่ยน Tool
+
+    -- Tool Update
     local espData = PlayerESP[player] or {}
     espData.ToolConnAdded = character.ChildAdded:Connect(function(child)
-        if child:IsA("Tool") then UpdatePlayerESP(player) end
+        if child:IsA("Tool") then 
+            task.wait(0.05)
+            UpdatePlayerESP(player) 
+        end
     end)
     espData.ToolConnRemoved = character.ChildRemoved:Connect(function(child)
-        if child:IsA("Tool") then UpdatePlayerESP(player) end
+        if child:IsA("Tool") then 
+            task.wait(0.05)
+            UpdatePlayerESP(player) 
+        end
     end)
     PlayerESP[player] = espData
 end
 
--- เปิด ESP ทั้งหมด (รวมตัวเรา)
+-- เปิด ESP (รวมตัวเอง)
 local function EnableESP()
     for _, player in pairs(Players:GetPlayers()) do
+        ClearPlayerESP(player)  -- ล้างของเก่าก่อน
+
         if player.Character then
             OnCharacterAdded(player, player.Character)
         end
-        player.CharacterAdded:Connect(function(char) OnCharacterAdded(player, char) end)
+
+        -- เชื่อมต่อการเกิดใหม่
+        player.CharacterAdded:Connect(function(char)
+            OnCharacterAdded(player, char)
+        end)
+
+        -- ล้างเมื่อตัวละครหาย
+        player.CharacterRemoving:Connect(function()
+            ClearPlayerESP(player)
+        end)
     end
-    
-    -- สำหรับ player ที่ join ใหม่
+
+    -- เมื่อมีผู้เล่นใหม่เข้ามา
     Players.PlayerAdded:Connect(function(player)
-        if EspEnabled then
-            player.CharacterAdded:Connect(function(char) OnCharacterAdded(player, char) end)
-            if player.Character then
-                OnCharacterAdded(player, player.Character)
-            end
+        if not EspEnabled then return end
+
+        ClearPlayerESP(player)
+
+        if player.Character then
+            OnCharacterAdded(player, player.Character)
         end
+
+        player.CharacterAdded:Connect(function(char)
+            OnCharacterAdded(player, char)
+        end)
+
+        player.CharacterRemoving:Connect(function()
+            ClearPlayerESP(player)
+        end)
     end)
 end
 
--- ปิด ESP ทั้งหมด
+-- ปิด ESP
 local function DisableESP()
     for _, player in pairs(Players:GetPlayers()) do
         ClearPlayerESP(player)
     end
 end
 
+-- ==================== Toggle ====================
 espTab:CreateToggle({
     Name = "[ 💡 ]  ESP Character Player   [ - 138, 43, 179 - ]    [ - All - ]",
     CurrentValue = false,
     Callback = function(Value)
-       EspEnabled = Value
+        EspEnabled = Value
         if Value then
             EnableESP()
         else
@@ -2067,15 +2144,6 @@ espTab:CreateToggle({
         end
     end,
 })
-
--- อัปเดตทุกเฟรม
- -- รอตัวละครใหม่ในอนาคต (respawn)
-    player.CharacterAdded:Connect(onCharacterAdded)
-    
-    -- ล้างเมื่อตัวละครหาย (ตายชั่วคราว)
-    player.CharacterRemoving:Connect(function()
-        ClearPlayerESP(player)
-    end)
 
 local Paragraph = espTab:CreateParagraph({Title = "ESP Player / Friend And Look", Content = "ESP Player / Friend Friend And Looking"})
 
