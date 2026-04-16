@@ -628,30 +628,21 @@ local SittingEnabled = false
 local SitConnection = nil
 local player = game.Players.LocalPlayer
 
--- ฟังก์ชันบังคับนั่ง
 local function ForceSit()
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     
     if humanoid then
-        -- บังคับให้ Humanoid นั่ง (แม้ไม่มี Seat)
         humanoid.Sit = true
-        
-        -- ป้องกันไม่ให้ลุกอัตโนมัติ
         if humanoid.SeatPart then
             humanoid.SeatPart = nil
         end
     end
 end
-
--- ฟังก์ชันเปิด/ปิด การนั่งค้าง
 local function ToggleSit(enabled)
     SittingEnabled = enabled
-    
     if enabled then
         ForceSit()
-        
-        -- อัปเดตทุกครั้งที่ตัวละครเกิดใหม่ หรือเปลี่ยนสถานะ
         SitConnection = game:GetService("RunService").Heartbeat:Connect(function()
             if SittingEnabled then
                 local character = player.Character
@@ -663,24 +654,18 @@ local function ToggleSit(enabled)
                 end
             end
         end)
-        
-        -- ถ้าตายแล้วเกิดใหม่ ให้นั่งต่ออัตโนมัติ
         player.CharacterAdded:Connect(function()
             if SittingEnabled then
-                task.wait(0.5) -- รอให้ตัวละครโหลดเสร็จ
+                task.wait(0.5)
                 ForceSit()
             end
         end)
-        
-        
-        
     else
         -- ปิดการนั่ง
         if SitConnection then
             SitConnection:Disconnect()
             SitConnection = nil
         end
-        
         local character = player.Character
         if character then
             local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -688,8 +673,6 @@ local function ToggleSit(enabled)
                 humanoid.Sit = false
             end
         end
-        
-        
     end
 end
 
