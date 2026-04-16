@@ -10,7 +10,7 @@ local function GetThaiDate()
     local time = os.date("*t")
     local day = time.day
     local month = monthsThai[time.month]
-    local year = time.year + 543  -- แปลงเป็น พ.ศ.
+    local year = time.year + 543
     
     return day .. " " .. month .. " " .. year
 end
