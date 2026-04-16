@@ -481,8 +481,7 @@ local humanoid = char:WaitForChild("Humanoid")
 local superSpeed = false
 local runSpeed = 16
 local noclipEnabled = false
- 
--- ฟังก์ชันวิ่งเร็ว
+
 local function toggleSpeed(on)
     superSpeed = on
     humanoid.WalkSpeed = superSpeed and runSpeed or 16
@@ -618,8 +617,27 @@ local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For
 
 local Divider = PTab:CreateDivider()
 
-local speedToggle = PTab:CreateToggle({Name="[ 🏃‍♀️ ]  Walking Or Running", CurrentValue=false, Flag="SpeedToggle", Callback=toggleSpeed})
-local speedSlider = PTab:CreateSlider({Name="[ 📏 ]  Slider Walking Or Running", Range={16,5000}, Increment=1, Suffix=" Running Speed", CurrentValue=25, Flag="RunSpeed", Callback=function(val) runSpeed=val if superSpeed then humanoid.WalkSpeed=runSpeed end end})
+local speedToggle = PTab:CreateToggle({
+    Name = "[ 🏃‍♀️ ]  Walking Or Running",
+    CurrentValue = false,
+    Flag = "SpeedToggle",
+    Callback = toggleSpeed
+})
+
+local speedSlider = PTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Walking Or Running",
+    Range = {16, 5000},
+    Increment = 1,
+    Suffix = " Running Speed",
+    CurrentValue = 16,
+    Flag = "RunSpeed",
+    Callback = function(val)
+        runSpeed = val
+        if superSpeed and humanoid then
+            humanoid.WalkSpeed = runSpeed
+        end
+    end
+})
 
 local Paragraph = PTab:CreateParagraph({Title = "Walking And Running For The Flash", Content = "Walking And Running For The Flash And Tiger"})
 
@@ -764,15 +782,13 @@ local ResetZoomButton = PTab:CreateButton({
     Name = "[ 🗞️ ]  Reseting Zoom Altra",
     Callback = function()
         local player = game.Players.LocalPlayer
-        
         InfiniteZoomEnabled = false
-        
         player.CameraMaxZoomDistance = 400
         player.CameraMinZoomDistance = 0.5
         
         Rayfield:Notify({
-            Title = "[ 🔎 ] Infinite Zoom Off",
-            Content = "The Infinite Zoom Has New",
+            Title =   "[ 🗞️ ]  The Infinite Zoom",
+            Content = "[ ✅ ]  The Infinite Zoom Has New",
             Duration = 1,
             Image = "zoom-out",
         })
@@ -788,32 +804,10 @@ local InfiniteZoomSlider = PTab:CreateSlider({
     Flag = "InfiniteZoomSlider",
     Callback = function(Value)
         local player = game.Players.LocalPlayer
-        
-        -- ตั้งค่าระยะซูมสูงสุด
         player.CameraMaxZoomDistance = Value
-        
-        -- คงค่าระยะซูมใกล้สุดไว้ (เพื่อไม่ให้ซูมเข้าใกล้เกินไป)
         player.CameraMinZoomDistance = 0.5
-        
-        -- แจ้งเตือนด้วย Rayfield Notify
         if Value == 400 then
-            
-        
-
-        elseif Value >= 8000 then
-            Rayfield:Notify({
-                Title = "[ 📏 ]  Infinite Zoom",
-                Content = "Zoom Distance: " .. Value .. " Studs",
-                Duration = 1,
-                Image = "zoom-in",
-            })
-        else
-            Rayfield:Notify({
-                Title = "[ 📏 ]  Zoom Adjusted",
-                Content = "Distance Zoom: " .. Value .. " Studs",
-                Duration = 1,
-                Image = "zoom-in",
-            })
+        elseif Value >= 8000 then   
         end
     end,
 })
@@ -842,7 +836,6 @@ local function EnableXray()
             desc.LocalTransparencyModifier = 0.75
         end
     end)
-    
 end
 
 local function DisableXray()
@@ -864,8 +857,20 @@ PTab:CreateToggle({
     Callback = function(Value)
         if Value then
             EnableXray()
+            Rayfield:Notify({
+               Title =   "[ 🔎 ]  X-Ray Walling Has ON",
+               Content = "[ ✅ ]  X-Ray Walling Has The ON",
+               Duration = 1,
+               Image = "brick-wall-shield",
+          })
         else
             DisableXray()
+            Rayfield:Notify({
+               Title =   "[ 🔎 ]  X-Ray Walling Has OFF",
+               Content = "[ 🛑 ]  X-Ray Walling Has The OFF",
+               Duration = 1,
+               Image = "brick-wall-shield",
+          })
         end
     end
 })
