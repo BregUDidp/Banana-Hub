@@ -101,55 +101,6 @@ local Paragraph = CreditTab:CreateParagraph({Title = "Animation Akari For The St
 
 local Divider = CreditTab:CreateDivider()
 
-local AnimationStatusLabel = CreditTab:CreateLabel(
-   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-)
-
-local Button = CreditTab:CreateButton({
-   Name = "                                                                      🖱️",
-   Callback = function()
-      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
-      AnimationStatusLabel:Set(
-         '<font color="rgb(255, 215, 0)"><b>Loading Curser Mouse Akari...</b></font>'
-      )
-      task.spawn(function()
-         local success, errorMsg = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Curser%20Akari"))()
-         end)
-
-         if success then
-            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
-            AnimationStatusLabel:Set(
-               '<font color="rgb(0, 255, 100)"><b>Curser Mouse Akari Loading Finish</b></font>'
-            )
-
-            Rayfield:Notify({
-               Title =   "[ 🖱️ ]  Curser Mouse Akari",
-               Content = "[ ✅ ]  Curser Mouse Akari Finish",
-               Duration = 1,
-               Image = "podcast",
-            })
-         else
-            -- ล้มเหลว → แสดงสีแดง
-            AnimationStatusLabel:Set(
-               '<font color="rgb(255, 70, 70)"><b>Loading Curser Mouse Akari Cancel</b></font>'
-            )
-
-         end
-
-         task.delay(6, function()
-            AnimationStatusLabel:Set(
-               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
-            )
-         end)
-      end)
-   end,
-})
-
-local Paragraph = CreditTab:CreateParagraph({Title = "Curser Mouse Akari Is For Style Games And FPS", Content = "Curser Mouse Akari Is For Style Games And FPS And Style"})
-
-local Divider = CreditTab:CreateDivider()
-
 local RejoinCountdownLabel = CreditTab:CreateLabel(
    '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
@@ -390,48 +341,52 @@ end)
 local PTab = Window:CreateTab("||   - Physical  X", "snail")
 local Divider = PTab:CreateDivider()
 
--- สร้าง Paragraph สำหรับแสดง FPS และ Ping
-local StatsParagraph = PTab:CreateParagraph({
-    Title = "Performance Status",
-    Content = "Loading FPS And Ping..."
+local AnimationStatusLabel = PTab:CreateLabel(
+   '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+)
+
+local Button = PTab:CreateButton({
+   Name = "                                                                      🖱️",
+   Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
+      AnimationStatusLabel:Set(
+         '<font color="rgb(255, 215, 0)"><b>Loading Curser Mouse Akari...</b></font>'
+      )
+      task.spawn(function()
+         local success, errorMsg = pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Curser%20Akari"))()
+         end)
+
+         if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
+            AnimationStatusLabel:Set(
+               '<font color="rgb(0, 255, 100)"><b>Curser Mouse Akari Loading Finish</b></font>'
+            )
+
+            Rayfield:Notify({
+               Title =   "[ 🖱️ ]  Curser Mouse Akari",
+               Content = "[ ✅ ]  Curser Mouse Akari Finish",
+               Duration = 1,
+               Image = "podcast",
+            })
+         else
+            -- ล้มเหลว → แสดงสีแดง
+            AnimationStatusLabel:Set(
+               '<font color="rgb(255, 70, 70)"><b>Loading Curser Mouse Akari Cancel</b></font>'
+            )
+
+         end
+
+         task.delay(6, function()
+            AnimationStatusLabel:Set(
+               '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
+            )
+         end)
+      end)
+   end,
 })
 
--- ตัวแปรสำหรับคำนวณ FPS
-local RunService = game:GetService("RunService")
-local frames = 0
-local lastUpdate = tick()
-
--- คำนวณ FPS (RenderStepped)
-RunService.RenderStepped:Connect(function()
-    frames = frames + 1
-end)
-
--- ฟังก์ชันอัปเดต Paragraph ทุกวินาที
-task.spawn(function()
-    while true do
-        task.wait(1)  -- อัปเดตทุก 1 วินาที
-        
-        local currentTime = tick()
-        local fps = math.floor(frames / (currentTime - lastUpdate))
-        frames = 0
-        lastUpdate = currentTime
-        
-        -- ได้ Ping จาก Player (หน่วยมิลลิวินาที)
-        local player = game.Players.LocalPlayer
-        local ping = math.floor(player:GetNetworkPing() * 1000)  -- แปลงเป็น ms
-        
-        -- อัปเดตเนื้อหา Paragraph
-        StatsParagraph:Set({
-            Title = "Performance Status",
-            Content = "[  🟢  ]  FPS : " .. fps .. "\n[  🟢  ]  Ping : " .. ping .. " MS"
-        })
-        
-        -- เปลี่ยนสีตามสถานะ (optional)
-        if fps < 30 then
-            -- สามารถเพิ่มโค้ดเปลี่ยนสีได้ ถ้าใช้ Label แทน Paragraph
-        end
-    end
-end)
+local Paragraph = PTab:CreateParagraph({Title = "Curser Mouse Akari Is For Style Games And FPS", Content = "Curser Mouse Akari Is For Style Games And FPS And Style"})
 
 local Divider = PTab:CreateDivider()
 
@@ -509,21 +464,20 @@ local function updateFly()
         horizontal = horizontal + camera.CFrame.RightVector
     end
     
-    local vertical = 0
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-        vertical = 1
-    elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
-        vertical = -1
-    end
-    
-    local moveDir = horizontal + Vector3.new(0, vertical, 0)
+    local moveDir = (horizontal + Vector3.new(0, vertical, 0)).Unit
     if moveDir.Magnitude > 0 then
-        bodyVelocity.Velocity = moveDir.Unit * flySpeed
+        bodyVelocity.Velocity = moveDir * flySpeed
     else
         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
     end
     
-    bodyGyro.CFrame = camera.CFrame
+    -- ทำให้ตัวละครนอนราบ (หงายหน้าขึ้นฟ้าเล็กน้อย) + หันตามกล้อง
+    local lookDir = camera.CFrame.LookVector
+    -- หมุน -90 องศา รอบแกน X เพื่อนอนราบ
+    local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir) 
+                        * CFrame.Angles(math.rad(-90), 0, 0)
+    
+    bodyGyro.CFrame = targetCFrame
 end
 
 -- ================== Flying Toggle ==================
@@ -535,7 +489,7 @@ local FlyToggle = PTab:CreateToggle({
         flying = Value
         
         Rayfield:Notify({
-            Title = Value and   "[ 🪁 ]  Flying ON" or "[ 🪁 ]  Flying ON",
+            Title = Value and   "[ 🪁 ]  Flying ON" or "[ 🪁 ]  Flying OFF",
             Content = Value and "[ ✅ ]  Click Flying ON" or "[ 🛑 ]  Click Flying OFF",
             Duration = 1,
             Image = "luggage"
@@ -550,6 +504,7 @@ local FlyToggle = PTab:CreateToggle({
         
         if Value then
             humanoid.PlatformStand = true
+            humanoid.AutoRotate = false  -- ป้องกันการยืนอัตโนมัติ
             
             bodyVelocity = Instance.new("BodyVelocity")
             bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
@@ -558,15 +513,33 @@ local FlyToggle = PTab:CreateToggle({
             
             bodyGyro = Instance.new("BodyGyro")
             bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bodyGyro.CFrame = humanoidRootPart.CFrame
+            bodyGyro.P = 3000  -- เพิ่มความเร็วการหมุนให้ลื่นไหล
+            bodyGyro.D = 500
+            bodyGyro.CFrame = humanoidRootPart.CFrame * CFrame.Angles(math.rad(-90), 0, 0)
             bodyGyro.Parent = humanoidRootPart
             
             flyConnection = RunService.Heartbeat:Connect(updateFly)
         else
             humanoid.PlatformStand = false
-            if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
-            if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
-            if flyConnection then flyConnection:Disconnect() flyConnection = nil end
+            humanoid.AutoRotate = true
+            
+            if bodyVelocity then 
+                bodyVelocity:Destroy() 
+                bodyVelocity = nil 
+            end
+            if bodyGyro then 
+                bodyGyro:Destroy() 
+                bodyGyro = nil 
+            end
+            if flyConnection then 
+                flyConnection:Disconnect() 
+                flyConnection = nil 
+            end
+            
+            -- รีเซ็ตท่าทางให้ยืนปกติ
+            if humanoidRootPart then
+                humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position) * CFrame.Angles(0, humanoidRootPart.Orientation.Y, 0)
+            end
         end
     end,
 })
@@ -1427,6 +1400,26 @@ Player.CharacterAdded:Connect(function()
 end)
 
 local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport Bypass For Player / Friend", Content = "Clicking Teleport Bypass Is Good For Building"})
+
+local Divider = espTab:CreateDivider()
+
+espTab:CreateButton({
+    Name = "[ 🚫 ]  Anti Fling Player Fling   [ - Anti Fling - ]",
+    Callback = function()
+
+        Rayfield:Notify({
+            Title =   "[ 🚫 ]  Teleport To Spawn",
+            Content = "[ ✅ ]  Teleport To Spawn Finish",
+            Duration = 1,
+            Image = "ban",
+        })
+
+        loadstring(game:HttpGet("https://pastefy.app/wo2ipSp6/raw"))()
+
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling Have A Full Power", Content = "The Anti Fling Have A Full Power And Player"})
 
 local Divider = espTab:CreateDivider()
 
