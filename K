@@ -1404,12 +1404,12 @@ local Paragraph = espTab:CreateParagraph({Title = "Clicking Teleport Bypass For 
 local Divider = espTab:CreateDivider()
 
 espTab:CreateButton({
-    Name = "[ 🚫 ]  Anti Fling Player Fling   [ - Anti Fling - ]",
+    Name = "[ 🚫 - 🛩️ ]   Anti Fling Player Fling   [ - Anti Fling - ]",
     Callback = function()
 
         Rayfield:Notify({
-            Title =   "[ 🚫 ]  Teleport To Spawn",
-            Content = "[ ✅ ]  Teleport To Spawn Finish",
+            Title =   "[ 🚫 - 🛩️ ]  Anti Fling Player",
+            Content = "[ ✅ ]  Anti Fling Player Finish",
             Duration = 1,
             Image = "ban",
         })
@@ -1419,7 +1419,25 @@ espTab:CreateButton({
     end
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling Have A Full Power", Content = "The Anti Fling Have A Full Power And Player"})
+local Divider = espTab:CreateDivider()
+
+espTab:CreateButton({
+    Name = "[ ❌ - ⭕ ]   Tic Tac Toe Player   [ - 3 Mode - ]",
+    Callback = function()
+
+        Rayfield:Notify({
+            Title =   "[ ❌ - ⭕ ]  Tic Tac Toe Player",
+            Content = "[ ✅ ]  Tic Tac Toe Player Finish",
+            Duration = 1,
+            Image = "circle",
+        })
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Tic%20Tac%20Toe"))()
+
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling / Tic Tac Toe Have A Full Power", Content = "The Anti Fling / Tic Tac Toe Have A Full Power And Player"})
 
 local Divider = espTab:CreateDivider()
 
