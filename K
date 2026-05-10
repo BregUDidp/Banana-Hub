@@ -2113,7 +2113,7 @@ local Toggle = espTab:CreateToggle({
 -- Slider ปรับแต่ง
 espTab:CreateSlider({
     Name = "[ 📏 ]  Slider Player Radar",
-    Range = {50, 600},
+    Range = {50, 5000},
     Increment = 10,
     Suffix = " Distance Player Radar",
     CurrentValue = maxDistance,
@@ -2125,7 +2125,7 @@ espTab:CreateSlider({
 
 espTab:CreateSlider({
     Name = "[ 📏 ]  Slider Size Radar",
-    Range = {180, 350},
+    Range = {180, 5000},
     Increment = 10,
     Suffix = " Size Player Radar",
     CurrentValue = radarSize,
