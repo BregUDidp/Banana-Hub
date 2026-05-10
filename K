@@ -436,6 +436,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local flying = false
+local layingMode = true        -- true = นอน, false = ยืนปกติ
 local flySpeed = 50
 local flyConnection
 local bodyVelocity
@@ -450,7 +451,9 @@ local function updateFly()
     
     local camera = workspace.CurrentCamera
     local horizontal = Vector3.new(0, 0, 0)
-    
+    local vertical = 0
+
+    -- Horizontal Movement
     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
         horizontal = horizontal + camera.CFrame.LookVector
     end
@@ -463,33 +466,46 @@ local function updateFly()
     if UserInputService:IsKeyDown(Enum.KeyCode.D) then
         horizontal = horizontal + camera.CFrame.RightVector
     end
-    
+
+    -- Vertical Movement
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        vertical = 1
+    elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+        vertical = -1
+    end
+
     local moveDir = (horizontal + Vector3.new(0, vertical, 0)).Unit
     if moveDir.Magnitude > 0 then
         bodyVelocity.Velocity = moveDir * flySpeed
     else
         bodyVelocity.Velocity = Vector3.new(0, 0, 0)
     end
-    
-    -- ทำให้ตัวละครนอนราบ (หงายหน้าขึ้นฟ้าเล็กน้อย) + หันตามกล้อง
+
+    -- === Rotation Logic ===
     local lookDir = camera.CFrame.LookVector
-    -- หมุน -90 องศา รอบแกน X เพื่อนอนราบ
-    local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir) 
-                        * CFrame.Angles(math.rad(-90), 0, 0)
-    
-    bodyGyro.CFrame = targetCFrame
+
+    if layingMode then
+        -- === โหมดนอน ===
+        local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir) 
+                            * CFrame.Angles(math.rad(-90), 0, 0)  -- นอนหงาย
+        bodyGyro.CFrame = targetCFrame
+    else
+        -- === โหมดปกติ (ยืน) ===
+        local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir)
+        bodyGyro.CFrame = targetCFrame
+    end
 end
 
 -- ================== Flying Toggle ==================
 local FlyToggle = PTab:CreateToggle({
-    Name = "[ 🪁 ]  Flying Gravity",
+    Name = "[ 🪁 ]  Flying Gravity Mode",
     CurrentValue = false,
     Flag = "FlyEnabled",
     Callback = function(Value)
         flying = Value
-        
+
         Rayfield:Notify({
-            Title = Value and   "[ 🪁 ]  Flying ON" or "[ 🪁 ]  Flying OFF",
+            Title = Value and   "[ 🪁 ]  Flying Mode ON" or "[ 🪁 ]  Flying Mode OFF",
             Content = Value and "[ ✅ ]  Click Flying ON" or "[ 🛑 ]  Click Flying OFF",
             Duration = 1,
             Image = "luggage"
@@ -499,48 +515,52 @@ local FlyToggle = PTab:CreateToggle({
         if not character then return end
         
         local humanoid = character:FindFirstChild("Humanoid")
-        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-        if not humanoid or not humanoidRootPart then return end
-        
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not hrp then return end
+
         if Value then
             humanoid.PlatformStand = true
-            humanoid.AutoRotate = false  -- ป้องกันการยืนอัตโนมัติ
-            
+            humanoid.AutoRotate = false
+
+            -- BodyVelocity
             bodyVelocity = Instance.new("BodyVelocity")
+            bodyVelocity.Name = "FlyVelocity"
             bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
             bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-            bodyVelocity.Parent = humanoidRootPart
-            
+            bodyVelocity.Parent = hrp
+
+            -- BodyGyro
             bodyGyro = Instance.new("BodyGyro")
+            bodyGyro.Name = "FlyGyro"
             bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
-            bodyGyro.P = 3000  -- เพิ่มความเร็วการหมุนให้ลื่นไหล
+            bodyGyro.P = 3000
             bodyGyro.D = 500
-            bodyGyro.CFrame = humanoidRootPart.CFrame * CFrame.Angles(math.rad(-90), 0, 0)
-            bodyGyro.Parent = humanoidRootPart
-            
+            bodyGyro.Parent = hrp
+
             flyConnection = RunService.Heartbeat:Connect(updateFly)
         else
             humanoid.PlatformStand = false
             humanoid.AutoRotate = true
-            
-            if bodyVelocity then 
-                bodyVelocity:Destroy() 
-                bodyVelocity = nil 
-            end
-            if bodyGyro then 
-                bodyGyro:Destroy() 
-                bodyGyro = nil 
-            end
-            if flyConnection then 
-                flyConnection:Disconnect() 
-                flyConnection = nil 
-            end
-            
-            -- รีเซ็ตท่าทางให้ยืนปกติ
-            if humanoidRootPart then
-                humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position) * CFrame.Angles(0, humanoidRootPart.Orientation.Y, 0)
-            end
+
+            if bodyVelocity then bodyVelocity:Destroy() bodyVelocity = nil end
+            if bodyGyro then bodyGyro:Destroy() bodyGyro = nil end
+            if flyConnection then flyConnection:Disconnect() flyConnection = nil end
         end
+    end,
+})
+
+local LayingToggle = PTab:CreateToggle({
+    Name = "[ 🛌 ]  Invincible Flying Mode",
+    CurrentValue = true,
+    Flag = "LayingMode",
+    Callback = function(Value)
+        layingMode = Value
+        Rayfield:Notify({
+            Title = Value and   "[ 🛌 ]  Laying Flying ON" or "[ 🛌 ]  Laying Flying OFF",
+            Content = Value and "[ ✅ ]  Click Lay Flying ON"  or "[ 🛑 ]  Click Lay Flying OFF",
+            Duration = 1,
+            Image = "bed-double"
+        })
     end,
 })
 
@@ -550,11 +570,11 @@ local FlyKeybind = PTab:CreateKeybind({
     HoldToInteract = false,
     Flag = "FlyKeybind",
     Callback = function()
-        local newValue = not flying
-        FlyToggle:Set(newValue)
+        FlyToggle:Set(not flying)
     end,
 })
 
+-- Speed Slider
 local SpeedSlider = PTab:CreateSlider({
     Name = "[ 📏 ]  Slider Flying Speed",
     Range = {50, 5000},
@@ -567,7 +587,7 @@ local SpeedSlider = PTab:CreateSlider({
     end,
 })
 
-local Paragraph = PTab:CreateParagraph({Title = "Flying For Building And Fly For Style", Content = "Flying For Building And Fly For Style Super Man"})
+local Paragraph = PTab:CreateParagraph({Title = "Flying And Laydown For Building And Fly For Style", Content = "Flying And Laydown For Building And Fly For Style Super Man"})
 
 local Divider = PTab:CreateDivider()
 
@@ -715,36 +735,49 @@ local Paragraph = PTab:CreateParagraph({Title = "Infinite Jumpping For Building 
 
 local Divider = PTab:CreateDivider()
 
-local ResetZoomButton = PTab:CreateButton({
-    Name = "[ 🗞️ ]  Reseting Zoom Altra",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        InfiniteZoomEnabled = false
-        player.CameraMaxZoomDistance = 400
-        player.CameraMinZoomDistance = 0.5
+local InfiniteZoomEnabled = false
+local DefaultMaxZoom = 400  -- ค่าเริ่มต้นปกติของ Roblox
+local player = game.Players.LocalPlayer
+
+local InfiniteZoomToggle = PTab:CreateToggle({
+    Name = "[ 🗞️ ]  Infinite Zoom",
+    CurrentValue = false,
+    Flag = "InfiniteZoomToggle",
+    Callback = function(Value)
+        InfiniteZoomEnabled = Value
         
         Rayfield:Notify({
-            Title =   "[ 🗞️ ]  The Infinite Zoom",
-            Content = "[ ✅ ]  The Infinite Zoom Has New",
+            Title = Value and   "[ 🗞️ ]  Infinite Zoom ON" or "[ 🗞️ ]  Infinite Zoom OFF",
+            Content = Value and "[ ✅ ]  Click Infinite ON" or "[ 🛑 ]  Click Infinite OFF",
             Duration = 1,
-            Image = "zoom-out",
+            Image = "zoom-out"
         })
+
+        if Value then
+            -- เปิด Infinite Zoom
+            local currentMax = InfiniteZoomSlider:Get() or 400
+            player.CameraMaxZoomDistance = currentMax
+            player.CameraMinZoomDistance = 0.5
+            
+        else
+            -- ปิดและรีเซ็ตกลับค่าเดิม
+            player.CameraMaxZoomDistance = DefaultMaxZoom
+            player.CameraMinZoomDistance = 0.5
+            
+        end
     end,
 })
 
 local InfiniteZoomSlider = PTab:CreateSlider({
     Name = "[ 📏 ]  Infinite Zoom Distance",
     Range = {400, 10000},
-    Increment = 100,       
-    Suffix = " Infinite Zoom",
-    CurrentValue = 400,    -- เริ่มต้นที่ค่าเดิมของ Roblox
+    Increment = 100,
+    Suffix = " Distance Zoom",
+    CurrentValue = 400,
     Flag = "InfiniteZoomSlider",
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        player.CameraMaxZoomDistance = Value
-        player.CameraMinZoomDistance = 0.5
-        if Value == 400 then
-        elseif Value >= 8000 then   
+        if InfiniteZoomEnabled then
+            player.CameraMaxZoomDistance = Value
         end
     end,
 })
