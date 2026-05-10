@@ -1917,6 +1917,13 @@ espTab:CreateToggle({
     Callback = function(Value)
         HitboxEnabled = Value
         
+        Rayfield:Notify({
+            Title = Value and   "[ ⚔️ ]  Hitbox Player ON" or "[ ⚔️ ]  Hitbox Player OFF",
+            Content = Value and "[ ✅ ]  Click Hitbox Boxing ON" or "[ 🛑 ]  Click Hitbox Boxing OFF",
+            Duration = 1,
+            Image = "swords"
+        })
+
         if Value then
             connections["Hitbox"] = RunService.RenderStepped:Connect(function()
                 if not HitboxEnabled then return end
@@ -1973,6 +1980,166 @@ espTab:CreateSlider({
 })
 
 local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend And Killing Player", Content = "Hitbox Player / Friend And Killing Player Style"})
+
+local Divider = espTab:CreateDivider()
+
+local radarEnabled = false
+local radarGui = nil
+local radarFrame = nil
+local playerDots = {}
+local connection = nil
+
+local radarSize = 240
+local radarRadius = radarSize / 2 - 20
+local maxDistance = 600
+
+-- ฟังก์ชันสร้าง Radar
+local function createRadar()
+    if radarGui then radarGui:Destroy() end
+    
+    radarGui = Instance.new("ScreenGui")
+    radarGui.Name = "CircularRadar"
+    radarGui.ResetOnSpawn = false
+    radarGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    radarFrame = Instance.new("Frame")
+    radarFrame.Size = UDim2.new(0, radarSize, 0, radarSize)
+    radarFrame.Position = UDim2.new(1, -radarSize - 20, 0, 20)   -- ← เปลี่ยนตรงนี้เป็นด้านบนขวา
+    radarFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    radarFrame.BorderSizePixel = 0
+    radarFrame.Parent = radarGui
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = radarFrame
+    
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(120, 100, 255)
+    stroke.Thickness = 2.5
+    stroke.Parent = radarFrame
+    
+    -- จุดตรงกลาง (ตัวเรา)
+    local centerDot = Instance.new("Frame")
+    centerDot.Size = UDim2.new(0, 10, 0, 10)
+    centerDot.Position = UDim2.new(0.5, -5, 0.5, -5)
+    centerDot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    centerDot.BorderSizePixel = 0
+    centerDot.Parent = radarFrame
+    
+    local centerCorner = Instance.new("UICorner")
+    centerCorner.CornerRadius = UDim.new(1, 0)
+    centerCorner.Parent = centerDot
+end
+
+-- ฟังก์ชันอัพเดท Radar (เหมือนเดิม)
+local function updateRadar()
+    if not radarEnabled or not radarFrame then return end
+    
+    local localPlayer = game.Players.LocalPlayer
+    local localChar = localPlayer.Character
+    if not localChar or not localChar:FindFirstChild("HumanoidRootPart") then return end
+    
+    local localRoot = localChar.HumanoidRootPart
+    for _, dot in pairs(playerDots) do
+        dot:Destroy()
+    end
+    playerDots = {}
+    
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local root = player.Character.HumanoidRootPart
+            local distance = (localRoot.Position - root.Position).Magnitude
+            
+            if distance <= maxDistance then
+                local relativePos = (root.Position - localRoot.Position)
+                local angle = math.atan2(relativePos.X, relativePos.Z)
+                
+                local dotDistance = (distance / maxDistance) * radarRadius
+                
+                local x = math.sin(angle) * dotDistance
+                local z = math.cos(angle) * dotDistance
+                
+                local dot = Instance.new("Frame")
+                dot.Size = UDim2.new(0, 11, 0, 11)
+                dot.BackgroundColor3 = Color3.fromRGB(180, 80, 255)  -- สีม่วง
+                dot.BorderSizePixel = 0
+                dot.ZIndex = 10
+                
+                local dotCorner = Instance.new("UICorner")
+                dotCorner.CornerRadius = UDim.new(1, 0)
+                dotCorner.Parent = dot
+                
+                dot.Position = UDim2.new(0.5, x - 5.5, 0.5, z - 5.5)
+                dot.Parent = radarFrame
+                
+                table.insert(playerDots, dot)
+            end
+        end
+    end
+end
+
+-- Toggle
+local Toggle = espTab:CreateToggle({
+    Name = "[ 🎥 ]  Circular Player Radar   [ - Radar - ]",
+    CurrentValue = false,
+    Flag = "RadarToggle",
+    Callback = function(Value)
+        radarEnabled = Value
+        
+        Rayfield:Notify({
+            Title = Value and   "[ 🎥 ]  Circular Radar ON" or "[ 🎥 ]  Circular Radar OFF",
+            Content = Value and "[ ✅ ]  Click Player Radar ON" or "[ 🛑 ]  Click Player Flying OFF",
+            Duration = 1,
+            Image = "radar"
+        })
+
+        if Value then
+            createRadar()
+            if connection then connection:Disconnect() end
+            connection = game:GetService("RunService").RenderStepped:Connect(updateRadar)
+        else
+            if connection then 
+                connection:Disconnect() 
+                connection = nil 
+            end
+            if radarGui then 
+                radarGui:Destroy() 
+                radarGui = nil 
+            end
+        end
+    end,
+})
+
+-- Slider ปรับแต่ง
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Player Radar",
+    Range = {50, 600},
+    Increment = 10,
+    Suffix = " Distance Player Radar",
+    CurrentValue = maxDistance,
+    Flag = "RadarDistance",
+    Callback = function(Value)
+        maxDistance = Value
+    end,
+})
+
+espTab:CreateSlider({
+    Name = "[ 📏 ]  Slider Size Radar",
+    Range = {180, 350},
+    Increment = 10,
+    Suffix = " Size Player Radar",
+    CurrentValue = radarSize,
+    Flag = "RadarSize",
+    Callback = function(Value)
+        radarSize = Value
+        radarRadius = radarSize / 2 - 20
+        if radarFrame then
+            radarFrame.Size = UDim2.new(0, radarSize, 0, radarSize)
+        end
+    end,
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Circular Radar Player Is It So Good", Content = "The Circular Radar Player Is It So Good And Have A Fuction"})
 
 local Divider = espTab:CreateDivider()
 
@@ -2148,6 +2315,14 @@ espTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         EspEnabled = Value
+
+        Rayfield:Notify({
+            Title = Value and   "[ 💡 ]  ESP Character ON" or "[ 💡 ]  ESP Character OFF",
+            Content = Value and "[ ✅ ]  Click ESP Player ON" or "[ 🛑 ]  Click ESP Player OFF",
+            Duration = 1,
+            Image = "flashlight"
+        })
+
         if Value then
             EnableESP()
         else
