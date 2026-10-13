@@ -17,6 +17,7 @@ end
 
 local CurrentDate = GetThaiDate()
 
+-- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |   All Map   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
@@ -54,6 +55,7 @@ local Window = Rayfield:CreateWindow({
 local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
 local Divider = CreditTab:CreateDivider()
 
+-- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
 local AnimationStatusLabel = CreditTab:CreateLabel(
    '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
@@ -61,6 +63,7 @@ local AnimationStatusLabel = CreditTab:CreateLabel(
 local Button = CreditTab:CreateButton({
    Name = "                                                                      💃",
    Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
       AnimationStatusLabel:Set(
          '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
       )
@@ -109,12 +112,15 @@ CreditTab:CreateButton({
       
       spawn(function()
          while countdown > 0 do
+            -- ระหว่าง countdown ใช้สีเหลืองเตือน
             RejoinCountdownLabel:Set(
                '<font color="rgb(255, 215, 0)"><b>Wait Rejoin  (  ' .. countdown .. '  )</b></font>'
             )
             task.wait(1)
             countdown = countdown - 1
          end
+        
+         -- ตอนรีจอยจริง เปลี่ยนเป็นสีเขียวสด
          RejoinCountdownLabel:Set(
             '<font color="rgb(0, 255, 120)"><b>Rejoining Now</b></font>'
          )
@@ -240,6 +246,8 @@ local function UpdatePlayerList()
    end
    
    local lines = {}
+   
+   -- 1. ชื่อคุณอยู่บนสุดเสมอ
    if localPlayerData then
       table.insert(lines, string.format(
          "  ★  1. %s ( @ %s )  ←-- YOU\n   %s   |  %s",
@@ -247,12 +255,16 @@ local function UpdatePlayerList()
          localPlayerData.status, localPlayerData.resetInfo
       ))
    end
+   
+   -- 2. ผู้เล่นคนอื่น (เรียงตามลำดับปกติของ GetPlayers)
    for i, data in ipairs(otherPlayers) do
       table.insert(lines, string.format(
          "  %d. %s ( @ %s )\n   %s   |  %s",
          i + 1, data.display, data.name, data.status, data.resetInfo
       ))
    end
+   
+   -- 3. คนที่เพิ่งออกเกม
    for name, data in pairs(RecentlyLeft) do
       local timeStr = GetTimeAgo(data.time)
       table.insert(lines, string.format(
@@ -265,6 +277,8 @@ local function UpdatePlayerList()
       Title = string.format("                                                                                     (  %d Player  |  Leave %d Player  )", playerCount, #RecentlyLeft),
       Content = table.concat(lines, "\n\n")
    })
+   
+   
 end
 
 game.Players.PlayerRemoving:Connect(function(player)
@@ -290,6 +304,7 @@ game.Players.PlayerRemoving:Connect(function(player)
    pcall(UpdatePlayerList)
 end)
 
+-- เริ่มต้น
 ConnectResetEvents()
 UpdatePlayerList()
 
@@ -333,6 +348,7 @@ local AnimationStatusLabel = PTab:CreateLabel(
 local Button = PTab:CreateButton({
    Name = "                                                                      🖱️",
    Callback = function()
+      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
       AnimationStatusLabel:Set(
          '<font color="rgb(255, 215, 0)"><b>Loading Curser Mouse Akari...</b></font>'
       )
@@ -342,6 +358,7 @@ local Button = PTab:CreateButton({
          end)
 
          if success then
+            -- โหลดสำเร็จ → เปลี่ยน Label เป็นสีเขียว + ข้อความเสร็จแล้ว
             AnimationStatusLabel:Set(
                '<font color="rgb(0, 255, 100)"><b>Curser Mouse Akari Loading Finish</b></font>'
             )
@@ -468,10 +485,12 @@ local function updateFly()
     local lookDir = camera.CFrame.LookVector
 
     if layingMode then
+        -- === โหมดนอน ===
         local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir) 
                             * CFrame.Angles(math.rad(-90), 0, 0)  -- นอนหงาย
         bodyGyro.CFrame = targetCFrame
     else
+        -- === โหมดปกติ (ยืน) ===
         local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir)
         bodyGyro.CFrame = targetCFrame
     end
@@ -635,6 +654,7 @@ local function ToggleSit(enabled)
             end
         end)
     else
+        -- ปิดการนั่ง
         if SitConnection then
             SitConnection:Disconnect()
             SitConnection = nil
@@ -1359,6 +1379,7 @@ local Paragraph = friendTab:CreateParagraph({Title = "Spectator And Return To Yo
 
 local Divider = friendTab:CreateDivider()
 
+--// === ESP TAB (Local ESP - Rainbow Edition) ===
 local espTab = Window:CreateTab("||   - Solution", "flask-conical")
 local Divider = espTab:CreateDivider()
 
@@ -1366,6 +1387,7 @@ local MouseTPEnabled = false
 local Mouse = game.Players.LocalPlayer:GetMouse()
 local Player = game.Players.LocalPlayer
 
+-- สร้าง Sound ไว้ใช้ซ้ำได้เรื่อย ๆ
 local teleportSound = Instance.new("Sound")
 teleportSound.SoundId = "rbxassetid://4861638982"
 teleportSound.Volume = 0.7
@@ -1385,6 +1407,7 @@ local Toggle = espTab:CreateToggle({
     end,
 })
 
+-- กดคลิก = วาร์ปทันที + เสียงดังพร้อมกัน
 Mouse.Button1Down:Connect(function()
     if MouseTPEnabled and Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") then
         local targetPos = Mouse.Hit.Position + Vector3.new(0, 5, 0)
@@ -1403,6 +1426,7 @@ Mouse.Button1Down:Connect(function()
     end
 end)
 
+-- รีโหลดสถานะตอนเกิดใหม่
 Player.CharacterAdded:Connect(function()
     task.wait(1)
     MouseTPEnabled = Rayfield.Flags.MouseTP.CurrentValue
@@ -1415,23 +1439,46 @@ local Divider = espTab:CreateDivider()
 espTab:CreateButton({
     Name = "[ 🚫 - 🛩️ ]   Anti Fling Player Fling   [ - Anti Fling - ]",
     Callback = function()
+
         Rayfield:Notify({
             Title =   "[ 🚫 - 🛩️ ]  Anti Fling Player",
             Content = "[ ✅ ]  Anti Fling Player Finish",
             Duration = 1,
             Image = "ban",
         })
+
         loadstring(game:HttpGet("https://pastefy.app/wo2ipSp6/raw"))()
+
     end
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling Is Have A Good For Troll", Content = "The Anti Fling Is Have A Good For Trolling Player"})
+local Divider = espTab:CreateDivider()
+
+espTab:CreateButton({
+    Name = "[ ❌ - ⭕ ]   Tic Tac Toe Player   [ - 3 Mode - ]",
+    Callback = function()
+
+        Rayfield:Notify({
+            Title =   "[ ❌ - ⭕ ]  Tic Tac Toe Player",
+            Content = "[ ✅ ]  Tic Tac Toe Player Finish",
+            Duration = 1,
+            Image = "circle",
+        })
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Tic%20Tac%20Toe"))()
+
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling / Tic Tac Toe Have A Full Power", Content = "The Anti Fling / Tic Tac Toe Have A Full Power And Player"})
 
 local Divider = espTab:CreateDivider()
 
+-- ตัวแปรเก็บตำแหน่ง Spawn
 local SavedSpawnCFrame = nil
 local SpawnMarker = nil
 
+-- สีม่วงตามที่ต้องการ
 local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
 
 local function CreateSpawnMarker(cframe)
@@ -1440,10 +1487,11 @@ local function CreateSpawnMarker(cframe)
         SpawnMarker:Destroy()
     end
 
+    -- สร้าง Part เป็นวงกลมเล็ก ๆ บนพื้น
     local marker = Instance.new("Part")
     marker.Name = "SpawnMarker"
     marker.Shape = Enum.PartType.Cylinder
-    marker.Size = Vector3.new(4, 0.2, 4)
+    marker.Size = Vector3.new(4, 0.2, 4)           -- ขนาดวงกลม
     marker.CFrame = cframe * CFrame.Angles(math.rad(90), 0, 0)
     marker.Color = PURPLE_COLOR
     marker.Material = Enum.Material.Neon
@@ -1481,6 +1529,7 @@ local function CreateSpawnMarker(cframe)
     SpawnMarker = marker
 end
 
+-- ปุ่ม Set Spawn
 espTab:CreateButton({
     Name = "[ 🔴 ]  Setting Spawn   [ - Save Spawn - ]",
     Callback = function()
@@ -1502,6 +1551,7 @@ espTab:CreateButton({
     end
 })
 
+-- ปุ่ม TP To Spawn
 espTab:CreateButton({
     Name = "[ 🔵 ]  TP To Spawn    [ - Teleport To Spawn - ]",
     Callback = function()
@@ -1564,6 +1614,7 @@ local PurpleTool = {
     Connections = {},
 }
 
+-- สีม่วงที่ต้องการ (138, 43, 179)
 local PURPLE_COLOR = Color3.fromRGB(138, 43, 179)
 
 local function CreateHighlight(tool)
@@ -1579,8 +1630,12 @@ end
 
 local function ApplyPurpleColor()
     if not PurpleTool.Enabled or not PurpleTool.Current or not PurpleTool.Highlight then return end
+    
+    -- ตั้งค่าสี Highlight
     PurpleTool.Highlight.FillColor = PURPLE_COLOR
     PurpleTool.Highlight.OutlineColor = PURPLE_COLOR
+    
+    -- เปลี่ยนสีทุก Part ใน Tool (ยกเว้น HumanoidRootPart)
     for _, part in pairs(PurpleTool.Current:GetDescendants()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
             part.Color = PURPLE_COLOR
@@ -1593,7 +1648,7 @@ local function OnEquipped(tool)
     PurpleTool.Current = tool
     task.wait(0.1)
     CreateHighlight(tool)
-    ApplyPurpleColor()
+    ApplyPurpleColor()  -- ใช้สีม่วงทันที
 end
 
 local function OnUnequipped()
@@ -1605,6 +1660,7 @@ local function OnUnequipped()
 end
 
 local function SetupTool(char)
+    -- ล้าง connection เก่า
     for _, c in pairs(PurpleTool.Connections) do c:Disconnect() end
     PurpleTool.Connections = {}
 
@@ -1613,6 +1669,7 @@ local function SetupTool(char)
         table.insert(PurpleTool.Connections, tool.Unequipped:Connect(OnUnequipped))
     end
 
+    -- เชื่อม Tool ที่อยู่ในตัวละครตอนนี้
     for _, child in pairs(char:GetChildren()) do
         if child:IsA("Tool") then ConnectTool(child) end
     end
@@ -1926,166 +1983,6 @@ local Paragraph = espTab:CreateParagraph({Title = "Hitbox Player / Friend And Ki
 
 local Divider = espTab:CreateDivider()
 
-local radarEnabled = false
-local radarGui = nil
-local radarFrame = nil
-local playerDots = {}
-local connection = nil
-
-local radarSize = 240
-local radarRadius = radarSize / 2 - 20
-local maxDistance = 600
-
--- ฟังก์ชันสร้าง Radar
-local function createRadar()
-    if radarGui then radarGui:Destroy() end
-    
-    radarGui = Instance.new("ScreenGui")
-    radarGui.Name = "CircularRadar"
-    radarGui.ResetOnSpawn = false
-    radarGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    
-    radarFrame = Instance.new("Frame")
-    radarFrame.Size = UDim2.new(0, radarSize, 0, radarSize)
-    radarFrame.Position = UDim2.new(1, -radarSize - 20, 0, 20)   -- ← เปลี่ยนตรงนี้เป็นด้านบนขวา
-    radarFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    radarFrame.BorderSizePixel = 0
-    radarFrame.Parent = radarGui
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = radarFrame
-    
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(120, 100, 255)
-    stroke.Thickness = 2.5
-    stroke.Parent = radarFrame
-    
-    -- จุดตรงกลาง (ตัวเรา)
-    local centerDot = Instance.new("Frame")
-    centerDot.Size = UDim2.new(0, 10, 0, 10)
-    centerDot.Position = UDim2.new(0.5, -5, 0.5, -5)
-    centerDot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    centerDot.BorderSizePixel = 0
-    centerDot.Parent = radarFrame
-    
-    local centerCorner = Instance.new("UICorner")
-    centerCorner.CornerRadius = UDim.new(1, 0)
-    centerCorner.Parent = centerDot
-end
-
--- ฟังก์ชันอัพเดท Radar (เหมือนเดิม)
-local function updateRadar()
-    if not radarEnabled or not radarFrame then return end
-    
-    local localPlayer = game.Players.LocalPlayer
-    local localChar = localPlayer.Character
-    if not localChar or not localChar:FindFirstChild("HumanoidRootPart") then return end
-    
-    local localRoot = localChar.HumanoidRootPart
-    for _, dot in pairs(playerDots) do
-        dot:Destroy()
-    end
-    playerDots = {}
-    
-    for _, player in ipairs(game.Players:GetPlayers()) do
-        if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local root = player.Character.HumanoidRootPart
-            local distance = (localRoot.Position - root.Position).Magnitude
-            
-            if distance <= maxDistance then
-                local relativePos = (root.Position - localRoot.Position)
-                local angle = math.atan2(relativePos.X, relativePos.Z)
-                
-                local dotDistance = (distance / maxDistance) * radarRadius
-                
-                local x = math.sin(angle) * dotDistance
-                local z = math.cos(angle) * dotDistance
-                
-                local dot = Instance.new("Frame")
-                dot.Size = UDim2.new(0, 11, 0, 11)
-                dot.BackgroundColor3 = Color3.fromRGB(180, 80, 255)  -- สีม่วง
-                dot.BorderSizePixel = 0
-                dot.ZIndex = 10
-                
-                local dotCorner = Instance.new("UICorner")
-                dotCorner.CornerRadius = UDim.new(1, 0)
-                dotCorner.Parent = dot
-                
-                dot.Position = UDim2.new(0.5, x - 5.5, 0.5, z - 5.5)
-                dot.Parent = radarFrame
-                
-                table.insert(playerDots, dot)
-            end
-        end
-    end
-end
-
--- Toggle
-local Toggle = espTab:CreateToggle({
-    Name = "[ 🎥 ]  Circular Player Radar   [ - Radar - ]",
-    CurrentValue = false,
-    Flag = "RadarToggle",
-    Callback = function(Value)
-        radarEnabled = Value
-        
-        Rayfield:Notify({
-            Title = Value and   "[ 🎥 ]  Circular Radar ON" or "[ 🎥 ]  Circular Radar OFF",
-            Content = Value and "[ ✅ ]  Click Player Radar ON" or "[ 🛑 ]  Click Player Flying OFF",
-            Duration = 1,
-            Image = "radar"
-        })
-
-        if Value then
-            createRadar()
-            if connection then connection:Disconnect() end
-            connection = game:GetService("RunService").RenderStepped:Connect(updateRadar)
-        else
-            if connection then 
-                connection:Disconnect() 
-                connection = nil 
-            end
-            if radarGui then 
-                radarGui:Destroy() 
-                radarGui = nil 
-            end
-        end
-    end,
-})
-
-espTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Player Radar",
-    Range = {50, 5000},
-    Increment = 10,
-    Suffix = " Distance Player Radar",
-    CurrentValue = maxDistance,
-    Flag = "RadarDistance",
-    Callback = function(Value)
-        maxDistance = Value
-    end,
-})
-
-espTab:CreateSlider({
-    Name = "[ 📏 ]  Slider Size Radar",
-    Range = {180, 5000},
-    Increment = 10,
-    Suffix = " Size Player Radar",
-    CurrentValue = radarSize,
-    Flag = "RadarSize",
-    Callback = function(Value)
-        radarSize = Value
-        radarRadius = radarSize / 2 - 20
-        if radarFrame then
-            radarFrame.Size = UDim2.new(0, radarSize, 0, radarSize)
-        end
-    end,
-})
-
-local Paragraph = espTab:CreateParagraph({Title = "The Circular Radar Player Is It So Good", Content = "The Circular Radar Player Is It So Good And Have A Fuction"})
-
-local Divider = espTab:CreateDivider()
-
--- Variables
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -2093,7 +1990,7 @@ local EspEnabled = false
 local ESPColor = Color3.fromRGB(138, 43, 179)  -- สีม่วง
 
 local PlayerESP = {}  
- 
+
 local function UpdatePlayerESP(player)
     if not EspEnabled then return end
     if not player.Character then return end
@@ -2115,7 +2012,6 @@ local function UpdatePlayerESP(player)
         PlayerESP[player] = espData
     end
 
-    -- Highlight
     if not espData.Highlight then
         espData.Highlight = Instance.new("Highlight")
         espData.Highlight.Adornee = character
@@ -2127,7 +2023,6 @@ local function UpdatePlayerESP(player)
         espData.Highlight.Parent = character
     end
 
-    -- BillboardGui
     if not espData.NameGui then
         espData.NameGui = Instance.new("BillboardGui")
         espData.NameGui.Adornee = head
@@ -2158,7 +2053,6 @@ local function UpdatePlayerESP(player)
     end
 end
 
--- ล้าง ESP
 local function ClearPlayerESP(player)
     local espData = PlayerESP[player]
     if espData then
@@ -2171,11 +2065,9 @@ local function ClearPlayerESP(player)
     end
 end
 
--- เมื่อตัวละครโหลด
 local function OnCharacterAdded(player, character)
     if not EspEnabled then return end
     
---    task.wait(0.1)  -- รอตัวละครโหลดเสร็จ
     UpdatePlayerESP(player)
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
