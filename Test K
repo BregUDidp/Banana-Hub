@@ -17,7 +17,6 @@ end
 
 local CurrentDate = GetThaiDate()
 
--- สร้าง Window - ชื่อ Roblox คุณเด่นสุด!
 local Window = Rayfield:CreateWindow({
    Name = "   |   Akari Hub   |   All Map   |   (  " .. CurrentDate .. "  )   |" ,
    Icon = "webhook",
@@ -55,7 +54,6 @@ local Window = Rayfield:CreateWindow({
 local CreditTab = Window:CreateTab("||   - Credit Setting", "badge-info")
 local Divider = CreditTab:CreateDivider()
 
--- สร้าง Label สำหรับแสดงสถานะ (วางไว้ก่อนปุ่ม เพื่อให้อยู่ด้านบน)
 local AnimationStatusLabel = CreditTab:CreateLabel(
    '<font color="rgb(138, 43, 179)"><b> --- </b></font>'
 )
@@ -63,7 +61,6 @@ local AnimationStatusLabel = CreditTab:CreateLabel(
 local Button = CreditTab:CreateButton({
    Name = "                                                                      💃",
    Callback = function()
-      -- อัปเดต Label เป็น "กำลังโหลด..." สีเหลือง
       AnimationStatusLabel:Set(
          '<font color="rgb(255, 215, 0)"><b>Loading Animation Hub...</b></font>'
       )
