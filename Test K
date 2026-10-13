@@ -25,7 +25,7 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "",
    
    ShowText = " 🌑 ",
-   Theme = "AmberGlow",
+   Theme = "Amethyst",
    ToggleUIKeybind = "G",
    DisableRayfieldPrompts = true,
    DisableBuildWarnings = true,
