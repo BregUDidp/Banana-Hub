@@ -25,7 +25,7 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "",
    
    ShowText = " 🌑 ",
-   Theme = "Amethyst",
+   Theme = "Default",
    ToggleUIKeybind = "G",
    DisableRayfieldPrompts = true,
    DisableBuildWarnings = true,
@@ -487,13 +487,11 @@ local function updateFly()
                             * CFrame.Angles(math.rad(-90), 0, 0)  -- นอนหงาย
         bodyGyro.CFrame = targetCFrame
     else
-        -- === โหมดปกติ (ยืน) ===
         local targetCFrame = CFrame.lookAt(humanoidRootPart.Position, humanoidRootPart.Position + lookDir)
         bodyGyro.CFrame = targetCFrame
     end
 end
 
--- ================== Flying Toggle ==================
 local FlyToggle = PTab:CreateToggle({
     Name = "[ 🪁 ]  Flying Gravity Mode",
     CurrentValue = false,
@@ -898,7 +896,7 @@ local Divider = BTab:CreateDivider()
 local Label = BTab:CreateLabel(" [ - This Item Teleport Is Not Bypass On In Mapping - ]", "lollipop", Color3.fromRGB(138, 43, 179) , false)
 
 local Button = BTab:CreateButton({
-   Name = "[ 🍭 ]   Teleport Tools   [  -  Pointing  -  ]",
+   Name = "[ 🍭 ]   Teleport Tools   [  -  Pointing Anything  -  ]",
    Callback = function()
         
         Rayfield:Notify({
@@ -945,6 +943,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 
+-- ตัวแปรหลัก
 local savedCFrame = nil
 local autoTPConnection = nil
 local autoTargetName = nil
@@ -957,10 +956,12 @@ local espConnection = nil
 local espFillColor = Color3.fromRGB(138, 43, 179)
 local espOutlineColor = Color3.fromRGB(138, 43, 179)
 
+-- ตัวแปร CCTV
 local isCCTVMode = false
 local cctvConnection = nil
 local currentTarget = nil
 
+-- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
     local list = {}
     for _, p in ipairs(Players:GetPlayers()) do
@@ -978,6 +979,7 @@ local function getPlayerFromSelection(selected)
     return Players:FindFirstChild(friendName)
 end
 
+-- ESP Functions
 local function enableHighlight(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     if currentESPHighlight and currentESPHighlight.Parent then
@@ -1069,6 +1071,7 @@ local function disableAllESP()
     espTargetPlayer = nil
 end
 
+-- CCTV Functions
 local function enterCCTVMode(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     currentTarget = targetPlayer
@@ -1104,10 +1107,8 @@ local friendDropdown = friendTab:CreateDropdown({
     Callback = function(Option)
         local selected = friendDropdown.CurrentOption[1]
         local newTarget = getPlayerFromSelection(selected)
-        
         local currentAutoTP = Rayfield.Flags["AutoTPToggle"] and Rayfield.Flags["AutoTPToggle"].CurrentValue or false
         local currentHitbox = Rayfield.Flags["TargetHitboxToggle"] and Rayfield.Flags["TargetHitboxToggle"].CurrentValue or false
-
         if currentAutoTP or currentHitbox then
             if currentAutoTP then Rayfield.Flags["AutoTPToggle"]:Set(false); task.wait(0.05); Rayfield.Flags["AutoTPToggle"]:Set(true) end
             if currentHitbox then Rayfield.Flags["TargetHitboxToggle"]:Set(false); task.wait(0.05); Rayfield.Flags["TargetHitboxToggle"]:Set(true) end
@@ -1161,11 +1162,13 @@ friendTab:CreateButton({
     end
 end})
 
+-- Auto Teleport
 friendTab:CreateToggle({
     Name = "[ 🪑 ]  Auto Teleport To Player Sit Head",
     CurrentValue = false,
     Flag = "AutoTPToggle",
     Callback = function(Value)
+        -- โค้ด Auto TP เดิมของคุณ (ย่อให้กระชับ)
         if autoTPConnection then autoTPConnection:Disconnect() end
         autoTargetName = nil
 
@@ -1199,6 +1202,7 @@ local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Frien
 
 local Divider = friendTab:CreateDivider()
 
+-- Hitbox
 local TargetHitboxEnabled = false
 local TargetHitboxSize = 20
 local TargetHitboxConnection = nil
@@ -1436,7 +1440,25 @@ espTab:CreateButton({
     end
 })
 
-local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling Have A Full Power", Content = "The Anti Fling Have A Full Power And Player"})
+local Divider = espTab:CreateDivider()
+
+espTab:CreateButton({
+    Name = "[ ❌ - ⭕ ]   Tic Tac Toe Player   [ - 3 Mode - ]",
+    Callback = function()
+
+        Rayfield:Notify({
+            Title =   "[ ❌ - ⭕ ]  Tic Tac Toe Player",
+            Content = "[ ✅ ]  Tic Tac Toe Player Finish",
+            Duration = 1,
+            Image = "circle",
+        })
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Akari/refs/heads/main/Tic%20Tac%20Toe"))()
+
+    end
+})
+
+local Paragraph = espTab:CreateParagraph({Title = "The Anti Fling / Tic Tac Toe Have A Full Power", Content = "The Anti Fling / Tic Tac Toe Have A Full Power And Player"})
 
 local Divider = espTab:CreateDivider()
 
@@ -1978,6 +2000,7 @@ local function UpdatePlayerESP(player)
         PlayerESP[player] = espData
     end
 
+    -- Highlight
     if not espData.Highlight then
         espData.Highlight = Instance.new("Highlight")
         espData.Highlight.Adornee = character
@@ -1989,6 +2012,7 @@ local function UpdatePlayerESP(player)
         espData.Highlight.Parent = character
     end
 
+    -- BillboardGui
     if not espData.NameGui then
         espData.NameGui = Instance.new("BillboardGui")
         espData.NameGui.Adornee = head
@@ -2019,6 +2043,7 @@ local function UpdatePlayerESP(player)
     end
 end
 
+-- ล้าง ESP
 local function ClearPlayerESP(player)
     local espData = PlayerESP[player]
     if espData then
@@ -2031,9 +2056,11 @@ local function ClearPlayerESP(player)
     end
 end
 
+-- เมื่อตัวละครโหลด
 local function OnCharacterAdded(player, character)
     if not EspEnabled then return end
     
+--    task.wait(0.1)  -- รอตัวละครโหลดเสร็จ
     UpdatePlayerESP(player)
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
