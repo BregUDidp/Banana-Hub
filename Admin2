@@ -21,6 +21,10 @@ local infiniteJumpConnection = nil
 local isInvisible = false
 local originalTransparency = {}
 
+local spinning = false
+local currentSpinSpeed = 50
+local bav = nil
+
 local bv = nil
 local bg = nil
 local flyConnection = nil
@@ -89,6 +93,37 @@ local function stopFlying()
             humanoid.WalkSpeed = originalWalkSpeed
             humanoid.JumpPower = originalJumpPower
         end
+    end
+end
+
+-- ================== ฟังก์ชันหมุนตัว (/spin) ==================
+local function startSpinning(speed)
+    if spinning then
+        currentSpinSpeed = tonumber(speed) or currentSpinSpeed
+        if bav then
+            bav.AngularVelocity = Vector3.new(0, currentSpinSpeed, 0)
+        end
+        return
+    end
+    spinning = true
+    currentSpinSpeed = tonumber(speed) or 50
+    
+    local character = player.Character or player.CharacterAdded:Wait()
+    local root = character:WaitForChild("HumanoidRootPart")
+    
+    bav = Instance.new("BodyAngularVelocity")
+    bav.Name = "SpinVelocity"
+    bav.MaxTorque = Vector3.new(0, math.huge, 0)
+    bav.AngularVelocity = Vector3.new(0, currentSpinSpeed, 0)
+    bav.Parent = root
+end
+
+local function stopSpinning()
+    if not spinning then return end
+    spinning = false
+    if bav then
+        bav:Destroy()
+        bav = nil
     end
 end
 
@@ -410,6 +445,13 @@ player.Chatted:Connect(function(message)
     elseif msg == "/unfly" then
         stopFlying()
         
+    elseif msg == "/spin" or msg:match("^/spin%s*%-?%d+$") then
+        local speed = msg:match("/spin%s*(%-?%d+)")
+        startSpinning(speed)
+        
+    elseif msg == "/unspin" then
+        stopSpinning()
+        
     elseif msg:match("^/speed%s*%d+$") then
         local speed = msg:match("/speed%s*(%d+)")
         local character = player.Character
@@ -467,6 +509,7 @@ end)
 player.CharacterAdded:Connect(function(character)
     task.wait(0.5)
     if flying then stopFlying() end
+    if spinning then stopSpinning() end
     if isFrozen then isFrozen = false end
     
     local humanoid = character:WaitForChild("Humanoid")
@@ -496,8 +539,8 @@ screenGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "NotepadFrame"
-mainFrame.Size = UDim2.new(0, 420, 0, 320)
-mainFrame.Position = UDim2.new(0.5, -210, 0.5, -160)
+mainFrame.Size = UDim2.new(0, 420, 0, 340)
+mainFrame.Position = UDim2.new(0.5, -210, 0.5, -170)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -564,6 +607,9 @@ contentLabel.Text = [[
 
  /fly
  /unfly
+
+ /spin
+ /unspin
 
  /speed
  /jump
