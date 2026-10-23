@@ -1171,6 +1171,25 @@ friendTab:CreateButton({
     end
 end})
 
+friendTab:CreateButton({
+    Name = "[ 📞 ] Teleport To All Players",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart", 5)
+        if not hrp then return end
+        for _, targetPlayer in ipairs(Players:GetPlayers()) do
+            if targetPlayer ~= player and targetPlayer.Character then
+                local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if targetHRP then
+                    hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 3, 0)
+                    task.wait(1)
+                end
+            end
+        end
+    end
+})
+
 -- Auto Teleport
 friendTab:CreateToggle({
     Name = "[ 🪑 ]  Auto Teleport To Player Sit Head",
