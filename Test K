@@ -751,11 +751,13 @@ local InfiniteZoomToggle = PTab:CreateToggle({
         })
 
         if Value then
+            -- เปิด Infinite Zoom
             local currentMax = InfiniteZoomSlider:Get() or 400
             player.CameraMaxZoomDistance = currentMax
             player.CameraMinZoomDistance = 0.5
             
         else
+            -- ปิดและรีเซ็ตกลับค่าเดิม
             player.CameraMaxZoomDistance = DefaultMaxZoom
             player.CameraMinZoomDistance = 0.5
             
@@ -896,7 +898,7 @@ local Divider = BTab:CreateDivider()
 local Label = BTab:CreateLabel(" [ - This Item Teleport Is Not Bypass On In Mapping - ]", "lollipop", Color3.fromRGB(138, 43, 179) , false)
 
 local Button = BTab:CreateButton({
-   Name = "[ 🍭 ]   Teleport Tools   [  -  Point Anything  -  ]",
+   Name = "[ 🍭 ]   Teleport Tools   [  -  Button  -  ]",
    Callback = function()
         
         Rayfield:Notify({
@@ -935,27 +937,6 @@ local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend
 
 local Divider = BTab:CreateDivider()
 
-local Label = BTab:CreateLabel(" [ - This Item Telekinesis Tool Is Bypass On In Mapping - ]", "hand", Color3.fromRGB(138, 43, 179) , false)
-
-local Button = BTab:CreateButton({
-   Name = "[ 🫳 ]   Telekinesis Tools   [  -  Grabing Items  -  ]",
-   Callback = function()
-
-       Rayfield:Notify({
-            Title =   "[ 🫳 ]  Telekinesis Tools Grab",
-            Content = "[ ✅ ]  Telekinesis Tools Grab Click",
-            Duration = 1,
-            Image = "hand",
-         })
-
-       loadstring(game:HttpGet("https://pastebin.com/raw/XLQXhDQf"))()
-   end,
-})
-
-local Paragraph = BTab:CreateParagraph({Title = "Telekinesis Tools For Player / Friend", Content = "Telekinesis Tool Is Good For Grabing Items"})
-
-local Divider = BTab:CreateDivider()
-
 local friendTab = Window:CreateTab("||   - Trolling Player", "bug-play")
 local Divider = friendTab:CreateDivider()
 
@@ -964,6 +945,7 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
 
+-- ตัวแปรหลัก
 local savedCFrame = nil
 local autoTPConnection = nil
 local autoTargetName = nil
@@ -976,10 +958,12 @@ local espConnection = nil
 local espFillColor = Color3.fromRGB(138, 43, 179)
 local espOutlineColor = Color3.fromRGB(138, 43, 179)
 
+-- ตัวแปร CCTV
 local isCCTVMode = false
 local cctvConnection = nil
 local currentTarget = nil
 
+-- ===== ฟังก์ชันช่วย =====
 local function getPlayerList()
     local list = {}
     for _, p in ipairs(Players:GetPlayers()) do
@@ -997,6 +981,7 @@ local function getPlayerFromSelection(selected)
     return Players:FindFirstChild(friendName)
 end
 
+-- ESP Functions
 local function enableHighlight(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     if currentESPHighlight and currentESPHighlight.Parent then
@@ -1088,6 +1073,7 @@ local function disableAllESP()
     espTargetPlayer = nil
 end
 
+-- CCTV Functions
 local function enterCCTVMode(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     currentTarget = targetPlayer
@@ -1116,24 +1102,28 @@ local function exitCCTVMode()
 end
 
 local friendDropdown = friendTab:CreateDropdown({
-    Name = "[ 👥 ]  Dropdown Choose Player",
+    Name = "[ 👥 ]  Dropdown Player Choose Player",
     Options = getPlayerList(),
     CurrentOption = {""},
     Flag = "FriendSelect",
     Callback = function(Option)
+        -- อัปเดต ESP เมื่อเปลี่ยนเป้าหมาย
         local selected = friendDropdown.CurrentOption[1]
         local newTarget = getPlayerFromSelection(selected)
         
+        -- สำหรับ ESP และ Hitbox + Auto TP (เหมือนโค้ดเดิม)
         local currentAutoTP = Rayfield.Flags["AutoTPToggle"] and Rayfield.Flags["AutoTPToggle"].CurrentValue or false
         local currentHitbox = Rayfield.Flags["TargetHitboxToggle"] and Rayfield.Flags["TargetHitboxToggle"].CurrentValue or false
 
         if currentAutoTP or currentHitbox then
+            -- รีเซ็ตและเปิดใหม่เพื่ออัปเดตเป้าหมาย
             if currentAutoTP then Rayfield.Flags["AutoTPToggle"]:Set(false); task.wait(0.05); Rayfield.Flags["AutoTPToggle"]:Set(true) end
             if currentHitbox then Rayfield.Flags["TargetHitboxToggle"]:Set(false); task.wait(0.05); Rayfield.Flags["TargetHitboxToggle"]:Set(true) end
         end
     end
 })
 
+-- อัปเดต Dropdown
 Players.PlayerAdded:Connect(function() friendDropdown:Refresh(getPlayerList(), true) end)
 Players.PlayerRemoving:Connect(function(p)
     task.wait(1)
@@ -1144,6 +1134,7 @@ end)
 
 local Divider = friendTab:CreateDivider()
 
+-- ปุ่ม Teleport (เหมือนเดิม)
 friendTab:CreateButton({ 
     Name = "[ 📌 ]  Teleport To Player - Friend", 
     Callback = function()
@@ -1180,6 +1171,7 @@ friendTab:CreateButton({
     end
 end})
 
+-- Auto Teleport
 friendTab:CreateToggle({
     Name = "[ 🪑 ]  Auto Teleport To Player Sit Head",
     CurrentValue = false,
@@ -1219,6 +1211,7 @@ local Paragraph = friendTab:CreateParagraph({Title = "Teleport To Player / Frien
 
 local Divider = friendTab:CreateDivider()
 
+-- Hitbox
 local TargetHitboxEnabled = false
 local TargetHitboxSize = 20
 local TargetHitboxConnection = nil
