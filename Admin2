@@ -368,6 +368,17 @@ local function giveTeleportTool()
     tool.Parent = player.Backpack
 end
 
+local function removeTeleportTool()
+    local backpack = player:FindFirstChild("Backpack")
+    if backpack and backpack:FindFirstChild("🍭") then
+        backpack["🍭"]:Destroy()
+    end
+    local character = player.Character
+    if character and character:FindFirstChild("🍭") then
+        character["🍭"]:Destroy()
+    end
+end
+
 -- ================== Tool Recoil Speed (🚲) ==================
 local function giveRecoilTool()
     local tool = Instance.new("Tool")
@@ -431,6 +442,17 @@ local function giveRecoilTool()
     
     player:WaitForChild("Backpack")
     tool.Parent = player.Backpack
+end
+
+local function removeRecoilTool()
+    local backpack = player:FindFirstChild("Backpack")
+    if backpack and backpack:FindFirstChild("🚲") then
+        backpack["🚲"]:Destroy()
+    end
+    local character = player.Character
+    if character and character:FindFirstChild("🚲") then
+        character["🚲"]:Destroy()
+    end
 end
 
 -- ================== รับคำสั่งจากแชท ==================
@@ -529,7 +551,7 @@ game.StarterGui:SetCore("SendNotification", {
 })
 task.wait(2)
 
--- สมุดโน้ต Command Chat (LocalScript)
+-- ================== GUI สมุดโน้ต (Toggle ทั้งหมด) ==================
 local playerGui = player:WaitForChild("PlayerGui")
 
 local screenGui = Instance.new("ScreenGui")
@@ -539,8 +561,8 @@ screenGui.Parent = playerGui
 
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "NotepadFrame"
-mainFrame.Size = UDim2.new(0, 420, 0, 340)
-mainFrame.Position = UDim2.new(0.5, -210, 0.5, -170)
+mainFrame.Size = UDim2.new(0, 420, 0, 380)
+mainFrame.Position = UDim2.new(0.5, -210, 0.5, -190)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -566,7 +588,7 @@ titleCorner.Parent = titleBar
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, -80, 1, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = " 📔  Note ( Command Chat )"
+titleLabel.Text = " 📔  Menu Controls"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.TextScaled = true
 titleLabel.Font = Enum.Font.GothamBold
@@ -587,69 +609,215 @@ closeCorner.CornerRadius = UDim.new(0, 8)
 closeCorner.Parent = closeButton
 
 local scrollingFrame = Instance.new("ScrollingFrame")
-scrollingFrame.Size = UDim2.new(1, -20, 1, -60)
-scrollingFrame.Position = UDim2.new(0, 10, 0, 50)
+scrollingFrame.Size = UDim2.new(1, -20, 1, -55)
+scrollingFrame.Position = UDim2.new(0, 10, 0, 45)
 scrollingFrame.BackgroundTransparency = 1
 scrollingFrame.BorderSizePixel = 0
 scrollingFrame.ScrollBarThickness = 6
 scrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 120)
+scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 scrollingFrame.Parent = mainFrame
 
 local listLayout = Instance.new("UIListLayout")
-listLayout.Padding = UDim.new(0, 8)
+listLayout.Padding = UDim.new(0, 6)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = scrollingFrame
 
-local contentLabel = Instance.new("TextLabel")
-contentLabel.Size = UDim2.new(1, -10, 0, 0)
-contentLabel.BackgroundTransparency = 1
-contentLabel.Text = [[
+-- ฟังก์ชันสร้างปุ่ม Toggle ทั่วไป (สำหรับทุกเมนู)
+local function createToggleButton(title, onToggle)
+    local state = false
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 35)
+    frame.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    frame.Parent = scrollingFrame
 
- /fly
- /unfly
+    local fCorner = Instance.new("UICorner")
+    fCorner.CornerRadius = UDim.new(0, 8)
+    fCorner.Parent = frame
 
- /spin
- /unspin
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 90, 1, -10)
+    btn.Position = UDim2.new(1, -95, 0, 5)
+    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+    btn.Text = "OFF"
+    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 12
+    btn.Parent = frame
 
- /speed
- /jump
+    local bCorner = Instance.new("UICorner")
+    bCorner.CornerRadius = UDim.new(0, 6)
+    bCorner.Parent = btn
 
- /sit
- /unsit
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -105, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = title
+    label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
 
- /freeze
- /unfreeze
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            btn.BackgroundColor3 = Color3.fromRGB(40, 150, 70)
+            btn.Text = "ON"
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+            btn.Text = "OFF"
+            btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        end
+        onToggle(state)
+    end)
+end
 
- /rejoin
+-- ฟังก์ชันสร้างปุ่ม Toggle + ช่องใส่ Power / Input
+local function createPowerToggleButton(title, defaultVal, placeholder, onToggle)
+    local state = false
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 35)
+    frame.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+    frame.Parent = scrollingFrame
 
- /tp
- /tooltp
- /toolrecoil
+    local fCorner = Instance.new("UICorner")
+    fCorner.CornerRadius = UDim.new(0, 8)
+    fCorner.Parent = frame
 
- /infinitejump = /if
- /uninfinitejump = /unif
+    local textBox = Instance.new("TextBox")
+    textBox.Size = UDim2.new(0, 80, 1, -10)
+    textBox.Position = UDim2.new(1, -180, 0, 5)
+    textBox.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    textBox.PlaceholderText = placeholder or "Power..."
+    textBox.Text = defaultVal and tostring(defaultVal) or ""
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.Font = Enum.Font.Gotham
+    textBox.TextSize = 12
+    textBox.Parent = frame
 
- /invisible = /iv
- /uninvisible = /univ
+    local tbCorner = Instance.new("UICorner")
+    tbCorner.CornerRadius = UDim.new(0, 6)
+    tbCorner.Parent = textBox
 
- /infiniteyield = /iy
- /flingscript = /fs
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 90, 1, -10)
+    btn.Position = UDim2.new(1, -95, 0, 5)
+    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+    btn.Text = "OFF"
+    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 12
+    btn.Parent = frame
 
- /animation = /an
+    local bCorner = Instance.new("UICorner")
+    bCorner.CornerRadius = UDim.new(0, 6)
+    bCorner.Parent = btn
 
- /rejoin
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -190, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = title
+    label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
 
-]]
-contentLabel.TextColor3 = Color3.fromRGB(220, 220, 230)
-contentLabel.TextXAlignment = Enum.TextXAlignment.Left
-contentLabel.TextYAlignment = Enum.TextYAlignment.Top
-contentLabel.TextWrapped = true
-contentLabel.TextScaled = false
-contentLabel.Font = Enum.Font.Gotham
-contentLabel.TextSize = 16
-contentLabel.AutomaticSize = Enum.AutomaticSize.Y
-contentLabel.Parent = scrollingFrame
+    btn.MouseButton1Click:Connect(function()
+        state = not state
+        local inputVal = textBox.Text
+        if state then
+            btn.BackgroundColor3 = Color3.fromRGB(40, 150, 70)
+            btn.Text = "ON"
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        else
+            btn.BackgroundColor3 = Color3.fromRGB(70, 70, 80)
+            btn.Text = "OFF"
+            btn.TextColor3 = Color3.fromRGB(200, 200, 200)
+        end
+        onToggle(state, inputVal)
+    end)
+    
+    textBox.FocusLost:Connect(function()
+        if state then
+            onToggle(true, textBox.Text)
+        end
+    end)
+end
 
+-- ================== เพิ่มปุ่ม Toggle ทั้งหมด ==================
+createPowerToggleButton("Fly Mode /fly", 50, "Power...", function(on, input)
+    if on then startFlying(tonumber(input) or 50) else stopFlying() end
+end)
+
+createPowerToggleButton("Spin Mode /spin", 50, "Power...", function(on, input)
+    if on then startSpinning(tonumber(input) or 50) else stopSpinning() end
+end)
+
+createPowerToggleButton("WalkSpeed /speed", 50, "Speed...", function(on, input)
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.WalkSpeed = on and (tonumber(input) or 50) or originalWalkSpeed
+    end
+end)
+
+createPowerToggleButton("JumpPower /jump", 50, "Power...", function(on, input)
+    local character = player.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.JumpPower = on and (tonumber(input) or 50) or originalJumpPower
+    end
+end)
+
+createToggleButton("Sit Mode /sit", function(on)
+    ToggleSit(on)
+end)
+
+createToggleButton("Freeze Mode /freeze", function(on)
+    if on then freezePlayer() else unfreezePlayer() end
+end)
+
+createToggleButton("Infinite Jump /if", function(on)
+    if on then enableInfiniteJump() else disableInfiniteJump() end
+end)
+
+createToggleButton("Invisible /iv", function(on)
+    if on then makeInvisible() else makeVisible() end
+end)
+
+createPowerToggleButton("Teleport Player /tp", "", "Player", function(on, input)
+    if on and input ~= "" then teleportToPlayer(input) end
+end)
+
+createToggleButton("Get Teleport Tool /tooltp", function(on)
+    if on then giveTeleportTool() else removeTeleportTool() end
+end)
+
+createToggleButton("Get Recoil Speed Tool /toolrecoil", function(on)
+    if on then giveRecoilTool() else removeRecoilTool() end
+end)
+
+createToggleButton("Rejoin Game /rejoin", function(on)
+    if on then TeleportService:Teleport(game.PlaceId, player) end
+end)
+
+createToggleButton("Infinite Yield Script /iy", function(on)
+    if on then loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))() end
+end)
+
+createToggleButton("Fling Script /fs", function(on)
+    if on then loadstring(game:HttpGet("https://raw.githubusercontent.com/SVG-CARLOS/I-spent-soo-much-time-making-this-script-that-I-cant-make-a-good-title/refs/heads/main/Invisfling"))() end
+end)
+
+createToggleButton("Animation Hub /an", function(on)
+    if on then loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))() end
+end)
+
+-- ปุ่มเปิด/ปิด สมุดโน้ตมุมขวาล่าง
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 60, 0, 60)
 toggleButton.Position = UDim2.new(1, -75, 1, -75)
