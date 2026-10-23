@@ -937,18 +937,17 @@ local Paragraph = BTab:CreateParagraph({Title = "Recoil Tool For Player / Friend
 
 local Divider = BTab:CreateDivider()
 
-local Label = BTab:CreateLabel(" [ - This Item Telekinesis Tool Is Bypass On In Mapping - ]", "magnet", Color3.fromRGB(138, 43, 179) , false)
+local Label = BTab:CreateLabel(" [ - This Item Telekinesis Tool Is Bypass On In Mapping - ]", "bike", Color3.fromRGB(138, 43, 179) , false)
+
 local Button = BTab:CreateButton({
    Name = "[ 🫳 ]   Telekinesis Tools   [  -  Grabing Items  -  ]",
    Callback = function()
-
        Rayfield:Notify({
             Title =   "[ 🫳 ]  Telekinesis Tools Grab",
             Content = "[ ✅ ]  Telekinesis Tools Grab Click",
             Duration = 1,
-            Image = "magnet",
+            Image = "bike",
          })
-
        loadstring(game:HttpGet("https://pastebin.com/raw/XLQXhDQf"))()
    end,
 })
