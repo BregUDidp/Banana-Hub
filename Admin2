@@ -3,6 +3,9 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local TeleportService = game:GetService("TeleportService")
 local Debris = game:GetService("Debris")
+local CoreGui = game:GetService("CoreGui")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
 local camera = workspace.CurrentCamera
@@ -25,9 +28,178 @@ local spinning = false
 local currentSpinSpeed = 50
 local bav = nil
 
+local noclipEnabled = false
+local noclipConnection = nil
+
 local bv = nil
 local bg = nil
 local flyConnection = nil
+
+-- ตัวแปรอ้างอิงปุ่ม Toggle ในสมุดโน้ตสำหรับ Sync สถานะ
+local chatGuiToggleRef = nil
+
+-- ================== ฟังก์ชัน Noclip (เดินทะลุกำแพง) ==================
+local function enableNoclip()
+    if noclipEnabled then return end
+    noclipEnabled = true
+    noclipConnection = RunService.Stepped:Connect(function()
+        if not noclipEnabled then return end
+        local character = player.Character
+        if character then
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+local function disableNoclip()
+    if not noclipEnabled then return end
+    noclipEnabled = false
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+    local character = player.Character
+    if character then
+        for _, part in ipairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = true
+            end
+        end
+    end
+end
+
+-- ================== ฟังก์ชันส่งแชท ==================
+local function executeChat(text)
+    if text == "" or not text then return end
+    
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local success, err = pcall(function()
+            TextChatService:ExecuteCommandAsync(text)
+        end)
+        if not success then
+            local generalChannel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
+            if generalChannel then
+                generalChannel:SendAsync(text)
+            end
+        end
+    else
+        local sayMessageRequest = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+            and ReplicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
+        if sayMessageRequest then
+            sayMessageRequest:FireServer(text, "All")
+        end
+    end
+end
+
+-- ================== ฟังก์ชัน Custom Chat GUI ==================
+local customChatGuiInstance = nil
+
+local function hideCustomChatGUI()
+    if customChatGuiInstance then
+        customChatGuiInstance:Destroy()
+        customChatGuiInstance = nil
+    end
+    if CoreGui:FindFirstChild("CustomChatGUI") then
+        CoreGui.CustomChatGUI:Destroy()
+    end
+    if chatGuiToggleRef then
+        chatGuiToggleRef.SetState(false)
+    end
+end
+
+local function showCustomChatGUI()
+    if CoreGui:FindFirstChild("CustomChatGUI") then
+        CoreGui.CustomChatGUI:Destroy()
+    end
+
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "CustomChatGUI"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = CoreGui
+    customChatGuiInstance = screenGui
+
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainFrame"
+    mainFrame.Size = UDim2.new(0, 260, 0, 105)
+    mainFrame.Position = UDim2.new(0.5, -130, 0.1, 0)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    mainFrame.Active = true
+    mainFrame.Draggable = true
+    mainFrame.Parent = screenGui
+
+    local mainCorner = Instance.new("UICorner")
+    mainCorner.CornerRadius = UDim.new(0, 10)
+    mainCorner.Parent = mainFrame
+
+    local mainStroke = Instance.new("UIStroke")
+    mainStroke.Color = Color3.fromRGB(90, 90, 90)
+    mainStroke.Thickness = 2
+    mainStroke.Parent = mainFrame
+
+    local textBox = Instance.new("TextBox")
+    textBox.Name = "ChatTextBox"
+    textBox.Size = UDim2.new(0, 205, 0, 40)
+    textBox.Position = UDim2.new(0, 10, 0, 10)
+    textBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textBox.PlaceholderText = "Print In Chat Here"
+    textBox.Text = "/e wave"
+    textBox.TextSize = 14
+    textBox.Font = Enum.Font.SourceSans
+    textBox.ClearTextOnFocus = false
+    textBox.Parent = mainFrame
+
+    local boxCorner = Instance.new("UICorner")
+    boxCorner.CornerRadius = UDim.new(0, 6)
+    boxCorner.Parent = textBox
+
+    -- ปุ่มกากบาท (X)
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 25, 0, 40)
+    closeButton.Position = UDim2.new(1, -35, 0, 10)
+    closeButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.TextSize = 14
+    closeButton.Font = Enum.Font.SourceSansBold
+    closeButton.Text = "X"
+    closeButton.Parent = mainFrame
+
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 6)
+    closeCorner.Parent = closeButton
+
+    local sendButton = Instance.new("TextButton")
+    sendButton.Name = "SendButton"
+    sendButton.Size = UDim2.new(0, 240, 0, 35)
+    sendButton.Position = UDim2.new(0, 10, 0, 60)
+    sendButton.BackgroundColor3 = Color3.fromRGB(40, 140, 40)
+    sendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    sendButton.TextSize = 15
+    sendButton.Font = Enum.Font.SourceSansBold
+    sendButton.Text = "Accept Chat"
+    sendButton.Parent = mainFrame
+
+    local sendCorner = Instance.new("UICorner")
+    sendCorner.CornerRadius = UDim.new(0, 6)
+    sendCorner.Parent = sendButton
+
+    sendButton.MouseButton1Click:Connect(function()
+        executeChat(textBox.Text)
+    end)
+
+    closeButton.MouseButton1Click:Connect(function()
+        hideCustomChatGUI()
+    end)
+
+    if chatGuiToggleRef then
+        chatGuiToggleRef.SetState(true)
+    end
+end
 
 -- ================== ฟังก์ชันบิน ==================
 local function startFlying(speed)
@@ -460,7 +632,25 @@ player.Chatted:Connect(function(message)
     local msg = message:lower()
     local args = message:split(" ")
     
-    if msg == "/fly" or msg:match("^/fly%s*%d*$") then
+    -- คำสั่ง /chat [text] และเปิดปิด GUI ผ่านแชท
+    if message:sub(1, 6):lower() == "/chat " then
+        local chatText = message:sub(7)
+        executeChat(chatText)
+    elseif msg == "/chatgui" or msg == "/chat" then
+        if customChatGuiInstance then
+            hideCustomChatGUI()
+        else
+            showCustomChatGUI()
+        end
+    elseif msg == "/unchatgui" or msg == "/unchat" then
+        hideCustomChatGUI()
+        
+    elseif msg == "/noclip" or msg == "/nc" then
+        enableNoclip()
+    elseif msg == "/unnoclip" or msg == "/unnc" then
+        disableNoclip()
+        
+    elseif msg == "/fly" or msg:match("^/fly%s*%d*$") then
         local speed = msg:match("/fly%s*(%d+)")
         startFlying(speed)
         
@@ -499,7 +689,7 @@ player.Chatted:Connect(function(message)
     elseif msg == "/toolrecoil" then
         giveRecoilTool()
         
-    elseif msg == "/rejoin" then
+    elseif msg == "/rejoin" or msg == "/rj" then
         TeleportService:Teleport(game.PlaceId, player)
         
     elseif msg == "/freeze" then
@@ -533,6 +723,7 @@ player.CharacterAdded:Connect(function(character)
     if flying then stopFlying() end
     if spinning then stopSpinning() end
     if isFrozen then isFrozen = false end
+    if noclipEnabled then disableNoclip() end
     
     local humanoid = character:WaitForChild("Humanoid")
     humanoid.WalkSpeed = originalWalkSpeed
@@ -551,7 +742,6 @@ game.StarterGui:SetCore("SendNotification", {
 })
 task.wait(2)
 
--- ================== GUI สมุดโน้ต (Toggle ทั้งหมด) ==================
 local playerGui = player:WaitForChild("PlayerGui")
 
 local screenGui = Instance.new("ScreenGui")
@@ -624,7 +814,7 @@ listLayout.Padding = UDim.new(0, 6)
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Parent = scrollingFrame
 
--- ฟังก์ชันสร้างปุ่ม Toggle ทั่วไป (สำหรับทุกเมนู)
+-- ฟังก์ชันสร้างปุ่ม Toggle ทั่วไป
 local function createToggleButton(title, onToggle)
     local state = false
     local frame = Instance.new("Frame")
@@ -661,8 +851,8 @@ local function createToggleButton(title, onToggle)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
-    btn.MouseButton1Click:Connect(function()
-        state = not state
+    local function setToggleState(newState)
+        state = newState
         if state then
             btn.BackgroundColor3 = Color3.fromRGB(40, 150, 70)
             btn.Text = "ON"
@@ -672,8 +862,18 @@ local function createToggleButton(title, onToggle)
             btn.Text = "OFF"
             btn.TextColor3 = Color3.fromRGB(200, 200, 200)
         end
+    end
+
+    btn.MouseButton1Click:Connect(function()
+        setToggleState(not state)
         onToggle(state)
     end)
+
+    return {
+        SetState = function(newState)
+            setToggleState(newState)
+        end
+    }
 end
 
 -- ฟังก์ชันสร้างปุ่ม Toggle + ช่องใส่ Power / Input
@@ -750,7 +950,6 @@ local function createPowerToggleButton(title, defaultVal, placeholder, onToggle)
     end)
 end
 
--- ================== เพิ่มปุ่ม Toggle ทั้งหมด ==================
 createPowerToggleButton("Fly Mode /fly", 50, "Power...", function(on, input)
     if on then startFlying(tonumber(input) or 50) else stopFlying() end
 end)
@@ -759,17 +958,29 @@ createPowerToggleButton("Spin Mode /spin", 50, "Power...", function(on, input)
     if on then startSpinning(tonumber(input) or 50) else stopSpinning() end
 end)
 
-createPowerToggleButton("WalkSpeed /speed", 50, "Speed...", function(on, input)
+createPowerToggleButton("Walk Speed /speed", 50, "Speed...", function(on, input)
     local character = player.Character
     if character and character:FindFirstChild("Humanoid") then
         character.Humanoid.WalkSpeed = on and (tonumber(input) or 50) or originalWalkSpeed
     end
 end)
 
-createPowerToggleButton("JumpPower /jump", 50, "Power...", function(on, input)
+createPowerToggleButton("Jump Power /jump", 50, "Power...", function(on, input)
     local character = player.Character
     if character and character:FindFirstChild("Humanoid") then
         character.Humanoid.JumpPower = on and (tonumber(input) or 50) or originalJumpPower
+    end
+end)
+
+createToggleButton("Infinite Jump /if", function(on)
+    if on then enableInfiniteJump() else disableInfiniteJump() end
+end)
+
+createToggleButton("Noclip Mode /noclip - /nc", function(on)
+    if on then
+        enableNoclip()
+    else
+        disableNoclip()
     end
 end)
 
@@ -781,28 +992,20 @@ createToggleButton("Freeze Mode /freeze", function(on)
     if on then freezePlayer() else unfreezePlayer() end
 end)
 
-createToggleButton("Infinite Jump /if", function(on)
-    if on then enableInfiniteJump() else disableInfiniteJump() end
-end)
-
 createToggleButton("Invisible /iv", function(on)
     if on then makeInvisible() else makeVisible() end
 end)
 
-createPowerToggleButton("Teleport Player /tp", "", "Player", function(on, input)
+createPowerToggleButton("Teleport Player /tp", "", "Name...", function(on, input)
     if on and input ~= "" then teleportToPlayer(input) end
 end)
 
-createToggleButton("Get Teleport Tool /tooltp", function(on)
+createToggleButton("Teleport Tool /tooltp", function(on)
     if on then giveTeleportTool() else removeTeleportTool() end
 end)
 
-createToggleButton("Get Recoil Speed Tool /toolrecoil", function(on)
+createToggleButton("Recoil Speed Tool /toolrecoil", function(on)
     if on then giveRecoilTool() else removeRecoilTool() end
-end)
-
-createToggleButton("Rejoin Game /rejoin", function(on)
-    if on then TeleportService:Teleport(game.PlaceId, player) end
 end)
 
 createToggleButton("Infinite Yield Script /iy", function(on)
@@ -817,7 +1020,18 @@ createToggleButton("Animation Hub /an", function(on)
     if on then loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Animation"))() end
 end)
 
--- ปุ่มเปิด/ปิด สมุดโน้ตมุมขวาล่าง
+chatGuiToggleRef = createToggleButton("Custom Chat Gui /chat - /chatgui", function(on)
+    if on then
+        showCustomChatGUI()
+    else
+        hideCustomChatGUI()
+    end
+end)
+
+createToggleButton("Rejoin Game /rejoin - /rj", function(on)
+    if on then TeleportService:Teleport(game.PlaceId, player) end
+end)
+
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0, 60, 0, 60)
 toggleButton.Position = UDim2.new(1, -75, 1, -75)
