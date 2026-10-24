@@ -896,7 +896,7 @@ local Divider = BTab:CreateDivider()
 local Label = BTab:CreateLabel(" [ - This Item Everything Is Not Bypass On In Mapping - ]", "hammer", Color3.fromRGB(138, 43, 179) , false)
 
 local Dropdown = BTab:CreateDropdown({
-   Name = "[ 🎒 ]  Choose Tool   [ - Everything - ]",
+   Name = "[ ⚓ ]  Choose Tool   [ - Everything - ]",
    Options = {
        "[ 🔨 ]  Tool Anythings  [ - 3 Tools Items - ]",
        "[ 🍭 ]  Teleport Tool  [ - Pointing - ]",
@@ -909,7 +909,7 @@ local Dropdown = BTab:CreateDropdown({
    Callback = function(Value)
        local selected = Value[1]
        Rayfield:Notify({
-           Title =   "[ 🎒 ]  Tools EveryThing",
+           Title =   "[ ⚓ ]  Tools EveryThing",
            Content = "[ ✅ ]  Tools EveryThing Click",
            Duration = 1,
            Image = "backpack",
