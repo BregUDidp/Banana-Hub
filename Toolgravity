@@ -1,0 +1,81 @@
+local tool = Instance.new("Tool")
+tool.Name = "🍭"
+tool.ToolTip = "[ 🍭 ] Gravity 90 Candy"
+tool.RequiresHandle = true
+
+local player = game.Players.LocalPlayer
+
+-- สร้าง Handle ลูกอมสีม่วง
+local handle = Instance.new("Part")
+handle.Name = "Handle"
+handle.Size = Vector3.new(2.2, 2.2, 2.2)
+handle.Shape = Enum.PartType.Ball
+handle.Material = Enum.Material.ForceField
+handle.BrickColor = BrickColor.new("Royal purple")
+handle.Color = Color3.fromRGB(138, 43, 179)
+handle.Transparency = 0.15
+handle.CanCollide = false
+handle.Parent = tool
+
+-- Sparkles สีม่วง
+local sparkles = Instance.new("Sparkles")
+sparkles.SparkleColor = Color3.fromRGB(138, 43, 179)
+sparkles.Enabled = false
+sparkles.Parent = handle
+
+-- ParticleEmitter สีม่วง
+local particles = Instance.new("ParticleEmitter")
+particles.Texture = "rbxassetid://241650934"
+particles.Color = ColorSequence.new(
+    Color3.fromRGB(138, 43, 179),
+    Color3.fromRGB(180, 100, 200)
+)
+particles.Size = NumberSequence.new(0.4)
+particles.Lifetime = NumberRange.new(1.5, 2.5)
+particles.Rate = 20
+particles.SpreadAngle = Vector2.new(45, 45)
+particles.Speed = NumberRange.new(2)
+particles.Parent = handle
+
+local light = Instance.new("PointLight")
+light.Color = Color3.fromRGB(138, 43, 179)
+light.Brightness = 0
+light.Range = 0
+light.Parent = handle
+
+-- เอฟเฟกต์และระบบแรงโน้มถ่วงตอนถือ (Equipped)
+tool.Equipped:Connect(function()
+    sparkles.Enabled = false
+    particles.Rate = 50
+    light.Brightness = 2
+    
+    -- ปรับแรงโน้มถ่วงเป็น 90 เมื่อถือลูกอม
+    workspace.Gravity = 80
+
+    -- เสียงตอนถือไอเทม
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local equipSound = Instance.new("Sound")
+        equipSound.SoundId = "rbxassetid://2865227271"
+        equipSound.Volume = 0.5
+        equipSound.Parent = character.HumanoidRootPart
+        equipSound:Play()
+        equipSound.Ended:Connect(function()
+            equipSound:Destroy()
+        end)
+    end
+end)
+
+-- คืนค่าเดิมตอนเก็บไอเทม (Unequipped)
+tool.Unequipped:Connect(function()
+    sparkles.Enabled = false
+    particles.Rate = 20
+    light.Brightness = 2
+    
+    -- คืนค่าแรงโน้มถ่วงกลับสู่ปกติ (196.2)
+    workspace.Gravity = 196.2
+end)
+
+-- ใส่ลง Backpack ของผู้เล่น
+player:WaitForChild("Backpack")
+tool.Parent = player.Backpack
