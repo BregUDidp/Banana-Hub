@@ -1,6 +1,6 @@
 local tool = Instance.new("Tool")
-tool.Name = "🍭"
-tool.ToolTip = "[ 🍭 ] Gravity 90 Candy"
+tool.Name = "☄️"
+tool.ToolTip = "[ ☄️ ]  Gravity 90 Candy"
 tool.RequiresHandle = true
 
 local player = game.Players.LocalPlayer
