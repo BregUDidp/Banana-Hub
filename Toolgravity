@@ -1,6 +1,6 @@
 local tool = Instance.new("Tool")
 tool.Name = "☄️"
-tool.ToolTip = "[ ☄️ ]  Gravity 90 Candy"
+tool.ToolTip = "[ ☄️ ] Graviy Tools Jump Boost"
 tool.RequiresHandle = true
 
 local player = game.Players.LocalPlayer
@@ -43,14 +43,12 @@ light.Brightness = 0
 light.Range = 0
 light.Parent = handle
 
--- เอฟเฟกต์และระบบแรงโน้มถ่วงตอนถือ (Equipped)
 tool.Equipped:Connect(function()
     sparkles.Enabled = false
     particles.Rate = 50
     light.Brightness = 2
     
-    -- ปรับแรงโน้มถ่วงเป็น 90 เมื่อถือลูกอม
-    workspace.Gravity = 80
+    workspace.Gravity = 75
 
     -- เสียงตอนถือไอเทม
     local character = player.Character
