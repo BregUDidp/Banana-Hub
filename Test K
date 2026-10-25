@@ -896,12 +896,13 @@ local Divider = BTab:CreateDivider()
 local Label = BTab:CreateLabel(" [ - This Item Everything Is Not Bypass On In Mapping - ]", "anchor", Color3.fromRGB(138, 43, 179) , false)
 
 local Dropdown = BTab:CreateDropdown({
-   Name = "[ ⚓ ]  Choose Tool   [ - Everything - ]",
+   Name = "[ ⚓ ]  Choose Tools   [ - Everything - ]",
    Options = {
-       "[ 🔨 ]  Tool Anythings  [ - 3 Tools Items - ]",
+       "[ 🔨 ]  Tool Anythings  [ - 4 - Tools Items - ]",
        "[ 🍭 ]  Teleport Tool  [ - Pointing - ]",
        "[ 🚲 ]  Recoil Tool  [ - Speed 30 - ]",
-       "[ ☄️ ]  Gravity Tool  [ - Gravity 75 - ]"
+       "[ ☄️ ]  Gravity Tool  [ - Gravity 75 - ]",
+       "[ ☄️ - 🚲 ]  Recoil Tool - Gravity Tool  [ - Recoil 30 - Gravity 75 - ]",
    },
    CurrentOption = {"🤚 - Choose Tools Items"},
    MultiSelection = false,
@@ -914,22 +915,25 @@ local Dropdown = BTab:CreateDropdown({
            Duration = 1,
            Image = "anchor",
         })
-       if selected == "[ 🔨 ]  Tool Anythings  [ - 3 Tools Items - ]" then
+       if selected == "[ 🔨 ]  Tool Anythings  [ - 4 - Tools Items - ]" then
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolTp"))()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolRecoil"))()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Toolgravity"))()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolsReGra"))()
        elseif selected == "[ 🍭 ]  Teleport Tool  [ - Pointing - ]" then
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolTp"))()
        elseif selected == "[ 🚲 ]  Recoil Tool  [ - Speed 30 - ]" then
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolRecoil"))()
        elseif selected == "[ ☄️ ]  Gravity Tool  [ - Gravity 75 - ]" then
            loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Toolgravity"))()
+       elseif selected == "[ ☄️ - 🚲 ]  Recoil Tool - Gravity Tool  [ - Recoil 30 - Gravity 75 - ]" then
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolsReGra"))()
        end
    end,
 })
 local Divider = BTab:CreateDivider()
 local Button = BTab:CreateButton({
-   Name = "[ 🔨 ]   Item Tools Here   [ - 3 Tools Items - ]",
+   Name = "[ 🔨 ]   Item Tools Here   [ - 4 - Tools Items - ]",
    Callback = function()
         Rayfield:Notify({
             Title =   "[ 🔨 ]  Tools EveryThing",
@@ -940,6 +944,7 @@ local Button = BTab:CreateButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolTp"))()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolRecoil"))()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Toolgravity"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/ToolsReGra"))()
    end,
 }) 
 
