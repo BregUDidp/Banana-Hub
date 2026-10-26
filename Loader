@@ -26,7 +26,7 @@ local Window = Rayfield:CreateWindow({
    LoadingSubtitle = "",
    
    ShowText = " 🌑 ",
-   Theme = "Default",
+   Theme = "Amethyst",
    ToggleUIKeybind = "G",
    DisableRayfieldPrompts = false,
    DisableBuildWarnings = false,
@@ -76,7 +76,12 @@ local Button = LoaderTab:CreateButton({
        local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderTab:CreateDivider()
        local Section = LoaderTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
-       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping   [ - Best Script - ] ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping - 🟢 - [ - Best Script - ]",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Test%20K"))() end})
+       
+       local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderTab:CreateDivider()
+       local Section = LoaderTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
+       LoaderTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping - 🔴 - [ - Best Script - ]",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
        
        local Paragraph = LoaderTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderTab:CreateDivider()
@@ -133,7 +138,12 @@ local Button = LoaderSTab:CreateButton({
        local Section = LoaderSTab:CreateSection("")
        local Divider = LoaderSTab:CreateDivider()
        local Section = LoaderSTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
-       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping   [ - Best Script - ] ",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping - 🟢 - [ - Best Script - ]",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/Test%20K"))() end})
+       
+       local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
+       local Divider = LoaderSTab:CreateDivider()
+       local Section = LoaderSTab:CreateSection("{ ( - Script Akari All Mapping - ) }")
+       LoaderSTab:CreateButton({Name = "||   - Akari Hub   |   All Mapping - 🔴 - [ - Best Script - ]",Callback = function() loadstring(game:HttpGet("https://raw.githubusercontent.com/BregUDidp/Banana-Hub/refs/heads/main/K"))() end})
        
        local Paragraph = LoaderSTab:CreateParagraph({Title = "Click Scripter Loader For Run - Execute Script", Content = "Click Scripter Loader For Run - Execute Script"})
        local Divider = LoaderSTab:CreateDivider()
